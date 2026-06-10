@@ -11,7 +11,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-<sub>`v0.2.0 · Last modified Jun 10, 2026 at 12:19 AM EDT`</sub>
+`v0.2.0 · Last modified Jun 10, 2026 at 12:19 AM EDT`
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
@@ -30,7 +30,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ## 1. The nature of public health campaigns
 A public health campaign is a **time-bounded, population-level delivery event**: over days to weeks, a health system mobilizes thousands of temporary workers to bring a product — a vaccine, a deworming tablet, a bed net, a vitamin A capsule — to everyone in a defined target population, regardless of whether they ever visit a health facility. Campaigns complement routine services; they do not replace them. Where routine immunization waits for the child to come to the system, **the campaign sends the system to the child**.
 ### 1.1 The programs in scope
-The ICR spans public health campaign programs across diseases and delivery models — the UNICEF-supported programs below are representative examples, not the limit of scope.{>>Check: reframed from "programs UNICEF supports" to all public-health campaigns, keeping UNICEF as an example. OK to keep UNICEF named here, or drop the funder reference entirely?<<}{id="c38" by="claude" at="2026-06-10T04:19:01.000Z"} They look different on the surface but share deep structure:
+The ICR spans public health campaign programs across diseases and delivery models — the UNICEF-supported programs below are representative examples, not the limit of scope.{>>Check: reframed from "programs UNICEF supports" to all public-health campaigns, keeping UNICEF as an example. OK to keep UNICEF named here, or drop the funder reference entirely?<<}{id="c38" by="claude" at="2026-06-10T04:19:01.000Z"}{>>yes that's fine<<}{id="c41" by="user" at="2026-06-10T04:28:44.369Z" re="c38"} They look different on the surface but share deep structure:
 
 | Program | Product | Typical target | Cadence & operational shape |
 | --- | --- | --- | --- |
@@ -76,7 +76,7 @@ Two phases deserve emphasis because they dominate the data model:
 | Independent monitor | Post-campaign household checks, LQAS | Microplan denominators |
 | Community mobilizer | Refusal/absence notes, session announcements | Session schedule |
 ### 1.4 How records are captured{>>Trimmed this to a digitization-first paragraph that keeps the artifact vocabulary later sections (§3, §4, §7) rely on. Keep it at this level, or cut the artifact list entirely and lean on those later sections?<<}{id="c37" by="claude" at="2026-06-10T04:19:01.000Z"}
-For this project we assume campaign data is captured digitally — through ODK/XLSForm, DHIS2, CommCare, or OpenSRP — or digitized shortly after capture. Digitization replaces _transcription_, not _semantics_: a digital form is still the underlying instrument it was modeled on, and the ICR's job is to give those instruments a standard, reusable representation rather than to change field practice. The artifacts the model must represent are the doorstep **tally sheet** (people reached by age band; houses visited), the **CDD community register** (household-by-household treatment records), the **dose pole** (height bands mapped to tablet counts in MDA), finger- and chalk-**marking** (in-field "already covered" flags), and the family-held **home-based record** (child health card, checked for zero-dose detection).
+For this project we assume campaign data is captured digitally — through ODK/XLSForm, DHIS2, CommCare, or OpenSRP — or digitized shortly after capture. {==Digitization replaces _transcription_, not _semantics_: a==}{>>NOt sure what this means. in plain english please!<<}{id="c42" by="user" at="2026-06-10T04:29:24.468Z"} digital form is still the underlying instrument it was modeled on, and the ICR's job is to give those instruments a standard, reusable representation rather than to change field practice. The artifacts the model must represent are the doorstep **tally sheet** (people reached by age band; houses visited), the **CDD community register** (household-by-household treatment records), the **dose pole** (height bands mapped to tablet counts in MDA), finger- and chalk-**marking** (in-field "already covered" flags), and the family-held **home-based record** (child health card, checked for zero-dose detection).
 
 > [!note] Legacy paper is increasingly digitizable Where paper records persist, AI/OCR can now convert tally sheets and registers into structured data in ways that were impractical before — promising for backfilling historical campaigns, though out of scope for this design.
 
@@ -98,10 +98,15 @@ Campaign delivery has been **verticalized for decades**: each program builds its
 Several forces explain why{>>These reasons are inferred from the research and general program structure — do they match your field experience, or are there bigger drivers (e.g. no budget line for data stewardship, donor reporting that ends at close-out) I should foreground?<<}{id="c36" by="claude" at="2026-06-10T04:19:01.000Z"}:
 
 - **Vertical funding and accountability.** Each program is financed and evaluated on its own round; nothing rewards one campaign for leaving behind assets a later campaign could use, so reuse is no one's mandate.
+  
 - **Data collected for control, not reuse.** The operational job is to hit coverage during the window; once that is achieved the data has served its purpose, and its value to a future campaign is rarely considered at design time.
+  
 - **No shared home and no common identifiers.** Without a registry and a standard format, records sit in program-specific tools or on paper, in incompatible schemas, with no agreed way to join one campaign's data to the next.
+  
 - **Temporary workforce, thin institutional memory.** Campaigns run on short-term staff who disperse at close-out, taking undocumented local knowledge with them.
+  
 - **Sensitivity and unclear ownership.** Household- and person-level lists carry real privacy obligations; absent clear governance, the safe default is to lock them away rather than hand them on.
+  
 
 The ICR's thesis is to invert this: make each campaign a contributor to a **cumulative, reusable corpus of public health intelligence**, so that data collection cost becomes an investment that compounds across programs and over time.
 ### 2.3 The reusable assets
@@ -128,14 +133,17 @@ flowchart LR
 ```
 
 > [!warning] Reuse is only safe with provenance A 2024 denominator silently reused in 2027 is worse than no denominator — it produces confident, wrong coverage figures. Every reusable asset must carry **its source, its date, and its method**, and consumers must see that metadata at the point of reuse. This is why the data model (§4) makes provenance a first-class feature of Tier 1, not an ETL detail.
-
 ### 2.4 What is not reusable{>>New section per your c11 — check this list of transient/non-reusable data matches where you'd draw the line.<<}{id="c39" by="claude" at="2026-06-10T04:19:01.000Z"}
 The counterpart to the reusable core is a large volume of **transient operational data** that does its job during the round and has little value afterward. It must still be captured — it drives the daily loop — but the ICR does not need to standardize or preserve it long-term:
 
 - **Per-team, per-hour tallies** once aggregated to site/day coverage;
+  
 - **Redeployment and mop-up decisions** — which team moved where on which morning;
+  
 - **Ephemeral operational state** — stock-on-hand at a post mid-day, transport status, daily attendance;
-- **Superseded estimates** retained only for audit, not for planning.
+  
+- {==**Superseded estimates** retained only for audit, not for planning.==}{>>What does this mean?<<}{id="c43" by="user" at="2026-06-10T04:33:51.082Z"}
+  
 
 The boundary is not always sharp: some transient data becomes reusable in aggregate (e.g. patterns of missed areas across days inform the next microplan). The model should make the distinction explicit rather than treat everything as equally permanent.
 
@@ -143,7 +151,7 @@ The rest of this document turns this picture into a formal model: first the camp
 
 * * *
 ## 3. Campaign types — by structural archetype
-A campaign's data model is determined primarily by its **delivery model, not its disease** — the delivery strategy sets the _grain_ of recording (who/where a record represents) and which entities even exist. The proposal's program scope (immunization, polio, NTD MDA, malaria, vitamin A) collapses into **three structural archetypes**, plus **routine immunization** as the substrate they all plug into.
+A campaign's data model is determined primarily by its **delivery model, not its disease** — the delivery strategy {==sets the _grain_ of recording==}{>>Not sure I really understand this framing.  Let's fine something better. Provide a few examples.  "Type of reporting?"<<}{id="c45" by="user" at="2026-06-10T04:40:11.563Z"} (who/where a record represents) and which entities even exist. The proposal's program scope (immunization, polio, NTD MDA, malaria, vitamin A) collapses into **three structural archetypes**, plus **routine immunization** as the substrate they all plug into.
 
 ```mermaid
 flowchart TD
@@ -170,14 +178,14 @@ flowchart TD
 ### 3.2 Why the archetype matters for FHIR
 The archetype dictates the **finest grain** at which a record exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
 
-- **Archetype A** produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the **`Location`** (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
+- **Archetype A** produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the `Location` (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
   
-- **Archetype B** produces _household visits_ → modeled as a `Task` per household whose `focus` is the household **`Group`** and whose `location` is the dwelling, carrying missed/noncompliance reasons natively.
+- **Archetype B** produces _household visits_ → modeled as a `Task` per household whose `focus` is the household `Group` and whose `location` is the dwelling, carrying missed/noncompliance reasons natively.
   
 - **Archetype C** produces _community register entries_ → modeled as `MedicationAdministration` (with dose-pole `Observation`) linked to a community/household `Group`.
-
-In all three, the `Task` carries a `location` (the site, the dwelling, or the community point); the archetypes differ in the `focus` — a `Location` for A, a household `Group` for B, a community/household `Group` for C.{>>Check: this fixes A's focus to a Location and B's to a household Group (per your c15/c16). Confirm this is the modeling you want — it propagates into the §6 crosswalk and the §7.4 ICRCampaignTask profile, which currently describe focus mainly as the household Group.<<}{id="c40" by="claude" at="2026-06-10T04:19:01.000Z"}
   
+
+In all three, the `Task` carries a `location` (the site, the dwelling, or the community point); the archetypes differ in the `focus` — a `Location` for A, a household `Group` for B, a community/household `Group` for C.{>>Check: this fixes A's focus to a Location and B's to a household Group (per your c15/c16). Confirm this is the modeling you want — it propagates into the §6 crosswalk and the §7.4 ICRCampaignTask profile, which currently describe focus mainly as the household Group.<<}{id="c40" by="claude" at="2026-06-10T04:19:01.000Z"}{>>I think so but need to give it more thought to confirm.<<}{id="c44" by="user" at="2026-06-10T04:34:40.304Z" re="c40"}
 
 > [!tip] First-class attribute **Delivery strategy must be a first-class, coded attribute** of every campaign activity / site / task. A single campaign routinely mixes strategies (e.g. fixed post + house-to-house mop-up), and the available data elements change with the strategy.
 
