@@ -60,8 +60,8 @@ The rewrite is a distinct, explicitly-triggered step.
 
 Each working doc carries `version` and `last_modified` in its YAML frontmatter **and**
 a visible stamp directly under the H1 title (frontmatter is hidden in rendered/Obsidian
-preview), e.g. ``` `v0.1.1` · <small>Last modified Jun 10, 2026 at 12:07 AM EDT</small> ```.
-The visible stamp uses a friendly format in the author's **local timezone** (EDT); the
+preview), e.g. `<sub>` + a monospace code span: `` <sub>`v0.1.1 · Last modified Jun 10, 2026 at 12:07 AM EDT`</sub> ``
+(small + mono). The visible stamp uses a friendly format in the author's **local timezone** (EDT); the
 frontmatter `last_modified` stays ISO 8601 UTC for machine-readability. Keep the stamp
 and the frontmatter in sync on every version change.
 

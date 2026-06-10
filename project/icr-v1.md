@@ -11,8 +11,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-
-`v0.1.1` · <small>Last modified Jun 10, 2026 at 12:07 AM EDT</small>
+<sub>`v0.1.1 · Last modified Jun 10, 2026 at 12:07 AM EDT`</sub>
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
@@ -107,7 +106,7 @@ Across all programs, well-run campaigns organize their data in the same layered 
 | **Supervision & quality layer** | Refusals, missed children + reasons, stock reconciliation, RCM, LQAS | Checklists, monitoring forms, mop-up lists |
 | **Analytics layer** | Coverage, dropout, zero-dose, wastage, data quality | Dashboards, HMIS reports, JAP forms |
 ### 2.2 The disposability problem
-Campaign delivery has been **verticalized for decades**: each program builds its own systems, remaps the same communities, re-registers the same people, and re-estimates the same denominators every round. Data from one program is rarely available to the next even when both serve the same villages. The clearest case is NTDs: MDA campaigns could run on the household maps, population denominators, and geographic data that better-funded polio and immunization campaigns have _already collected_ — but siloed systems make that impossible. Campaign data is treated as **disposable**, an operational byproduct discarded at close-out.
+Campaign delivery has been **verticalized for decades**: each program builds its own systems, remaps the same communities, re-registers the same people, and re-estimates the same denominators every round. Data from one program is rarely available to the next even when both serve the same villages. The clearest case is NTDs: MDA campaigns could run on the household maps, population denominators, and geographic data that better-funded polio and immunization campaigns have _already collected_ — but siloed systems make that impossible. {==Campaign data is treated as **disposable**, an operational byproduct discarded at close-out.==}{>>Disposiable is a strong term.  Just not reused.<<}{id="c33" by="user" at="2026-06-10T04:14:00.682Z"}{>>Not a lot of effort is invested to save it or make it in a format tat can be reused.  Perhahps because it is not considered useful for later campaigns. If so what are the reasons why?  Please explore that.<<}{id="c34" by="user" at="2026-06-10T04:14:26.312Z" re="c33"}
 
 The ICR's thesis is to invert this: make each campaign a contributor to a **cumulative, reusable corpus of public health intelligence**, so that data collection cost becomes an investment that compounds across programs and over time.
 ### 2.3 The reusable assets
