@@ -1,0 +1,12 @@
+# OS / editor cruft
+.DS_Store
+
+# Local Claude Code overrides (shared .claude/settings.json is tracked)
+.claude/settings.local.json
+
+# Tooling / scratch render artifacts
+.playwright-mcp/
+mermaid-*.png
+
+# Signed contract — keep out of git history
+docs/contract/Complete_with_Docusign_*.pdf
