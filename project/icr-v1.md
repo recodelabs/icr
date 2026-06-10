@@ -2,8 +2,8 @@
 title: "ICR FHIR Implementation Guide — Campaign Data Model & Structure (v1 Working Doc)"
 project: ICR
 status: draft
-version: 0.2.0
-last_modified: 2026-06-10T04:19:01.000Z
+version: 0.2.1
+last_modified: 2026-06-10T04:45:08.000Z
 authors: [Ona, Crosscut]
 audience: [Ona, Crosscut, UNICEF, WHO]
 created: 2026-06-09
@@ -11,7 +11,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-`v0.2.0 · Last modified Jun 10, 2026 at 12:19 AM EDT`
+`v0.2.1 · Last modified Jun 10, 2026 at 12:45 AM EDT`
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
@@ -76,7 +76,7 @@ Two phases deserve emphasis because they dominate the data model:
 | Independent monitor | Post-campaign household checks, LQAS | Microplan denominators |
 | Community mobilizer | Refusal/absence notes, session announcements | Session schedule |
 ### 1.4 How records are captured{>>Trimmed this to a digitization-first paragraph that keeps the artifact vocabulary later sections (§3, §4, §7) rely on. Keep it at this level, or cut the artifact list entirely and lean on those later sections?<<}{id="c37" by="claude" at="2026-06-10T04:19:01.000Z"}
-For this project we assume campaign data is captured digitally — through ODK/XLSForm, DHIS2, CommCare, or OpenSRP — or digitized shortly after capture. {==Digitization replaces _transcription_, not _semantics_: a==}{>>NOt sure what this means. in plain english please!<<}{id="c42" by="user" at="2026-06-10T04:29:24.468Z"} digital form is still the underlying instrument it was modeled on, and the ICR's job is to give those instruments a standard, reusable representation rather than to change field practice. The artifacts the model must represent are the doorstep **tally sheet** (people reached by age band; houses visited), the **CDD community register** (household-by-household treatment records), the **dose pole** (height bands mapped to tablet counts in MDA), finger- and chalk-**marking** (in-field "already covered" flags), and the family-held **home-based record** (child health card, checked for zero-dose detection).
+For this project we assume campaign data is captured digitally — through ODK/XLSForm, DHIS2, CommCare, or OpenSRP — or digitized shortly after capture. {==Digitization replaces _transcription_, not _semantics_: a==}{>>NOt sure what this means. in plain english please!<<}{id="c42" by="user" at="2026-06-10T04:29:24.468Z"}{>>Plain English: digitizing only changes HOW a record is entered (typing on a phone vs. writing on paper) — it doesn't change WHAT the record is; a digital form is still the same tally sheet or register underneath. Suggested replacement for the highlighted clause: "Going from paper to a digital form changes how data is recorded, not what it is: a digital form is still the same tally sheet, register, or dose-pole reading underneath." Want me to apply it?<<}{id="c48" by="claude" at="2026-06-10T04:45:08.000Z" re="c42"} digital form is still the underlying instrument it was modeled on, and the ICR's job is to give those instruments a standard, reusable representation rather than to change field practice. The artifacts the model must represent are the doorstep **tally sheet** (people reached by age band; houses visited), the **CDD community register** (household-by-household treatment records), the **dose pole** (height bands mapped to tablet counts in MDA), finger- and chalk-**marking** (in-field "already covered" flags), and the family-held **home-based record** (child health card, checked for zero-dose detection).
 
 > [!note] Legacy paper is increasingly digitizable Where paper records persist, AI/OCR can now convert tally sheets and registers into structured data in ways that were impractical before — promising for backfilling historical campaigns, though out of scope for this design.
 
@@ -142,7 +142,7 @@ The counterpart to the reusable core is a large volume of **transient operationa
   
 - **Ephemeral operational state** — stock-on-hand at a post mid-day, transport status, daily attendance;
   
-- {==**Superseded estimates** retained only for audit, not for planning.==}{>>What does this mean?<<}{id="c43" by="user" at="2026-06-10T04:33:51.082Z"}
+- {==**Superseded estimates** retained only for audit, not for planning.==}{>>What does this mean?<<}{id="c43" by="user" at="2026-06-10T04:33:51.082Z"}{>>It means: when an estimate is replaced by a newer one — e.g. a 2024 population denominator superseded by a 2026 figure — the old value is kept only as a record of what was used at the time, not fed into future planning. Clearer wording: "Old estimates that newer ones have replaced — kept for the audit trail, not used to plan future campaigns." Apply this?<<}{id="c49" by="claude" at="2026-06-10T04:45:08.000Z" re="c43"}
   
 
 The boundary is not always sharp: some transient data becomes reusable in aggregate (e.g. patterns of missed areas across days inform the next microplan). The model should make the distinction explicit rather than treat everything as equally permanent.
@@ -151,7 +151,7 @@ The rest of this document turns this picture into a formal model: first the camp
 
 * * *
 ## 3. Campaign types — by structural archetype
-A campaign's data model is determined primarily by its **delivery model, not its disease** — the delivery strategy {==sets the _grain_ of recording==}{>>Not sure I really understand this framing.  Let's fine something better. Provide a few examples.  "Type of reporting?"<<}{id="c45" by="user" at="2026-06-10T04:40:11.563Z"} (who/where a record represents) and which entities even exist. The proposal's program scope (immunization, polio, NTD MDA, malaria, vitamin A) collapses into **three structural archetypes**, plus **routine immunization** as the substrate they all plug into.
+A campaign's data model is determined primarily by its **delivery model, not its disease** — the delivery strategy {==sets the _grain_ of recording==}{>>Not sure I really understand this framing.  Let's fine something better. Provide a few examples.  "Type of reporting?"<<}{id="c45" by="user" at="2026-06-10T04:40:11.563Z"}{>>"Grain" = the level at which a single record is created (one row represents what?). The delivery model sets it: fixed-post (A) → one record per SITE-SESSION (a post's whole day, aggregated); house-to-house (B) → one record per HOUSEHOLD VISIT; MDA (C) → one record per PERSON treated in a register. It's about record granularity, not the type of report. Suggested replacement: "…determines the level at which a single record is created — a site-session in fixed-post campaigns, a household in house-to-house, a person in an MDA register — and which entities even exist." Good?<<}{id="c50" by="claude" at="2026-06-10T04:45:08.000Z" re="c45"} (who/where a record represents) and which entities even exist. The proposal's program scope (immunization, polio, NTD MDA, malaria, vitamin A) collapses into **three structural archetypes**, plus **routine immunization** as the substrate they all plug into.
 
 ```mermaid
 flowchart TD
@@ -168,7 +168,7 @@ flowchart TD
 ```
 
 > [!note] Hybrids are the norm, not the exception Real campaigns mix archetypes. A mass **ITN campaign** is typically a _house-to-house registration phase_ (Archetype B — enumerate households, issue vouchers, compute net allocation) followed by a _fixed-point distribution phase_ (Archetype A). **Vitamin A** is usually co-delivered through child health days (A) or piggybacked on polio house-to-house rounds (B). A measles SIA adds house-to-house _mop-up_ after fixed-post delivery. This is exactly why delivery strategy must be an attribute of the **activity/task**, not of the campaign.
-### 3.1 The archetypes at a glance
+### {==3.1 The archetypes at a glance==}{>>Just say Campaign Types? I think<<}{id="c46" by="user" at="2026-06-10T04:41:00.589Z"}{>>Agree we can drop the jargon. Two options: (a) just rename this heading to "3.1 Campaign types at a glance" (avoids clashing with §3's title), or (b) globally rename "Archetype A/B/C" → "Type A/B/C" everywhere (§3.1, §3.2, §6, §7) and label each by its delivery model. I'd recommend (b), carried through with the names in c47. Want the global rename?<<}{id="c51" by="claude" at="2026-06-10T04:45:08.000Z" re="c46"}
 | Archetype | Delivery unit & **grain** of record | Core records / planning artifacts | Distinctive data elements | Reporting rhythm |
 | --- | --- | --- | --- | --- |
 | **A. Fixed-post / outreach vaccine SIA** (measles–rubella, HPV, yellow fever, OCV, vitamin A) | Site → _site-session_ (fixed post, temporary post, **school**, mobile) | Daily tally sheets by age band, vial accountability, cold-chain logs, AEFI line lists, RCM, readiness assessment | Doses by antigen × age band; wastage; AEFI; readiness score; per-round/per-dose coverage (OCV) | Daily tally review; post-campaign survey / mop-up |
@@ -178,7 +178,7 @@ flowchart TD
 ### 3.2 Why the archetype matters for FHIR
 The archetype dictates the **finest grain** at which a record exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
 
-- **Archetype A** produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the `Location` (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
+- {==**Archetype A**==}{>>Say the campaign type. Eg Fixed-post<<}{id="c47" by="user" at="2026-06-10T04:41:28.196Z"}{>>Yes — I'll lead each bullet with the delivery type: **Fixed-post / outreach (A)**, **House-to-house (B)**, **Community / MDA (C)**. If you approve the global rename in c51 I'll apply this consistently across §3.2 and the §7 profile tables.<<}{id="c52" by="claude" at="2026-06-10T04:45:08.000Z" re="c47"} produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the `Location` (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
   
 - **Archetype B** produces _household visits_ → modeled as a `Task` per household whose `focus` is the household `Group` and whose `location` is the dwelling, carrying missed/noncompliance reasons natively.
   
