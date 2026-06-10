@@ -12,7 +12,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
 
-`v0.1.1` · _last modified 2026-06-10 04:07 UTC_
+`v0.1.1` · <small>Last modified Jun 10, 2026 at 12:07 AM EDT</small>
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
