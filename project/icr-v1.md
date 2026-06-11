@@ -117,7 +117,7 @@ The reusable core — what the ICR exists to capture, standardize, and hand to t
 | Reusable asset | Typically produced by | Reused for | Refresh cadence{>>Renamed "Stability / decay" → "Refresh cadence" (how often the asset must be re-collected to stay trustworthy). Alternatives if you prefer: "Update cadence" or "Refresh frequency / stability." Good with this?<<}{id="c35" by="claude" at="2026-06-10T04:19:01.000Z"} |
 | --- | --- | --- | --- |
 | **Admin hierarchy & location registry** | National georegistry, any campaign | Every campaign + routine services | Very stable (years); changes with boundary reforms |
-| **Settlement & household maps** (incl. building footprints / GERS IDs) | House-to-house campaigns (polio, IRS, ITN registration); geospatial tooling | Microplanning of _any_ program in the same geography | Durable; needs refresh for new/abandoned settlements |
+| **Settlement & household maps** (incl. building footprints / GERS IDs) | House-to-house icampaigns (polio, IRS, ITN registration); geospatial tooling | Microplanning of _any_ program in the same geography | Durable; needs refresh for new/abandoned settlements |
 | **Population denominators** | Microcensus & enumeration, modelled estimates (WorldPop, GRID3) | All targeting and every coverage calculation | **Decays fast** (1–3 years); must carry source + date |
 | **Catchment polygons & supervisory areas** | Microplanning tools (Crosscut, ESPEN Microplanner) | Session planning, fair team workloads, travel-time analysis | Stable until the facility network changes |
 | **Target lists & zero-dose lists** | Campaign delivery + routine HMIS analysis | The next campaign's focus areas; routine catch-up | Months; **sensitive** — household-level, access-controlled |
