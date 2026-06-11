@@ -2,8 +2,8 @@
 title: "ICR FHIR Implementation Guide — Campaign Data Model & Structure (v1 Working Doc)"
 project: ICR
 status: draft
-version: 0.3.2
-last_modified: 2026-06-11T02:30:48.000Z
+version: 0.4.0
+last_modified: 2026-06-11T02:54:48.000Z
 authors: [Ona, Crosscut]
 audience: [Ona, Crosscut, UNICEF, WHO]
 created: 2026-06-09
@@ -11,9 +11,9 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-`v0.3.2 · Last modified Jun 10, 2026 at 10:30 PM EDT`
+`v0.4.0 · Last modified Jun 10, 2026 at 10:54 PM EDT`
 
-⁠
+{>>Rewrite pass (v0.4.0) — what changed and where, after a full re-read of the doc against the proposal, the project plan, and all three research reports: (1) "grain" is gone doc-wide, replaced with "level of record" — see c55 at §3.1 for why I didn't use "type"; (2) §9 is substantially rewritten with a new §9.1 on GERS and canonical location identity, covering the OSM→Overture contribution loop and applying GERS to households, settlements, facilities, and admin divisions — see c61; (3) §4.3 now explains HOW one structure serves both real-time and reconciled data (c56); (4) new §4.5 "Capture the minimum that drives action" principle from the research (c57); (5) §6.1 crosswalk gains Consent/governance and record-linkage/dedup rows — both were proposal commitments missing from the doc (c58); (6) §7.9 measures now anchor to the JAP/ICG/ESPEN/EPI reporting minimums ministries already owe (c59); (7) §8 adds EN/FR multi-language ValueSet designations for the pilot countries (c60); (8) §10 gains three open questions, including the Task-focus confirmation from our c40/c44 thread, now tracked there as promised (c62). Housekeeping: removed an invisible stray character left at this spot when the old process note was deleted. Delete each comment once you've seen it.<<}{id="c54" by="claude" at="2026-06-11T02:54:48.000Z"}
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
@@ -171,14 +171,14 @@ flowchart TD
 
 > [!note] Hybrids are the norm, not the exception Real campaigns mix types. A mass **ITN campaign** is typically a _house-to-house registration phase_ (Type B — enumerate households, issue vouchers, compute net allocation) followed by a _fixed-point distribution phase_ (Type A). **Vitamin A** is usually co-delivered through child health days (A) or piggybacked on polio house-to-house rounds (B). A measles SIA adds house-to-house _mop-up_ after fixed-post delivery. This is exactly why delivery strategy must be an attribute of the **activity/task**, not of the campaign.
 ### 3.1 The campaign types at a glance
-| Type | Delivery unit & {==**grain**==}{>>Let's please stop using grain and use type instead.<<}{id="c45" by="mberg" at="2026-06-11T01:53:06.799Z"}{>>Will do — one flag before I apply it: in this table "type" collides with the campaign Types A/B/C (the first column is literally "Type"), so "Delivery unit & type of record" reads as two unrelated "types" in one row. Alternatives that avoid the clash: "unit of record" or "level of record". Should I use one of those, or do you want "type of record" regardless? Whichever you pick, I'll replace "grain" everywhere it appears (this header, the §3.2 "finest grain" intro, and the Tier 3 "grain layer" label in §4).<<}{id="c50" by="claude" at="2026-06-11T02:27:36.000Z" re="c45"} of record | Core records / planning artifacts | Distinctive data elements | Reporting rhythm |
+| Type | Delivery unit & {==**level of record**==}{>>RESOLVED c45 (your "stop using grain" request): "grain" is now gone everywhere in the doc — this header, the §3.2 intro ("finest level of record"), and the Tier 3 layer label in §4. I used "level of record" rather than the "type" you suggested because in this exact table "type" would collide head-on with the campaign Types A/B/C — the first column of this table is literally "Type", so "Delivery unit & type of record" would read as two unrelated meanings of "type" in one row. If you still prefer "type of record" despite that, say so and I'll swap it in one pass.<<}{id="c55" by="claude" at="2026-06-11T02:54:48.000Z" re="c45"} | Core records / planning artifacts | Distinctive data elements | Reporting rhythm |
 | --- | --- | --- | --- | --- |
 | **A. Fixed-post / outreach vaccine SIA** (measles–rubella, HPV, yellow fever, OCV, vitamin A) | Site → _site-session_ (fixed post, temporary post, **school**, mobile) | Daily tally sheets by age band, vial accountability, cold-chain logs, AEFI line lists, RCM, readiness assessment | Doses by antigen × age band; wastage; AEFI; readiness score; per-round/per-dose coverage (OCV) | Daily tally review; post-campaign survey / mop-up |
 | **B. House-to-house rapid delivery** (polio, OCV mop-up; malaria IRS/ITN structurally) | Household → _household visit_ (+ child within household) | Team movement plans, operational maps, doorstep tally sheets, finger/house-marking, LQAS, RCM | Houses visited; children present/absent; **missed + reason**; **noncompliance reason**; chronically missed settlements | Daily team & supervisor review; same-day mop-up |
 | **C. Community / MDA preventive chemotherapy** (NTD: LF, oncho, schisto, STH, trachoma) | Community / household → _community treatment register_ (by a CDD) | CDD treatment registers, household visit logs, supervision forms, side-event reports | Directly-observed consumption; **dose-pole height → tablet count**; chronic-morbidity line lists (lymphoedema, hydrocele) | Often daily during round; aggregated program / epidemiological / geographic coverage |
 | **(Substrate) Routine immunization / EPI** | Facility / outreach → child over time | Home-based record, facility register, tally sheets → monthly HMIS report | Coverage by antigen-dose; drop-out (Penta1→Penta3); zero-dose (no DTP1); MOV | Monthly reporting; quarterly microplan revision |
 ### 3.2 Why the campaign type matters for FHIR
-The campaign type dictates the **finest grain** at which a record exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
+The campaign type dictates the **finest level of record** that exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
 
 - **Fixed-post / outreach (Type A)** produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the `Location` (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
   
@@ -187,7 +187,7 @@ The campaign type dictates the **finest grain** at which a record exists, and th
 - **Community / MDA (Type C)** produces _community register entries_ → modeled as `MedicationAdministration` (with dose-pole `Observation`) linked to a community/household `Group`.
   
 
-In all three, the `Task` carries a `location` (the site, the dwelling, or the community point); the types differ in the `focus` — a `Location` for A, a household `Group` for B, a community/household `Group` for C.{>>Check: this fixes A's focus to a Location and B's to a household Group (per your c15/c16). Confirm this is the modeling you want — it propagates into the §6 crosswalk and the §7.4 ICRCampaignTask profile, which currently describe focus mainly as the household Group.<<}{id="c40" by="claude" at="2026-06-10T04:19:01.000Z"}{>>I think so but need to give it more thought to confirm.<<}{id="c44" by="user" at="2026-06-10T04:34:40.304Z" re="c40"}{>>Understood — keeping the focus modeling as drafted (A → Location, B → household Group) and treating it as provisional. In the next rewrite I'll add it to the §10 open design questions so it stays visible until you confirm.<<}{id="c52" by="claude" at="2026-06-11T02:27:36.000Z" re="c44"}
+In all three, the `Task` carries a `location` (the site, the dwelling, or the community point); the types differ in the `focus` — a `Location` for A, a household `Group` for B, a community/household `Group` for C.{>>RESOLVED our c40/c44 thread (Task focus per type — you said you needed more thought): kept the modeling as drafted (A → site Location, B → household Group) and added it as open question #7 in §10 so it stays visible and provisional until you confirm or change it.<<}{id="c63" by="claude" at="2026-06-11T02:54:48.000Z"}
 
 > [!tip] First-class attribute **Delivery strategy must be a first-class, coded attribute** of every campaign activity / site / task. A single campaign routinely mixes strategies (e.g. fixed post + house-to-house mop-up), and the available data elements change with the strategy.
 
@@ -200,7 +200,7 @@ flowchart TB
     T0["<b>Tier 0 — Geography & org units</b><br/>admin hierarchy · operational geography · catchment polygons · settlements/structures"]
     T1["<b>Tier 1 — Population & denominators</b><br/>target population per geography · source/provenance · age–sex bands · competing estimates"]
     T2["<b>Tier 2 — Microplan & resources</b><br/>microplan · sites/posts (w/ strategy) · teams · resource requirements"]
-    T3["<b>Tier 3 — Delivery / encounters (grain layer)</b><br/>site-session tally · household visit · community treatment register · individual event"]
+    T3["<b>Tier 3 — Delivery / encounters (the record-level layer)</b><br/>site-session tally · household visit · community treatment register · individual event"]
     T4["<b>Tier 4 — Monitoring & coverage</b><br/>administrative coverage · survey coverage · RCM · LQAS · readiness · coverage targets"]
     T5["<b>Tier 5 — Supply, logistics & cost</b><br/>lots & stockpile source · cold chain · wastage · campaign cost"]
     T0 --> T1 --> T2 --> T3 --> T4
@@ -230,6 +230,8 @@ The IG must distinguish components captured/reported **in real time during an ac
 | Locations visited, progress vs target | Final coverage calculations (admin + survey) |
 | Team redeployment, mop-up triggers | Data-quality review, deduplication |
 | Daily dashboards | JAP / Gavi / ICG-aligned consolidated reporting |
+
+{==The mechanism is lineage metadata on the same resources, not parallel schemas: delivery events and Tasks stream in as they happen, each already carrying `record-origin` and `Provenance`; at close-out, reconciled figures — final stock counts, corrected tallies, final coverage `MeasureReport`s — are written as superseding resources flagged via the `realtime-vs-reconciled` element (§7.2). Any consumer then selects the lineage it needs: a campaign dashboard reads the live stream, a JAP export reads only reconciled records, and neither requires a second system or a migration step between "operational" and "reporting" data.==}{>>ADDED (new paragraph): the doc previously asserted "a single structure that supports both" but never said HOW — this was flagged as a gap against the proposal, which commits to one structure serving operational monitoring and formal reporting. The paragraph now names the mechanism: superseding resources + the realtime-vs-reconciled flag + consumers filtering by lineage.<<}{id="c56" by="claude" at="2026-06-11T02:54:48.000Z"}
 ### 4.4 Campaign ↔ routine integration and zero-dose
 Campaigns are no longer just blanket-coverage events — they are increasingly **precision instruments for finding zero-dose children** (no DTP/Penta1) and pulling them into the routine system (the Big Catch-Up pattern). Two concrete model requirements follow:
 
@@ -239,6 +241,8 @@ Campaigns are no longer just blanket-coverage events — they are increasingly *
   
 
 This is also the heart of the ICR's reuse thesis: the household maps, population denominators, and zero-dose lists that one campaign produces become **planning inputs (Tier 0–1) for the next** — across programs, not just within one.
+### 4.5 {==Capture the minimum that drives action==}{>>ADDED (entire new subsection §4.5): this design principle recurs across all three research reports — WHO DAK thinking, the EIR requirements guidance, and ESPEN's digitized-MDA guide all warn that over-collecting "nice-to-have" data is one of the most common campaign-digitization failure modes — but the doc never stated it. It matters for the IG because it dictates how sparing the profiles must be with required elements, and it gives reviewers (UNICEF/WHO) the rationale for why the IG won't mandate person-level capture everywhere.<<}{id="c57" by="claude" at="2026-06-11T02:54:48.000Z"}
+A recurring failure mode in campaign digitization is **over-collection**: digitizing every field a form could hold rather than the few that change a decision. The guidance synthesized across the research reduces to one principle: **capture the most detailed variable at the lowest level where it changes an operational decision.** Lot number is essential in a person-level EIR and any AEFI investigation, but operational overkill on a doorstep OPV tally; household GPS is essential for zero-dose hunting, but unnecessary for a fixed-post school round. For the IG this means all six tiers must be _expressible_, but only a minimal operational core is _required_: profiles keep mandatory elements sparse, and countries opt into household- and person-level granularity where (and only where) it drives action — the same tiered-adoption logic as the granularity note in §7.4.
 
 * * *
 ## 5. The FHIR modeling challenge
@@ -307,6 +311,8 @@ flowchart TD
 | Survey / LQAS / RCM coverage (T4) | `MeasureReport` / `Observation` | Method, sample design, CI, date — **separate** from admin |
 | Coverage target / threshold (T4) | `PlanDefinition.goal` / `Measure` | e.g. ≥95%, ≥65% (LF), EYE 50/60/80% |
 | Supervision checklist / RCM form / readiness assessment (T4) | `Questionnaire` + `QuestionnaireResponse` | The natural landing zone for ODK/XLSForm instruments (SDC) |
+| {==Consent & data-sharing governance (all tiers)==} | `Consent` | Household- and person-level lists carry real privacy obligations (§2.2); consent status recorded & enforceable per individual; data ownership rests with country governments |
+| {==Duplicate detection & record linkage (all tiers)==}{>>ADDED (two new crosswalk rows): Consent and dedup/record-linkage were both explicit proposal commitments missing from this doc. The proposal names the FHIR Consent resource for recording/enforcing consent status and states data ownership rests with governments; it also calls cross-campaign deduplication of households and locations "essential to the integrity of the registry" (operationally via Cinder). Neither had any model representation here. Also added a matching identity principle #4 in §9 and open question #9 in §10 about the conformant dedup pattern.<<}{id="c58" by="claude" at="2026-06-11T02:54:48.000Z"} | `Linkage` / `Patient.link` + identifier matching on `Location`/`Group` | Cross-campaign dedup of households & locations is core registry-integrity work (operationally: Cinder); the conformant pattern is §10 open question 9 |
 | Data lineage / source system (all tiers) | `Provenance` | Which tool (ODK, DHIS2, CommCare), which transform (OpenFn), when — essential for a registry fed by many sources |
 | Analytics projection (T4) | `ViewDefinition` (SQL-on-FHIR) | Part of the IG → portable warehouse schema |
 
@@ -389,7 +395,7 @@ The reusable, version-controlled template for a campaign type.
 | `quantity` | The denominator count |
 | `characteristic` | Age band, sex, eligibility rule, geography |
 | **Extensions** | `denominator-source` (census / microcensus / WorldPop / GRID3), `estimate-date`, `is-planning-denominator` (bool), `confidence` |
-### 7.7 ICRLocation — _profile of_ `Location` (most-customized resource) | Element | Constraint | | --- | --- | | `partOf` | Enables nested admin hierarchy (country → region → district → ward → settlement) | | `physicalType` | jurisdiction / site / building / household | | `type` | facility / school / community-distribution-point / temporary-post / household | | `position` | GPS point (long/lat/alt) | | `identifier` | **Multi-system**: P-codes (OCHA), Overture Maps GERS IDs, national facility codes | | **Extension** | `location-boundary-geojson` (polygon: district / settlement / catchment) |
+### 7.7 ICRLocation — _profile of_ `Location` (most-customized resource) | Element | Constraint | | --- | --- | | `partOf` | Enables nested admin hierarchy (country → region → district → ward → settlement) | | `physicalType` | jurisdiction / site / building / household | | `type` | facility / school / community-distribution-point / temporary-post / household | | `position` | GPS point (long/lat/alt) | | `identifier` | **Multi-system**: Overture Maps **GERS IDs** (building / place / division — the cross-campaign join key, §9.1), P-codes (OCHA), national facility codes | | **Extension** | `location-boundary-geojson` (polygon: district / settlement / catchment) |
 > [!warning] Performance is a first-order concern Campaign countries commonly have **6+ levels** of administrative nesting. Deep `partOf` chains create query-performance challenges for mobile/web clients. This is an explicit focus area for IG development, drawing on production experience with nested FHIR location hierarchies at national scale (e.g. Uganda). ### 7.8 Delivery-event profiles
 
 | Profile | Base | Key constraints / bindings |
@@ -406,6 +412,8 @@ The reusable, version-controlled template for a campaign type.
 | **ICRSurveyCoverage** | `MeasureReport` / `Observation` | survey / LQAS / RCM result with method, sample design, CI, date; marked `source = survey/lqas/rcm` |
 | **ICR ViewDefinitions** | `ViewDefinition` (SQL-on-FHIR) | Shipped *in the IG* so any implementer generates the same warehouse schema for DHIS2/JAP reporting |
 
+{==The `Measure` definitions behind these reports should be authored against the reporting minimums ministries already owe, rather than invented fresh: the WHO **JAP** forms for NTDs, the **ICG** M&E minimum dataset (OCV / yellow fever — delivery strategy, target population, doses, AEFI, coverage, costs), ESPEN's treatment-coverage schema (program / epidemiological / geographic coverage), and the standard WHO EPI indicators on the routine side. A submission-ready report then becomes a query over the registry, not a re-collection exercise.==}{>>ADDED (new paragraph): the research catalogues ready-made minimum reporting datasets (ICG M&E set, ESPEN/JAP schemas, WHO EPI indicators) and recommends aligning with what ministries already report instead of defining novel measures — the doc mentioned JAP/Gavi reporting as a destination but never tied the Measure definitions to those existing schemas. This also grounds Phase 4 (JAP alignment) in the data model from day one.<<}{id="c59" by="claude" at="2026-06-11T02:54:48.000Z"}
+
 * * *
 ## 8. Terminology & ValueSets
 Multi-program scope means the IG must define bindings that are **internationally standardized yet locally adaptable**.
@@ -420,34 +428,43 @@ Multi-program scope means the IG must define bindings that are **internationally
 | Missed / noncompliance reasons | **ICR-defined ValueSet** | Extensible |
 | Adverse events | Existing FHIR/WHO AEFI sets | Extensible |
 
-> [!tip] Localization pattern Implementations **must** use IG-defined codes for core campaign types, **should** use international codes (CVX/ATC) for products where applicable, and **may** add local codes for country-specific products. `ConceptMap` resources in the IG show how local codes relate back to the international standards — keeping data comparable across countries while honoring national formularies and registration numbers.
+> [!tip] Localization pattern Implementations **must** use IG-defined codes for core campaign types, **should** use international codes (CVX/ATC) for products where applicable, and **may** add local codes for country-specific products. `ConceptMap` resources in the IG show how local codes relate back to the international standards — keeping data comparable across countries while honoring national formularies and registration numbers. {==IG-defined ValueSets carry **multi-language display names** (FHIR designations) — English and French at minimum, matching the pilot-country contexts — so the same codes render natively in country tools without forking the terminology.==}{>>ADDED (sentence): the project plan/proposal commit to French-language delivery for the pilots (Côte d'Ivoire francophone; second-country trips "EN/FR as needed"), but the doc had no localization mechanism for terminology. FHIR designations are the standard answer and cost little to mandate from v0.1.<<}{id="c60" by="claude" at="2026-06-11T02:54:48.000Z"}
 ### Alignment with WHO SMART Guidelines
 The ICR IG should **declare its relationship to the WHO SMART Immunizations IG and the Immunization DAK** rather than evolve in parallel. Concretely: reuse DAK core data elements and indicator definitions where they overlap (vaccination event fields, coverage indicators), align profile design with SMART conventions where campaigns and routine immunization meet (the §4.4 integration boundary), and track the SMART work as it matures — it is still draft/demo status, which gives the ICR room to _lead_ on campaign semantics while staying compatible on the routine side. This mirrors how the ICR IG is authored with the same FSH/SUSHI/IG-Publisher toolchain WHO SMART Guidelines use.
 
 * * *
-## 9. Location, administrative hierarchy & {==geospatial identity==}{>>[https://docs.overturemaps.org/gers/](https://docs.overturemaps.org/gers/)
-This is not just for the country but for most location types eg. households, districts, etc. update the doc ot reflect that. also add a section about GERS id and the problem it's trying to solve and how it does that. include how it pulls in data from sources like OSM and how if you update osm. eg map a now household and add it to OSM it would eventually (in a month or two) make it into overture and be assigned a unique ID. Talk about the issue of globally unique canonical ids for location and why the are sort of the golden / missing thing.<<}{id="c46" by="mberg" at="2026-06-11T02:15:07.144Z"}{>>Got it — plan for the rewrite: (1) reframe §9 so GERS identity applies across location types — buildings/households, settlements, schools/facilities, and admin divisions — not just country-level; (2) add a subsection ("GERS and the problem of canonical location identity") covering why globally unique, stable location IDs are the golden/missing piece for cross-campaign reuse, how GERS assigns and stabilizes IDs across Overture releases, and how Overture conflates sources like OSM — including the contribution loop where a newly mapped household added to OSM lands in Overture within a month or two and acquires a GERS ID; (3) update §7.7 ICRLocation identifier guidance to match. One question: should the IG recommend GERS as the primary cross-campaign location identifier, with P-codes and national facility codes as secondary aliases — or keep the identifier systems coequal with no designated primary?<<}{id="c51" by="claude" at="2026-06-11T02:27:36.000Z" re="c46"}
+## 9. Location, administrative hierarchy & geospatial identity{>>RESOLVED c46 (your GERS request) — this whole section is rewritten: (1) GERS identity now applies across location types — every level of the hierarchy diagram below carries a GERS identifier, not just country; (2) entirely new §9.1 explains the canonical-location-identity problem ("the golden, missing piece"), how GERS assigns and stabilizes IDs across Overture releases, how Overture conflates OSM and other open sources, and the contribution loop where a household you map into OSM lands in Overture within a month or two and acquires a permanent GERS ID; (3) §7.7's identifier row and §12 decision 8 now name GERS as the cross-campaign join key. One judgment call I made without your answer to my earlier question: I drafted GERS as the PREFERRED cross-campaign join key (where Overture coverage exists), with P-codes and national codes as coequal aliases rather than demoted "secondary" identifiers — since Overture coverage is incomplete, no identifier can be mandatory. Flag if you want GERS positioned more (or less) strongly.<<}{id="c61" by="claude" at="2026-06-11T02:54:48.000Z" re="c46"}
 
 ```mermaid
 flowchart TD
-    C[Country<br/>P-code · GERS] --> R[Region]
-    R --> D[District]
-    D --> SD[Sub-district / Ward]
-    SD --> SET[Settlement / Village<br/>GeoJSON polygon]
+    C[Country<br/>P-code · GERS division] --> R[Region<br/>P-code · GERS division]
+    R --> D[District<br/>P-code · GERS division]
+    D --> SD[Sub-district / Ward<br/>P-code · GERS division]
+    SD --> SET[Settlement / Village<br/>GeoJSON polygon · GERS]
     SET --> HH[Household<br/>Group + Location point · GERS building ID]
     SD -.operational geography.-> SUP[Supervisory area<br/>linkable-but-distinct]
-    D --> FAC[Health facility<br/>national facility code]
-    SET --> SCH[School / community<br/>distribution point]
+    D --> FAC[Health facility<br/>national facility code · GERS place]
+    SET --> SCH[School / community<br/>distribution point · GERS place]
 ```
 
-Three identity principles:
+Four identity principles:
 
-1. **Stable cross-campaign identity.** Support multiple identifier systems on every Location — **P-codes** (OCHA admin boundaries), **Overture Maps GERS IDs** (2.6B+ buildings, 64M+ places — a consistent way to identify the _same_ household/settlement across campaigns), and country-specific facility-registry codes.
+1. **Stable cross-campaign identity.** Support multiple identifier systems on every Location — **Overture Maps GERS IDs** for buildings, places, settlements, and admin divisions (the cross-campaign join key — §9.1), **P-codes** (OCHA admin boundaries), and country-specific facility-registry codes.
   
 2. **Boundaries, not just points.** A `location-boundary-geojson` extension carries district polygons, settlement areas, and catchment zones — the geometry Crosscut enriches and pushes back.
   
 3. **Operational ≠ administrative geography.** Polio operational boundaries often differ from RI catchment boundaries (the Nigeria lesson). Model operational geography as _linkable-but-distinct_ from the admin hierarchy.
   
+4. **Identity is what makes deduplication possible.** Cross-campaign dedup of households and locations (§6.1) is only tractable when records share canonical identifiers; where they don't, the registry falls back to geometry- and attribute-based matching — strictly worse. Every identifier the model carries shrinks the fuzzy-matching problem.
+  
+### 9.1 GERS and the problem of canonical location identity
+Campaign data reuse lives or dies on location identity. Every system names places its own way: national facility registries cover facilities only and differ by ministry; P-codes cover administrative units only and shift with boundary reforms; campaign tools invent project codes that die with the project. The result is that the _same_ village appears under three spellings in three campaign datasets, and the _same_ household is re-enumerated every round because nothing in the data can assert "this is the same building as last year." A **globally unique, stable, openly licensed identifier for every location — building, settlement, school, facility, admin division — is the golden, missing piece** of cross-campaign reuse: without it, every join between two campaigns' data is a fuzzy-matching exercise; with it, reuse is a key lookup.
+
+This is the problem the **Global Entity Reference System (GERS)** from the Overture Maps Foundation is built to solve ([docs.overturemaps.org/gers](https://docs.overturemaps.org/gers/)). Every feature in the Overture corpus — **2.6B+ building footprints, 64M+ places, plus divisions (admin units) and addresses** — carries a globally unique GERS ID that is **kept stable across releases**: each Overture release matches incoming data against existing features so the same real-world entity keeps the same ID even as its geometry and attributes improve. GERS is to the world's locations what a canonical primary key is to a database — any two datasets that both carry GERS IDs join exactly, with no crosswalk tables and no string matching.
+
+Overture builds its corpus by **conflating open sources** — OpenStreetMap, the Google and Microsoft open building-footprint datasets, Esri community layers, national open data. That gives the ICR a practical **contribution loop**: when a campaign's field mapping finds a household, settlement, or facility that isn't on the map, contributing it to **OSM** means it flows into a subsequent Overture release — typically within a month or two — gets conflated, and is assigned a permanent GERS ID. Field mapping done for one campaign thereby becomes globally shared, permanently identifiable infrastructure rather than a project shapefile: _microplan mapping → OSM → Overture → GERS ID → the next campaign's microplan_.
+
+For the ICR the pattern is: GERS **building IDs** anchor households (the dwelling `Location` behind each **ICRHousehold**), GERS **place IDs** anchor schools, facilities, and distribution points, and GERS **division IDs** anchor admin units alongside their P-codes. The IG treats GERS as the **preferred cross-campaign join key wherever the feature exists in Overture**, with P-codes and national codes carried as coequal aliases — no identifier is mandatory, because Overture coverage is incomplete (new and informal settlements may not yet be mapped — which the contribution loop progressively fixes). Two caveats the IG must handle explicitly: conflation can occasionally mis-match features, and GERS IDs have a lifecycle (a feature can be retired or superseded between releases), so implementations should record the Overture release version alongside the ID — the same provenance discipline §2.3 demands of denominators.
 
 * * *
 ## 10. Open design questions for the FHIR community
@@ -464,6 +481,12 @@ These are the questions we will take to chat.fhir.org, working-group calls, and 
 5. **Denominator provenance** — extension vs `Group.characteristic` vs a dedicated profile.
   
 6. **GeoJSON on Location in R4** — custom extension now; alignment path with the R4B/R5 standard boundary extension.
+  
+7. {==**Task `focus` by campaign type** — the draft fixes Type A's focus to the site `Location` and Type B's to the household `Group` (§3.2); confirm this is right (it propagates into the §6 crosswalk and §7.4), and pressure-test it against how implementers expect `Task.focus` vs `Task.location` to behave.==}
+  
+8. {==**Population-scale access patterns** — Bulk Data (`$export`) and `Group`-based cohort export for generating microplanning target lists at national scale without per-record queries.==}
+  
+9. {==**Record linkage & deduplication** — the conformant pattern for cross-campaign household/location dedup: `Linkage` vs `Person` vs pure identifier-matching on `Location`/`Group`, and how merge outcomes are recorded.==}{>>ADDED (three new open questions): #7 is our c40/c44 Task-focus thread, parked here as promised so it stays visible until you confirm the modeling. #8 comes from the research — FHIR Bulk Data + Group-based cohort export is how EIR-scale systems generate target lists without melting the server, and it belongs on the Connectathon list alongside the existing hierarchy-performance question. #9 pairs with the new dedup rows in §6.1 — dedup is a proposal commitment with no settled FHIR pattern, exactly what this section is for.<<}{id="c62" by="claude" at="2026-06-11T02:54:48.000Z"}
   
 
 * * *
@@ -504,7 +527,7 @@ flowchart LR
 >   
 > 7. **Household = Group + Location** (the validated Ona pattern); target population = Group.
 >   
-> 8. **Location is the most-customized resource** — multi-identifier (P-code, GERS, national), GeoJSON boundaries, performance-tuned hierarchy.
+> 8. **Location is the most-customized resource** — multi-identifier with **GERS as the cross-campaign join key** (§9.1) alongside P-codes and national codes, GeoJSON boundaries, performance-tuned hierarchy.
 >   
 > 9. **Terminology: international codes required, local codes allowed, ConceptMaps bridge them.**
 >   
