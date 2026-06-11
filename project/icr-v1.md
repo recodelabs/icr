@@ -2,8 +2,8 @@
 title: "ICR FHIR Implementation Guide — Campaign Data Model & Structure (v1 Working Doc)"
 project: ICR
 status: draft
-version: 0.3.1
-last_modified: 2026-06-11T02:27:36.000Z
+version: 0.3.2
+last_modified: 2026-06-11T02:30:48.000Z
 authors: [Ona, Crosscut]
 audience: [Ona, Crosscut, UNICEF, WHO]
 created: 2026-06-09
@@ -11,7 +11,9 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-`v0.3.1 · Last modified Jun 10, 2026 at 10:27 PM EDT`
+`v0.3.2 · Last modified Jun 10, 2026 at 10:30 PM EDT`
+
+{>>Process note (v0.3.1–0.3.2, git sync): local checkout and origin/main had diverged. I fast-forwarded to origin/main (which had your c45 "grain" and c46 GERS comments from web edits), re-applied your uncommitted §1 "change the name" comment — renumbered c45 → c48 because the id collided with the §3.1 "grain" comment — and dropped two accidental keystroke edits from the local tree: stray "ZXCZXCZXCZXC"/"zxcvzxcvzxcv" lines after the abstract and a "pra ctitioners" typo (backed up in a git stash on issue/BERG-1). My replies and questions are at c49 (§1 rename — need direction), c50 (§3.1 grain→type — "type" collides with Type A/B/C in that table; ok with "unit of record" or "level of record"?), c51 (§9 GERS plan — should GERS be the primary cross-campaign identifier or coequal with P-codes/national codes?), and c52 (c44 ack). Answer in the doc and I'll do the rewrite pass (→ v0.4.0).<<}{id="c53" by="claude" at="2026-06-11T02:30:48.000Z"}
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
