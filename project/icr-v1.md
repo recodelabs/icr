@@ -229,7 +229,7 @@ The IG must distinguish components captured/reported **in real time during an ac
 | Doses / commodities administered | Reconciled stock counts & wastage |
 | Locations visited, progress vs target | Final coverage calculations (admin + survey) |
 | Team redeployment, mop-up triggers | Data-quality review, deduplication |
-| Daily dashboards | JAP / Gavi / ICG-aligned consolidated reporting |
+| Daily dashboards | JAP / Gavi / ICG-aligned consolidated reportingu |
 
 {==The mechanism is lineage metadata on the same resources, not parallel schemas: delivery events and Tasks stream in as they happen, each already carrying `record-origin` and `Provenance`; at close-out, reconciled figures — final stock counts, corrected tallies, final coverage `MeasureReport`s — are written as superseding resources flagged via the `realtime-vs-reconciled` element (§7.2). Any consumer then selects the lineage it needs: a campaign dashboard reads the live stream, a JAP export reads only reconciled records, and neither requires a second system or a migration step between "operational" and "reporting" data.==}{>>ADDED (new paragraph): the doc previously asserted "a single structure that supports both" but never said HOW — this was flagged as a gap against the proposal, which commits to one structure serving operational monitoring and formal reporting. The paragraph now names the mechanism: superseding resources + the realtime-vs-reconciled flag + consumers filtering by lineage.<<}{id="c56" by="claude" at="2026-06-11T02:54:48.000Z"}
 ### 4.4 Campaign ↔ routine integration and zero-dose
@@ -421,7 +421,7 @@ Multi-program scope means the IG must define bindings that are **internationally
 | Domain | Code system | Binding strength |
 | --- | --- | --- |
 | Campaign type (vaccination / MDA / ITN / IRS / vitamin A) | **ICR-defined ValueSet** | Required |
-| Delivery strategy (fixed-post / outreach / school / house-to-house / community-directed) | **ICR-defined ValueSet** | Required |
+| Delivery strategy (fixed-post / outreach / school / house-to-house / community-directed) | **ICR-definedu ValueSet** | Required |
 | Vaccines | **CVX** (CDC) | Required + local via ConceptMap |
 | MDA pharmaceuticals | **WHO ATC** | Required + local via ConceptMap |
 | Commodities (ITN, IRS chemicals, drug formulations) | **GS1 GTIN**; WHO EML categories | Extensible |
