@@ -109,7 +109,7 @@ Several forces explain why{>>These reasons are inferred from the research and ge
   
 
 The ICR's thesis is to invert this: make each campaign a contributor to a **cumulative, reusable corpus of public health intelligence**, so that data collection cost becomes an investment that compounds across programs and over time.
-### 2.3 The reusable assets
+### 2.3 The reusable data assets
 The reusable core — what the ICR exists to capture, standardize, and hand to the next campaign — is the data that holds value beyond the round it was collected in (the transient remainder is catalogued in §2.4):
 
 | Reusable asset | Typically produced by | Reused for | Refresh cadence{>>Renamed "Stability / decay" → "Refresh cadence" (how often the asset must be re-collected to stay trustworthy). Alternatives if you prefer: "Update cadence" or "Refresh frequency / stability." Good with this?<<}{id="c35" by="claude" at="2026-06-10T04:19:01.000Z"} |
