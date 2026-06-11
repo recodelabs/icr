@@ -2,8 +2,8 @@
 title: "ICR FHIR Implementation Guide — Campaign Data Model & Structure (v1 Working Doc)"
 project: ICR
 status: draft
-version: 0.3.0
-last_modified: 2026-06-10T04:54:39.000Z
+version: 0.3.1
+last_modified: 2026-06-11T02:27:36.000Z
 authors: [Ona, Crosscut]
 audience: [Ona, Crosscut, UNICEF, WHO]
 created: 2026-06-09
@@ -11,7 +11,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-`v0.3.0 · Last modified Jun 10, 2026 at 12:54 AM EDT`
+`v0.3.1 · Last modified Jun 10, 2026 at 10:27 PM EDT`
 
 > [!abstract] What this document is A working design document that grounds the **ICR FHIR Implementation Guide (IG)** before Phase 1 authoring begins. It moves in four deliberate steps:
 > 
@@ -27,7 +27,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 > It is technical and opinionated, but written to be circulated to UNICEF and WHO as a v1 thinking piece. It is **not** the IG itself — it is the design rationale the IG will encode. Source research lives in [[Immunization Campaign Data Models Research]], [[immunization-campaign-data-models-report]], [[chatpgpt-campaigns]], and the [[ICR Technical Proposal Ona Final]].
 
 * * *
-## 1. The nature of public health campaigns
+## 1. The nature o{==f public health campaigns==}{>>Let's change the name of this?<<}{id="c48" by="user" at="2026-06-10T16:24:58.020Z"}{>>Happy to rename — which direction do you mean? (a) Retitle just this section (e.g. "What is a campaign?" or "Anatomy of a campaign"), or (b) change the term "public health campaign" itself throughout the doc (to "health campaign", or plain "campaign" after first use)? If (b), what should it become? Note the abstract echoes this title ("The nature of campaigns"), so I'll sync both. (Housekeeping: this comment was originally id c45, which collided with your c45 on "grain" in §3.1 — renumbered to c48.)<<}{id="c49" by="claude" at="2026-06-11T02:27:36.000Z" re="c48"}
 A public health campaign is a **time-bounded, population-level delivery event**: over days to weeks, a health system mobilizes thousands of temporary workers to bring a product — a vaccine, a deworming tablet, a bed net, a vitamin A capsule — to everyone in a defined target population, regardless of whether they ever visit a health facility. Campaigns complement routine services; they do not replace them. Where routine immunization waits for the child to come to the system, **the campaign sends the system to the child**.
 ### 1.1 The programs in scope
 The ICR spans public health campaign programs across diseases and delivery models — the UNICEF-supported programs below are representative examples, not the limit of scope. They look different on the surface but share deep structure:
@@ -169,7 +169,7 @@ flowchart TD
 
 > [!note] Hybrids are the norm, not the exception Real campaigns mix types. A mass **ITN campaign** is typically a _house-to-house registration phase_ (Type B — enumerate households, issue vouchers, compute net allocation) followed by a _fixed-point distribution phase_ (Type A). **Vitamin A** is usually co-delivered through child health days (A) or piggybacked on polio house-to-house rounds (B). A measles SIA adds house-to-house _mop-up_ after fixed-post delivery. This is exactly why delivery strategy must be an attribute of the **activity/task**, not of the campaign.
 ### 3.1 The campaign types at a glance
-| Type | Delivery unit & {==**grain**==}{>>Let's please stop using grain and use type instead.<<}{id="c45" by="mberg" at="2026-06-11T01:53:06.799Z"} of record | Core records / planning artifacts | Distinctive data elements | Reporting rhythm |
+| Type | Delivery unit & {==**grain**==}{>>Let's please stop using grain and use type instead.<<}{id="c45" by="mberg" at="2026-06-11T01:53:06.799Z"}{>>Will do — one flag before I apply it: in this table "type" collides with the campaign Types A/B/C (the first column is literally "Type"), so "Delivery unit & type of record" reads as two unrelated "types" in one row. Alternatives that avoid the clash: "unit of record" or "level of record". Should I use one of those, or do you want "type of record" regardless? Whichever you pick, I'll replace "grain" everywhere it appears (this header, the §3.2 "finest grain" intro, and the Tier 3 "grain layer" label in §4).<<}{id="c50" by="claude" at="2026-06-11T02:27:36.000Z" re="c45"} of record | Core records / planning artifacts | Distinctive data elements | Reporting rhythm |
 | --- | --- | --- | --- | --- |
 | **A. Fixed-post / outreach vaccine SIA** (measles–rubella, HPV, yellow fever, OCV, vitamin A) | Site → _site-session_ (fixed post, temporary post, **school**, mobile) | Daily tally sheets by age band, vial accountability, cold-chain logs, AEFI line lists, RCM, readiness assessment | Doses by antigen × age band; wastage; AEFI; readiness score; per-round/per-dose coverage (OCV) | Daily tally review; post-campaign survey / mop-up |
 | **B. House-to-house rapid delivery** (polio, OCV mop-up; malaria IRS/ITN structurally) | Household → _household visit_ (+ child within household) | Team movement plans, operational maps, doorstep tally sheets, finger/house-marking, LQAS, RCM | Houses visited; children present/absent; **missed + reason**; **noncompliance reason**; chronically missed settlements | Daily team & supervisor review; same-day mop-up |
@@ -185,7 +185,7 @@ The campaign type dictates the **finest grain** at which a record exists, and th
 - **Community / MDA (Type C)** produces _community register entries_ → modeled as `MedicationAdministration` (with dose-pole `Observation`) linked to a community/household `Group`.
   
 
-In all three, the `Task` carries a `location` (the site, the dwelling, or the community point); the types differ in the `focus` — a `Location` for A, a household `Group` for B, a community/household `Group` for C.{>>Check: this fixes A's focus to a Location and B's to a household Group (per your c15/c16). Confirm this is the modeling you want — it propagates into the §6 crosswalk and the §7.4 ICRCampaignTask profile, which currently describe focus mainly as the household Group.<<}{id="c40" by="claude" at="2026-06-10T04:19:01.000Z"}{>>I think so but need to give it more thought to confirm.<<}{id="c44" by="user" at="2026-06-10T04:34:40.304Z" re="c40"}
+In all three, the `Task` carries a `location` (the site, the dwelling, or the community point); the types differ in the `focus` — a `Location` for A, a household `Group` for B, a community/household `Group` for C.{>>Check: this fixes A's focus to a Location and B's to a household Group (per your c15/c16). Confirm this is the modeling you want — it propagates into the §6 crosswalk and the §7.4 ICRCampaignTask profile, which currently describe focus mainly as the household Group.<<}{id="c40" by="claude" at="2026-06-10T04:19:01.000Z"}{>>I think so but need to give it more thought to confirm.<<}{id="c44" by="user" at="2026-06-10T04:34:40.304Z" re="c40"}{>>Understood — keeping the focus modeling as drafted (A → Location, B → household Group) and treating it as provisional. In the next rewrite I'll add it to the §10 open design questions so it stays visible until you confirm.<<}{id="c52" by="claude" at="2026-06-11T02:27:36.000Z" re="c44"}
 
 > [!tip] First-class attribute **Delivery strategy must be a first-class, coded attribute** of every campaign activity / site / task. A single campaign routinely mixes strategies (e.g. fixed post + house-to-house mop-up), and the available data elements change with the strategy.
 
@@ -424,7 +424,7 @@ The ICR IG should **declare its relationship to the WHO SMART Immunizations IG a
 
 * * *
 ## 9. Location, administrative hierarchy & {==geospatial identity==}{>>https://docs.overturemaps.org/gers/
-This is not just for the country but for most location types eg. households, districts, etc.  update the doc ot reflect that. also add a section about GERS id and the problem it's trying to solve and how it does that. include how it pulls in data from sources like OSM and how if you update osm. eg map a now household and add it to OSM it would eventually (in a month or two) make it into overture and be assigned a unique ID.  Talk about the issue of globally unique canonical ids for location and why the are sort of the golden / missing thing.<<}{id="c46" by="mberg" at="2026-06-11T02:15:07.144Z"}
+This is not just for the country but for most location types eg. households, districts, etc.  update the doc ot reflect that. also add a section about GERS id and the problem it's trying to solve and how it does that. include how it pulls in data from sources like OSM and how if you update osm. eg map a now household and add it to OSM it would eventually (in a month or two) make it into overture and be assigned a unique ID.  Talk about the issue of globally unique canonical ids for location and why the are sort of the golden / missing thing.<<}{id="c46" by="mberg" at="2026-06-11T02:15:07.144Z"}{>>Got it — plan for the rewrite: (1) reframe §9 so GERS identity applies across location types — buildings/households, settlements, schools/facilities, and admin divisions — not just country-level; (2) add a subsection ("GERS and the problem of canonical location identity") covering why globally unique, stable location IDs are the golden/missing piece for cross-campaign reuse, how GERS assigns and stabilizes IDs across Overture releases, and how Overture conflates sources like OSM — including the contribution loop where a newly mapped household added to OSM lands in Overture within a month or two and acquires a GERS ID; (3) update §7.7 ICRLocation identifier guidance to match. One question: should the IG recommend GERS as the primary cross-campaign location identifier, with P-codes and national facility codes as secondary aliases — or keep the identifier systems coequal with no designated primary?<<}{id="c51" by="claude" at="2026-06-11T02:27:36.000Z" re="c46"}
 
 ```mermaid
 flowchart TD
