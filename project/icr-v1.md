@@ -178,7 +178,7 @@ flowchart TD
 | **C. Community / MDA preventive chemotherapy** (NTD: LF, oncho, schisto, STH, trachoma) | Community / household → _community treatment register_ (by a CDD) | CDD treatment registers, household visit logs, supervision forms, side-event reports | Directly-observed consumption; **dose-pole height → tablet count**; chronic-morbidity line lists (lymphoedema, hydrocele) | Often daily during round; aggregated program / epidemiological / geographic coverage |
 | **(Substrate) Routine immunization / EPI** | Facility / outreach → child over time | Home-based record, facility register, tally sheets → monthly HMIS report | Coverage by antigen-dose; drop-out (Penta1→Penta3); zero-dose (no DTP1); MOV | Monthly reporting; quarterly microplan revision |
 ### 3.2 Why the campaign type matters for FHIR
-The campaign type dictates the **finest level of record** that exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
+The campaign type dictates the {==**finest**==}{>>Lowest<<}{id="c65" by="mberg" at="2026-06-11T03:39:17.911Z"} **level of record** that exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
 
 - **Fixed-post / outreach (Type A)** produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the `Location` (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
   
