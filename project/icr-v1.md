@@ -2,8 +2,8 @@
 title: "ICR FHIR Implementation Guide — Campaign Data Model & Structure (v1 Working Doc)"
 project: ICR
 status: draft
-version: 0.4.0
-last_modified: 2026-06-11T02:54:48.000Z
+version: 0.4.1
+last_modified: 2026-06-11T17:31:32.000Z
 authors: [Ona, Crosscut]
 audience: [Ona, Crosscut, UNICEF, WHO]
 created: 2026-06-09
@@ -11,7 +11,9 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-`v0.4.0 · Last modified Jun 10, 2026 at 10:54 PM EDT`
+`v0.4.1 · Last modified Jun 11, 2026 at 1:31 PM EDT`
+
+{>>MILESTONE — the draft IG now exists, in this repo at ig/. It encodes this doc's §7–§8 in FSH and compiles clean with SUSHI (0 errors / 0 warnings): 12 profiles (ICRCampaignProtocol, ICRCampaign, ICRCampaignActivity, ICRCampaignTask, ICRHousehold, ICRTargetPopulation, ICRLocation, the three delivery-event profiles, and the two never-merged coverage profiles), 20 extensions (record-origin, delivery-strategy, denominator provenance, GERS-sliced Location identifiers, house-to-house data elements…), 8 ICR code systems with EN/FR designations on the two Required ones, 10 ValueSets, and a worked example set — an MR SIA over a district→settlement→dwelling hierarchy with GERS IDs, a house-to-house mop-up Task, plus MDA and ITN delivery events. Build it with `sushi build ig` or see ig/README.md for the full IG-Publisher website. Deferred to the next IG draft (per §7/§12): ViewDefinitions, ConceptMap scaffolds, Consent guidance, JAP/ICG/ESPEN-aligned Measure definitions. Housekeeping note: your latest web edits introduced a few stray characters I'll sweep in the next rewrite pass — "ihouseholds" (§2.1), "sprayedu" (§2.1), "icampaigns" (§2.3), "guidance I" (§2.3), "mmm" (§3.1 row B), "reportingu" (§4.3), "ICR-definedu" (§8).<<}{id="c66" by="claude" at="2026-06-11T17:31:32.000Z"}
 
 {>>Rewrite pass (v0.4.0) — what changed and where, after a full re-read of the doc against the proposal, the project plan, and all three research reports: (1) "grain" is gone doc-wide, replaced with "level of record" — see c55 at §3.1 for why I didn't use "type"; (2) §9 is substantially rewritten with a new §9.1 on GERS and canonical location identity, covering the OSM→Overture contribution loop and applying GERS to households, settlements, facilities, and admin divisions — see c61; (3) §4.3 now explains HOW one structure serves both real-time and reconciled data (c56); (4) new §4.5 "Capture the minimum that drives action" principle from the research (c57); (5) §6.1 crosswalk gains Consent/governance and record-linkage/dedup rows — both were proposal commitments missing from the doc (c58); (6) §7.9 measures now anchor to the JAP/ICG/ESPEN/EPI reporting minimums ministries already owe (c59); (7) §8 adds EN/FR multi-language ValueSet designations for the pilot countries (c60); (8) §10 gains three open questions, including the Task-focus confirmation from our c40/c44 thread, now tracked there as promised (c62). Housekeeping: removed an invisible stray character left at this spot when the old process note was deleted. Delete each comment once you've seen it.<<}{id="c54" by="claude" at="2026-06-11T02:54:48.000Z"}
 
@@ -30,7 +32,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 
 * * *
 ## 1. The nature of public health campaigns
-A public health campaign is a **time-bounded, population-level delivery event**: over days to weeks, a health system mobilizes thousands of temporary workers to bring a product — a vaccine, a deworming tablet, a bed net, a vitamin A capsule — to everyone in a defined target population, regardless of whether they ever visit a health facility. Campaigns complement routine services; they do not replace them. Where routine immunization waits for the child to come to the system, **t**{==**he campaign sends the system to the child**==}{>>Brings services to people<<}{id="c64" by="mberg" at="2026-06-11T03:31:20.865Z"}.
+A public health campaign is a **time-bounded, population-level delivery event**: over days to weeks, a health system mobilizes thousands of temporary workers to bring a product — a vaccine, a deworming tablet, a bed net, a vitamin A capsule — to everyone in a defined target population, regardless of whether they ever visit a health facility. Campaigns complement routine services; they do not replace them. Where routine immunization waits for the child to come to the system, **t**{==**he campaign sends the system to the child**==}{>>Brings services to people<<}{id="c64" by="mberg" at="2026-06-11T03:31:20.865Z"}{>>Will apply in the next rewrite: "…the campaign **brings services to people**" replacing "sends the system to the child". I'll keep the contrast with the preceding clause ("waits for the child to come to the system") intact.<<}{id="c67" by="claude" at="2026-06-11T17:31:32.000Z" re="c64"}.
 ### 1.1 The programs in scope
 The ICR spans public health campaign programs across diseases and delivery models — the UNICEF-supported programs below are representative examples, not the limit of scope. They look different on the surface but share deep structure:
 
@@ -178,7 +180,7 @@ flowchart TD
 | **C. Community / MDA preventive chemotherapy** (NTD: LF, oncho, schisto, STH, trachoma) | Community / household → _community treatment register_ (by a CDD) | CDD treatment registers, household visit logs, supervision forms, side-event reports | Directly-observed consumption; **dose-pole height → tablet count**; chronic-morbidity line lists (lymphoedema, hydrocele) | Often daily during round; aggregated program / epidemiological / geographic coverage |
 | **(Substrate) Routine immunization / EPI** | Facility / outreach → child over time | Home-based record, facility register, tally sheets → monthly HMIS report | Coverage by antigen-dose; drop-out (Penta1→Penta3); zero-dose (no DTP1); MOV | Monthly reporting; quarterly microplan revision |
 ### 3.2 Why the campaign type matters for FHIR
-The campaign type dictates the {==**finest**==}{>>Lowest<<}{id="c65" by="mberg" at="2026-06-11T03:39:17.911Z"} **level of record** that exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
+The campaign type dictates the {==**finest**==}{>>Lowest<<}{id="c65" by="mberg" at="2026-06-11T03:39:17.911Z"}{>>Will apply in the next rewrite: "the **lowest** level of record". (Matches the §4.5 phrasing "at the lowest level where it changes an operational decision", so the doc will use one consistent term.)<<}{id="c68" by="claude" at="2026-06-11T17:31:32.000Z" re="c65"} **level of record** that exists, and therefore which FHIR resource carries the delivery event and at what cardinality:
 
 - **Fixed-post / outreach (Type A)** produces _site-session aggregates_ → modeled as a `Task` per site-session whose `focus`/`location` is the `Location` (fixed post, temporary post, school), with aggregate outputs — and optionally individual `Immunization` where person-level capture exists.
   
