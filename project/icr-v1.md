@@ -30,7 +30,7 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 
 * * *
 ## 1. The nature of public health campaigns
-A public health campaign is a **time-bounded, population-level delivery event**: over days to weeks, a health system mobilizes thousands of temporary workers to bring a product — a vaccine, a deworming tablet, a bed net, a vitamin A capsule — to everyone in a defined target population, regardless of whether they ever visit a health facility. Campaigns complement routine services; they do not replace them. Where routine immunization waits for the child to come to the system, **the campaign sends the system to the child**.
+A public health campaign is a **time-bounded, population-level delivery event**: over days to weeks, a health system mobilizes thousands of temporary workers to bring a product — a vaccine, a deworming tablet, a bed net, a vitamin A capsule — to everyone in a defined target population, regardless of whether they ever visit a health facility. Campaigns complement routine services; they do not replace them. Where routine immunization waits for the child to come to the system, **t**{==**he campaign sends the system to the child**==}{>>Brings services to people<<}{id="c64" by="mberg" at="2026-06-11T03:31:20.865Z"}.
 ### 1.1 The programs in scope
 The ICR spans public health campaign programs across diseases and delivery models — the UNICEF-supported programs below are representative examples, not the limit of scope. They look different on the surface but share deep structure:
 
