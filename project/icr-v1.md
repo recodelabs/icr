@@ -91,7 +91,7 @@ Across all programs, well-run campaigns organize their data in the same layered 
 | --- | --- | --- |
 | **Campaign layer** | Dates, targets, geography, teams, commodities, partners | Campaign plan, microplan, budget |
 | **Delivery layer** | Facilities, posts, schools, ihouseholds, routes | Site lists, team movement plans, operational maps |
-| **Service layer** | Doses given / not given, treatments, nets delivered, structures sprayed | Tally sheets, registers, individual records |
+| **Service layer** | Doses given / not given, treatments, nets delivered, structures sprayedu | Tally sheets, registers, individual records |
 | **Supervision & quality layer** | Refusals, missed children + reasons, stock reconciliation, RCM, LQAS | Checklists, monitoring forms, mop-up lists |
 | **Analytics layer** | Coverage, dropout, zero-dose, wastage, data quality | Dashboards, HMIS reports, JAP forms |
 ### 2.2 The disposability problem
