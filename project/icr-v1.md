@@ -423,7 +423,9 @@ Multi-program scope means the IG must define bindings that are **internationally
 The ICR IG should **declare its relationship to the WHO SMART Immunizations IG and the Immunization DAK** rather than evolve in parallel. Concretely: reuse DAK core data elements and indicator definitions where they overlap (vaccination event fields, coverage indicators), align profile design with SMART conventions where campaigns and routine immunization meet (the §4.4 integration boundary), and track the SMART work as it matures — it is still draft/demo status, which gives the ICR room to _lead_ on campaign semantics while staying compatible on the routine side. This mirrors how the ICR IG is authored with the same FSH/SUSHI/IG-Publisher toolchain WHO SMART Guidelines use.
 
 * * *
-## 9. Location, administrative hierarchy & geospatial identity
+## 9. Location, administrative hierarchy & {==geospatial identity==}{>>https://docs.overturemaps.org/gers/
+This is not just for the country but for most location types eg. households, districts, etc.  update the doc ot reflect that. also add a section about GERS id and the problem it's trying to solve and how it does that. include how it pulls in data from sources like OSM and how if you update osm. eg map a now household and add it to OSM it would eventually (in a month or two) make it into overture and be assigned a unique ID.  Talk about the issue of globally unique canonical ids for location and why the are sort of the golden / missing thing.<<}{id="c46" by="mberg" at="2026-06-11T02:15:07.144Z"}
+
 ```mermaid
 flowchart TD
     C[Country<br/>P-code · GERS] --> R[Region]
