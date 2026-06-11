@@ -1,0 +1,33 @@
+# sushi-config.yaml — ICR FHIR Implementation Guide
+# Built per https://build.fhir.org/ig/FHIR/ig-guidance/ using the FSH/SUSHI/IG-Publisher
+# toolchain (the same toolchain WHO SMART Guidelines use — see working doc §11).
+id: unicef.fhir.icr
+canonical: https://fhir.icr.unicef.org
+name: ICR
+title: "Integrated Campaign Registry (ICR) Implementation Guide"
+description: >-
+  HL7 FHIR R4 Implementation Guide for UNICEF's Integrated Campaign Registry (ICR):
+  a standards framework that lets public health campaigns (immunization SIAs, polio,
+  NTD mass drug administration, malaria ITN/IRS, vitamin A) share, exchange, and reuse
+  campaign data and metadata instead of re-collecting it every round. CarePlan is the
+  architectural keystone: PlanDefinition carries the reusable campaign protocol,
+  CarePlan the campaign execution, Task the operational unit of work, Group the
+  households and target populations, and Location the administrative hierarchy and
+  geospatial identity (Overture Maps GERS).
+status: draft
+version: 0.1.0
+fhirVersion: 4.0.1
+copyrightYear: 2026+
+releaseLabel: ci-build
+license: Apache-2.0
+jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
+publisher:
+  name: UNICEF Integrated Campaign Registry project (Ona + Crosscut)
+  url: https://ona.io
+menu:
+  Home: index.html
+  Background: background.html
+  Artifacts: artifacts.html
+parameters:
+  show-inherited-invariants: false
+  shownav: true
