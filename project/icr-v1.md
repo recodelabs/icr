@@ -122,7 +122,7 @@ The reusable core — what the ICR exists to capture, standardize, and hand to t
 | **Catchment polygons & supervisory areas** | Microplanning tools (Crosscut, ESPEN Microplanner) | Session planning, fair team workloads, travel-time analysis | Stable until the facility network changes |
 | **Target lists & zero-dose lists** | Campaign delivery + routine HMIS analysis | The next campaign's focus areas; routine catch-up | Months; **sensitive** — household-level, access-controlled |
 | **Team rosters & site lists** | Campaign operations | The next round or the next program's campaign | Semi-durable; people and posts turn over |
-| **Campaign protocols** (what a measles SIA _is_: products, age bands, activity sequence) | Program design, WHO guidance | Every instantiation, every country | Durable; versioned, evolves with guidance |
+| **Campaign protocols** (what a measles SIA _is_: products, age bands, activity sequence) | Program design, WHO guidance I | Every instantiation, every country | Durable; versioned, evolves with guidance |
 | **Coverage results & missed-area lists** | Monitoring & post-campaign evaluation | The next microplan's risk targeting | One planning cycle |
 
 ```mermaid
@@ -434,7 +434,6 @@ The ICR IG should **declare its relationship to the WHO SMART Immunizations IG a
 
 * * *
 ## 9. Location, administrative hierarchy & geospatial identity{>>RESOLVED c46 (your GERS request) — this whole section is rewritten: (1) GERS identity now applies across location types — every level of the hierarchy diagram below carries a GERS identifier, not just country; (2) entirely new §9.1 explains the canonical-location-identity problem ("the golden, missing piece"), how GERS assigns and stabilizes IDs across Overture releases, how Overture conflates OSM and other open sources, and the contribution loop where a household you map into OSM lands in Overture within a month or two and acquires a permanent GERS ID; (3) §7.7's identifier row and §12 decision 8 now name GERS as the cross-campaign join key. One judgment call I made without your answer to my earlier question: I drafted GERS as the PREFERRED cross-campaign join key (where Overture coverage exists), with P-codes and national codes as coequal aliases rather than demoted "secondary" identifiers — since Overture coverage is incomplete, no identifier can be mandatory. Flag if you want GERS positioned more (or less) strongly.<<}{id="c61" by="claude" at="2026-06-11T02:54:48.000Z" re="c46"}
-
 ```mermaid
 flowchart TD
     C[Country<br/>P-code · GERS division] --> R[Region<br/>P-code · GERS division]
@@ -482,7 +481,7 @@ These are the questions we will take to chat.fhir.org, working-group calls, and 
   
 6. **GeoJSON on Location in R4** — custom extension now; alignment path with the R4B/R5 standard boundary extension.
   
-7. {==**Task `focus` by campaign type** — the draft fixes Type A's focus to the site `Location` and Type B's to the household `Group` (§3.2); confirm this is right (it propagates into the §6 crosswalk and §7.4), and pressure-test it against how implementers expect `Task.focus` vs `Task.location` to behave.==}
+7. {==**Task** `focus` **by campaign type** — the draft fixes Type A's focus to the site `Location` and Type B's to the household `Group` (§3.2); confirm this is right (it propagates into the §6 crosswalk and §7.4), and pressure-test it against how implementers expect `Task.focus` vs `Task.location` to behave.==}
   
 8. {==**Population-scale access patterns** — Bulk Data (`$export`) and `Group`-based cohort export for generating microplanning target lists at national scale without per-record queries.==}
   
