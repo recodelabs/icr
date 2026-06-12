@@ -435,7 +435,7 @@ _FHIR has no native campaign semantics; these extensions carry them on profiled 
 
 > [!warning] Questions
 > 
-> 1. `RealtimeVsReconciled` is never required anywhere (0..1 at all three uses). If consumers are expected to "filter by lineage", absent = which stream? Define a default (e.g. absent ⇒ realtime) or make it required on MeasureReport.
+> 1. {==`RealtimeVsReconciled`==}{>>Elaborate what you mean.<<}{id="c20" by="mberg" at="2026-06-12T20:58:49.186Z"} is never required anywhere (0..1 at all three uses). If consumers are expected to "filter by lineage", absent = which stream? Define a default (e.g. absent ⇒ realtime) or make it required on MeasureReport.
 >   
 > 2. House-to-house counts say "children" — vitamin A / MDA target other age bands; consider renaming to eligible-persons counts (or noting "children" is generic) before the names ossify.
 >   
