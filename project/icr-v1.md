@@ -471,7 +471,7 @@ For the ICR the pattern is: GERS **building IDs** anchor households (the dwellin
 ## 10. Open design questions for the FHIR community
 These are the questions we will take to chat.fhir.org, working-group calls, and Connectathons — and validate against real campaign data during IG development:
 
-1. **Task granularity at scale** — village-level vs household-level Tasks: the performance vs fidelity trade-off for national deployments.
+1. {==**Task granularity at scale** — village-level vs household-level Tasks: the performance vs fidelity trade-off for national deployments.==}{>>One issue on tasks.  Do they ahve to be generated in advance or can the be recorded after?  Eg if you know you have to visit 100 households you can generate 100 tasks.  However you may not know how many households are in an area and the job is to register each household as you go.  Those would be just registered as a new task right?  if so, we may want to be able to capture that it was registered in the field.<<}{id="c75" by="mberg" at="2026-06-12T19:42:20.914Z"}
   
 2. **Aggregate vs individual delivery records** — when a site-session tally is enough vs when individual `Immunization`/`MedicationAdministration` is warranted (and how to represent aggregates conformantly — `Task.output` counts vs `MeasureReport`).
   
