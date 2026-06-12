@@ -423,7 +423,7 @@ Multi-program scope means the IG must define bindings that are **internationally
 | Domain | Code system | Binding strength |
 | --- | --- | --- |
 | Campaign type (vaccination / MDA / ITN / IRS / vitamin A) | **ICR-defined ValueSet** | Required |
-| Delivery strategy (fixed-post / outreach / school / house-to-house / community-directed) | **ICR-definedu ValueSet** | Required |
+| Delivery strategy (fixed-post / outreach / school / house-to-house / community-directed) | **ICR-defined ValueSet** | Required |
 | Vaccines | **CVX** (CDC) | Required + local via ConceptMap |
 | MDA pharmaceuticals | **WHO ATC** | Required + local via ConceptMap |
 | Commodities (ITN, IRS chemicals, drug formulations) | **GS1 GTIN**; WHO EML categories | Extensible |
