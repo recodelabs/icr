@@ -204,7 +204,7 @@ _A discrete work type within a campaign — "administer albendazole to children 
 > 
 > _Resolved in first pass:_ an example now exists (`example-mcv-activity`), and the protocol example wires it in via `action.definitionCanonical`.
 ### 5.4 ICRCampaignTask — `Task`
-_The assignable, trackable operational unit of work — one Task per site-session (Type A, focus = the site Location) or per household (Type B, focus = the household Group). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice._ (working doc §7.4)
+_The assignable, trackable operational unit of work — one Task per site-session (Type A, focus = the site Location) or per household_ {==_(Type B, focus = the household Group)_==}{>>This can also go down to a household member within a household.  Eg a polio would be at the household member level not household.  The task could be to visit the household but would be recored with multiple immunizations. would that close one task or would you record a task for each child vaccinated?<<}{id="c12" by="mberg" at="2026-06-12T20:43:38.912Z"}_. Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice._ (working doc §7.4)
 
 | Element | Constraint |
 |---|---|
@@ -251,9 +251,9 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 
 > [!warning] Questions
 > 
-> 1. No `Group.identifier` guidance — how is a _household_ itself identified across campaigns (vs its dwelling)? The cross-campaign record-linkage question is acknowledged as open; flagging that the profile is silent here.
+> 1. {==No `Group.identifier` guidance — how is a _household_ itself identified across campaigns (vs its dwelling)? The cross-campaign record-linkage question is acknowledged as open; flagging that the profile is silent here.==}{>>I think an open question is should the structure be linked to the household or can it be different.  For some campaigns households will go to a village center to receive the service so that needs to be decoupled.<<}{id="c13" by="mberg" at="2026-06-12T20:45:06.704Z"}
 >   
-> 2. `actual = true` + `type = #person` is right, but `member.entity` locked to Patient excludes RelatedPerson — fine for campaigns, just confirming it's deliberate.
+> 2. {==`actual = true` + `type = #person` is right, but `member.entity` locked to Patient excludes RelatedPerson — fine for campaigns, just confirming it's deliberate.==}{>>Need to discuss this further.  Is everyone in fhir a patient or are there person resource?<<}{id="c14" by="mberg" at="2026-06-12T20:46:02.602Z"}
 >   
 > 3. Is two kinds enough? School cohorts ride on the school _Location_ today; if a country wants an enrolled-children _Group_ per school, `group-kind` needs a `school-cohort` code (cheap to add later — the VS is ICR-owned).
 >   
@@ -271,7 +271,7 @@ _A target-population denominator: a conceptual cohort (_`actual=false`_) with a 
 | `characteristic[geography]` | 0..1 MS — `code` fixed to `icr-group-characteristic-cs#geography`; `value[x]` only `Reference(ICRLocation)`; `exclude` fixed `false` |
 | Extensions | `denominatorSource` **1..1 MS** (CodeableConcept, extensible) · `estimateDate` **1..1 MS** (date) · `isPlanningDenominator` 0..1 MS (boolean) · `confidence` 0..1 (string) |
 
-**Rationale.** Design decision #6 ("denominator-first"): the denominator is the dominant error source in campaign analytics, so an estimate without source+date is not allowed to exist — both provenance extensions are **mandatory**. Keeping _competing_ estimates (census projection vs GRID3 vs microcensus) as sibling Groups and flagging one (`isPlanningDenominator`) preserves the audit trail instead of overwriting. The second-pass **geography characteristic** makes the estimate's scope computable at **any level** — country, district, ward, settlement, or operational area (working-doc comment c70: target populations are _not_ household-bound; that's what ICRDeliveryUnit is for) — so estimates are joinable to the location hierarchy by reference, not by parsing `name`.
+{==**Rationale.** Design decision #6 ("denominator-first"): the denominator is the dominant error source in campaign analytics, so an estimate without source+date is not allowed to exist — both provenance extensions are **mandatory**. Keeping _competing_ estimates (census projection vs GRID3 vs microcensus) as sibling Groups and flagging one==}{>>This sounds good. can we illustrate with some examples?<<}{id="c15" by="mberg" at="2026-06-12T20:47:18.444Z"} (`isPlanningDenominator`) preserves the audit trail instead of overwriting. The second-pass **geography characteristic** makes the estimate's scope computable at **any level** — country, district, ward, settlement, or operational area (working-doc comment c70: target populations are _not_ household-bound; that's what ICRDeliveryUnit is for) — so estimates are joinable to the location hierarchy by reference, not by parsing `name`.
 
 > [!warning] Questions
 > 
