@@ -410,7 +410,7 @@ _FHIR has no native campaign semantics; these extensions carry them on profiled 
 | NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS |
 | FingerMarked (`finger-marked`) | boolean — "the in-field 'already covered' flag" |
 
-**Population & denominator provenance**
+{==**Population & denominator provenance**==}{>>some examples would be great<<}{id="c19" by="mberg" at="2026-06-12T20:57:26.361Z"}
 
 | Extension (id) | Context | Type / binding |
 | --- | --- | --- |
