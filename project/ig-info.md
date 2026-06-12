@@ -78,7 +78,7 @@ Three groups:
 - **ICR code systems:** twelve `$...` aliases, one per CodeSystem in §10.
   
 
-**Rationale.** GERS and P-codes need _some_ system URI to live under in `Location.identifier`; parking them under the ICR canonical is the pragmatic v0.1 choice. CVX/ATC/GS1 as the international product-code backbone is working doc §8.
+{==**Rationale.** GERS and P-codes need _some_ system URI to live under i==}{>>Add as a task in linear to figure out how to add a URI for overture gers.  Speak to the foundation about this.<<}{id="c2" by="mberg" at="2026-06-12T20:21:12.610Z"}{>>I need more info on how these are supposed to work.  Can you point me towards docs or explain what this system URI would contain and it's purpose?<<}{id="c3" by="mberg" at="2026-06-12T20:21:46.568Z" re="c2"}n `Location.identifier`; parking them under the ICR canonical is the pragmatic v0.1 choice. CVX/ATC/GS1 as the international product-code backbone is working doc §8.
 
 > [!warning] Questions
 > 
