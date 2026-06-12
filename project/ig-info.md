@@ -453,7 +453,7 @@ Pattern (working doc §8): **ICR defines only campaign semantics**; product code
 | ICRCampaignTypeCS | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔   | Protocol.type, Campaign.category (**required**) |
 | ICRDeliveryStrategyCS | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed` (6) | ✔   | delivery-strategy ext (**required**) |
 | ICRRecordOriginCS | `campaign`, `routine` (2) | ✔   | record-origin ext (**required**) |
-| ICRGroupKindCS | `household`, `community` (2) | ✔   | ICRDeliveryUnit.code (**required**) |
+| ICRGroupKindCS | {==`household`, `community`==}{>>Are there any other potential ones we should consider?<<}{id="c21" by="mberg" at="2026-06-12T20:59:23.580Z"} (2) | ✔   | ICRDeliveryUnit.code (**required**) |
 | ICRTaskOriginCS | `pre-planned`, `field-registered` (2) | ✔   | task-origin ext (**required**) |
 | ICRLocationTypeCS | `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area` (9) | —   | ICRLocation.type (extensible) |
 | ICRGroupCharacteristicCS | `geography` (1) | —   | fixed code on the geography characteristic slice (no VS) |
