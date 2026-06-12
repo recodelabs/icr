@@ -128,7 +128,7 @@ Reading order for a reviewer: protocol → campaign → task → delivery events
 
 * * *
 ## 5. Campaign-architecture profiles (`profiles-campaign.fsh`)
-### 5.1 {==ICRCampaignProtocol==}{>>Please justify why you chose CampaignProtocol?  Is this the term of art? What other names were considered.  Please show from the reports I shared or do your own research why this is the best term.<<}{id="c5" by="mberg" at="2026-06-12T20:27:44.096Z"} — `PlanDefinition`
+### 5.1 {==ICRCampaignProtocol==}{>>Please justify why you chose CampaignProtocol?  Is this the term of art? What other names were considered.  Please show from the reports I shared or do your own research why this is the best term.<<}{id="c5" by="mberg" at="2026-06-12T20:27:44.096Z"}{>>Propose some alternates too.<<}{id="c6" by="mberg" at="2026-06-12T20:28:31.570Z" re="c5"} — `PlanDefinition`
 _The reusable, version-controlled template for a campaign type — what a measles SIA_ **_is_** _(products, age bands, activity sequence, coverage goals), instantiated by every execution in every country._ (working doc §7.1)
 
 | Element | Constraint |
