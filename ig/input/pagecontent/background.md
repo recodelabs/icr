@@ -26,11 +26,17 @@ activity/task**, not of the campaign.
 2. **PlanDefinition = reusable protocol; CarePlan = execution** — rounds are sibling
    CarePlans under an umbrella via `partOf`.
 3. **Task is the operational unit** — one per site-session (A) or household (B);
-   delivery events hang off `Task.output`.
+   delivery events hang off `Task.output`. Tasks may be **pre-planned** from the
+   microplan or **field-registered** on discovery (an unenumerated household found
+   mid-sweep); the required `task-origin` code records which — and field-registered
+   counts per area measure how incomplete the microplan's enumeration was.
 4. **Delivery strategy is a first-class coded attribute** of the activity/task.
 5. **Three lineages — planned / delivered / independently-measured — never merged.**
 6. **Denominator-first**, with provenance and date on every estimate and coverage figure.
-7. **Household = Group + Location** (the validated Ona pattern).
+7. **Household / community = Group + Location** (the validated Ona household pattern,
+   generalized): one `ICRDeliveryUnit` profile serves the Type B household and the
+   Type C community, distinguished by the required `group-kind` code, each anchored
+   to its Location (dwelling or settlement).
 8. **Location is the most-customized resource** — multi-identifier with **GERS as the
    cross-campaign join key** alongside P-codes and national codes, GeoJSON boundaries,
    performance-tuned hierarchy.
@@ -40,6 +46,28 @@ activity/task**, not of the campaign.
     afterthought.
 12. **ViewDefinitions ship in the IG** — the analytics layer is as portable as the
     data model (planned for the next draft).
+
+#### Campaign work vs routine encounters
+
+Campaign delivery is **Task-based**: `Encounter` was rejected for campaign sessions
+because site-sessions and household visits are *work*, not patient visits — Task
+carries assignment, status, location, and outputs natively, with or without a
+`Patient`. Routine delivery keeps its Encounters: where genuine person-level
+encounters occur (EIR-grade capture, routine facility visits), `Encounter` remains
+available *alongside* the campaign Task. When both lineages land in the same
+registry, the required **`record-origin`** code on every delivery event is the
+discriminator — campaign records never contaminate routine coverage analytics, and
+routine history observed during a campaign (card checks, zero-dose detection) stays
+analyzable.
+
+#### Operational vs administrative geography
+
+Polio operational boundaries often differ from routine-immunization catchments (the
+Nigeria lesson). `Location.partOf` can express only one hierarchy, so operational
+geography (supervisory areas, operational zones) is modeled as **linkable-but-distinct**:
+coded location types (`supervisory-area`, `operational-area`) plus the
+**`overlays-admin-unit`** extension linking an operational area to the admin unit(s)
+it covers.
 
 #### Open design questions
 

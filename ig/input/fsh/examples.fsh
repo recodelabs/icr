@@ -1,10 +1,26 @@
 // Example instances — a coherent measles–rubella SIA scenario over a small location
 // hierarchy with GERS identifiers: national umbrella campaign + district round
-// (partOf pattern), a Type A fixed-post site-session task, a Type B house-to-house
-// mop-up task, the admin-vs-survey coverage pair (never-merged lineages), plus an
-// MDA treatment event (Type C) and an ITN delivery.
+// (partOf pattern), a Type A fixed-post site-session task (pre-planned), a Type B
+// house-to-house mop-up task (field-registered), the admin-vs-survey coverage pair
+// (never-merged lineages), plus an MDA treatment event (Type C) and an ITN delivery.
+// Population side: a household and a community delivery unit (the generalized
+// Group+Location pattern), target populations with computable geography
+// characteristics, and a supervisory area overlaying the admin hierarchy.
 
-// --- Location hierarchy: district → settlement → dwelling --------------------
+// --- Location hierarchy: country → district → settlement → dwelling ----------
+
+Instance: example-country
+InstanceOf: ICRLocation
+Title: "Example Country"
+Usage: #example
+* name = "Sierra Leone"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
+* type = $LocationType#admin-unit "Administrative unit"
+* identifier[pcode].system = $PCode
+* identifier[pcode].value = "SL"
+* identifier[gers].system = $GERSId
+* identifier[gers].value = "08f2a3b4c5d6e7f8-division-country-example"
 
 Instance: example-district
 InstanceOf: ICRLocation
@@ -13,6 +29,8 @@ Usage: #example
 * name = "Kambia District"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
+* type = $LocationType#admin-unit "Administrative unit"
+* partOf = Reference(example-country)
 * identifier[pcode].system = $PCode
 * identifier[pcode].value = "SL0201"
 * identifier[gers].system = $GERSId
@@ -58,7 +76,21 @@ Usage: #example
 * identifier[gers].value = "08f2a3b4c5d6e7f8-building-chc-example"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
 
-// --- Population: a household and the campaign's planning denominators --------
+// Operational geography: a supervisory area is NOT in the admin partOf chain — it
+// overlays the admin units it covers via the overlays-admin-unit extension
+// (linkable-but-distinct, working doc §9 identity principle 3).
+
+Instance: example-supervisory-area
+InstanceOf: ICRLocation
+Title: "Example Supervisory Area"
+Usage: #example
+* name = "Kambia supervision zone 2 (Rokupr axis)"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#area "Area"
+* type = $LocationType#supervisory-area "Supervisory area"
+* extension[overlaysAdminUnit].valueReference = Reference(example-district)
+
+// --- Population: a household, a community, and the planning denominators -----
 
 Instance: example-child
 InstanceOf: Patient
@@ -70,14 +102,30 @@ Usage: #example
 * birthDate = "2023-04-12"
 
 Instance: example-household
-InstanceOf: ICRHousehold
+InstanceOf: ICRDeliveryUnit
 Title: "Example Household"
 Usage: #example
 * type = #person
 * actual = true
+* code = $GroupKind#household "Household"
 * quantity = 6
 * member.entity = Reference(example-child)
-* extension[householdLocation].valueReference = Reference(example-dwelling)
+* extension[groupLocation].valueReference = Reference(example-dwelling)
+
+// A community delivery unit (Type C): the same Group + Location pattern as the
+// household, with the settlement as its Location — what a CDD's MDA register
+// entries and community-level Tasks act on.
+
+Instance: example-community
+InstanceOf: ICRDeliveryUnit
+Title: "Example Community — Rokupr"
+Usage: #example
+* type = #person
+* actual = true
+* code = $GroupKind#community "Community"
+* name = "Rokupr community"
+* quantity = 3480
+* extension[groupLocation].valueReference = Reference(example-settlement)
 
 Instance: example-target-population
 InstanceOf: ICRTargetPopulation
@@ -87,6 +135,9 @@ Usage: #example
 * actual = false
 * name = "Children 9 months–14 years, Kambia District (MR SIA 2026 planning denominator)"
 * quantity = 48250
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
 * extension[estimateDate].valueDate = "2026-01-15"
 * extension[isPlanningDenominator].valueBoolean = true
@@ -99,6 +150,9 @@ Usage: #example
 * actual = false
 * name = "Children 9 months–14 years, Sierra Leone (MR SIA 2026 national planning denominator)"
 * quantity = 2150000
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-country)
+* characteristic[geography].exclude = false
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#census-projection "Census projection"
 * extension[estimateDate].valueDate = "2025-11-30"
 * extension[isPlanningDenominator].valueBoolean = true
@@ -179,6 +233,7 @@ Usage: #example
 * executionPeriod.start = "2026-06-17T08:00:00Z"
 * executionPeriod.end = "2026-06-17T17:00:00Z"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
+* extension[taskOrigin].valueCode = #pre-planned
 * extension[dataLineage].valueCode = #realtime
 * output.type.text = "Children vaccinated (session tally)"
 * output.valueUnsignedInt = 412
@@ -196,6 +251,7 @@ Usage: #example
 * executionPeriod.start = "2026-06-24T09:30:00Z"
 * executionPeriod.end = "2026-06-24T09:50:00Z"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[taskOrigin].valueCode = #field-registered
 * extension[childrenPresent].valueUnsignedInt = 2
 * extension[childrenAbsent].valueUnsignedInt = 1
 * extension[missedReason].valueCodeableConcept = $MissedReason#absent "Absent"

@@ -2,9 +2,10 @@
 // Core campaign-semantics codes the IG itself must define; product codes come from
 // CVX / ATC / GS1 (see valuesets.fsh). EN + FR designations on every system with a
 // required binding (campaign-type, delivery-strategy, record-origin, data-lineage,
-// coverage-source), matching the pilot-country contexts (working doc §8 localization
-// pattern). Extensible-bound systems (missed/noncompliance reasons, denominator
-// source) are translated as country localization packages mature.
+// coverage-source, group-kind, task-origin), matching the pilot-country contexts
+// (working doc §8 localization pattern). Extensible-bound systems (missed/
+// noncompliance reasons, denominator source, location-type) are translated as
+// country localization packages mature.
 
 CodeSystem: ICRCampaignTypeCS
 Id: icr-campaign-type-cs
@@ -68,6 +69,56 @@ Description: "Whether a delivery event originated in a campaign or a routine fac
 * #routine "Routine facility visit" "Recorded during routine service delivery."
 * #routine ^designation[0].language = #fr
 * #routine ^designation[0].value = "Visite de routine en établissement"
+
+CodeSystem: ICRGroupKindCS
+Id: icr-group-kind-cs
+Title: "ICR Group Kind"
+Description: "The kind of delivery-unit Group a campaign Task acts on. Households (Type B house-to-house) and communities (Type C MDA) share the same Group + Location pattern; this code distinguishes them (working doc §3.2, §7.5)."
+* ^caseSensitive = true
+* ^experimental = false
+* #household "Household" "The people of one dwelling — the Type B house-to-house delivery unit. Its Location is the dwelling."
+* #household ^designation[0].language = #fr
+* #household ^designation[0].value = "Ménage"
+* #community "Community" "The people of a settlement or community — the Type C community/MDA delivery unit. Its Location is the settlement or community point."
+* #community ^designation[0].language = #fr
+* #community ^designation[0].value = "Communauté"
+
+CodeSystem: ICRTaskOriginCS
+Id: icr-task-origin-cs
+Title: "ICR Task Origin"
+Description: "Whether a campaign Task was generated in advance from the microplan or registered in the field on discovery. Field-registered counts per area measure how incomplete the microplan's enumeration was — input to the next round's denominators (working doc §10 q1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #pre-planned "Pre-planned" "Generated in advance from the microplan (e.g. one Task per enumerated household or planned site-session)."
+* #pre-planned ^designation[0].language = #fr
+* #pre-planned ^designation[0].value = "Planifiée à l'avance"
+* #field-registered "Field-registered" "Created in the field on discovery — e.g. an unenumerated household found during a house-to-house sweep, registered as it is visited."
+* #field-registered ^designation[0].language = #fr
+* #field-registered ^designation[0].value = "Enregistrée sur le terrain"
+
+CodeSystem: ICRLocationTypeCS
+Id: icr-location-type-cs
+Title: "ICR Location Type"
+Description: "Campaign-relevant location types, including operational geography (supervisory and operational areas) as linkable-but-distinct from the administrative hierarchy (working doc §9)."
+* ^caseSensitive = true
+* ^experimental = false
+* #admin-unit "Administrative unit" "A unit of the administrative hierarchy: country, region, district, ward."
+* #settlement "Settlement" "A settlement or village — operational geography below the formal admin hierarchy."
+* #facility "Health facility" "A permanent health facility."
+* #school "School" "A school used as a delivery site."
+* #community-distribution-point "Community distribution point" "A community focal point used for distribution (market, place of worship, transit point)."
+* #temporary-post "Temporary post" "A temporary or outreach vaccination/delivery post."
+* #household "Household dwelling" "The physical dwelling of a household."
+* #supervisory-area "Supervisory area" "An operational supervision area — a group of settlements or sites under one supervisor; overlays (but is distinct from) the admin hierarchy."
+* #operational-area "Operational area" "An operational planning area that does not match an admin unit (e.g. polio operational boundaries differing from RI catchments)."
+
+CodeSystem: ICRGroupCharacteristicCS
+Id: icr-group-characteristic-cs
+Title: "ICR Group Characteristic"
+Description: "Characteristic codes for ICR Group profiles — currently the geographic-scope characteristic that links a target-population estimate to its Location, making estimates computably joinable to the location hierarchy (working doc §7.6)."
+* ^caseSensitive = true
+* ^experimental = false
+* #geography "Geographic scope" "The Location (admin unit, settlement, or operational area) this target-population estimate is scoped to."
 
 CodeSystem: ICRMissedReasonCS
 Id: icr-missed-reason-cs

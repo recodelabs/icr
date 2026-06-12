@@ -17,3 +17,7 @@ Alias: $NoncomplianceReason = https://fhir.icr.unicef.org/CodeSystem/icr-noncomp
 Alias: $DenominatorSource = https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source-cs
 Alias: $DataLineage = https://fhir.icr.unicef.org/CodeSystem/icr-data-lineage-cs
 Alias: $CoverageSource = https://fhir.icr.unicef.org/CodeSystem/icr-coverage-source-cs
+Alias: $GroupKind = https://fhir.icr.unicef.org/CodeSystem/icr-group-kind-cs
+Alias: $TaskOrigin = https://fhir.icr.unicef.org/CodeSystem/icr-task-origin-cs
+Alias: $LocationType = https://fhir.icr.unicef.org/CodeSystem/icr-location-type-cs
+Alias: $GroupCharacteristic = https://fhir.icr.unicef.org/CodeSystem/icr-group-characteristic-cs

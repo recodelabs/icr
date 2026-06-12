@@ -1,22 +1,27 @@
 // Population & geography profiles (working doc §7.5–§7.7, §9).
-// Household = Group + Location (the validated Ona pattern); target population =
-// conceptual Group with denominator provenance; Location is the most-customized
-// resource — multi-identifier with GERS as the cross-campaign join key.
+// Delivery unit = Group + Location (the validated Ona pattern, generalized from
+// household to household-or-community); target population = conceptual Group with
+// denominator provenance and a computable geography characteristic; Location is the
+// most-customized resource — multi-identifier with GERS as the cross-campaign join key.
 
-Profile: ICRHousehold
+Profile: ICRDeliveryUnit
 Parent: Group
-Id: ICRHousehold
-Title: "ICR Household"
-Description: "A household: Group (who lives there) + Location (the dwelling, via the household-location extension). The dwelling Location carries the Overture GERS building ID, giving the household stable identity across campaigns (working doc §7.5, §9.1)."
+Id: ICRDeliveryUnit
+Title: "ICR Delivery Unit (Household / Community)"
+Description: "The actual Group of people a campaign Task acts on — a household (Type B house-to-house) or a community (Type C MDA), distinguished by the required group-kind code. The validated Group + Location pattern, generalized: the Group is who, the Location (group-location extension) is where — the dwelling for a household, the settlement or community point for a community — with the Location carrying the Overture GERS ID for stable cross-campaign identity. Type A's delivery unit is a site, which is a Location, not a Group (working doc §3.2, §7.5, §9.1)."
 * ^experimental = false
 * type = #person
 * actual = true
+* code 1..1 MS
+* code from ICRGroupKindVS (required)
+* code ^short = "household | community"
 * member MS
 * member.entity only Reference(Patient)
-* member.entity ^short = "Household members, where person-level data is collected"
+* member.entity ^short = "Members, where person-level data is collected"
 * quantity MS
-* quantity ^short = "Household size where individuals are not enumerated"
-* extension contains HouseholdLocation named householdLocation 1..1 MS
+* quantity ^short = "Group size where individuals are not enumerated"
+* extension contains GroupLocation named groupLocation 1..1 MS
+* extension[groupLocation] ^short = "The dwelling (household) or settlement/community point (community)"
 
 Profile: ICRTargetPopulation
 Parent: Group
@@ -30,6 +35,14 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * quantity ^short = "The denominator count"
 * characteristic MS
 * characteristic ^short = "Age band, sex, eligibility rule, geography"
+* characteristic ^slicing.discriminator.type = #pattern
+* characteristic ^slicing.discriminator.path = "code"
+* characteristic ^slicing.rules = #open
+* characteristic contains geography 0..1 MS
+* characteristic[geography].code = $GroupCharacteristic#geography
+* characteristic[geography] ^short = "The Location this estimate is scoped to — any level: country, district, ward, settlement, or operational area. Makes estimates computably joinable to the location hierarchy."
+* characteristic[geography].value[x] only Reference(ICRLocation)
+* characteristic[geography].exclude = false
 * extension contains
     DenominatorSource named denominatorSource 1..1 MS and
     EstimateDate named estimateDate 1..1 MS and
@@ -50,7 +63,8 @@ Description: "The most-customized ICR resource: nested administrative hierarchy 
 * physicalType MS
 * physicalType ^short = "jurisdiction / site / building / household"
 * type MS
-* type ^short = "facility / school / community-distribution-point / temporary-post / household"
+* type from ICRLocationTypeVS (extensible)
+* type ^short = "admin-unit / settlement / facility / school / community-distribution-point / temporary-post / household / supervisory-area / operational-area"
 * position MS
 * position ^short = "GPS point (longitude/latitude/altitude)"
 * identifier MS
@@ -67,6 +81,8 @@ Description: "The most-customized ICR resource: nested administrative hierarchy 
 * identifier[pcode] ^short = "OCHA P-code for administrative units"
 * extension contains
     LocationBoundaryGeoJson named boundary 0..1 MS and
-    DeliveryStrategy named deliveryStrategy 0..1
+    DeliveryStrategy named deliveryStrategy 0..1 and
+    OverlaysAdminUnit named overlaysAdminUnit 0..*
 * extension[boundary] ^short = "District polygon, settlement area, or catchment zone — the geometry Crosscut enriches and pushes back"
 * extension[deliveryStrategy] ^short = "For delivery sites (fixed/temporary posts): the strategy this site serves"
+* extension[overlaysAdminUnit] ^short = "For operational geography (supervisory/operational areas): the admin unit(s) this area overlays — linkable-but-distinct from the admin hierarchy (working doc §9)"

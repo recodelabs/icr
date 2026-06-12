@@ -27,9 +27,11 @@ is the operational unit — one per site-session or per household — carrying t
 off `Task.output` as [ICRImmunizationEvent](StructureDefinition-ICRImmunizationEvent.html),
 [ICRMedicationAdministration](StructureDefinition-ICRMedicationAdministration.html), or
 [ICRSupplyDelivery](StructureDefinition-ICRSupplyDelivery.html), each permanently
-flagged **campaign vs routine** (`record-origin`). [ICRHousehold](StructureDefinition-ICRHousehold.html)
-and [ICRTargetPopulation](StructureDefinition-ICRTargetPopulation.html) (`Group`) carry
-people and denominators — every estimate with **source and date provenance** — and
+flagged **campaign vs routine** (`record-origin`). [ICRDeliveryUnit](StructureDefinition-ICRDeliveryUnit.html)
+(`Group` — a household or a community, the generalized Group + Location pattern) and
+[ICRTargetPopulation](StructureDefinition-ICRTargetPopulation.html) (`Group`) carry
+people and denominators — every estimate with **source, date provenance, and a
+computable geographic scope** — and
 [ICRLocation](StructureDefinition-ICRLocation.html) carries the administrative
 hierarchy and **geospatial identity**, with Overture Maps **GERS IDs** as the
 cross-campaign join key alongside P-codes and national codes. Administrative and

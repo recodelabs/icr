@@ -22,6 +22,27 @@ Description: "Campaign vs routine record origin. Binding: required on the record
 * ^experimental = false
 * include codes from system ICRRecordOriginCS
 
+ValueSet: ICRGroupKindVS
+Id: icr-group-kind
+Title: "ICR Group Kind"
+Description: "Delivery-unit Group kinds (household / community). Binding: required on ICRDeliveryUnit.code."
+* ^experimental = false
+* include codes from system ICRGroupKindCS
+
+ValueSet: ICRTaskOriginVS
+Id: icr-task-origin
+Title: "ICR Task Origin"
+Description: "Pre-planned vs field-registered task origin. Binding: required on the task-origin extension."
+* ^experimental = false
+* include codes from system ICRTaskOriginCS
+
+ValueSet: ICRLocationTypeVS
+Id: icr-location-type
+Title: "ICR Location Type"
+Description: "Campaign-relevant location types, including operational geography. Binding: extensible on ICRLocation.type — countries may add local types."
+* ^experimental = false
+* include codes from system ICRLocationTypeCS
+
 ValueSet: ICRMissedReasonVS
 Id: icr-missed-reason
 Title: "ICR Missed Reason"

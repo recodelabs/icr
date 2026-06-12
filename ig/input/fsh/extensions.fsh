@@ -94,6 +94,15 @@ Context: Task
 * value[x] only CodeableConcept
 * value[x] from ICRNoncomplianceReasonVS (extensible)
 
+Extension: TaskOrigin
+Id: task-origin
+Title: "Task Origin"
+Description: "Whether this Task was generated in advance from the microplan or registered in the field on discovery. REQUIRED on ICRCampaignTask — field-registered counts per area measure how incomplete the microplan's enumeration was, feeding the next round's denominators (working doc §10 q1)."
+Context: Task
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRTaskOriginVS (required)
+
 Extension: FingerMarked
 Id: finger-marked
 Title: "Finger Marked"
@@ -102,10 +111,10 @@ Context: Task
 * ^experimental = false
 * value[x] only boolean
 
-Extension: HouseholdLocation
-Id: household-location
-Title: "Household Location"
-Description: "The dwelling Location of a household Group — the validated Ona household pattern: Group (who) + Location (where), with the Location carrying the GERS building ID (working doc §7.5, §9.1)."
+Extension: GroupLocation
+Id: group-location
+Title: "Group Location"
+Description: "The physical Location of a delivery-unit Group — the validated Ona pattern: Group (who) + Location (where). For a household the Location is the dwelling (carrying the GERS building ID); for a community it is the settlement or community point (working doc §7.5, §9.1)."
 Context: Group
 * ^experimental = false
 * value[x] only Reference(ICRLocation)
@@ -151,6 +160,14 @@ Context: Location
 * ^experimental = false
 * value[x] only Attachment
 * valueAttachment.contentType = #"application/geo+json"
+
+Extension: OverlaysAdminUnit
+Id: overlays-admin-unit
+Title: "Overlays Admin Unit"
+Description: "Links an operational-geography Location (supervisory area, operational area) to the administrative unit(s) it overlays. Operational ≠ administrative geography: partOf can only express one hierarchy, so this extension is what makes operational areas linkable-but-distinct rather than just distinct (working doc §9, identity principle 3)."
+Context: Location
+* ^experimental = false
+* value[x] only Reference(ICRLocation)
 
 Extension: DirectlyObservedConsumption
 Id: directly-observed-consumption

@@ -34,7 +34,8 @@ Description: "An MDA treatment event: ATC-coded preventive chemotherapy with dir
 * medicationCodeableConcept from ICRMDAMedicationVS (extensible)
 * medicationCodeableConcept ^short = "WHO ATC-coded (albendazole, ivermectin, praziquantel, azithromycin…)"
 * subject MS
-* subject ^short = "The treated person, or the community/household Group for register-level capture"
+* subject only Reference(Patient or ICRDeliveryUnit)
+* subject ^short = "The treated person, or the community/household delivery-unit Group for register-level capture"
 * effective[x] MS
 * dosage MS
 * dosage ^short = "Tablet count — in the field usually derived from a dose-pole height band Observation"

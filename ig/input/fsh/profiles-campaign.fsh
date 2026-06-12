@@ -75,18 +75,18 @@ Profile: ICRCampaignTask
 Parent: Task
 Id: ICRCampaignTask
 Title: "ICR Campaign Task"
-Description: "The assignable, trackable operational unit of work — one Task per site-session (Type A, focus = the site Location) or per household (Type B, focus = the household Group). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
+Description: "The assignable, trackable operational unit of work — one Task per site-session (Type A, focus = the site Location) or per household (Type B, focus = the household Group). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
 * ^experimental = false
 * status MS
 * status ^short = "requested → in-progress → completed / failed"
 * intent MS
 * code 1..1 MS
 * code ^short = "The activity being performed"
-// focus stays Group|Location (not ICRHousehold|ICRLocation): Type C community/school
-// cohort Groups are not ICRHouseholds, so narrowing would break MDA register tasks.
+// focus is now narrowable: ICRDeliveryUnit generalizes the old ICRHousehold to
+// household-or-community Groups, so Type C MDA register tasks conform too.
 * focus 1..1 MS
-* focus only Reference(Group or Location)
-* focus ^short = "What the task acts on: site Location (Type A) or household/community Group (Type B/C)"
+* focus only Reference(ICRDeliveryUnit or ICRLocation)
+* focus ^short = "What the task acts on: site Location (Type A) or household/community delivery-unit Group (Type B/C)"
 * for MS
 * for ^short = "The target subject/population"
 * owner MS
@@ -99,6 +99,7 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * output ^short = "Delivery results: references to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts"
 * extension contains
     DeliveryStrategy named deliveryStrategy 1..1 MS and
+    TaskOrigin named taskOrigin 1..1 MS and
     HousesVisited named housesVisited 0..1 and
     ChildrenPresent named childrenPresent 0..1 and
     ChildrenAbsent named childrenAbsent 0..1 and
