@@ -88,7 +88,7 @@ Three groups:
 >   
 
 * * *
-## 4. The architecture at a glance
+## 4. {==The architecture at a glance==}{>>The proposed architecture looks good.  General question - is it normal to have a name like ICRCampaign in the profile vs just using Campaign or CampaignTask.  ICRCampaignTask looks weird.  Can we just say ICR on the top so the resources can be cleaner? That would be my preference but I don't know what's normal here.<<}{id="c4" by="mberg" at="2026-06-12T20:23:34.073Z"}
 FHIR has no native `Campaign` resource, so the IG profiles core resources. The structural story:
 
 ```mermaid
