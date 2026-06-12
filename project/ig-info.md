@@ -181,7 +181,7 @@ _A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and
 >   
 > 5. `activity.reference` locked to Task only — excludes the R4 alternative `activity.detail` (inline activities). Worth stating in narrative that inline activities are out.
 >   
-### 5.3 ICRCampaignActivity — `ActivityDefinition`
+### 5.3 ICRCampaignActivity — {==`ActivityDefinition`==}{>>Woud really help to have some real examples.<<}{id="c10" by="mberg" at="2026-06-12T20:36:45.686Z"}
 _A discrete work type within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households" — instantiated as ICRCampaignTask resources._ (working doc §7.3)
 
 | Element | Constraint |
