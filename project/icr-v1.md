@@ -454,7 +454,7 @@ Four identity principles:
   
 2. **Boundaries, not just points.** A `location-boundary-geojson` extension carries district polygons, settlement areas, and catchment zones — the geometry Crosscut enriches and pushes back.
   
-3. **Operational ≠ administrative geography.** Polio operational boundaries often differ from RI catchment boundaries (the Nigeria lesson). Model operational geography as _linkable-but-distinct_ from the admin hierarchy.
+3. {==**Operational ≠ administrative geography.**==}{>>How is this reflected in the IG?<<}{id="c74" by="mberg" at="2026-06-12T19:41:33.865Z"} Polio operational boundaries often differ from RI catchment boundaries (the Nigeria lesson). Model operational geography as _linkable-but-distinct_ from the admin hierarchy.
   
 4. **Identity is what makes deduplication possible.** Cross-campaign dedup of households and locations (§6.1) is only tractable when records share canonical identifiers; where they don't, the registry falls back to geometry- and attribute-based matching — strictly worse. Every identifier the model carries shrinks the fuzzy-matching problem.
   
