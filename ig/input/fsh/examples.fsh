@@ -1,6 +1,8 @@
-// Example instances — a coherent measles–rubella SIA scenario (Type A fixed-post,
-// with a Type B house-to-house mop-up task) over a small location hierarchy with
-// GERS identifiers, plus an MDA treatment event (Type C).
+// Example instances — a coherent measles–rubella SIA scenario over a small location
+// hierarchy with GERS identifiers: national umbrella campaign + district round
+// (partOf pattern), a Type A fixed-post site-session task, a Type B house-to-house
+// mop-up task, the admin-vs-survey coverage pair (never-merged lineages), plus an
+// MDA treatment event (Type C) and an ITN delivery.
 
 // --- Location hierarchy: district → settlement → dwelling --------------------
 
@@ -42,7 +44,21 @@ Usage: #example
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-building-example"
 
-// --- Population: a household and the campaign's planning denominator ---------
+Instance: example-fixed-post
+InstanceOf: ICRLocation
+Title: "Example Fixed Post — Rokupr CHC"
+Usage: #example
+* name = "Rokupr Community Health Centre — fixed vaccination post"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#si "Site"
+* partOf = Reference(example-settlement)
+* position.longitude = -12.9465
+* position.latitude = 9.0140
+* identifier[gers].system = $GERSId
+* identifier[gers].value = "08f2a3b4c5d6e7f8-building-chc-example"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
+
+// --- Population: a household and the campaign's planning denominators --------
 
 Instance: example-child
 InstanceOf: Patient
@@ -75,7 +91,30 @@ Usage: #example
 * extension[estimateDate].valueDate = "2026-01-15"
 * extension[isPlanningDenominator].valueBoolean = true
 
-// --- The campaign: protocol + execution --------------------------------------
+Instance: example-target-population-national
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 9m–14y, Sierra Leone (national)"
+Usage: #example
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years, Sierra Leone (MR SIA 2026 national planning denominator)"
+* quantity = 2150000
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#census-projection "Census projection"
+* extension[estimateDate].valueDate = "2025-11-30"
+* extension[isPlanningDenominator].valueBoolean = true
+
+// --- The campaign: protocol + activity + umbrella + round --------------------
+
+Instance: example-mcv-activity
+InstanceOf: ICRCampaignActivity
+Title: "Administer MCV — campaign activity definition"
+Usage: #example
+* status = #active
+* kind = #Task
+* title = "Administer measles-containing vaccine, 9 months–14 years"
+* code.text = "Vaccinate"
+* productCodeableConcept = $CVX#05 "measles virus vaccine"
+* dosage.text = "0.5 mL subcutaneous, single dose"
 
 Instance: example-mr-sia-protocol
 InstanceOf: ICRCampaignProtocol
@@ -89,6 +128,24 @@ Usage: #example
 * extension[deliveryStrategy][1].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
 * goal.description.text = "≥95% administrative coverage in every district, verified by post-campaign survey"
 * action.title = "Administer MCV to all children 9 months–14 years regardless of prior vaccination status"
+* action.definitionCanonical = Canonical(example-mcv-activity)
+
+// The umbrella campaign (national, intent=plan) and its first round (district,
+// intent=order, partOf the umbrella) — the multi-round pattern (working doc §6.3).
+
+Instance: example-mr-sia-national
+InstanceOf: ICRCampaign
+Title: "Sierra Leone MR SIA 2026 — national umbrella campaign"
+Usage: #example
+* instantiatesCanonical = Canonical(example-mr-sia-protocol)
+* status = #active
+* intent = #plan
+* title = "Measles–rubella SIA, Sierra Leone, 2026"
+* category = $CampaignType#vaccination-sia "Vaccination campaign (SIA)"
+* subject = Reference(example-target-population-national)
+* period.start = "2026-06-15"
+* period.end = "2026-12-18"
+* extension[planningDenominator].valueReference = Reference(example-target-population-national)
 
 Instance: example-mr-sia-2026
 InstanceOf: ICRCampaign
@@ -96,17 +153,35 @@ Title: "Kambia MR SIA — June 2026 round"
 Usage: #example
 * instantiatesCanonical = Canonical(example-mr-sia-protocol)
 * status = #active
-* intent = #plan
-* title = "Measles–rubella SIA, Kambia District, June 2026"
+* intent = #order
+* title = "Measles–rubella SIA, Kambia District, June 2026 (round 1)"
 * category = $CampaignType#vaccination-sia "Vaccination campaign (SIA)"
 * subject = Reference(example-target-population)
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
+* partOf = Reference(example-mr-sia-national)
 * extension[campaignRound].valuePositiveInt = 1
 * extension[targetGeography].valueReference = Reference(example-district)
 * extension[planningDenominator].valueReference = Reference(example-target-population)
 
-// --- The operational unit: a house-to-house mop-up visit ---------------------
+// --- The operational units: a Type A site-session and a Type B mop-up visit --
+
+Instance: example-site-session-task
+InstanceOf: ICRCampaignTask
+Title: "Site session — Rokupr CHC fixed post, campaign day 3"
+Usage: #example
+* status = #completed
+* intent = #order
+* code.text = "Fixed-post vaccination session"
+* focus = Reference(example-fixed-post)
+* for = Reference(example-target-population)
+* location = Reference(example-fixed-post)
+* executionPeriod.start = "2026-06-17T08:00:00Z"
+* executionPeriod.end = "2026-06-17T17:00:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
+* extension[dataLineage].valueCode = #realtime
+* output.type.text = "Children vaccinated (session tally)"
+* output.valueUnsignedInt = 412
 
 Instance: example-mopup-task
 InstanceOf: ICRCampaignTask
@@ -140,6 +215,9 @@ Usage: #example
 * occurrenceDateTime = "2026-06-24T09:40:00Z"
 * location = Reference(example-dwelling)
 * lotNumber = "MRV-2026-0412"
+* manufacturer.display = "Serum Institute of India"
+* performer.actor.display = "Mop-up team 4, Rokupr"
+* protocolApplied.doseNumberPositiveInt = 1
 * extension[recordOrigin].valueCode = #campaign
 
 Instance: example-albendazole-administration
@@ -163,3 +241,42 @@ Usage: #example
 * suppliedItem.itemCodeableConcept.text = "Long-lasting insecticidal net (LLIN)"
 * destination = Reference(example-dwelling)
 * extension[recordOrigin].valueCode = #campaign
+
+// --- Coverage: the admin-vs-survey pair (never-merged lineages) ---------------
+// Same district, same round, same conceptual quantity — two separately-sourced
+// figures that diverge (mirroring the canonical Cuamba example: ~99% admin vs
+// ~76% survey, working doc §4.1). Measure canonicals are placeholders until the
+// Measure definitions ship (see roadmap).
+
+Instance: example-admin-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Administrative coverage — Kambia MR SIA, June 2026 round"
+Usage: #example
+* status = #complete
+* type = #summary
+* measure = "https://fhir.icr.unicef.org/Measure/icr-admin-coverage"
+* period.start = "2026-06-15"
+* period.end = "2026-06-26"
+* reporter.display = "Kambia District Health Management Team"
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 47766
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 48250
+* group.measureScore = 99 '%' "%"
+* extension[coverageSource].valueCode = #administrative
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[dataLineage].valueCode = #reconciled
+
+Instance: example-survey-coverage
+InstanceOf: ICRSurveyCoverage
+Title: "Post-campaign survey coverage — Kambia MR SIA, June 2026 round"
+Usage: #example
+* status = #complete
+* type = #summary
+* measure = "https://fhir.icr.unicef.org/Measure/icr-survey-coverage"
+* period.start = "2026-07-06"
+* period.end = "2026-07-12"
+* reporter.display = "Independent post-campaign coverage survey team"
+* group.measureScore = 76 '%' "%"
+* extension[coverageSource].valueCode = #survey
+* extension[sampleDesign].valueString = "WHO 30×10 cluster survey, district-representative; card + caregiver recall"

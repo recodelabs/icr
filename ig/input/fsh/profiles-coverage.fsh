@@ -32,5 +32,8 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * period 1..1 MS
 * reporter MS
 * group MS
-* extension contains CoverageSource named coverageSource 1..1 MS
+* extension contains
+    CoverageSource named coverageSource 1..1 MS and
+    SampleDesign named sampleDesign 0..1 MS
 * extension[coverageSource].value[x] from ICRIndependentCoverageSourceVS (required)
+* extension[sampleDesign] ^short = "Method / sample design of the independent measurement (e.g. WHO 30×10 cluster survey)"

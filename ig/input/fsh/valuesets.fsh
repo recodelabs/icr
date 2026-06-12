@@ -69,6 +69,6 @@ Description: "Independently-measured coverage lineages only (survey / LQAS / RCM
 ValueSet: ICRMDAMedicationVS
 Id: icr-mda-medication
 Title: "ICR MDA Medication"
-Description: "WHO ATC-coded preventive-chemotherapy medications. Binding: extensible — local formulary codes map back via ConceptMap. Representative PC-NTD codes; the full ATC system is permitted."
+Description: "WHO ATC-coded preventive-chemotherapy medications. Binding: extensible — local formulary codes map back via ConceptMap. Includes the full ATC system; typical PC-NTD codes are albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01, azithromycin J01FA10, diethylcarbamazine P02CB02. Restricting to a PC-NTD subtree is deferred until country formularies are reviewed."
 * ^experimental = false
 * include codes from system $ATC

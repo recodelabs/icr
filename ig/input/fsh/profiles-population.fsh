@@ -65,5 +65,8 @@ Description: "The most-customized ICR resource: nested administrative hierarchy 
 * identifier[gers] ^short = "Overture Maps GERS ID (building / place / division). Record the Overture release version alongside (working doc §9.1)."
 * identifier[pcode].system = $PCode
 * identifier[pcode] ^short = "OCHA P-code for administrative units"
-* extension contains LocationBoundaryGeoJson named boundary 0..1 MS
+* extension contains
+    LocationBoundaryGeoJson named boundary 0..1 MS and
+    DeliveryStrategy named deliveryStrategy 0..1
 * extension[boundary] ^short = "District polygon, settlement area, or catchment zone — the geometry Crosscut enriches and pushes back"
+* extension[deliveryStrategy] ^short = "For delivery sites (fixed/temporary posts): the strategy this site serves"

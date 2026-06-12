@@ -19,6 +19,8 @@ Description: "The reusable, version-controlled template for a campaign type — 
 * goal ^short = "Coverage targets / thresholds (e.g. ≥95% admin coverage; ≥65% epidemiological coverage for LF)"
 * action MS
 * action ^short = "The activity sequence, instantiated as ICRCampaignActivity definitions"
+* action.definition[x] only Canonical(ICRCampaignActivity)
+* action.definition[x] MS
 * extension contains DeliveryStrategy named deliveryStrategy 1..* MS
 * extension[deliveryStrategy] ^short = "Delivery strategies this protocol uses — campaigns routinely mix them"
 
@@ -80,9 +82,11 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * intent MS
 * code 1..1 MS
 * code ^short = "The activity being performed"
+// focus stays Group|Location (not ICRHousehold|ICRLocation): Type C community/school
+// cohort Groups are not ICRHouseholds, so narrowing would break MDA register tasks.
 * focus 1..1 MS
 * focus only Reference(Group or Location)
-* focus ^short = "What the task acts on: site Location (Type A) or household Group (Type B/C)"
+* focus ^short = "What the task acts on: site Location (Type A) or household/community Group (Type B/C)"
 * for MS
 * for ^short = "The target subject/population"
 * owner MS

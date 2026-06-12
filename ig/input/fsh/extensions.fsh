@@ -33,7 +33,7 @@ Title: "Target Geography"
 Description: "The geography (admin unit or operational area) this campaign targets."
 Context: CarePlan
 * ^experimental = false
-* value[x] only Reference(Location)
+* value[x] only Reference(ICRLocation)
 
 Extension: PlanningDenominator
 Id: planning-denominator
@@ -41,7 +41,7 @@ Title: "Planning Denominator"
 Description: "The target-population Group flagged as this campaign's planning denominator. Multiple competing estimates may exist per geography; exactly one is the planning denominator (working doc §4.2)."
 Context: CarePlan
 * ^experimental = false
-* value[x] only Reference(Group)
+* value[x] only Reference(ICRTargetPopulation)
 
 Extension: RealtimeVsReconciled
 Id: realtime-vs-reconciled
@@ -108,7 +108,7 @@ Title: "Household Location"
 Description: "The dwelling Location of a household Group — the validated Ona household pattern: Group (who) + Location (where), with the Location carrying the GERS building ID (working doc §7.5, §9.1)."
 Context: Group
 * ^experimental = false
-* value[x] only Reference(Location)
+* value[x] only Reference(ICRLocation)
 
 Extension: DenominatorSource
 Id: denominator-source
@@ -159,6 +159,14 @@ Description: "Whether the community drug distributor physically observed the ind
 Context: MedicationAdministration
 * ^experimental = false
 * value[x] only boolean
+
+Extension: SampleDesign
+Id: sample-design
+Title: "Sample Design"
+Description: "Sample design / method detail of an independently-measured coverage estimate — e.g. 'WHO 30×10 cluster survey, district-representative', LQAS lot definition, RCM site-selection note. Survey coverage without its design is uninterpretable (working doc §4.1)."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only string
 
 Extension: CoverageSource
 Id: coverage-source

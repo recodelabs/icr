@@ -1,5 +1,6 @@
 // Aliases — external code systems and value sets used across the IG
 Alias: $CVX = http://hl7.org/fhir/sid/cvx
+Alias: $MeasurePopulation = http://terminology.hl7.org/CodeSystem/measure-population
 Alias: $ATC = http://www.whocc.no/atc
 Alias: $VaccineCodeVS = http://hl7.org/fhir/ValueSet/vaccine-code
 

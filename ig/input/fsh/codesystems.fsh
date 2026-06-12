@@ -1,7 +1,10 @@
 // ICR-defined code systems (working doc §8).
 // Core campaign-semantics codes the IG itself must define; product codes come from
-// CVX / ATC / GS1 (see valuesets.fsh). EN + FR designations on the two Required
-// systems, matching the pilot-country contexts (working doc §8 localization pattern).
+// CVX / ATC / GS1 (see valuesets.fsh). EN + FR designations on every system with a
+// required binding (campaign-type, delivery-strategy, record-origin, data-lineage,
+// coverage-source), matching the pilot-country contexts (working doc §8 localization
+// pattern). Extensible-bound systems (missed/noncompliance reasons, denominator
+// source) are translated as country localization packages mature.
 
 CodeSystem: ICRCampaignTypeCS
 Id: icr-campaign-type-cs
@@ -60,7 +63,11 @@ Description: "Whether a delivery event originated in a campaign or a routine fac
 * ^caseSensitive = true
 * ^experimental = false
 * #campaign "Campaign / SIA" "Recorded during a time-bounded campaign (SIA, MDA round, distribution)."
+* #campaign ^designation[0].language = #fr
+* #campaign ^designation[0].value = "Campagne / AVS"
 * #routine "Routine facility visit" "Recorded during routine service delivery."
+* #routine ^designation[0].language = #fr
+* #routine ^designation[0].value = "Visite de routine en établissement"
 
 CodeSystem: ICRMissedReasonCS
 Id: icr-missed-reason-cs
@@ -110,7 +117,11 @@ Description: "Whether a record belongs to the real-time operational stream or th
 * ^caseSensitive = true
 * ^experimental = false
 * #realtime "Real-time" "Captured during the active campaign for same-day operational monitoring."
+* #realtime ^designation[0].language = #fr
+* #realtime ^designation[0].value = "Temps réel"
 * #reconciled "Reconciled" "Finalized at campaign close: reconciled stock, corrected tallies, final coverage."
+* #reconciled ^designation[0].language = #fr
+* #reconciled ^designation[0].value = "Réconcilié"
 
 CodeSystem: ICRCoverageSourceCS
 Id: icr-coverage-source-cs
@@ -119,6 +130,14 @@ Description: "The measurement lineage of a coverage figure. Administrative and i
 * ^caseSensitive = true
 * ^experimental = false
 * #administrative "Administrative" "Doses/treatments delivered ÷ planning denominator, from tallies."
+* #administrative ^designation[0].language = #fr
+* #administrative ^designation[0].value = "Couverture administrative"
 * #survey "Coverage survey" "Post-campaign cluster survey estimate."
+* #survey ^designation[0].language = #fr
+* #survey ^designation[0].value = "Enquête de couverture"
 * #lqas "LQAS" "Lot quality assurance sampling classification."
+* #lqas ^designation[0].language = #fr
+* #lqas ^designation[0].value = "Échantillonnage par lots pour l'assurance de la qualité (LQAS)"
 * #rcm "Rapid convenience monitoring" "Non-probabilistic in-campaign spot checks."
+* #rcm ^designation[0].language = #fr
+* #rcm ^designation[0].value = "Monitorage rapide de convenance"
