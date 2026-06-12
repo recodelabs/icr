@@ -324,7 +324,7 @@ Reviewers will reasonably ask why not these — recording the reasoning up front
 
 - **A custom** `Campaign` **resource.** Tempting, but a non-standard resource has no community adoption path, no tooling support, and would isolate the ICR from the FHIR ecosystem the IG exists to join. Profiling existing resources is how household representation succeeded.
   
-- `Encounter` **for delivery sessions.** Encounter is patient-centric (requires a subject) and carries clinical-visit semantics. Type A site-sessions and Type B household visits are _work_, not visits — `Task` carries assignment, status, location, and outputs natively, and works whether or not a `Patient` exists. Where genuine person-level encounters occur (e.g. EIR-grade capture), `Encounter` remains available _alongside_ the Task, not instead of it.
+- {==`Encounter`==}{>>When we do the ICR we probably want to call this out.  That We can differentiate with encounters that are part of more routine delivery.<<}{id="c71" by="mberg" at="2026-06-12T19:29:27.430Z"} **for delivery sessions.** Encounter is patient-centric (requires a subject) and carries clinical-visit semantics. Type A site-sessions and Type B household visits are _work_, not visits — `Task` carries assignment, status, location, and outputs natively, and works whether or not a `Patient` exists. Where genuine person-level encounters occur (e.g. EIR-grade capture), `Encounter` remains available _alongside_ the Task, not instead of it.
   
 - `RequestGroup` **as the campaign container.** RequestGroup orchestrates related requests but has no lifecycle as an _executed plan_, no `careTeam`, no goal/outcome linkage, and no microplan→execution evolution. CarePlan does.
   
@@ -382,7 +382,7 @@ The reusable, version-controlled template for a campaign type.
 | **Extensions** | `delivery-strategy`; `houses-visited`; `children-present` / `children-absent`; `missed-reason` (coded); `noncompliance-reason` (coded); `finger-marked` (bool) |
 
 > [!note] Granularity is a deliberate design question Whether Tasks are assigned at _village_ level or down to _individual household_ is a performance-vs-fidelity trade-off to validate at national scale against real data. The profile supports both; the choice is configuration.
-### 7.5 ICRHousehold — _profile of_ `Group`
+### 7.5 {==ICRHousehold — _profile of_ `Group`==}{>>What about for the things that aren't households eg a settlment or community that's the target for a campaign not a specific household.<<}{id="c72" by="mberg" at="2026-06-12T19:30:48.560Z"}
 | Element | Constraint |
 |---|---|
 | `type` | `person` |
