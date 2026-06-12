@@ -193,7 +193,7 @@ _A discrete work type within a campaign — "administer albendazole to children 
 | `dosage` | MS — "Where applicable; dose-pole logic references an Observation" |
 | `extension[deliveryStrategy]` | 0..1 MS |
 
-**Rationale.** `kind = #Task` hard-wires the instantiation target: activities become Tasks, not ServiceRequests. Product and dosage ride on the definition so the protocol carries the clinical content once.
+{==**Rationale.** `kind = #Task` hard-wires the instantiation target: activities become Tasks, not ServiceRequests. Product and dosage ride on the definition so the protocol carries the clinical content once.==}{>>Do activityies need to have a focus? or can that be defined at the task level.  Eg if the activity is spray house then the target would be the household structure.  if it's vaccinate it would be a child in the household, if it's get a fly trap it wouldl be the fly trap.<<}{id="c11" by="mberg" at="2026-06-12T20:42:16.549Z"}
 
 > [!warning] Questions
 > 
