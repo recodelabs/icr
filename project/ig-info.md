@@ -404,8 +404,8 @@ _FHIR has no native campaign semantics; these extensions carry them on profiled 
 | Extension (id) | Type / binding |
 | --- | --- |
 | HousesVisited (`houses-visited`) | unsignedInt |
-| ChildrenPresent (`children-present`) | unsignedInt |
-| ChildrenAbsent (`children-absent`) | unsignedInt |
+| {==ChildrenPresent (`children-present`)==}{>>Let's see how common this.  Eg should it say children or do we include target patients or something.  children can be fine jsut want a bit more info on this.<<}{id="c18" by="mberg" at="2026-06-12T20:56:33.978Z"} | {==unsignedInt==}{>>Let's see how common this.  Eg should it say children or do we include target patients or something.  children can be fine jsut want a bit more info on this.<<}{id="c18" by="mberg" at="2026-06-12T20:56:33.978Z"} |
+| {==ChildrenAbsent (`children-absent`)==}{>>Let's see how common this.  Eg should it say children or do we include target patients or something.  children can be fine jsut want a bit more info on this.<<}{id="c18" by="mberg" at="2026-06-12T20:56:33.978Z"} | {==unsignedInt==}{>>Let's see how common this.  Eg should it say children or do we include target patients or something.  children can be fine jsut want a bit more info on this.<<}{id="c18" by="mberg" at="2026-06-12T20:56:33.978Z"} |
 | MissedReason (`missed-reason`) | CodeableConcept, **extensible** → ICRMissedReasonVS |
 | NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS |
 | FingerMarked (`finger-marked`) | boolean — "the in-field 'already covered' flag" |
