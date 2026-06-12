@@ -268,7 +268,7 @@ flowchart LR
 > [!note] Design north star **One configurable data model, many expressions.** Routine immunization, polio SIAs, measles–rubella SIAs, NTD MDA, malaria IRS/ITN, and vitamin A supplementation differ mostly in _delivery strategy, age band, dose/round count, and product type_ — all expressible as configuration over a shared model, rather than as separate per-disease schemas.
 
 * * *
-## 6. Mapping public-health components → FHIR resources
+## 6. {==Mapping public-health components → FHIR resources==}{>>One question on this. For the group eg. target population can that be assigned to a settlement, district etc not just a houshold?<<}{id="c70" by="mberg" at="2026-06-12T19:28:19.861Z"}
 This is the crosswalk from the public-health vocabulary of §§2–4 to FHIR R4 resources. `CarePlan` **is the architectural foundation**: in clinical FHIR a CarePlan is a coordinated set of activities to address a health concern for a patient or group; _a campaign is the same concept at population scale_.
 
 ```mermaid
