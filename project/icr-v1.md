@@ -2,8 +2,8 @@
 title: "ICR FHIR Implementation Guide — Campaign Data Model & Structure (v1 Working Doc)"
 project: ICR
 status: draft
-version: 0.4.2
-last_modified: 2026-06-12T19:49:24.000Z
+version: 0.4.3
+last_modified: 2026-06-12T20:14:49.000Z
 authors: [Ona, Crosscut]
 audience: [Ona, Crosscut, UNICEF, WHO]
 created: 2026-06-09
@@ -11,7 +11,9 @@ tags: [icr, fhir, ig, data-model, campaigns, working-doc]
 ---
 
 # ICR FHIR Implementation Guide — Campaign Data Model & Structure
-`v0.4.2 · Last modified Jun 12, 2026 at 3:49 PM EDT`
+`v0.4.3 · Last modified Jun 12, 2026 at 4:14 PM EDT`
+
+{>>IG UPDATED (per your go-ahead on the c69–c75 replies): your comments are now encoded in ig/ (commit 6a0ac4b, SUSHI-clean 0/0) and ig-info.md v0.3.0 describes the changes. In brief: ICRHousehold generalized to ICRDeliveryUnit (household | community, required group-kind code) with Task.focus and MDA subject narrowed to it (c72); ICRTargetPopulation gains a computable geography characteristic → any-level Location (c70); operational geography gets its mechanism — supervisory/operational-area location types + an overlays-admin-unit extension (c74); Tasks carry a required task-origin code, pre-planned | field-registered (c75); and the Encounter-vs-campaign-work boundary is stated in the IG background narrative (c71). New examples: country, community, supervisory area. NOT yet done: the corresponding rewrite of THIS doc (your wording edits c64/c65/c69 + folding the above into §7–§10) — say "rewrite" when you want that pass, and I'll also sweep the stray characters listed in c66. The Overture comparison task is BERG-45 in Linear (c73 reply has the link). Delete this note once seen.<<}{id="c83" by="claude" at="2026-06-12T20:14:49.000Z"}
 
 {>>MILESTONE — the draft IG now exists, in this repo at ig/. It encodes this doc's §7–§8 in FSH and compiles clean with SUSHI (0 errors / 0 warnings): 12 profiles (ICRCampaignProtocol, ICRCampaign, ICRCampaignActivity, ICRCampaignTask, ICRHousehold, ICRTargetPopulation, ICRLocation, the three delivery-event profiles, and the two never-merged coverage profiles), 20 extensions (record-origin, delivery-strategy, denominator provenance, GERS-sliced Location identifiers, house-to-house data elements…), 8 ICR code systems with EN/FR designations on the two Required ones, 10 ValueSets, and a worked example set — an MR SIA over a district→settlement→dwelling hierarchy with GERS IDs, a house-to-house mop-up Task, plus MDA and ITN delivery events. Build it with `sushi build ig` or see ig/README.md for the full IG-Publisher website. Deferred to the next IG draft (per §7/§12): ViewDefinitions, ConceptMap scaffolds, Consent guidance, JAP/ICG/ESPEN-aligned Measure definitions. Housekeeping note: your latest web edits introduced a few stray characters I'll sweep in the next rewrite pass — "ihouseholds" (§2.1), "sprayedu" (§2.1), "icampaigns" (§2.3), "guidance I" (§2.3), "mmm" (§3.1 row B), "reportingu" (§4.3), "ICR-definedu" (§8).<<}{id="c66" by="claude" at="2026-06-11T17:31:32.000Z"}
 
