@@ -46,7 +46,7 @@ Context: CarePlan
 Extension: RealtimeVsReconciled
 Id: realtime-vs-reconciled
 Title: "Real-time vs Reconciled"
-Description: "Data lineage of this record: the real-time operational stream or the post-campaign reconciled stream. One structure serves both; consumers filter by lineage — dashboards read realtime, JAP exports read reconciled (working doc §4.3)."
+Description: "Data lineage of this record: the real-time operational stream or the post-campaign reconciled stream. One structure serves both; consumers filter by lineage — dashboards read realtime, JAP exports read reconciled (working doc §4.3). Default semantics: ABSENT MEANS REALTIME — live-stream records may omit the flag, but reconciled records must carry it, and coverage MeasureReports always carry it (1..1 on both coverage profiles)."
 Context: CarePlan, Task, MeasureReport
 * ^experimental = false
 * value[x] only code
@@ -60,18 +60,18 @@ Context: Task
 * ^experimental = false
 * value[x] only unsignedInt
 
-Extension: ChildrenPresent
-Id: children-present
-Title: "Children Present"
-Description: "Number of eligible children present at the visit(s)."
+Extension: EligiblePresent
+Id: eligible-present
+Title: "Eligible Persons Present"
+Description: "Number of eligible persons — per the campaign protocol's target definition — present at the visit(s). Program-neutral by design: children under 5 for polio, household members for ITN registration, the eligible age band for MDA or vitamin A."
 Context: Task
 * ^experimental = false
 * value[x] only unsignedInt
 
-Extension: ChildrenAbsent
-Id: children-absent
-Title: "Children Absent"
-Description: "Number of eligible children absent at the visit(s) — feeds same-day mop-up lists."
+Extension: EligibleAbsent
+Id: eligible-absent
+Title: "Eligible Persons Absent"
+Description: "Number of eligible persons absent at the visit(s) — feeds same-day mop-up lists. Program-neutral counterpart of eligible-present."
 Context: Task
 * ^experimental = false
 * value[x] only unsignedInt
@@ -114,7 +114,7 @@ Context: Task
 Extension: GroupLocation
 Id: group-location
 Title: "Group Location"
-Description: "The physical Location of a delivery-unit Group — the validated Ona pattern: Group (who) + Location (where). For a household the Location is the dwelling (carrying the GERS building ID); for a community it is the settlement or community point (working doc §7.5, §9.1)."
+Description: "The physical Location of a delivery-unit Group — the validated Ona pattern: Group (who) + Location (where). For a household the Location is the dwelling (carrying the GERS building ID); for a community it is the settlement or community point; for a school cohort it is the school. This is the group's RESIDENCE/BASE, not its service point: where service actually happened is Task.location and the delivery event's own location — a household served at a village distribution center keeps its dwelling here unchanged (working doc §7.5, §9.1)."
 Context: Group
 * ^experimental = false
 * value[x] only Reference(ICRLocation)

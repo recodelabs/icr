@@ -142,6 +142,26 @@ Usage: #example
 * extension[estimateDate].valueDate = "2026-01-15"
 * extension[isPlanningDenominator].valueBoolean = true
 
+// A COMPETING estimate for the same geography: house-to-house enumeration says
+// 51,800 where GRID3 says 48,250 — a 7% disagreement that stays visible because
+// both estimates are retained with source + date, and exactly one carries the
+// planning flag. The denominator you pick changes the coverage you report.
+
+Instance: example-target-population-enumerated
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 9m–14y, Kambia District (enumeration estimate)"
+Usage: #example
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years, Kambia District (house-to-house enumeration, competing estimate)"
+* quantity = 51800
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[estimateDate].valueDate = "2026-03-02"
+* extension[isPlanningDenominator].valueBoolean = false
+
 Instance: example-target-population-national
 InstanceOf: ICRTargetPopulation
 Title: "Example Target Population — children 9m–14y, Sierra Leone (national)"
@@ -169,6 +189,42 @@ Usage: #example
 * code.text = "Vaccinate"
 * productCodeableConcept = $CVX#05 "measles virus vaccine"
 * dosage.text = "0.5 mL subcutaneous, single dose"
+
+// Three more activity definitions spanning the campaign types — the protocol layer
+// carries the clinical/commodity content once; thousands of Tasks instantiate it.
+// Note none of them name a concrete target: WHAT lives here, the thing acted on
+// (this household, this structure) is each Task's focus.
+
+Instance: example-albendazole-activity
+InstanceOf: ICRCampaignActivity
+Title: "Administer albendazole — MDA activity definition"
+Usage: #example
+* status = #active
+* kind = #Task
+* title = "Administer albendazole to school-age children 5–14 years (STH preventive chemotherapy)"
+* code.text = "Treat"
+* productCodeableConcept = $ATC#P02CA03 "albendazole"
+* dosage.text = "400 mg single dose; tablet count determined by dose-pole height band"
+
+Instance: example-itn-activity
+InstanceOf: ICRCampaignActivity
+Title: "Distribute ITNs — activity definition"
+Usage: #example
+* status = #active
+* kind = #Task
+* title = "Distribute long-lasting insecticidal nets, 1 net per 2 household members"
+* code.text = "Distribute"
+* productCodeableConcept.text = "Long-lasting insecticidal net (LLIN)"
+
+Instance: example-irs-activity
+InstanceOf: ICRCampaignActivity
+Title: "Spray structure — IRS activity definition"
+Usage: #example
+* status = #active
+* kind = #Task
+* title = "Spray interior walls of eligible structures (indoor residual spraying)"
+* code.text = "Spray"
+* productCodeableConcept.text = "Pirimiphos-methyl 300CS (IRS insecticide)"
 
 Instance: example-mr-sia-protocol
 InstanceOf: ICRCampaignProtocol
@@ -252,8 +308,8 @@ Usage: #example
 * executionPeriod.end = "2026-06-24T09:50:00Z"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
 * extension[taskOrigin].valueCode = #field-registered
-* extension[childrenPresent].valueUnsignedInt = 2
-* extension[childrenAbsent].valueUnsignedInt = 1
+* extension[eligiblePresent].valueUnsignedInt = 2
+* extension[eligibleAbsent].valueUnsignedInt = 1
 * extension[missedReason].valueCodeableConcept = $MissedReason#absent "Absent"
 * extension[fingerMarked].valueBoolean = true
 * output.type.text = "Immunization delivered"
@@ -336,3 +392,4 @@ Usage: #example
 * group.measureScore = 76 '%' "%"
 * extension[coverageSource].valueCode = #survey
 * extension[sampleDesign].valueString = "WHO 30×10 cluster survey, district-representative; card + caregiver recall"
+* extension[dataLineage].valueCode = #reconciled

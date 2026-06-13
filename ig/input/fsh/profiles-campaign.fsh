@@ -53,7 +53,7 @@ Description: "A specific campaign execution — the keystone resource. Begins li
     CampaignRound named campaignRound 0..1 MS and
     TargetGeography named targetGeography 0..* MS and
     PlanningDenominator named planningDenominator 0..1 MS and
-    RealtimeVsReconciled named dataLineage 0..1
+    RealtimeVsReconciled named dataLineage 0..1 MS
 
 Profile: ICRCampaignActivity
 Parent: ActivityDefinition
@@ -82,11 +82,14 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * intent MS
 * code 1..1 MS
 * code ^short = "The activity being performed"
-// focus is now narrowable: ICRDeliveryUnit generalizes the old ICRHousehold to
-// household-or-community Groups, so Type C MDA register tasks conform too.
+// focus: delivery-unit Group (B/C), site Location (A) — plus Patient as the
+// deliberate exception: person-targeted FOLLOW-UP tasks (a specific missed or
+// zero-dose child spawns a Task pointing at that child, working doc §4.4). The
+// norm remains one Task per visit/session with person-level detail in the
+// delivery events hanging off Task.output.
 * focus 1..1 MS
-* focus only Reference(ICRDeliveryUnit or ICRLocation)
-* focus ^short = "What the task acts on: site Location (Type A) or household/community delivery-unit Group (Type B/C)"
+* focus only Reference(ICRDeliveryUnit or ICRLocation or Patient)
+* focus ^short = "What the task acts on: site Location (Type A), household/community delivery-unit Group (Type B/C), or — for person-targeted follow-up tasks only — a Patient"
 * for MS
 * for ^short = "The target subject/population"
 * owner MS
@@ -101,8 +104,8 @@ Description: "The assignable, trackable operational unit of work — one Task pe
     DeliveryStrategy named deliveryStrategy 1..1 MS and
     TaskOrigin named taskOrigin 1..1 MS and
     HousesVisited named housesVisited 0..1 and
-    ChildrenPresent named childrenPresent 0..1 and
-    ChildrenAbsent named childrenAbsent 0..1 and
+    EligiblePresent named eligiblePresent 0..1 and
+    EligibleAbsent named eligibleAbsent 0..1 and
     MissedReason named missedReason 0..* and
     NoncomplianceReason named noncomplianceReason 0..* and
     FingerMarked named fingerMarked 0..1 and

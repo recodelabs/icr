@@ -26,10 +26,15 @@ activity/task**, not of the campaign.
 2. **PlanDefinition = reusable protocol; CarePlan = execution** — rounds are sibling
    CarePlans under an umbrella via `partOf`.
 3. **Task is the operational unit** — one per site-session (A) or household (B);
-   delivery events hang off `Task.output`. Tasks may be **pre-planned** from the
-   microplan or **field-registered** on discovery (an unenumerated household found
-   mid-sweep); the required `task-origin` code records which — and field-registered
-   counts per area measure how incomplete the microplan's enumeration was.
+   delivery events hang off `Task.output`. Person-level detail lives in the
+   delivery events, not in extra Tasks: a polio team's household visit is ONE
+   Task whose output references one `Immunization` per child vaccinated. The
+   deliberate exception is **person-targeted follow-up**: a specific missed or
+   zero-dose child can spawn a Task whose `focus` is that `Patient`. Tasks may be
+   **pre-planned** from the microplan or **field-registered** on discovery (an
+   unenumerated household found mid-sweep); the required `task-origin` code
+   records which — and field-registered counts per area measure how incomplete
+   the microplan's enumeration was.
 4. **Delivery strategy is a first-class coded attribute** of the activity/task.
 5. **Three lineages — planned / delivered / independently-measured — never merged.**
 6. **Denominator-first**, with provenance and date on every estimate and coverage figure.
@@ -68,6 +73,19 @@ geography (supervisory areas, operational zones) is modeled as **linkable-but-di
 coded location types (`supervisory-area`, `operational-area`) plus the
 **`overlays-admin-unit`** extension linking an operational area to the admin unit(s)
 it covers.
+
+#### Location identity lifecycle: GERS enrichment
+
+GERS is the **preferred** cross-campaign join key, not a required one, because new
+and informal locations won't be in Overture at creation time. The expected lifecycle:
+a field-registered Location is created with only its internal id (and any national
+codes); an **asynchronous enrichment process** later matches it against Overture —
+directly, or via the OSM→Overture contribution loop — and appends the GERS
+identifier to the existing resource, with FHIR versioning and `Provenance` recording
+when and how the match was made. Implementations should record the **Overture
+release version** alongside each GERS ID. Open question: whether enrichment jobs may
+also *merge* two Locations they discover to be the same place, which folds into the
+record-linkage question below.
 
 #### Open design questions
 

@@ -82,6 +82,9 @@ Description: "The kind of delivery-unit Group a campaign Task acts on. Household
 * #community "Community" "The people of a settlement or community — the Type C community/MDA delivery unit. Its Location is the settlement or community point."
 * #community ^designation[0].language = #fr
 * #community ^designation[0].value = "Communauté"
+* #school-cohort "School cohort" "The enrolled children of one school — the school-based delivery unit (HPV, school-based MDA/deworming). Its Location is the school. Also demonstrates that this system extends to further delivery-unit kinds (nomadic groups, camp populations) as country demand appears."
+* #school-cohort ^designation[0].language = #fr
+* #school-cohort ^designation[0].value = "Cohorte scolaire"
 
 CodeSystem: ICRTaskOriginCS
 Id: icr-task-origin-cs

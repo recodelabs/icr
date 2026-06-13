@@ -18,8 +18,9 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * extension contains
     CoverageSource named coverageSource 1..1 MS and
     DenominatorSource named denominatorSource 0..1 MS and
-    RealtimeVsReconciled named dataLineage 0..1 MS
+    RealtimeVsReconciled named dataLineage 1..1 MS
 * extension[coverageSource].valueCode = #administrative
+* extension[dataLineage] ^short = "Required on coverage reports: preliminary in-campaign figures (realtime) vs final close-out figures (reconciled) must be distinguishable"
 
 Profile: ICRSurveyCoverage
 Parent: MeasureReport
@@ -34,6 +35,8 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * group MS
 * extension contains
     CoverageSource named coverageSource 1..1 MS and
-    SampleDesign named sampleDesign 0..1 MS
+    SampleDesign named sampleDesign 0..1 MS and
+    RealtimeVsReconciled named dataLineage 1..1 MS
 * extension[coverageSource].value[x] from ICRIndependentCoverageSourceVS (required)
 * extension[sampleDesign] ^short = "Method / sample design of the independent measurement (e.g. WHO 30×10 cluster survey)"
+* extension[dataLineage] ^short = "Required on coverage reports: preliminary survey results (realtime) vs final results (reconciled)"

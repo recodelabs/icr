@@ -8,20 +8,20 @@ Profile: ICRDeliveryUnit
 Parent: Group
 Id: ICRDeliveryUnit
 Title: "ICR Delivery Unit (Household / Community)"
-Description: "The actual Group of people a campaign Task acts on — a household (Type B house-to-house) or a community (Type C MDA), distinguished by the required group-kind code. The validated Group + Location pattern, generalized: the Group is who, the Location (group-location extension) is where — the dwelling for a household, the settlement or community point for a community — with the Location carrying the Overture GERS ID for stable cross-campaign identity. Type A's delivery unit is a site, which is a Location, not a Group (working doc §3.2, §7.5, §9.1)."
+Description: "The actual Group of people a campaign Task acts on — a household (Type B house-to-house), a community (Type C MDA), or a school cohort (school-based delivery), distinguished by the required group-kind code. The validated Group + Location pattern, generalized: the Group is who, the Location (group-location extension) is where it lives or is based — the dwelling for a household, the settlement or community point for a community, the school for a school cohort — with the Location carrying the Overture GERS ID for stable cross-campaign identity. Type A's delivery unit is a site, which is a Location, not a Group (working doc §3.2, §7.5, §9.1)."
 * ^experimental = false
 * type = #person
 * actual = true
 * code 1..1 MS
 * code from ICRGroupKindVS (required)
-* code ^short = "household | community"
+* code ^short = "household | community | school-cohort"
 * member MS
 * member.entity only Reference(Patient)
 * member.entity ^short = "Members, where person-level data is collected"
 * quantity MS
 * quantity ^short = "Group size where individuals are not enumerated"
 * extension contains GroupLocation named groupLocation 1..1 MS
-* extension[groupLocation] ^short = "The dwelling (household) or settlement/community point (community)"
+* extension[groupLocation] ^short = "Residence/base, not service point: the dwelling (household), settlement/community point (community), or school (school-cohort)"
 
 Profile: ICRTargetPopulation
 Parent: Group
