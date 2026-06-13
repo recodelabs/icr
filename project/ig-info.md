@@ -71,7 +71,7 @@ File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `
 ## 3. Aliases & identifier systems (`aliases.fsh`)
 Three groups:
 
-- **External terminologies:** `$CVX` (`http://hl7.org/fhir/sid/cvx`, vaccine codes), `$MeasurePopulation` (the HL7 measure-population code system, used by the coverage examples), `$ATC` (`http://www.whocc.no/atc`, WHO drug classification), `$VaccineCodeVS` (the core FHIR vaccine-code ValueSet).
+- **External terminologies:** `$CVX` (`http://hl7.org/fhir/sid/cvx`, vaccine codes), `$MeasurePopulation` (the HL7 measure-population code system, used by the coverage examples), `$ATC` (`http://www.whocc.no/atc`, WHO drug classification), `$VaccineCodeVS` (the core {==FHIR vaccine==}{>>Cool<<}{id="c64" by="mberg" at="2026-06-13T20:43:33.868Z"}-code ValueSet).
   
 - **ICR identifier-system URIs** (explicitly marked _provisional — to be confirmed before v1.0_):
   
