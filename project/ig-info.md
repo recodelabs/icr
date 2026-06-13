@@ -15,7 +15,7 @@ tags: [icr, fhir, ig, review]
 
 * * *
 ## 1. Orientation — what's in the IG
-The IG is ~1,140 lines of FHIR Shorthand (FSH), compiled by SUSHI into FHIR R4 artifacts. Inventory:
+The IG consists of FHIR Shorthand (FSH), compiled by SUSHI into FHIR R4 artifacts. Inventory:
 
 | Layer | Count | Artifacts |
 | --- | --- | --- |
