@@ -98,7 +98,7 @@ Three groups:
 >   
 
 * * *
-## 4. The architecture at a glance
+## 4. {==The architecture at a glance==}{>>I think CareTeams are missing from this no?<<}{id="c131" by="mberg" at="2026-06-15T21:11:06.668Z"}
 FHIR has no native `Campaign` resource, so the IG profiles core will be based on the CarePlan resource.
 
 ```mermaid
