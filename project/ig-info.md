@@ -4,7 +4,7 @@ last_modified: 2026-06-13T01:31:20.000Z
 tags: [icr, fhir, ig, review]
 ---
 
-# ICR FHIR IG v0.1 — Reviewer's Explainer
+# ICR FHIR IG v0.1 — {==Reviewer's Explainer==}{>>For each of the sections can we create an example resource or resources in FHIR /json to illustrate these. eg the care plan or ActivityDefinition.  Do them from a common campaign so they are interlinked and make sense.<<}{id="c67" by="mberg" at="2026-06-15T17:20:30.567Z"}
 `v0.4.0 · Last modified Jun 12, 2026 at 9:31 PM EDT`
 
 ⁠
@@ -168,7 +168,7 @@ Every execution then points back at it: the national umbrella and the Kambia rou
 > 
 > _Resolved in first pass:_ `action.definition[x]` is now constrained to `Canonical(ICRCampaignActivity)`, so the protocol→activity wiring is machine-enforced.
 ### 5.2 ICRCampaign — `CarePlan` (the keystone)
-_A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via_ `partOf`_._ (working doc §7.2, §6.3)
+{==_A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via_ `partOf`_._ (working doc §7.2, §6.3)==}{>>Can we create a mermaid illustration and add a section showing how this works?<<}{id="c64" by="mberg" at="2026-06-15T17:15:15.708Z"}
 
 | Element | Constraint |
 |---|---|
@@ -185,7 +185,7 @@ _A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and
 
 **Rationale.** CarePlan won over a custom resource, Encounter, and RequestGroup (design decision #1) because it natively supports plan→execution lifecycle, `instantiatesCanonical`, population subjects, and `partOf` composition. **Every campaign must point at its protocol** (1..1) — that is what makes campaign data reusable rather than ad-hoc. `subject` typed to ICRTargetPopulation makes the denominator a first-class participant rather than an afterthought; `planningDenominator` additionally disambiguates _which_ estimate is THE denominator when several exist (§6.2).
 
-{==**Who vs where, and nested scopes.** Each CarePlan has exactly **one** `subject` — the WHO, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250"). The WHERE is separate and plural: `targetGeography` is 0..*, so one campaign can name several geographies. Multiple and nested populations are carried by the **umbrella/round stack**, not by overloading one CarePlan:
+{=={==**Who vs where, and nested scopes.** Each CarePlan has exactly **one** `subject` — the WHO, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250"). The WHERE is separate and plural: `targetGeography` is 0..*, so one campaign can name several geographies. Multiple and nested populations are carried by the **umbrella/round stack**, not by overloading one CarePlan:==}{>>I'm a bit confused here.  So this means that the target would be like say a hundred thousand then you'd have multiple geographies with populations that equal with a hundred thousand. Is that how it works?<<}{id="c65" by="mberg" at="2026-06-15T17:16:32.246Z"}
 
 ```mermaid
 graph TD
@@ -210,7 +210,7 @@ One subject per CarePlan; as many CarePlans as the campaign has nested scopes, l
 >   
 > 4. {==`dataLineage` is the only campaign extension _not_ marked MS — deliberate (lineage matters more on Task/MeasureReport) or an oversight?==}{>>I don't understand this elaborate further.<<}{id="c9" by="mberg" at="2026-06-12T20:35:14.865Z"}{>>Background first: MS = Must Support, a FHIR conformance flag meaning "implementations claiming conformance must be able to populate and process this element" — it's about implementation obligation, not whether data is required (that's cardinality). The observation here: ICRCampaign carries four extensions; three are flagged MS (campaign round, target geography, planning denominator) but dataLineage — the realtime-vs-reconciled flag — is not. Practical consequence: a conformant implementation may completely ignore lineage at the campaign level. That's defensible (lineage filtering really happens on Tasks and MeasureReports — a CarePlan is mostly metadata that doesn't get "reconciled"), but it was never stated as a decision, which is why I flagged it. Recommendation: mark it MS for consistency — costs implementers almost nothing — or write one sentence of rationale for why campaign-level lineage is optional. I'll do the former in the next IG pass unless you prefer the latter.<<}{id="c29" by="claude" at="2026-06-12T21:03:09.000Z" re="c9"}{>>APPLIED in v0.4.0: dataLineage is now MS on ICRCampaign (IG commit 4b49ab0) — the extensions row above reflects it.<<}{id="c53" by="claude" at="2026-06-13T01:31:20.000Z" re="c29"}
 >   
-> 5. `activity.reference` locked to Task only — excludes the R4 alternative `activity.detail` (inline activities). Worth stating in narrative that inline activities are out.
+> 5. {==`activity.reference` locked to Task only — excludes the R4 alternative `activity.detail` (inline activities). Worth stating in narrative that inline activities are out.==}{>>Can we create an example CarePlan in this section following the IG to illustrate how this works.  Show the actual JSON and annotate it.<<}{id="c66" by="mberg" at="2026-06-15T17:18:48.153Z"}
 >   
 ### 5.3 ICRCampaignActivity — {==`ActivityDefinition`==}{>>Woud really help to have some real examples.<<}{id="c10" by="mberg" at="2026-06-12T20:36:45.686Z"}{>>One exists (`example-mcv-activity`: "Administer MCV, 9m–14y" — kind=Task, product=CVX 05, dosage "0.5 mL subcutaneous") but agreed, one isn't enough to make the concept land. In the rewrite I'll inline a trio spanning the campaign types: (1) "Administer albendazole, 5–14y" — ATC P02CA03, dose-pole-derived tablet count (Type C MDA); (2) "Distribute 1 ITN per 2 household members" — GS1 commodity, household-level (Type B-then-A); (3) "Spray interior structure walls" — IRS, structure-level (Type B). Together with the MCV one they show the point of the layer: the protocol carries the clinical/commodity content ONCE, and thousands of Tasks instantiate it without repeating it.<<}{id="c30" by="claude" at="2026-06-12T21:03:09.000Z" re="c10"}{>>Add this to the main text during rewrite<<}{id="c46" by="mberg" at="2026-06-13T01:20:49.728Z" re="c30"}
 _A discrete work type within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households" — instantiated as ICRCampaignTask resources._ (working doc §7.3)
