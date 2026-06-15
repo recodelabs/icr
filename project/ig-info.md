@@ -1,11 +1,11 @@
 ---
-version: 0.5.0
-last_modified: 2026-06-15T18:30:00.000Z
+version: 0.5.1
+last_modified: 2026-06-15T17:46:01.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.5.0 · Last modified Jun 15, 2026 at 2:30 PM EDT`
+`v0.5.1 · Last modified Jun 15, 2026 at 1:46 PM EDT`
 
 ⁠
 
@@ -265,7 +265,7 @@ graph TD
 
 One subject per CarePlan; as many CarePlans as the campaign has nested scopes, linked by `partOf`; finer-grained targets (per-ward) exist as additional geography-scoped ICRTargetPopulation Groups that planning and coverage reference without being anyone's `subject`.==}{>>ADDED in v0.4.0 (your c8): the who-vs-where explanation and nested-population stack, as promised in c28.<<}{id="c52" by="claude" at="2026-06-13T01:31:20.000Z" re="c28"}
 
-{==**The campaign as FHIR/JSON — umbrella + round.** Two `ICRCampaign` (CarePlan) instances from the scenario. First the **national umbrella** (the microplan shell):
+**The campaign as FHIR/JSON — umbrella + round.** Two `ICRCampaign` (CarePlan) instances from the scenario. First the **national umbrella** (the microplan shell):
 
 ```json
 { "resourceType": "CarePlan", "id": "example-mr-sia-national", "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] }, "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"], "status": "active", "intent": "plan", "category": [{ "coding": [{ "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type", "code": "vaccination-sia" }] }], "subject": { "reference": "Group/example-target-population-national" }, "period": { "start": "2026-06-15", "end": "2026-12-18" }, {=="addresses": [{ "display": "Measles and rubella" }],==}{>>Is this just narrative or is this linked to a more structured data type somwehre for measles and rubella?<<}{id="c72" by="mberg" at="2026-06-15T17:41:37.141Z"} "extension": [{ "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator", "valueReference": { "reference": "Group/example-target-population-national" } }] }
@@ -310,7 +310,7 @@ Then the **Kambia June round**, a child execution of that umbrella:
 }
 ```
 
-Annotated, reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §5.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the WHO — each scope its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §6.2), which is the concrete answer to c65: different numbers from different sources, _not_ a partition of one total. `partOf` makes the round a child of the umbrella. `activity.reference` lists the round's Tasks (§5.4). The three extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (WHERE, `0..*` — here the district Location, §6.3), and the `planning-denominator` that singles out _the_ denominator coverage is computed against. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference for the disease.)==}{>>ADDED in v0.5.0 (your c66): the umbrella and round CarePlans as annotated FHIR/JSON, with every reference resolved to the section that defines its target.<<}{id="c71" by="agent" at="2026-06-15T18:30:00.000Z" re="c66"}
+Annotated, reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §5.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the WHO — each scope its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §6.2), which is the concrete answer to c65: different numbers from different sources, _not_ a partition of one total. `partOf` makes the round a child of the umbrella. `activity.reference` lists the round's Tasks (§5.4). The three extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (WHERE, `0..*` — here the district Location, §6.3), and the `planning-denominator` that singles out _the_ denominator coverage is computed against. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference for the disease.){>>ADDED in v0.5.0 (your c66): the umbrella and round CarePlans as annotated FHIR/JSON, with every reference resolved to the section that defines its target.<<}{id="c71" by="agent" at="2026-06-15T18:30:00.000Z" re="c66"}
 
 > [!warning] Questions
 > 
