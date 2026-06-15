@@ -233,7 +233,7 @@ graph LR
     R1 -- "activity.reference" --> T
 ```
 
-The umbrella stays `intent = plan` — it is the planning shell that holds the national denominator and binds the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query, not a research project (§5.1). The actual JSON for the umbrella and a round is below, after the who-vs-where explanation.
+{==The umbrella stays `intent = plan` — it is the planning shell that holds the national denominator and binds the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query, not a research project (§5.1). The actual JSON for the umbrella and a round is below, after the who-vs-where explanation.==}{>>Do we have the plan for each of the sub areas? eg if there is a care plan for the three districts the campaign was done in, do we have the original plan for each so we can see what was planned vs executed?<<}{id="c95" by="mberg" at="2026-06-15T20:04:34.533Z"}
 
 | Element | Constraint |
 |---|---|
