@@ -1,15 +1,17 @@
 ---
-version: 0.8.0
-last_modified: 2026-06-15T21:45:00.000Z
+version: 0.9.0
+last_modified: 2026-06-15T23:30:00.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.8.0 · Last modified Jun 15, 2026 at 5:45 PM EDT`
+`v0.9.0 · Last modified Jun 15, 2026 at 7:30 PM EDT`
 
 ⁠
 
 > [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to** `ig/`; those are flagged in-thread and in the v0.7.0 changelog note below.
+
+> [!tip] v0.9.0 — field-evidence synthesis folded in as §17 (a prioritized list of *proposed* IG additions for a subsequent round) New **§17. Research-validated proposed additions** rolls up the eight-document global-health field-evidence synthesis ([`_SYNTHESIS-research-vs-ICR-IG.md`](research/_SYNTHESIS-research-vs-ICR-IG.md): WHO SIA/RED/measles guides, the cluster-survey manual, GTFCC OCV, NTD-MDA, WHO EYE/yellow-fever, and geo-microplanning) into one decision-ready change-list. The headline: the evidence **validates the IG's spine** (plan→order lifecycle, one-Task-per-visit, the campaign/routine `record-origin` firewall, denominator-with-provenance, the never-merged coverage lineages, and operational-geography-overlays-admin — the standout win) and surfaces a **prioritized set of additions** — the highest-priority themes being a **programme-semantics quartet** (activity/SIA-type, coverage-target-as-data, stockpile-source, dosing-regimen) and a **coverage-model overhaul** (denominator-type + unit axes, structured `sample-design`, `Measure` bindings, a multi-dose "fully-immunized" measure). **Everything in §17 is *proposed* — like the v0.7.0 items, nothing here is committed to** `ig/`; the actual IG/FSH edits are deferred to a subsequent round. §14 (Known gaps) and §15 (checklist) now point at §17. This pass adds the synthesis section only — no profile/FSH change and no change to the IG-as-committed prose.
 
 > [!tip] v0.8.0 — section Question-blocks pruned to OPEN items only; resolved questions archived to §16 Each section's "[!warning] Questions" callout now lists **only genuinely-open questions**; every question already addressed/resolved was moved to the new **§16. Closed questions — archive** (grouped by section) so nothing is lost. Open decisions that still carry live comment threads stay in place (§2 WHO SMART alignment c129; §6.3 Overture release-version c86 and `partOf`-typing c87, plus the addressed-but-awaiting-confirm admin-identifier c88 and breadcrumb c89). This is a documentation-organization pass — no profile/FSH change.
 
@@ -1375,6 +1377,8 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
 - No `CapabilityStatement`, search-parameter, or Bulk-Data/cohort-export guidance yet (the access-pattern open question)
   
 
+These are the gaps ICR already *knew* about. **§17** adds a second, larger class: gaps surfaced by the **field-evidence synthesis** — programme-semantics axes, a coverage-model overhaul, AEFI/wastage/supervision, and more — each flagged there as a *proposed* addition for a subsequent IG round (none committed yet).
+
 * * *
 ## 15. Consolidated review checklist
 **✅ Addressed in the first-pass revision (commit** `843ab18`**)**
@@ -1476,6 +1480,8 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
 
 **Hold for community review (already flagged in the IG)** 8. Task granularity at scale; deep partOf performance; MeasureReport vs Observation; GeoJSON on R4; record-linkage pattern; Bulk Data access (§12 of background page).
 
+**🔬 Proposed from the field-evidence synthesis (v0.9.0 — for a subsequent IG round)** 9. A prioritized P1/P2/P3 change-list of research-validated additions — programme-semantics quartet, coverage-model overhaul, AEFI/wastage/supervision, geography refinements, and the surveillance "reference-don't-model" scope line — is captured in **§17**. None is committed to `ig/`; §17 is the working checklist for the next IG-editing pass.
+
 * * *
 ## 16. Closed questions — archive
 _Questions that were resolved/addressed have been moved out of the per-section "[!warning] Questions" blocks (so those lists show only what's still open) and parked here, grouped by section, with how each was closed. Nothing is lost; this list grew in v0.8.0. The pass-by-pass §15 checklist remains the changelog view — this is the by-section view._
@@ -1540,3 +1546,109 @@ _Questions that were resolved/addressed have been moved out of the per-section "
 **§10 — Terminology**
 
 - ✅ FR designations now cover all five required-binding systems and the file comment matches; the MDA VS description matches its content (first pass). _(Still open, kept in §10: francophone reviewer check + localization policy.)_
+
+* * *
+## 17. Research-validated proposed additions (field-evidence synthesis)
+
+> [!note] Status — *proposed*, not committed
+> Everything in §17 is a **proposed** change for a **subsequent IG round** — none of it is in `ig/` and no FSH/profile artifact changes in this pass. It rolls up [`_SYNTHESIS-research-vs-ICR-IG.md`](research/_SYNTHESIS-research-vs-ICR-IG.md), which compared **eight** global-health source analyses against ICR IG v0.1.0 / this explainer. Proposed code names (CodeSystems, extensions, value sets) follow ICR's existing conventions (kebab-case, ICR-prefixed) but are **placeholders to be finalized when drafted** — confirm exact CodeSystem URLs against `ig/input/fsh/` before authoring. Source key for the matrix: **S**=WHO SIA-2016, **R**=WHO RED microplanning, **M**=WHO-AFRO Measles, **CS**=WHO Cluster-Survey Manual 2018, **O**=GTFCC OCV, **N**=NTD-MDA/PC, **Y**=WHO EYE/Yellow-Fever, **G**=Geo-enabled microplanning.
+
+**The convergence is the signal.** Eight documents — across routine RI, polio/measles/YF/OCV vaccine SIAs, NTD drug campaigns, survey methodology, and GIS microplanning — converge on the same conclusions, and **no source contradicts the IG's spine**. Two themes dominate the proposed additions: (1) **programme semantics** is too thin — four coded axes show up as first-class in *every* campaign type yet are absent from the IG; (2) the **coverage model** needs the biggest rework — it is keyed only by data-source and lacks the denominator-type and unit axes the evidence demands.
+
+### 17.1 Validated — do **not** change (the spine holds)
+The field evidence strongly endorses these; they are listed so the next round knows what is *settled*, not up for redesign (cross-ref §13):
+- Plan→order lifecycle; one-Task-per-visit with per-person delivery events; the `record-origin` campaign/routine firewall; denominator-with-provenance; the three never-merged coverage lineages; realtime-vs-reconciled; coded delivery strategy.
+- **Operational geography overlaying the admin hierarchy** (`overlays-admin-unit` / `supervisory-area`) — the **standout win**, validated by every GIS/operational source.
+- GERS-preferred multi-system identity; configurable age bands (all-age PMVC works); `campaign-type = mda` + `community-directed` + `ICRMedicationAdministration` (ATC, subject = DeliveryUnit, directlyObserved) for NTD MDA; integrated multi-intervention on a shared denominator.
+- **GeoJSON-on-R4 is effectively resolved already** — the IG *ships* `location-boundary-geojson`; only `background.md`'s "open question" wording lags (see 17.4).
+
+### 17.2 P1 — strongly convergent / load-bearing (do first)
+
+**A. Programme-semantics quartet** — four small coded axes the IG lacks but every campaign type treats as first-class:
+
+| # | Proposed addition | Where it lands | Sources |
+|---|---|---|---|
+| A1 | **`activity-type` / `sia-type`** CodeSystem + extension — `routine`, `pmvc`, `catch-up`, `follow-up`, `mop-up`, `reactive`/`outbreak-response`, `rolling-phased`. **Orthogonal** to `campaign-type` (intervention) and `record-origin` (campaign-vs-routine). | new CodeSystem + extension on ICRCampaignProtocol / ICRCampaign | S, M, Y (EYE's canonical 4-type taxonomy) |
+| A2 | **`coverage-target`** element — store the *programme-defined threshold* (≥95% SIA; ≥65% LF epidemiological; EYE 50/60/80%), not just achieved coverage. | element/extension on ICRCampaignProtocol.`goal` / ICRCampaign | Y, N, O |
+| A3 | **`stockpile-source`** axis — ICG / national / Gavi, with allocation/lot + request-to-delivery interval; one value set serves OCV and YF (same ICG mechanism). | extension on ICRSupplyDelivery | O, Y |
+| A4 | **`dosing-regimen`** — single-dose-lifelong / multi-dose / fractional-dose; needed to define "fully immunized." | extension on ICRCampaignActivity / ICRImmunizationEvent | O, Y |
+
+**B. Coverage-model overhaul** — the biggest analytic theme:
+
+| # | Proposed addition | Where it lands | Sources |
+|---|---|---|---|
+| B1 | **Separate the three coverage axes.** Today coverage is keyed only by *data-source*. Add **denominator-type** (total-population vs at-risk/eligible → NTD programme-vs-epidemiological coverage) and **unit** (people vs implementation-units → a geographic-coverage Measure). Requires an **at-risk denominator** on ICRTargetPopulation. | new axes/extensions on both coverage profiles + ICRTargetPopulation | N decisive; O/Y/M corroborate |
+| B2 | **Structure `sample-design`** (today a single free-text string, §8.2) into sub-elements — method, PSU/EA, #clusters, design-effect/ICC, sample size, weighting, evidence-source (card/recall/register), crude-vs-valid, CI/precision — **and bind `ICRSurveyCoverage` (and `ICRAdministrativeCoverage`) to `Measure` definitions** aligned to VCQI/Annex L. Closes the IG's own acknowledged "Measure definitions" gap (§14). | rework `sample-design` extension → complex; new `Measure` resources | CS |
+| B3 | **Multi-dose "fully-immunized" measure + round1↔round2 linkage** for OCV/multi-round campaigns. | new Measure + round-linkage on ICRCampaign | O, Y |
+| B4 | **Make RCM semantics explicit** — pass/fail + trigger thresholds, **not** a coverage rate, **not** a probability survey; LQAS needs its decision-rule documented. | narrative + profile note on ICRSurveyCoverage (`rcm`/`lqas`) | S, M, CS, R |
+
+**C. Vaccine-cross-cutting operational data** (all three vaccine guides):
+
+| # | Proposed addition | Where it lands | Sources |
+|---|---|---|---|
+| C1 | **AEFI** profile + **`aefi-causal-type`** value set (5 WHO/CIOMS categories + serious criteria). | new profile + CodeSystem/VS | S, R, M, ~Y |
+| C2 | **Wastage / vial-accountability** axis (WMF; received/opened/not-usable/returned; VVM) — reusable for vaccines, drugs, ITNs. | extension on ICRSupplyDelivery | S, R, M |
+| C3 | **Reconcile `missed-reason` / `noncompliance-reason`** with the WHO RCM field lists — add `unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`, `unknown-declined`; split out non-missed dispositions (`already-vaccinated`, `plan-to-go-later`); decide one home for `sick`. | extend ICRMissedReasonCS / ICRNoncomplianceReasonCS (§10) | S, R, ~M, ~N |
+
+### 17.3 P2 — convergent, more design work
+- **`stockpile-source`, `dosing-regimen`** (also P1 above as A3/A4), **`campaign-trigger`** (reactive/preventive/outbreak), **`campaign-cost`** (cost-per-FIP/treated person, CholTool-aligned). _(O, Y; M ~; S/R ~ for cost.)_
+- **Campaign-phase / readiness** lifecycle axis + a **readiness MeasureReport**. _(S, M; R ~.)_
+- **Defaulter / dropout / zero-dose** disposition + a **dropout Measure** + zero-dose hand-off-to-routine. _(R, M; S/N ~.)_
+- **Supervision / QA** profile; **social-mobilization / demand** axis; **population-vulnerability / equity** taxonomy (characteristic). _(S, R, M; N/G ~ for equity.)_ **Note (c131/c136):** the supervision/QA piece overlaps the open **ICRCareTeam / supervisor** gap flagged at §4 — the supervisor is a key delivery actor and often the reporter; fold the two together when drafting.
+- **`outreach` delivery-strategy** (distinct from mobile/temporary-post); **CDD / community-distributor performer role**; a **Team / CareTeam + microplan-resource** profile (every geo/microplanning source models team-areas + workload; the IG has none — ties to the §4 CareTeam gap). _(R, N, G.)_
+- **Survey evidence-source + crude-vs-valid coverage** (card/recall/register) — overlaps B2. _(CS.)_
+
+### 17.4 P3 — narrower or partly routine-only
+- **Geography refinements (G):** **adopt the already-shipped `location-boundary-geojson` extension as canonical and remove GeoJSON from "open question" status** in `background.md` (cheap; the extension already exists — §9); add a **population-estimation-method + source-raster version/date** on ICRTargetPopulation (two `worldpop` estimates are currently indistinguishable — relates to the §6.2 competing-denominator model and the §6.3 Overture-release-version thread c86); add a **`structure`/footprint** location-type + **accessibility/travel-time** attribute; a **georegistry-match-status** value set extending the GERS-enrichment lifecycle.
+- **Cold-chain / logistics / stock-readiness** axis beyond SupplyDelivery. _(R, M; S/O ~.)_
+- **NTD specifics (N):** **endemicity status + TAS/impact-survey gate** on ICRLocation; **eligibility-exclusion reasons + dose-pole/height dosing** as structured data.
+- **Access-vs-utilization** problem-category typology _(R)_; **location-type / denominator-source code additions** — transit-point, health-camp, idp-camp; head-count, campaign-results, line-list-household _(S, R; M/N/G ~)_.
+
+### 17.5 Convergence matrix (recommendation × document)
+✓ = the document independently flags it; ~ = touched/implied; blank = out of that document's scope.
+
+| Proposed IG addition | S | R | M | CS | O | N | Y | G | Priority |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| Activity/SIA-type axis (A1) | ✓ | ~ | ✓ |  | ~ | ~ | ✓ |  | **P1** |
+| Coverage-target as data (A2) |  |  | ~ | ~ | ✓ | ✓ | ✓ |  | **P1** |
+| Coverage model: denominator-type + unit axes (B1) |  |  |  | ~ | ~ | ✓ | ~ |  | **P1** |
+| Structured `sample-design` + bind coverage to a `Measure` (B2) | ~ |  | ~ | ✓ | ~ | ~ |  |  | **P1** |
+| Multi-dose "fully-immunized" measure + round linkage (B3) |  |  |  | ~ | ✓ |  | ~ |  | **P1** |
+| RCM = pass/fail + triggers, not a coverage rate (B4) | ✓ | ✓ | ✓ | ✓ |  |  |  |  | **P1** |
+| AEFI profile + 5-category causal value set (C1) | ✓ | ✓ | ✓ |  |  |  | ~ |  | **P1** |
+| Wastage / vial-accountability axis (C2) | ✓ | ✓ | ✓ |  | ~ |  |  |  | **P1** |
+| Reconcile missed-/noncompliance-reason with WHO lists (C3) | ✓ | ✓ | ~ |  |  | ~ |  |  | **P1** |
+| Stockpile-source axis (A3) |  |  |  |  | ✓ |  | ✓ |  | **P2** |
+| Dosing-regimen (A4) |  |  |  |  | ✓ |  | ✓ |  | **P2** |
+| Campaign-trigger |  |  | ~ |  | ✓ |  | ✓ |  | **P2** |
+| Campaign-cost axis | ~ | ~ |  |  | ✓ |  |  |  | **P2** |
+| Campaign-phase / readiness lifecycle | ✓ | ~ | ✓ |  |  |  |  |  | **P2** |
+| Defaulter / dropout / zero-dose + dropout Measure | ~ | ✓ | ✓ |  |  | ~ |  |  | **P2** |
+| Supervision / QA profile | ✓ | ✓ | ✓ |  |  | ~ |  |  | **P2** |
+| Social-mobilization / demand axis | ✓ | ✓ | ✓ |  |  |  |  |  | **P2** |
+| Population-vulnerability / equity taxonomy | ✓ | ✓ | ✓ |  |  | ~ |  | ✓ | **P2** |
+| `outreach` delivery-strategy |  | ✓ |  |  |  | ~ |  | ~ | **P2** |
+| CDD / community-distributor performer role |  |  |  |  |  | ✓ |  |  | **P2** |
+| Team / CareTeam + microplan-resource profile |  | ~ |  |  |  | ~ |  | ✓ | **P2** |
+| Survey evidence-source + crude-vs-valid coverage |  |  |  | ✓ |  |  |  |  | **P2** |
+| Population-estimation method + source-raster version/date | ~ | ~ |  |  |  | ~ |  | ✓ | **P3** |
+| Catchment-polygon geometry — adopt shipped GeoJSON ext |  |  |  |  |  |  |  | ✓ | **P3 (cheap)** |
+| `structure`/footprint location-type + accessibility/travel-time |  | ~ |  |  |  |  |  | ✓ | **P3** |
+| Cold-chain / logistics / stock-readiness axis | ~ | ✓ | ✓ |  | ~ |  |  |  | **P3** |
+| Endemicity status + TAS/impact-survey gate (NTD) |  |  |  |  |  | ✓ |  |  | **P3** |
+| Eligibility-exclusion reasons + dose-pole/height dosing (NTD) |  |  |  |  |  | ✓ |  |  | **P3** |
+| Access-vs-utilization problem typology |  | ✓ |  |  |  |  |  |  | **P3** |
+| Location-type / denominator-source code additions | ✓ | ✓ | ~ |  |  | ~ |  | ~ | **P3** |
+| Surveillance / outbreak / lab — *reference, don't model* |  | ~ | ✓ |  | ~ | ~ | ~ |  | **Scope** |
+
+### 17.6 Scope decision & refinements to revisit
+- **Surveillance & outbreak response — *reference, don't model*.** Case-based surveillance, lab specimen/confirmation, susceptibility/inter-epidemic modelling, and confirmed-case age-distribution are the **trigger and evaluation context** for a campaign, not its execution data. ICR should hold a **thin reference** (the signal/outbreak that justified the SIA + the case-age distribution that set the target age) and link out to a **VPD-surveillance IG**. Keep case/lab data out of the ICR campaign IG. _(M; O/N/Y/R ~.)_
+- **Refinements (not new axes):**
+  - **House-to-house *canvassing* vs *vaccination*** — the single `house-to-house` code conflates Type A demand-generation (dose at post) with Type B door-delivery; canvassing is arguably a modifier. _(S.)_
+  - **Administrative-coverage stratification** — all sources warn it is denominator-fragile; ensure ICRAdministrativeCoverage stratifies by strategy + age band and can carry a data-quality caveat. _(S, M, R.)_
+  - **OCV/YF campaign-type** — keep `vaccination-sia` (it already names YF PMVC) rather than adding `ocv`/`yf` codes; document as a deliberate choice. _(O, Y.)_
+
+### 17.7 Caveats on the evidence
+- The **RED** source is the **2009** edition (not the 2017 revision).
+- Some web sources 403'd or were thin (GTFCC §9, JHU stop-cholera, the WHO geo-handbook landing page); those analyses leaned on substituted primary sources, flagged inline in each file. A few measles-guide annexes are scanned images; two of its `missed-reason` proposals are inferred from body text.
+- Downloaded source PDFs live in `docs/research/` (untracked). Each analysis checked the IG against the committed FSH; **confirm exact CodeSystem URLs against `ig/input/fsh/` before drafting changes.**
