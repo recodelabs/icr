@@ -56,13 +56,13 @@ File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `
 | `menu` | Home, Background, Artifacts | |
 | `parameters` | `show-inherited-invariants: false`, `shownav: true` | |
 
-{==**Rationale.** The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace; the same base hosts the two provisional identifier-system URIs (§3). The toolchain (FSH/SUSHI/IG Publisher) deliberately matches WHO SMART Guidelines practice (working doc §11).==}{>>These are all open questions we need to determine.  Don't know yet.<<}{id="c1" by="mberg" at="2026-06-12T20:19:31.927Z"}{>>Understood — all four stay open. Nothing in the IG hardens them yet: canonical URL, publisher attribution, package id, and dependency declarations are each a one-line edit until first publication, after which the canonical becomes painful to change. Suggest batching all four for the first UNICEF technical review. Want a Linear task to track that batch, or fold it into an existing review milestone?<<}{id="c22" by="claude" at="2026-06-12T21:03:09.000Z" re="c1"}
+**Rationale.** The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace; the same base hosts the two provisional identifier-system URIs (§3). The toolchain (FSH/SUSHI/IG Publisher) deliberately matches WHO SMART Guidelines practice (working doc §11).
 
 > [!warning] Questions
 > 
 > 1. **Canonical URL ownership** — does UNICEF actually control `fhir.icr.unicef.org` (or intend to)? Changing canonicals after publication is painful; this needs early confirmation.
 >   
-> 2. **Publisher attribution** — is "(Ona + Crosscut)" with `ona.io` as URL the right public attribution, or should UNICEF be the publisher of record?
+> 2. {==**Publisher attribution** — is "(Ona + Crosscut)" with `ona.io` as URL the right public attribution, or should UNICEF be the publisher of record?==}{>>UNICEF should be not ona or crosscut<<}{id="c94" by="mberg" at="2026-06-15T20:00:09.237Z"}
 >   
 > 3. **No dependencies declared** — the background page commits to aligning with WHO SMART Immunizations / the Immunization DAK, but the config declares no dependency on it (or on IHE mCSD, etc.). Intentional for v0.1, but worth deciding when the dependency gets declared and what "alignment" concretely means.
 >   
