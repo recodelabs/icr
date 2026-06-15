@@ -268,25 +268,7 @@ One subject per CarePlan; as many CarePlans as the campaign has nested scopes, l
 {==**The campaign as FHIR/JSON — umbrella + round.** Two `ICRCampaign` (CarePlan) instances from the scenario. First the **national umbrella** (the microplan shell):
 
 ```json
-{
-  "resourceType": "CarePlan",
-  "id": "example-mr-sia-national",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] },
-  "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"],
-  "status": "active",
-  "intent": "plan",
-  "category": [{ "coding": [{
-    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
-    "code": "vaccination-sia"
-  }] }],
-  "subject": { "reference": "Group/example-target-population-national" },
-  "period": { "start": "2026-06-15", "end": "2026-12-18" },
-  "addresses": [{ "display": "Measles and rubella" }],
-  "extension": [{
-    "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
-    "valueReference": { "reference": "Group/example-target-population-national" }
-  }]
-}
+{ "resourceType": "CarePlan", "id": "example-mr-sia-national", "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] }, "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"], "status": "active", "intent": "plan", "category": [{ "coding": [{ "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type", "code": "vaccination-sia" }] }], "subject": { "reference": "Group/example-target-population-national" }, "period": { "start": "2026-06-15", "end": "2026-12-18" }, {=="addresses": [{ "display": "Measles and rubella" }],==}{>>Is this just narrative or is this linked to a more structured data type somwehre for measles and rubella?<<}{id="c72" by="mberg" at="2026-06-15T17:41:37.141Z"} "extension": [{ "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator", "valueReference": { "reference": "Group/example-target-population-national" } }] }
 ```
 
 Then the **Kambia June round**, a child execution of that umbrella:
