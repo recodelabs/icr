@@ -18,7 +18,7 @@ tags: [icr, fhir, ig, review]
 > [!tip] v0.2.0 — first-pass revision applied The cheap fixes and missing examples from this doc's original §15 checklist have been **applied to the IG** (commit `843ab18`, SUSHI-clean: 0 errors / 0 warnings) and this doc updated to match: FR designations on all five required-binding code systems; MDA ValueSet description corrected; new `SampleDesign` extension on survey coverage; reference-target tightening (target-geography → ICRLocation, planning-denominator → ICRTargetPopulation, household-location → ICRLocation); protocol `action.definition` locked to ICRCampaignActivity; delivery-strategy wired into ICRLocation for sites; Task.focus looseness documented as deliberate; and 7 new examples (activity definition, national umbrella + `partOf` round, Type A site-session task, fixed-post site, national denominator, admin-vs-survey coverage pair). Items needing a project decision (§15) remain open.
 
 * * *
-## 1. Orientation — what's {==in the IG==}{>>One more test. Seeing if margins got this.<<}{id="c67" by="mberg" at="2026-06-15T16:13:34.840Z"}
+## 1. Orientation — what's in the IG
 The IG consists of FHIR Shorthand (FSH), compiled by SUSHI into FHIR R4 artifacts.
 
 | Layer | Count | Artifacts |
