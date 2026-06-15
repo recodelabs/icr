@@ -9,9 +9,9 @@ tags: [icr, fhir, ig, review]
 
 ⁠
 
-> [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to `ig/`**; those are flagged in-thread and in the v0.7.0 changelog note below.
+> [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to** `ig/`; those are flagged in-thread and in the v0.7.0 changelog note below.
 
-> [!tip] v0.7.0 — fourth-pass revision: your Jun 15 comments folded into the main text (this doc's comments c80–c95) Your latest review round is now **incorporated into this doc's prose**, and each comment thread carries an **APPLIED in v0.7.0 … OK to close** note so you can decide which to close. The substance: **publisher → UNICEF** of record, Ona + Crosscut credited via `contact` (c94, §2); a **planned-vs-executed** explanation on the round CarePlans (c95, §5.2); a **worked `dataLineage` (realtime vs reconciled) example** (c80, §8); the **Patient-vs-RelatedPerson/Person** explanation folded into §6.1 with the q2 wording corrected (c83); **GRID3 → WorldPop** relabelled across the example denominators (c84, §6.2/§8/§11); a **two-hierarchy mermaid diagram** for Location (c85, §6.3); **admin-level identifier rules** — ≥1 identifier required at admin-unit level, plus national/internal-code and ISO 3166 slices (c88, §3/§6.3); a proposed **`location-ancestors` breadcrumb extension** for partOf-depth performance (c89, §6.3/§9); an **`overlays-admin-unit` 1..* invariant** on operational-area types (c90, §6.3); and an **inline albendazole MedicationAdministration example** for §7.2 (c91). Explanations were added for the Overture release-version purpose (c86) and the `partOf`-only-ICRLocation trade-off (c87), both left open pending your/Overture's decision. **This pass edits this explainer doc only** — IG/FSH artifact changes implied by c84/c88/c89/c90/c94 are flagged in-thread and tracked for the next IG build, not yet committed to `ig/`.
+> [!tip] v0.7.0 — fourth-pass revision: your Jun 15 comments folded into the main text (this doc's comments c80–c95) Your latest review round is now **incorporated into this doc's prose**, and each comment thread carries an **APPLIED in v0.7.0 … OK to close** note so you can decide which to close. The substance: **publisher → UNICEF** of record, Ona + Crosscut credited via `contact` (c94, §2); a **planned-vs-executed** explanation on the round CarePlans (c95, §5.2); a **worked** `dataLineage` **(realtime vs reconciled) example** (c80, §8); the **Patient-vs-RelatedPerson/Person** explanation folded into §6.1 with the q2 wording corrected (c83); **GRID3 → WorldPop** relabelled across the example denominators (c84, §6.2/§8/§11); a **two-hierarchy mermaid diagram** for Location (c85, §6.3); **admin-level identifier rules** — ≥1 identifier required at admin-unit level, plus national/internal-code and ISO 3166 slices (c88, §3/§6.3); a proposed `location-ancestors` **breadcrumb extension** for partOf-depth performance (c89, §6.3/§9); an `overlays-admin-unit` _1.. invariant_* on operational-area types (c90, §6.3); and an **inline albendazole MedicationAdministration example** for §7.2 (c91). Explanations were added for the Overture release-version purpose (c86) and the `partOf`-only-ICRLocation trade-off (c87), both left open pending your/Overture's decision. **This pass edits this explainer doc only** — IG/FSH artifact changes implied by c84/c88/c89/c90/c94 are flagged in-thread and tracked for the next IG build, not yet committed to `ig/`.
 
 > [!tip] v0.5.0 — annotated FHIR/JSON examples inlined (this doc's comments c64–c67) The campaign-architecture sections now carry the **actual resource JSON**, all drawn from the one Sierra Leone MR SIA scenario so every example interlinks: the **protocol** (§5.1), its **activity** (§5.3), the **umbrella + round CarePlans** (§5.2), and a **house-to-house Task** that chains through `Task.output` to the **MCV dose** (§5.4 → §7.1), plus the identity resources they reference (**Location** §6.3, **delivery-unit** and **denominator Groups** §6.1/§6.2) and the divergent **coverage pair** (§8). §5.2 also gains a **lifecycle diagram** (microplan `plan` → execution `order`, umbrella → rounds) answering c64, and a worked answer to "do the geographies sum to the national total?" (c65): they don't have to — each scope carries its own denominator from its own source. Every block is annotated field-by-field beneath the JSON. **No IG/FSH artifacts changed in this pass** — these render `examples.fsh` instances already in the IG (the §11 table) as readable JSON for reviewers.
 
@@ -64,11 +64,9 @@ File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `
 > 
 > 1. **Canonical URL ownership** — does UNICEF actually control `fhir.icr.unicef.org` (or intend to)? Changing canonicals after publication is painful; this needs early confirmation.
 >   
-> 2. {==**Publisher attribution** — is "(Ona + Crosscut)" with `ona.io` as URL the right public attribution, or should UNICEF be the publisher of record?==}{>>UNICEF should be not ona or crosscut<<}{id="c94" by="mberg" at="2026-06-15T20:00:09.237Z"}{>>Understood. In the next rewrite I'll set `publisher: UNICEF` (with a UNICEF url) in sushi-config.yaml and demote "Ona + Crosscut" to a `contact`/author credit rather than publisher of record — that's the right public attribution and it resolves §2 q2.<<}{id="c96" by="agent" at="2026-06-15T20:20:00.000Z" re="c94"}{>>APPLIED in v0.7.0: §2 publisher row now reads **UNICEF** as publisher of record (url `https://www.unicef.org`), with Ona + Crosscut moved to a `contact` credit — this resolves §2 q2. The matching `sushi-config.yaml` edit is flagged for the next IG build (this pass edits the explainer only). OK to close.<<}{id="c113" by="agent" at="2026-06-15T20:45:00.000Z" re="c94"}
+> 2. **No dependencies declared** — the background page commits to aligning with WHO SMART Immunizations / the Immunization DAK, but the config declares no dependency on it (or on IHE mCSD, etc.). Intentional for v0.1, but worth deciding when the dependency gets declared and what "alignment" concretely means.
 >   
-> 3. **No dependencies declared** — the background page commits to aligning with WHO SMART Immunizations / the Immunization DAK, but the config declares no dependency on it (or on IHE mCSD, etc.). Intentional for v0.1, but worth deciding when the dependency gets declared and what "alignment" concretely means.
->   
-> 4. `id: unicef.fhir.icr` — confirm this fits the package-naming convention UNICEF wants (most are `<org>.fhir.<scope>`, so it's plausible, but it's permanent).
+> 3. `id: unicef.fhir.icr` — confirm this fits the package-naming convention UNICEF wants (most are `<org>.fhir.<scope>`, so it's plausible, but it's permanent).
 >   
 
 * * *
@@ -173,39 +171,59 @@ Every execution then points back at it: the national umbrella and the Kambia rou
 {
   "resourceType": "PlanDefinition",
   "id": "example-mr-sia-protocol",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignProtocol"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignProtocol"
+    ]
+  },
   "status": "active",
   "version": "1.0.0",
   "title": "Measles–Rubella SIA — 2026 national guidance",
   "type": {
-    "coding": [{
-      "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
-      "code": "vaccination-sia"
-    }]
+    "coding": [
+      {
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+        "code": "vaccination-sia"
+      }
+    ]
   },
   "extension": [
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
-      "valueCodeableConcept": { "coding": [{
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
-        "code": "fixed-post"
-      }] }
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "code": "fixed-post"
+          }
+        ]
+      }
     },
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
-      "valueCodeableConcept": { "coding": [{
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
-        "code": "house-to-house"
-      }] }
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "code": "house-to-house"
+          }
+        ]
+      }
     }
   ],
-  "goal": [{
-    "description": { "text": "≥95% administrative coverage in every district, verified by post-campaign survey" }
-  }],
-  "action": [{
-    "title": "Administer MCV, 9 months–14 years",
-    "definitionCanonical": "https://fhir.icr.unicef.org/ActivityDefinition/example-mcv-activity"
-  }]
+  "goal": [
+    {
+      "description": {
+        "text": "≥95% administrative coverage in every district, verified by post-campaign survey"
+      }
+    }
+  ],
+  "action": [
+    {
+      "title": "Administer MCV, 9 months–14 years",
+      "definitionCanonical": "https://fhir.icr.unicef.org/ActivityDefinition/example-mcv-activity"
+    }
+  ]
 }
 ```
 
@@ -276,7 +294,50 @@ One subject per CarePlan; as many CarePlans as the campaign has nested scopes, l
 **The campaign as FHIR/JSON — umbrella + round.** Two `ICRCampaign` (CarePlan) instances from the scenario. First the **national umbrella** (the microplan shell):
 
 ```json
-{ "resourceType": "CarePlan", "id": "example-mr-sia-national", "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] }, "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"], "status": "active", "intent": "plan", "category": [{ "coding": [{ "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type", "code": "vaccination-sia" }] }], "subject": { "reference": "Group/example-target-population-national" }, "period": { "start": "2026-06-15", "end": "2026-12-18" }, "addresses": [{ "display": "Measles and rubella" }], "extension": [{ "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator", "valueReference": { "reference": "Group/example-target-population-national" } }] }
+{
+  "resourceType": "CarePlan",
+  "id": "example-mr-sia-national",
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"
+    ]
+  },
+  "instantiatesCanonical": [
+    "https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"
+  ],
+  "status": "active",
+  "intent": "plan",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+          "code": "vaccination-sia"
+        }
+      ]
+    }
+  ],
+  "subject": {
+    "reference": "Group/example-target-population-national"
+  },
+  "period": {
+    "start": "2026-06-15",
+    "end": "2026-12-18"
+  },
+  "addresses": [
+    {
+      "display": "Measles and rubella"
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
+      "valueReference": {
+        "reference": "Group/example-target-population-national"
+      }
+    }
+  ]
+}
 ```
 
 Then the **Kambia June round**, a child execution of that umbrella:
@@ -285,21 +346,54 @@ Then the **Kambia June round**, a child execution of that umbrella:
 {
   "resourceType": "CarePlan",
   "id": "example-mr-sia-2026",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] },
-  "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"],
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"
+    ]
+  },
+  "instantiatesCanonical": [
+    "https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"
+  ],
   "status": "completed",
   "intent": "order",
-  "category": [{ "coding": [{
-    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
-    "code": "vaccination-sia"
-  }] }],
-  "subject": { "reference": "Group/example-target-population" },
-  "period": { "start": "2026-06-15", "end": "2026-06-26" },
-  "partOf": [{ "reference": "CarePlan/example-mr-sia-national" }],
-  "addresses": [{ "display": "Measles and rubella" }],
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+          "code": "vaccination-sia"
+        }
+      ]
+    }
+  ],
+  "subject": {
+    "reference": "Group/example-target-population"
+  },
+  "period": {
+    "start": "2026-06-15",
+    "end": "2026-06-26"
+  },
+  "partOf": [
+    {
+      "reference": "CarePlan/example-mr-sia-national"
+    }
+  ],
+  "addresses": [
+    {
+      "display": "Measles and rubella"
+    }
+  ],
   "activity": [
-    { "reference": { "reference": "Task/example-site-session-task" } },
-    { "reference": { "reference": "Task/example-mopup-task" } }
+    {
+      "reference": {
+        "reference": "Task/example-site-session-task"
+      }
+    },
+    {
+      "reference": {
+        "reference": "Task/example-mopup-task"
+      }
+    }
   ],
   "extension": [
     {
@@ -308,11 +402,15 @@ Then the **Kambia June round**, a child execution of that umbrella:
     },
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/target-geography",
-      "valueReference": { "reference": "Location/example-district" }
+      "valueReference": {
+        "reference": "Location/example-district"
+      }
     },
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
-      "valueReference": { "reference": "Group/example-target-population" }
+      "valueReference": {
+        "reference": "Group/example-target-population"
+      }
     }
   ]
 }
@@ -363,28 +461,57 @@ _A discrete work type within a campaign — "administer albendazole to children 
 {
   "resourceType": "ActivityDefinition",
   "id": "example-mcv-activity",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignActivity"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignActivity"
+    ]
+  },
   "status": "active",
   "name": "AdministerMCV",
   "title": "Administer MCV, 9 months–14 years",
   "kind": "Task",
-  "code": { "text": "Vaccinate — measles–rubella–containing vaccine" },
-  "productCodeableConcept": {
-    "coding": [{ "system": "http://hl7.org/fhir/sid/cvx", "code": "05", "display": "measles virus vaccine" }]
+  "code": {
+    "text": "Vaccinate — measles–rubella–containing vaccine"
   },
-  "dosage": [{
-    "route": { "text": "subcutaneous" },
-    "doseAndRate": [{ "doseQuantity": {
-      "value": 0.5, "unit": "mL", "system": "http://unitsofmeasure.org", "code": "mL"
-    } }]
-  }],
-  "extension": [{
-    "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
-    "valueCodeableConcept": { "coding": [{
-      "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
-      "code": "fixed-post"
-    }] }
-  }]
+  "productCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/cvx",
+        "code": "05",
+        "display": "measles virus vaccine"
+      }
+    ]
+  },
+  "dosage": [
+    {
+      "route": {
+        "text": "subcutaneous"
+      },
+      "doseAndRate": [
+        {
+          "doseQuantity": {
+            "value": 0.5,
+            "unit": "mL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mL"
+          }
+        }
+      ]
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "code": "fixed-post"
+          }
+        ]
+      }
+    }
+  ]
 }
 ```
 
@@ -421,41 +548,81 @@ _The assignable, trackable operational unit of work — one Task per site-sessio
 {
   "resourceType": "Task",
   "id": "example-mopup-task",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignTask"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignTask"
+    ]
+  },
   "status": "completed",
   "intent": "order",
-  "code": { "text": "Administer MCV — house-to-house mop-up visit" },
-  "focus": { "reference": "Group/example-household" },
-  "for": { "reference": "Group/example-household" },
-  "location": { "reference": "Location/example-dwelling" },
-  "executionPeriod": { "start": "2026-06-24", "end": "2026-06-24" },
-  "owner": { "display": "CDD team 7, Rokupr" },
-  "output": [{
-    "type": { "text": "Immunization administered" },
-    "valueReference": { "reference": "Immunization/example-mcv-dose" }
-  }],
+  "code": {
+    "text": "Administer MCV — house-to-house mop-up visit"
+  },
+  "focus": {
+    "reference": "Group/example-household"
+  },
+  "for": {
+    "reference": "Group/example-household"
+  },
+  "location": {
+    "reference": "Location/example-dwelling"
+  },
+  "executionPeriod": {
+    "start": "2026-06-24",
+    "end": "2026-06-24"
+  },
+  "owner": {
+    "display": "CDD team 7, Rokupr"
+  },
+  "output": [
+    {
+      "type": {
+        "text": "Immunization administered"
+      },
+      "valueReference": {
+        "reference": "Immunization/example-mcv-dose"
+      }
+    }
+  ],
   "extension": [
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
-      "valueCodeableConcept": { "coding": [{
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
-        "code": "house-to-house"
-      }] }
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "code": "house-to-house"
+          }
+        ]
+      }
     },
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/task-origin",
       "valueCode": "field-registered"
     },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-present", "valueUnsignedInt": 2 },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-absent", "valueUnsignedInt": 1 },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-present",
+      "valueUnsignedInt": 2
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-absent",
+      "valueUnsignedInt": 1
+    },
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/missed-reason",
-      "valueCodeableConcept": { "coding": [{
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason",
-        "code": "absent"
-      }] }
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason",
+            "code": "absent"
+          }
+        ]
+      }
     },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/finger-marked", "valueBoolean": true }
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/finger-marked",
+      "valueBoolean": true
+    }
   ]
 }
 ```
@@ -491,12 +658,46 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 | `quantity` | MS — "Group size where individuals are not enumerated" |
 | `extension[groupLocation]` | **1..1 MS** → `Reference(ICRLocation)` — **residence/base, not service point**: the dwelling (household), settlement/community point (community), or school (school-cohort) |
 
-**Rationale.** Separating _who_ (Group) from _where_ (Location) means the location's identity (GERS building/place ID) survives group composition changes, and the group survives re-mapping. The second-pass generalization (was: ICRHousehold) reflects that households and communities are the _same pattern at two scales_ — one profile with a coded kind beats two near-identical profiles, and it lets `Task.focus` and `MedicationAdministration.subject` be narrowed to ICR-conformant targets; `school-cohort` (third pass) demonstrates the kind list extends to non-obvious delivery units (nomadic groups, camp populations) as country demand appears. `quantity` covers the common case where campaigns count members without registering individuals — person-level `member` entries are optional by design. **Why `member.entity` is Patient (re c14/c83):** FHIR has four person-shaped resources — **Patient** (anyone who might receive a service: despite the name, a healthy child getting a measles dose or a household member receiving a net is a Patient, and it is the resource every clinical/delivery record points at — `Immunization.patient` can _only_ be a Patient), **RelatedPerson** (a caregiver in relation to a patient), **Practitioner** (workers — CDDs, vaccinators), and **Person** (an identity-linkage resource matching one human across systems — plumbing, not a care-record subject). So every enumerated household member is a Patient (the standard household-registration pattern, as in OpenSRP). Locking `member.entity` to Patient therefore excludes Practitioner/Device/etc. — **not** RelatedPerson, which R4 `Group.member` never permitted in the first place (RelatedPerson membership only arrives in R5). `groupLocation` **is residence, not service point**: where service actually happened is `Task.location` and the delivery event's own `location`. A household that walks to a village distribution center keeps its dwelling here unchanged — the Task records the center.
+**Rationale.** Separating _who_ (Group) from _where_ (Location) means the location's identity (GERS building/place ID) survives group composition changes, and the group survives re-mapping. The second-pass generalization (was: ICRHousehold) reflects that households and communities are the _same pattern at two scales_ — one profile with a coded kind beats two near-identical profiles, and it lets `Task.focus` and `MedicationAdministration.subject` be narrowed to ICR-conformant targets; `school-cohort` (third pass) demonstrates the kind list extends to non-obvious delivery units (nomadic groups, camp populations) as country demand appears. `quantity` covers the common case where campaigns count members without registering individuals — person-level `member` entries are optional by design. **Why** `member.entity` **is Patient (re c14/c83):** FHIR has four person-shaped resources — **Patient** (anyone who might receive a service: despite the name, a healthy child getting a measles dose or a household member receiving a net is a Patient, and it is the resource every clinical/delivery record points at — `Immunization.patient` can _only_ be a Patient), **RelatedPerson** (a caregiver in relation to a patient), **Practitioner** (workers — CDDs, vaccinators), and **Person** (an identity-linkage resource matching one human across systems — plumbing, not a care-record subject). So every enumerated household member is a Patient (the standard household-registration pattern, as in OpenSRP). Locking `member.entity` to Patient therefore excludes Practitioner/Device/etc. — **not** RelatedPerson, which R4 `Group.member` never permitted in the first place (RelatedPerson membership only arrives in R5). `groupLocation` **is residence, not service point**: where service actually happened is `Task.location` and the delivery event's own `location`. A household that walks to a village distribution center keeps its dwelling here unchanged — the Task records the center.
 
 **The delivery unit as FHIR/JSON.** `example-household` — the Type-B unit a mop-up Task focuses on:
 
 ```json
-{ "resourceType": "Group", "id": "example-household", "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"] }, "type": "person", "actual": true, "code": { "coding": [{ "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind", "code": "household" }] }, "quantity": 6, "member": [{ "entity": { "reference": "Patient/example-child" } }], "extension": [{ "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location", "valueReference": { "reference": "Location/example-dwelling" } }] }
+{
+  "resourceType": "Group",
+  "id": "example-household",
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"
+    ]
+  },
+  "type": "person",
+  "actual": true,
+  "code": {
+    "coding": [
+      {
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind",
+        "code": "household"
+      }
+    ]
+  },
+  "quantity": 6,
+  "member": [
+    {
+      "entity": {
+        "reference": "Patient/example-child"
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location",
+      "valueReference": {
+        "reference": "Location/example-dwelling"
+      }
+    }
+  ]
+}
 ```
 
 Annotated: `code` is the **required** group-kind (`household` here; `community` or `school-cohort` for the other delivery units, same profile); `quantity` 6 is the head-count even though only one `member` (the child, `Patient/example-child`, §7.1) is individually enumerated; `group-location` is the dwelling Location (§6.3) — **residence, not service point** (where service actually happened is the Task's `location`). Swap `code` to `community` and point `group-location` at a settlement and this same JSON becomes the Type-C community delivery unit.⁠
@@ -541,28 +742,50 @@ The first two are **the same geography disagreeing by ~7%**: WorldPop says 48k, 
 {
   "resourceType": "Group",
   "id": "example-target-population",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+    ]
+  },
   "type": "person",
   "actual": false,
   "quantity": 48250,
-  "characteristic": [{
-    "code": { "coding": [{
-      "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-characteristic",
-      "code": "geography"
-    }] },
-    "valueReference": { "reference": "Location/example-district" },
-    "exclude": false
-  }],
+  "characteristic": [
+    {
+      "code": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-characteristic",
+            "code": "geography"
+          }
+        ]
+      },
+      "valueReference": {
+        "reference": "Location/example-district"
+      },
+      "exclude": false
+    }
+  ],
   "extension": [
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source",
-      "valueCodeableConcept": { "coding": [{
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source",
-        "code": "worldpop"
-      }] }
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source",
+            "code": "worldpop"
+          }
+        ]
+      }
     },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/estimate-date", "valueDate": "2026-01-15" },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/is-planning-denominator", "valueBoolean": true }
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/estimate-date",
+      "valueDate": "2026-01-15"
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/is-planning-denominator",
+      "valueBoolean": true
+    }
   ]
 }
 ```
@@ -613,10 +836,15 @@ Reading it: every box on the solid `partOf` spine is an ICRLocation pointing at 
 {==**Rationale.** Design decision #8. Open slicing means national location codes coexist with GERS/P-codes without profile changes. The GERS `^short` carries an operationally crucial instruction: **record the Overture release version alongside the ID** (GERS IDs are stable but the registry versions).==}{>>We sohuld be able to assign multiple external ids to locations.  Ideally GERS  Id can be the unique identifier.  the system will need to generate an internal unique location id too.  In many cases new locations will not have a GERS ID.  The system will be built to try and update these new locations with a GERS ID after they have been added in an async way.<<}{id="c16" by="mberg" at="2026-06-12T20:50:18.299Z"}{>>The profile already supports every piece of that workflow: (1) multiple external IDs — identifier slicing is OPEN, so any number of identifier systems coexist (GERS, P-code, national facility code, project codes); (2) internal unique ID — every FHIR resource has a server-assigned Resource.id, so that's free; (3) GERS as 0..1 not 1..1 — precisely because new/unmapped locations won't have one at creation; (4) async enrichment — adding a GERS ID later is just an update to the Location appending the gers identifier slice, with FHIR versioning + Provenance recording when/how it was matched. So nothing blocks the build-flow you describe. What the IG does NOT yet say is that this async-enrichment loop is the EXPECTED lifecycle (create unmatched → conflate → backfill GERS — the §9.1 OSM→Overture loop, operationalized). I'll add that as explicit implementer guidance in the next IG pass, plus one open design point it raises: should an enrichment job also be allowed to MERGE two Locations it discovers are the same place (ties into the dedup open question #9)?<<}{id="c36" by="claude" at="2026-06-12T21:03:09.000Z" re="c16"}{>>APPLIED in v0.4.0: the IG background page now states the async-enrichment lifecycle as the EXPECTED workflow ("Location identity lifecycle: GERS enrichment" section, commit 4b49ab0) — create with internal id + national codes → async match against Overture (directly or via the OSM→Overture loop) → append the GERS identifier to the same resource with versioning + Provenance, recording the Overture release version — and parks the merge-on-enrichment question alongside the record-linkage open question.<<}{id="c59" by="claude" at="2026-06-13T01:31:20.000Z" re="c36"} The boundary extension mirrors the R5 standard extension on R4 (working doc §10 q6). {==The second-pass additions give **"operational ≠ administrative geography" a real mechanism** (working-doc comment c74): `partOf` can express only _one_ hierarchy, so a supervisory/operational area is typed via the new location-type codes and linked to the admin units it covers via `overlays-admin-unit` — that is what makes it linkable-but-distinct rather than just distinct.==}{>>I don't understand this explain it further.<<}{id="c17" by="mberg" at="2026-06-12T20:53:01.299Z"}{>>Plain version. The admin hierarchy is the official tree: country → district → ward, expressed by each Location's partOf pointing at its single parent. Campaign programs draw their OWN areas that don't respect that tree — a polio supervision zone might cover all of ward 3 plus half of ward 4. Problem: partOf gives a location exactly one parent, so the zone can't sit INSIDE the admin tree without lying about the hierarchy (which ward would be its parent?). Old state of the IG: we said "keep operational areas distinct" but gave you no way to relate them to admin units at all — distinct but UNLINKABLE, so you couldn't answer "which districts does zone 2's data roll up into?". The fix: the zone is its own Location, typed supervisory-area, NOT in any partOf chain, carrying an overlays-admin-unit extension that points at the admin unit(s) it covers (can be several). Concrete: example-supervisory-area "Kambia supervision zone 2" overlays Kambia District — so zone-level tallies can be related to district reporting, while the official hierarchy stays clean. That's all "linkable-but-distinct" means: distinct = not in the admin tree; linkable = the overlays pointer.<<}{id="c37" by="claude" at="2026-06-12T21:03:09.000Z" re="c17"}
 
 **Identity & hierarchy refinements (v0.7.0, from your Jun 15 review).**
+
 - **Admin units must carry an identifier, and it needn't be a P-code (c88).** The identifier slicing stays open, but is now named to make the country's options first-class: alongside `gers` and `pcode`, a `national` slice holds the implementer's own admin code (many countries key on a national code, not a P-code) and an `iso` slice holds ISO 3166-1/-2 codes for the upper levels (admin 0–3). A new invariant (`icr-loc-admin-id`) requires **at least one** identifier — any system — when `type = admin-unit`, so an administrative area can't exist with no stable code, while sites and dwellings stay loose.
-- **`partOf` typing is an open decision (c87).** Constraining `partOf` to `Reference(ICRLocation)` keeps the whole tree ICR-conformant (clean, fully queryable) but means you can't hang an ICR site directly under a Location from a pre-existing national MFL/GIS without re-profiling it. The relief valve is to widen `partOf` to `Reference(Location)`. Left as a project decision — it pairs with the c88 national-code work, since both govern how ICR coexists with existing registries.
+  
+- `partOf` **typing is an open decision (c87).** Constraining `partOf` to `Reference(ICRLocation)` keeps the whole tree ICR-conformant (clean, fully queryable) but means you can't hang an ICR site directly under a Location from a pre-existing national MFL/GIS without re-profiling it. The relief valve is to widen `partOf` to `Reference(Location)`. Left as a project decision — it pairs with the c88 national-code work, since both govern how ICR coexists with existing registries.
+  
 - **Operational areas must declare what they overlay (c90).** The `overlays-admin-unit` extension is now required `1..*` when `type` is `supervisory-area`/`operational-area` (invariant `icr-loc-overlays`): an operational area that overlays nothing can't be rolled up to any admin reporting unit, so its data would float — the invariant forbids that.
-- **A breadcrumb to tame deep `partOf` (c89).** A proposed, **server-maintained** `location-ancestors` extension denormalizes the chain into per-level pointers (`adm0`…`adm3+`), so "everything in Kambia District" is one indexed search instead of N `partOf` hops on a mobile client. It is derived data — re-computed on write and on re-parenting, never hand-authored out of sync with `partOf`.
+  
+- **A breadcrumb to tame deep** `partOf` **(c89).** A proposed, **server-maintained** `location-ancestors` extension denormalizes the chain into per-level pointers (`adm0`…`adm3+`), so "everything in Kambia District" is one indexed search instead of N `partOf` hops on a mobile client. It is derived data — re-computed on write and on re-parenting, never hand-authored out of sync with `partOf`.
+  
 
 **The location as FHIR/JSON.** `example-district` — Kambia District, showing the multi-system identity and the admin hierarchy:
 
@@ -624,21 +852,44 @@ Reading it: every box on the solid `partOf` spine is an ICRLocation pointing at 
 {
   "resourceType": "Location",
   "id": "example-district",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRLocation"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRLocation"
+    ]
+  },
   "status": "active",
   "name": "Kambia District",
-  "physicalType": { "coding": [{
-    "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
-    "code": "jdn", "display": "Jurisdiction"
-  }] },
-  "type": [{ "coding": [{
-    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-location-type",
-    "code": "admin-unit"
-  }] }],
-  "partOf": { "reference": "Location/example-country" },
+  "physicalType": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+        "code": "jdn",
+        "display": "Jurisdiction"
+      }
+    ]
+  },
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "https://fhir.icr.unicef.org/CodeSystem/icr-location-type",
+          "code": "admin-unit"
+        }
+      ]
+    }
+  ],
+  "partOf": {
+    "reference": "Location/example-country"
+  },
   "identifier": [
-    { "system": "https://fhir.icr.unicef.org/identifiers/pcode", "value": "SL0201" },
-    { "system": "https://fhir.icr.unicef.org/identifiers/overture-gers", "value": "overture-division-kambia-example" }
+    {
+      "system": "https://fhir.icr.unicef.org/identifiers/pcode",
+      "value": "SL0201"
+    },
+    {
+      "system": "https://fhir.icr.unicef.org/identifiers/overture-gers",
+      "value": "overture-division-kambia-example"
+    }
   ]
 }
 ```
@@ -679,20 +930,50 @@ All three share two design constants: a **mandatory** `record-origin` **extensio
 {
   "resourceType": "Immunization",
   "id": "example-mcv-dose",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRImmunizationEvent"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRImmunizationEvent"
+    ]
+  },
   "status": "completed",
-  "vaccineCode": { "coding": [{ "system": "http://hl7.org/fhir/sid/cvx", "code": "05", "display": "measles virus vaccine" }] },
-  "patient": { "reference": "Patient/example-child" },
+  "vaccineCode": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/cvx",
+        "code": "05",
+        "display": "measles virus vaccine"
+      }
+    ]
+  },
+  "patient": {
+    "reference": "Patient/example-child"
+  },
   "occurrenceDateTime": "2026-06-24",
-  "location": { "reference": "Location/example-dwelling" },
+  "location": {
+    "reference": "Location/example-dwelling"
+  },
   "lotNumber": "MRV-2026-0412",
-  "manufacturer": { "display": "Serum Institute of India" },
-  "performer": [{ "actor": { "display": "CDD team 7, Rokupr" } }],
-  "protocolApplied": [{ "doseNumberPositiveInt": 1 }],
-  "extension": [{
-    "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
-    "valueCode": "campaign"
-  }]
+  "manufacturer": {
+    "display": "Serum Institute of India"
+  },
+  "performer": [
+    {
+      "actor": {
+        "display": "CDD team 7, Rokupr"
+      }
+    }
+  ],
+  "protocolApplied": [
+    {
+      "doseNumberPositiveInt": 1
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
+      "valueCode": "campaign"
+    }
+  ]
 }
 ```
 
@@ -715,23 +996,48 @@ Annotated: `patient` is the **person-level capture** — the same `example-child
 {
   "resourceType": "MedicationAdministration",
   "id": "example-albendazole-administration",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRMedicationAdministration"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRMedicationAdministration"
+    ]
+  },
   "status": "completed",
   "medicationCodeableConcept": {
-    "coding": [{ "system": "http://www.whocc.no/atc", "code": "P02CA03", "display": "albendazole" }]
+    "coding": [
+      {
+        "system": "http://www.whocc.no/atc",
+        "code": "P02CA03",
+        "display": "albendazole"
+      }
+    ]
   },
-  "subject": { "reference": "Patient/example-child" },
+  "subject": {
+    "reference": "Patient/example-child"
+  },
   "effectiveDateTime": "2026-06-24",
   "dosage": {
     "text": "1 tablet (400 mg), dose-pole band B",
-    "dose": { "value": 400, "unit": "mg", "system": "http://unitsofmeasure.org", "code": "mg" }
+    "dose": {
+      "value": 400,
+      "unit": "mg",
+      "system": "http://unitsofmeasure.org",
+      "code": "mg"
+    }
   },
   "supportingInformation": [
-    { "display": "Dose-pole height-band Observation (band B) — display-only; the scenario ships no Observation instance yet" }
+    {
+      "display": "Dose-pole height-band Observation (band B) — display-only; the scenario ships no Observation instance yet"
+    }
   ],
   "extension": [
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin", "valueCode": "campaign" },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/directly-observed-consumption", "valueBoolean": true }
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
+      "valueCode": "campaign"
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/directly-observed-consumption",
+      "valueBoolean": true
+    }
   ]
 }
 ```
@@ -774,7 +1080,7 @@ _Administrative and independently-measured coverage are distinct lineages of the
 
 **Rationale.** The "never merge" rule is enforced _structurally_: the admin profile pins `coverageSource` to the single code `administrative`; the survey profile re-binds the same extension to a value set that _excludes_ `administrative`. A resource can't be both. Admin coverage additionally carries its denominator's provenance (because admin coverage is only as good as its denominator). {==**Lineage is now required (1..1) on both coverage profiles** (third pass): coverage reports are where the realtime/reconciled distinction has teeth — preliminary in-campaign figures vs final close-out figures must be machine-distinguishable, including preliminary-vs-final survey results. Elsewhere (CarePlan, Task) the flag stays optional with a documented default: **absent ⇒ realtime**.==}{>>ADDED in v0.4.0 (your c20): both fixes from the c40 thread — documented default + 1..1 on coverage MeasureReports (commit 4b49ab0).<<}{id="c60" by="claude" at="2026-06-13T01:31:20.000Z" re="c40"}
 
-**What `dataLineage` actually means — a worked example (re c80).** The flag marks _which data stream_ a record belongs to, not lineage in the provenance/audit sense: it separates the **live in-field feed** from the **corrected close-out figures**. On campaign night, Kambia's admin-coverage MeasureReport is published with `realtime` — numerator 47,766 from the day's tally sheets, denominator from the planning estimate, score ~99% — and it feeds the live dashboard. Two weeks later, after stock reconciliation and data cleaning (duplicate doses removed, late tallies added), the **final** close-out MeasureReport for the same round carries `reconciled`, and _that_ is the figure exported to the WHO JAP. Same conceptual quantity, two records, distinguished only by this flag — so a "final figures only" query (`dataLineage = reconciled`) cleanly drops the preliminary one. This is exactly why the flag is **1..1 on the coverage profiles** (where the stakes are highest) while staying optional with the `absent ⇒ realtime` default elsewhere.
+**What** `dataLineage` **actually means — a worked example (re c80).** The flag marks _which data stream_ a record belongs to, not lineage in the provenance/audit sense: it separates the **live in-field feed** from the **corrected close-out figures**. On campaign night, Kambia's admin-coverage MeasureReport is published with `realtime` — numerator 47,766 from the day's tally sheets, denominator from the planning estimate, score ~99% — and it feeds the live dashboard. Two weeks later, after stock reconciliation and data cleaning (duplicate doses removed, late tallies added), the **final** close-out MeasureReport for the same round carries `reconciled`, and _that_ is the figure exported to the WHO JAP. Same conceptual quantity, two records, distinguished only by this flag — so a "final figures only" query (`dataLineage = reconciled`) cleanly drops the preliminary one. This is exactly why the flag is **1..1 on the coverage profiles** (where the stakes are highest) while staying optional with the `absent ⇒ realtime` default elsewhere.
 
 **The coverage pair as FHIR/JSON — 99% vs 76%.** The two MeasureReports for the **same** Kambia round — the structural "never merge":
 
@@ -782,23 +1088,72 @@ _Administrative and independently-measured coverage are distinct lineages of the
 {
   "resourceType": "MeasureReport",
   "id": "example-admin-coverage",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+    ]
+  },
   "status": "complete",
   "type": "summary",
   "measure": "https://fhir.icr.unicef.org/Measure/icr-admin-coverage",
-  "reporter": { "reference": "Location/example-district" },
-  "period": { "start": "2026-06-15", "end": "2026-06-26" },
-  "group": [{
-    "measureScore": { "value": 0.99 },
-    "population": [
-      { "code": { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/measure-population", "code": "numerator" }] }, "count": 47766 },
-      { "code": { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/measure-population", "code": "denominator" }] }, "count": 48250 }
-    ]
-  }],
+  "reporter": {
+    "reference": "Location/example-district"
+  },
+  "period": {
+    "start": "2026-06-15",
+    "end": "2026-06-26"
+  },
+  "group": [
+    {
+      "measureScore": {
+        "value": 0.99
+      },
+      "population": [
+        {
+          "code": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "code": "numerator"
+              }
+            ]
+          },
+          "count": 47766
+        },
+        {
+          "code": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "code": "denominator"
+              }
+            ]
+          },
+          "count": 48250
+        }
+      ]
+    }
+  ],
   "extension": [
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source", "valueCode": "administrative" },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source", "valueCodeableConcept": { "coding": [{ "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source", "code": "worldpop" }] } },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled", "valueCode": "reconciled" }
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source",
+      "valueCode": "administrative"
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source",
+            "code": "worldpop"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled",
+      "valueCode": "reconciled"
+    }
   ]
 }
 ```
@@ -807,17 +1162,41 @@ _Administrative and independently-measured coverage are distinct lineages of the
 {
   "resourceType": "MeasureReport",
   "id": "example-survey-coverage",
-  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRSurveyCoverage"] },
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRSurveyCoverage"
+    ]
+  },
   "status": "complete",
   "type": "summary",
   "measure": "https://fhir.icr.unicef.org/Measure/icr-survey-coverage",
-  "reporter": { "reference": "Location/example-district" },
-  "period": { "start": "2026-07-06", "end": "2026-07-12" },
-  "group": [{ "measureScore": { "value": 0.76 } }],
+  "reporter": {
+    "reference": "Location/example-district"
+  },
+  "period": {
+    "start": "2026-07-06",
+    "end": "2026-07-12"
+  },
+  "group": [
+    {
+      "measureScore": {
+        "value": 0.76
+      }
+    }
+  ],
   "extension": [
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source", "valueCode": "survey" },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/sample-design", "valueString": "WHO 30×10 cluster survey, post-campaign" },
-    { "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled", "valueCode": "reconciled" }
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source",
+      "valueCode": "survey"
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/sample-design",
+      "valueString": "WHO 30×10 cluster survey, post-campaign"
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled",
+      "valueCode": "reconciled"
+    }
   ]
 }
 ```
@@ -1087,7 +1466,7 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
   
 - ~~Plan per sub-area / planned-vs-executed~~ — explained: each sub-area is its own round CarePlan, plan→order lifecycle, `planningDenominator` is the retained planned figure, history/Provenance for the rest; **no separate snapshot** per your c112 (§5.2).
   
-- ~~What `dataLineage` means~~ — realtime-vs-reconciled worked example added (c80, §8).
+- ~~What~~ `dataLineage` ~~means~~ — realtime-vs-reconciled worked example added (c80, §8).
   
 - ~~Patient vs RelatedPerson/Person~~ — folded into §6.1; q2 wording corrected (c83).
   
@@ -1099,7 +1478,7 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
   
 - ~~Operational-area overlays~~ — `icr-loc-overlays` invariant (1..* on supervisory/operational-area) (c90, §6.3).
   
-- ~~Deep-`partOf` performance~~ — proposed server-maintained `location-ancestors` breadcrumb extension (c89, §6.3/§9).
+- ~~Deep-~~`partOf` ~~performance~~ — proposed server-maintained `location-ancestors` breadcrumb extension (c89, §6.3/§9).
   
 - ~~MDA example~~ — inline albendazole MedicationAdministration JSON added to §7.2 (c91).
   
