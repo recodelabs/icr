@@ -335,7 +335,7 @@ The first two are **the same geography disagreeing by ~7%**: GRID3 says 48k, the
 >   
 > 3. `confidence` as free string — fine for v0.1; consider coded confidence later.
 >   
-### 6.3 ICRLocation — `Location`
+### 6.3 ICRLocation — {==`Location`==}{>>Did you see this?<<}{id="c65" by="mberg" at="2026-06-15T15:41:11.487Z"}
 _The most-customized ICR resource: nested administrative hierarchy (6+ levels), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases._ (working doc §7.7, §9)
 
 | Element | Constraint |
