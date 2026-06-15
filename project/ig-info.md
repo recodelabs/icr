@@ -11,7 +11,7 @@ tags: [icr, fhir, ig, review]
 
 > [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to** `ig/`; those are flagged in-thread and in the v0.7.0 changelog note below.
 
-> [!tip] v0.9.0 — field-evidence synthesis folded in as §17 (a prioritized list of *proposed* IG additions for a subsequent round) New **§17. Research-validated proposed additions** rolls up the eight-document global-health field-evidence synthesis ([`_SYNTHESIS-research-vs-ICR-IG.md`](research/_SYNTHESIS-research-vs-ICR-IG.md): WHO SIA/RED/measles guides, the cluster-survey manual, GTFCC OCV, NTD-MDA, WHO EYE/yellow-fever, and geo-microplanning) into one decision-ready change-list. The headline: the evidence **validates the IG's spine** (plan→order lifecycle, one-Task-per-visit, the campaign/routine `record-origin` firewall, denominator-with-provenance, the never-merged coverage lineages, and operational-geography-overlays-admin — the standout win) and surfaces a **prioritized set of additions** — the highest-priority themes being a **programme-semantics quartet** (activity/SIA-type, coverage-target-as-data, stockpile-source, dosing-regimen) and a **coverage-model overhaul** (denominator-type + unit axes, structured `sample-design`, `Measure` bindings, a multi-dose "fully-immunized" measure). **Everything in §17 is *proposed* — like the v0.7.0 items, nothing here is committed to** `ig/`; the actual IG/FSH edits are deferred to a subsequent round. §14 (Known gaps) and §15 (checklist) now point at §17. This pass adds the synthesis section only — no profile/FSH change and no change to the IG-as-committed prose.
+> [!tip] v0.9.0 — field-evidence synthesis folded in as §17 (a prioritized list of *proposed* IG additions for a subsequent round) New **§17. Research-validated proposed additions** rolls up the eight-document global-health field-evidence synthesis ([`_SYNTHESIS-research-vs-ICR-IG.md`](research/_SYNTHESIS-research-vs-ICR-IG.md): WHO SIA/RED/measles guides, the cluster-survey manual, GTFCC OCV, NTD-MDA, WHO EYE/yellow-fever, and geo-microplanning) into one decision-ready change-list. The headline: the evidence **validates the IG's spine** (plan→order lifecycle, one-Task-per-visit, the campaign/routine `record-origin` firewall, denominator-with-provenance, the never-merged coverage lineages, and operational-geography-overlays-admin — the standout win) and surfaces a **prioritized set of additions** — the highest-priority themes being a **programme-semantics quartet** (activity/SIA-type, coverage-target-as-data, stockpile-source, dosing-regimen) and a **coverage-model overhaul** (denominator-type + unit axes, structured `sample-design`, `Measure` bindings, a multi-dose "fully-immunized" measure). **Everything in §17 is *proposed* — like the v0.7.0 items, nothing here is committed to** `ig/`; the actual IG/FSH edits are deferred to a subsequent round. §14 (Known gaps) and §15 (checklist) point at §17, and each affected section (§4, §5.1–5.3, §6.2/§6.3, §7, §8, §9, §10) now carries a short inline **"[!warning] Proposed (§17)"** callout linking back, so the proposal is visible where the artifact is described. This pass adds the synthesis section + cross-reference callouts only — no profile/FSH change and no change to the IG-as-committed prose.
 
 > [!tip] v0.8.0 — section Question-blocks pruned to OPEN items only; resolved questions archived to §16 Each section's "[!warning] Questions" callout now lists **only genuinely-open questions**; every question already addressed/resolved was moved to the new **§16. Closed questions — archive** (grouped by section) so nothing is lost. Open decisions that still carry live comment threads stay in place (§2 WHO SMART alignment c129; §6.3 Overture release-version c86 and `partOf`-typing c87, plus the addressed-but-awaiting-confirm admin-identifier c88 and breadcrumb c89). This is a documentation-organization pass — no profile/FSH change.
 
@@ -105,6 +105,8 @@ Three groups:
 ## 4. {==The architecture at a glance==}{>>I think CareTeams are missing from this no?<<}{id="c131" by="mberg" at="2026-06-15T21:11:06.668Z"}{>>From the §4 diagram, yes — but not from the model: `ICRCampaign.careTeam` is a **MS** element (see the §5.2 element table), so a campaign already points at FHIR CareTeam(s). The §4 graphic is just the simplified resource-to-resource spine; it also omits `addresses` and several extensions to stay readable. That said, you've surfaced two **real gaps** worth tracking: (1) there is **no ICRCareTeam profile and no example CareTeam instance** yet — `careTeam` is referenced but unprofiled, and team identity in the examples is **display-only** (e.g. `Task.owner` = "CDD team 7, Rokupr" is a plain display string, not a CareTeam reference); (2) the worker/team model (vaccination teams, CDD teams, supervisors, and their link to supervisory-areas §6.3) isn't fleshed out. If team-level reporting matters — team productivity, supervisor assignment, who-worked-which-zone — we should add an ICRCareTeam profile, wire `Task.owner`/`Task.performer` + `ICRCampaign.careTeam` to it, ship an example, and add CareTeam to the §4 diagram. Want me to add that as an open question and sketch the profile in a rewrite?<<}{id="c134" by="agent" at="2026-06-15T21:30:00.000Z" re="c131"}{>>reporting matters the supervisor is a key piece of delivery too and is often the one doing the reporting.<<}{id="c136" by="mberg" at="2026-06-15T21:35:59.221Z" re="c134"}
 FHIR has no native `Campaign` resource, so the IG profiles core will be based on the CarePlan resource.
 
+> [!warning] Proposed (§17.3 — for a subsequent IG round) A **Team / CareTeam + supervisor** profile: `careTeam` is referenced but unprofiled and team/supervisor identity in the examples is display-only (c131/c136). The field-evidence synthesis also flags supervision/QA as a cross-cutting gap — see §17.
+
 ```mermaid
 graph TD
     PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/><i>the reusable template</i>"]
@@ -144,6 +146,8 @@ Reading order for a reviewer: protocol → campaign → task → delivery events
 ## 5. Campaign-architecture profiles (`profiles-campaign.fsh`)
 ### 5.1 ICRCampaignProtocol — `PlanDefinition`
 _The reusable, version-controlled template for a campaign type — what a measles SIA_ **_is_** _(products, age bands, activity sequence, coverage goals), instantiated by every execution in every country._ (working doc §7.1)
+
+> [!warning] Proposed (§17.2 P1 — for a subsequent IG round) An **`activity-type` / `sia-type`** coded axis (routine / pmvc / catch-up / follow-up / mop-up / reactive), orthogonal to `campaign-type`; and a **`coverage-target`** element to store the programme threshold (≥95% SIA / ≥65% LF / EYE 50-60-80%), not just achieved coverage. See §17.
 
 | Element | Constraint |
 |---|---|
@@ -241,6 +245,8 @@ Annotated: `type` is the **required** campaign-type code (what kind of campaign 
 >   
 ### 5.2 ICRCampaign — `CarePlan` (the keystone)
 _A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via_ `partOf`_._ (working doc §7.2, §6.3)
+
+> [!warning] Proposed (§17.2 — for a subsequent IG round) The `activity-type` and `coverage-target` axes (see §5.1) also surface here on ICRCampaign; plus **round1↔round2 linkage** for OCV/multi-round campaigns (§17.2 B3). See §17.
 
 **How a campaign moves through its life (**`plan → order`**).** A campaign is born as a _microplan_ and matures into the _execution record_ of the **same** `ICRCampaign` resource — `intent` flips `plan → order`, `status` walks `draft → active → completed`, and Tasks plus coverage accumulate against it. Rounds are sibling executions under a national umbrella via `partOf`, and every one of them points at the single versioned protocol:
 
@@ -432,6 +438,8 @@ Annotated, reading the links out: `instantiatesCanonical` (**1..1**) makes both 
 >   
 ### 5.3 ICRCampaignActivity — {==`ActivityDefinition`==}{>>Woud really help to have some real examples.<<}{id="c10" by="mberg" at="2026-06-12T20:36:45.686Z"}{>>One exists (`example-mcv-activity`: "Administer MCV, 9m–14y" — kind=Task, product=CVX 05, dosage "0.5 mL subcutaneous") but agreed, one isn't enough to make the concept land. In the rewrite I'll inline a trio spanning the campaign types: (1) "Administer albendazole, 5–14y" — ATC P02CA03, dose-pole-derived tablet count (Type C MDA); (2) "Distribute 1 ITN per 2 household members" — GS1 commodity, household-level (Type B-then-A); (3) "Spray interior structure walls" — IRS, structure-level (Type B). Together with the MCV one they show the point of the layer: the protocol carries the clinical/commodity content ONCE, and thousands of Tasks instantiate it without repeating it.<<}{id="c30" by="claude" at="2026-06-12T21:03:09.000Z" re="c10"}{>>Add this to the main text during rewrite<<}{id="c46" by="mberg" at="2026-06-13T01:20:49.728Z" re="c30"}
 _A discrete work type within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households" — instantiated as ICRCampaignTask resources._ (working doc §7.3)
+
+> [!warning] Proposed (§17.2 P1 — for a subsequent IG round) A **`dosing-regimen`** axis (single-dose-lifelong / multi-dose / fractional) on the activity (and event, §7.1), needed to define "fully immunized." See §17.
 
 | Element | Constraint |
 |---|---|
@@ -705,6 +713,8 @@ Annotated: `code` is the **required** group-kind (`household` here; `community` 
 ### 6.2 ICRTargetPopulation — `Group`
 _A target-population denominator: a conceptual cohort (_`actual=false`_) with a count, eligibility characteristics, and — critically — source and date provenance. Multiple competing estimates per geography are retained; exactly one is flagged as the planning denominator._ (working doc §7.6, §4.2)
 
+> [!warning] Proposed (§17 — for a subsequent IG round) An **at-risk / eligible denominator** type to drive programme-vs-epidemiological coverage (§17.2 B1); a **population-estimation-method + source-raster version/date** so two `worldpop` estimates are distinguishable (§17.4); and a **population-vulnerability / equity** characteristic (§17.3). See §17.
+
 | Element | Constraint |
 |---|---|
 | `type` | fixed `#person` |
@@ -790,6 +800,8 @@ Annotated: `actual: false` is what makes this a _conceptual cohort_ — a denomi
 >   
 ### 6.3 ICRLocation — `Location`
 _The most-customized ICR resource: nested administrative hierarchy (6+ levels), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases._ (working doc §7.7, §9)
+
+> [!warning] Proposed (§17.4 P3 — for a subsequent IG round) Geography refinements: a **`structure` / footprint** location-type + **accessibility / travel-time**, a **georegistry-match-status** value set, and (NTD) **endemicity + TAS/impact-survey gate** on ICRLocation. The synthesis also says the GeoJSON "open question" can be closed — `location-boundary-geojson` already ships (§9). See §17.
 
 **The two hierarchies, side by side.** The `partOf` chain is the **administrative** tree (one parent each); operational geography sits **beside** it — its own Location, _not_ in the `partOf` chain, linked to the admin unit(s) it covers by `overlays-admin-unit`:
 
@@ -898,6 +910,8 @@ Annotated: `partOf` climbs the admin tree (district → `example-country`; the f
 * * *
 ## 7. Delivery-event profiles (`profiles-delivery.fsh`)
 All three share two design constants: a **mandatory** `record-origin` **extension (1..1 MS)** — campaign vs routine, so SIA doses never contaminate routine coverage analytics (working doc §4.4) — and the **Task→event link running through** `Task.output` because R4 Immunization has no `basedOn` element to point back with.
+
+> [!warning] Proposed (§17.2 P1 / §17.3 — for a subsequent IG round) An **AEFI** profile + `aefi-causal-type` VS (C1); **wastage / vial-accountability** (C2) and a **`stockpile-source`** axis (ICG / national / Gavi, A3) on ICRSupplyDelivery; and **cold-chain / stock-readiness** beyond SupplyDelivery (§17.4). See §17.
 ### 7.1 ICRImmunizationEvent — `Immunization`
 | Element | Constraint |
 |---|---|
@@ -1049,6 +1063,8 @@ Annotated, with the distinctly-MDA pieces called out: `medicationCodeableConcept
 * * *
 ## 8. Coverage profiles (`profiles-coverage.fsh`)
 _Administrative and independently-measured coverage are distinct lineages of the same conceptual quantity — separately profiled, never merged._ (working doc §4.1; the recurring evidence: **Cuamba, Mozambique — ~99% admin vs ~76% survey**.) Measure definitions are meant to align with what ministries already owe: WHO JAP, ICG M&E minimum dataset, ESPEN treatment-coverage schema, WHO EPI — the `Measure` resources themselves are deferred (§13).
+
+> [!warning] Proposed (§17.2 P1 — the biggest rework, for a subsequent IG round) Coverage is keyed only by data-source today. Add **denominator-type** (total vs at-risk) and **unit** (people vs implementation-units → geographic coverage) axes (B1); **structure `sample-design`** into sub-elements and **bind both coverage profiles to `Measure` definitions** (B2 — closes the §14 Measure gap); and make **RCM = pass/fail + triggers, not a coverage rate** explicit (B4). See §17.
 ### 8.1 ICRAdministrativeCoverage — `MeasureReport`
 | Element | Constraint |
 | --- | --- |
@@ -1198,6 +1214,8 @@ Annotated: the same conceptual quantity — coverage of the Kambia round — rep
 ## 9. Extensions (`extensions.fsh`) — all 23
 _FHIR has no native campaign semantics; these extensions carry them on profiled core resources._ (working doc §7)
 
+> [!warning] Proposed (§17 — for a subsequent IG round) The §17 additions imply **new extensions** here — `activity-type`, `coverage-target`, `dosing-regimen`, `stockpile-source`, `wastage`/vial-accountability, `aefi-causal-type`, an at-risk-denominator flag, and a structured (complex) `sample-design` replacing today's free-text string. See §17.
+
 **Campaign mechanics**
 
 | Extension (id) | Context | Type / binding | Card. where used |
@@ -1252,6 +1270,8 @@ _FHIR has no native campaign semantics; these extensions carry them on profiled 
 * * *
 ## 10. Terminology (`codesystems.fsh`, `valuesets.fsh`)
 Pattern (working doc §8): **ICR defines only campaign semantics**; product codes come from CVX/ATC/GS1; local codes join via ConceptMap (deferred). All 12 code systems are `caseSensitive` and non-experimental.
+
+> [!warning] Proposed (§17 — for a subsequent IG round) New/extended terminology: an **`activity-type` / `sia-type`** CodeSystem (A1), an **`aefi-causal-type`** VS (C1), reconciling **`missed-reason` / `noncompliance-reason`** with the WHO RCM field lists (C3 — add `unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`…, and split out non-missed dispositions), and **location-type / denominator-source** code additions (§17.4). See §17.
 
 | CodeSystem | Codes | FR? | Bound (strength) |
 | --- | --- | --- | --- |
