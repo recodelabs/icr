@@ -7,7 +7,7 @@ tags: [icr, fhir, ig, review]
 # ICR FHIR IG v0.1 — Reviewer's Explainer
 `v0.4.0 · Last modified Jun 12, 2026 at 9:31 PM EDT`
 
-{>>PROCESS NOTE (v0.4.0 rewrite): per your request NO comments were deleted — every thread is retained, with short APPLIED notes added where the change landed and new content marked with ADDED comments. The matching IG changes are commit 4b49ab0 (SUSHI-clean 0/0). Two loose ends: (1) c43 ("hello", §2 q3) looks like a stray test comment — delete it yourself or tell me to keep it; (2) my c22 question is still open — want a Linear task batching the four §2 UNICEF decisions?<<}{id="c50" by="claude" at="2026-06-13T01:31:20.000Z"}
+⁠
 
 > [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG exactly as committed — every cardinality, binding, and fixed value below was checked against the FSH source.
 
