@@ -1,15 +1,17 @@
 ---
-version: 0.4.0
-last_modified: 2026-06-13T01:31:20.000Z
+version: 0.5.0
+last_modified: 2026-06-15T18:30:00.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — {==Reviewer's Explainer==}{>>For each of the sections can we create an example resource or resources in FHIR /json to illustrate these. eg the care plan or ActivityDefinition.  Do them from a common campaign so they are interlinked and make sense.<<}{id="c67" by="mberg" at="2026-06-15T17:20:30.567Z"}
-`v0.4.0 · Last modified Jun 12, 2026 at 9:31 PM EDT`
+`v0.5.0 · Last modified Jun 15, 2026 at 2:30 PM EDT`
 
 ⁠
 
 > [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG exactly as committed — every cardinality, binding, and fixed value below was checked against the FSH source.
+
+> [!tip] v0.5.0 — annotated FHIR/JSON examples inlined (this doc's comments c64–c67) The campaign-architecture sections now carry the **actual resource JSON**, all drawn from the one Sierra Leone MR SIA scenario so every example interlinks: the **protocol** (§5.1), its **activity** (§5.3), the **umbrella + round CarePlans** (§5.2), and a **house-to-house Task** that chains through `Task.output` to the **MCV dose** (§5.4 → §7.1), plus the identity resources they reference (**Location** §6.3, **delivery-unit** and **denominator Groups** §6.1/§6.2) and the divergent **coverage pair** (§8). §5.2 also gains a **lifecycle diagram** (microplan `plan` → execution `order`, umbrella → rounds) answering c64, and a worked answer to "do the geographies sum to the national total?" (c65): they don't have to — each scope carries its own denominator from its own source. Every block is annotated field-by-field beneath the JSON. **No IG/FSH artifacts changed in this pass** — these render `examples.fsh` instances already in the IG (the §11 table) as readable JSON for reviewers.
 
 > [!tip] v0.4.0 — third-pass revision applied (this doc's comments c1–c49) Your review comments on THIS doc, and the agreed replies, are now **applied to the IG** (commit `4b49ab0`, SUSHI-clean: 0 errors / 0 warnings) and folded into this doc's main text. The substance: **naming stays** — ICR-prefixed profile names and "Protocol" confirmed (c42/c45); a **protocol walk-through** (§5.1) and an **activity-definition gallery** (§5.3) are now in the main text (c44/c46); the **who-vs-where split and nested-population stack** explained in §5.2 (c8); the **one-Task-per-visit pattern with the person-targeted follow-up exception** documented in §5.4 and `Task.focus` widened to allow `Patient` for follow-ups (c48); `dataLineage` now **MS on ICRCampaign** (c9) and **required (1..1) on both coverage profiles with "absent ⇒ realtime" as the documented default** (c20); `children-present/absent` **renamed** `eligible-present/absent` (c18); `school-cohort` added as a third group kind (c49); `groupLocation` documented as **residence, not service point** (c13); the **async GERS-enrichment lifecycle** stated as the expected workflow in the IG narrative (c16); §6.2 gains a **competing-denominator walk-through** with a new third example (c15/c19). New examples: albendazole/ITN/IRS activity definitions + the Kambia enumeration estimate (26 total). Linear: **BERG-46** (GERS system URI, c2).
 
@@ -159,6 +161,50 @@ _The reusable, version-controlled template for a campaign type — what a measle
 
 Every execution then points back at it: the national umbrella and the Kambia round both carry `instantiatesCanonical → example-mr-sia-protocol`. That single link is what makes "all MR SIA rounds, anywhere, comparable" a query instead of a research project — and it is why `instantiatesCanonical` is 1..1.==}{>>ADDED in v0.4.0 (your c7/c44): the inline protocol walk-through.<<}{id="c51" by="claude" at="2026-06-13T01:31:20.000Z" re="c44"}
 
+{==**The protocol as FHIR/JSON.** The same `example-mr-sia-protocol`, rendered (the fields a reviewer cares about; `meta.text` and narrative elided):
+
+```json
+{
+  "resourceType": "PlanDefinition",
+  "id": "example-mr-sia-protocol",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignProtocol"] },
+  "status": "active",
+  "version": "1.0.0",
+  "title": "Measles–Rubella SIA — 2026 national guidance",
+  "type": {
+    "coding": [{
+      "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+      "code": "vaccination-sia"
+    }]
+  },
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "valueCodeableConcept": { "coding": [{
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+        "code": "fixed-post"
+      }] }
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "valueCodeableConcept": { "coding": [{
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+        "code": "house-to-house"
+      }] }
+    }
+  ],
+  "goal": [{
+    "description": { "text": "≥95% administrative coverage in every district, verified by post-campaign survey" }
+  }],
+  "action": [{
+    "title": "Administer MCV, 9 months–14 years",
+    "definitionCanonical": "https://fhir.icr.unicef.org/ActivityDefinition/example-mcv-activity"
+  }]
+}
+```
+
+Annotated: `type` is the **required** campaign-type code (what kind of campaign this is); the two `delivery-strategy` extensions are the `1..*` repeat saying MR SIAs run posts **and** mop-up; `goal.description` is the coverage target every execution inherits; `action.definitionCanonical` is the wiring to the activity in §5.3 — **locked to `Canonical(ICRCampaignActivity)`**, so the protocol→activity link is machine-checked, not just narrated. Note what is **absent**: no geography, no dates, no denominator — those live on the executions (§5.2) that point back here via `instantiatesCanonical`.==}{>>ADDED in v0.5.0 (your c67): the protocol rendered as annotated FHIR/JSON, interlinked with the §5.3 activity it references.<<}{id="c68" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
+
 > {==[!warning] Questions==}{>>It would be helpful to get an example of what a campaign protocols would look. i don't really understand how this is structured.<<}{id="c7" by="mberg" at="2026-06-12T20:32:58.665Z"}{>>There IS one in the IG — `example-mr-sia-protocol` (ig/input/fsh/examples.fsh) — and its shape in plain terms: a protocol is the reusable recipe card for a campaign type. Concretely it holds (1) `type` = vaccination-sia — what kind of campaign this is; (2) the delivery strategies it uses — fixed-post AND house-to-house, because MR SIAs do both; (3) `goal` — "≥95% administrative coverage in every district, verified by post-campaign survey"; (4) `action` — the activity sequence, here one action pointing at the "Administer MCV, 9m–14y" ActivityDefinition (a bigger protocol would list several: vaccinate, then mop-up, each its own action); (5) version "1.0.0" — protocols are versioned, so "MR SIA per 2026 guidance" vs 2028 revision are distinct citable things. Then EVERY execution — national umbrella, each district round — points at it via instantiatesCanonical, which is what makes "all MR SIA rounds anywhere, comparable" a query instead of a research project. I'll inline a rendered walk-through of this example into §5.1 in the next rewrite so the structure is visible right here in the memo.<<}{id="c27" by="claude" at="2026-06-12T21:03:09.000Z" re="c7"}{>>great please add these details with an example inline in the doc when you do a rewrite.<<}{id="c44" by="mberg" at="2026-06-13T01:17:45.552Z" re="c27"}
 > 
 > 1. `type` is 1..1, but `PlanDefinition.type` semantically distinguishes plan kinds (order-set vs protocol…) in base FHIR — here it's repurposed for campaign type. Reasonable, but reviewers may ask whether `topic` or a dedicated extension is cleaner.
@@ -169,6 +215,25 @@ Every execution then points back at it: the national umbrella and the Kambia rou
 > _Resolved in first pass:_ `action.definition[x]` is now constrained to `Canonical(ICRCampaignActivity)`, so the protocol→activity wiring is machine-enforced.
 ### 5.2 ICRCampaign — `CarePlan` (the keystone)
 {==_A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via_ `partOf`_._ (working doc §7.2, §6.3)==}{>>Can we create a mermaid illustration and add a section showing how this works?<<}{id="c64" by="mberg" at="2026-06-15T17:15:15.708Z"}
+
+{==**How a campaign moves through its life (`plan → order`).** A campaign is born as a *microplan* and matures into the *execution record* of the **same** `ICRCampaign` resource — `intent` flips `plan → order`, `status` walks `draft → active → completed`, and Tasks plus coverage accumulate against it. Rounds are sibling executions under a national umbrella via `partOf`, and every one of them points at the single versioned protocol:
+
+```mermaid
+graph LR
+    PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/>versioned recipe"]
+    U["Umbrella ICRCampaign<br/>intent: plan · status: active<br/>subject: national denominator"]
+    R1["Kambia round<br/>intent: order · status: completed<br/>subject: district denominator"]
+    R2["Port Loko round<br/>intent: order · status: active"]
+    T["ICRCampaignTask(s)<br/>→ delivery events"]
+    PD -- "instantiatesCanonical 1..1" --> U
+    PD -- "instantiatesCanonical 1..1" --> R1
+    PD -- "instantiatesCanonical 1..1" --> R2
+    R1 -- "partOf" --> U
+    R2 -- "partOf" --> U
+    R1 -- "activity.reference" --> T
+```
+
+The umbrella stays `intent = plan` — it is the planning shell that holds the national denominator and binds the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query, not a research project (§5.1). The actual JSON for the umbrella and a round is below, after the who-vs-where explanation.==}{>>ADDED in v0.5.0 (your c64): a lifecycle diagram of the microplan→execution and umbrella→round flow.<<}{id="c69" by="agent" at="2026-06-15T18:30:00.000Z" re="c64"}
 
 | Element | Constraint |
 |---|---|
@@ -185,7 +250,7 @@ Every execution then points back at it: the national umbrella and the Kambia rou
 
 **Rationale.** CarePlan won over a custom resource, Encounter, and RequestGroup (design decision #1) because it natively supports plan→execution lifecycle, `instantiatesCanonical`, population subjects, and `partOf` composition. **Every campaign must point at its protocol** (1..1) — that is what makes campaign data reusable rather than ad-hoc. `subject` typed to ICRTargetPopulation makes the denominator a first-class participant rather than an afterthought; `planningDenominator` additionally disambiguates _which_ estimate is THE denominator when several exist (§6.2).
 
-{=={==**Who vs where, and nested scopes.** Each CarePlan has exactly **one** `subject` — the WHO, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250"). The WHERE is separate and plural: `targetGeography` is 0..*, so one campaign can name several geographies. Multiple and nested populations are carried by the **umbrella/round stack**, not by overloading one CarePlan:==}{>>I'm a bit confused here.  So this means that the target would be like say a hundred thousand then you'd have multiple geographies with populations that equal with a hundred thousand. Is that how it works?<<}{id="c65" by="mberg" at="2026-06-15T17:16:32.246Z"}
+{=={==**Who vs where, and nested scopes.** Each CarePlan has exactly **one** `subject` — the WHO, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250"). The WHERE is separate and plural: `targetGeography` is 0..*, so one campaign can name several geographies. Multiple and nested populations are carried by the **umbrella/round stack**, not by overloading one CarePlan:==}{>>I'm a bit confused here.  So this means that the target would be like say a hundred thousand then you'd have multiple geographies with populations that equal with a hundred thousand. Is that how it works?<<}{id="c65" by="mberg" at="2026-06-15T17:16:32.246Z"}{>>Not quite — the geographies don't have to **sum** to the parent total, and a campaign's subject isn't "100k split across geographies." Each scope carries its **own** denominator from its **own** source: the national umbrella's subject is 2,150,000 (census projection, Nov 2025); the Kambia round's subject is 48,250 (GRID3, Jan 2026); Port Loko's round has its own. They nest *conceptually* (districts roll up to the nation via `partOf`) but they will **not** add up exactly, because they come from different methods at different times — and that mismatch is real and expected, not an error (it's the same denominator-disagreement the §6.2 walk-through is about). So: one denominator per CarePlan scope, as many CarePlans as scopes, linked by `partOf` — not a single number partitioned across geographies. The JSON just below makes the two scopes concrete.<<}{id="c70" by="agent" at="2026-06-15T18:30:00.000Z" re="c65"}
 
 ```mermaid
 graph TD
@@ -199,6 +264,71 @@ graph TD
 ```
 
 One subject per CarePlan; as many CarePlans as the campaign has nested scopes, linked by `partOf`; finer-grained targets (per-ward) exist as additional geography-scoped ICRTargetPopulation Groups that planning and coverage reference without being anyone's `subject`.==}{>>ADDED in v0.4.0 (your c8): the who-vs-where explanation and nested-population stack, as promised in c28.<<}{id="c52" by="claude" at="2026-06-13T01:31:20.000Z" re="c28"}
+
+{==**The campaign as FHIR/JSON — umbrella + round.** Two `ICRCampaign` (CarePlan) instances from the scenario. First the **national umbrella** (the microplan shell):
+
+```json
+{
+  "resourceType": "CarePlan",
+  "id": "example-mr-sia-national",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] },
+  "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"],
+  "status": "active",
+  "intent": "plan",
+  "category": [{ "coding": [{
+    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+    "code": "vaccination-sia"
+  }] }],
+  "subject": { "reference": "Group/example-target-population-national" },
+  "period": { "start": "2026-06-15", "end": "2026-12-18" },
+  "addresses": [{ "display": "Measles and rubella" }],
+  "extension": [{
+    "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
+    "valueReference": { "reference": "Group/example-target-population-national" }
+  }]
+}
+```
+
+Then the **Kambia June round**, a child execution of that umbrella:
+
+```json
+{
+  "resourceType": "CarePlan",
+  "id": "example-mr-sia-2026",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"] },
+  "instantiatesCanonical": ["https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"],
+  "status": "completed",
+  "intent": "order",
+  "category": [{ "coding": [{
+    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+    "code": "vaccination-sia"
+  }] }],
+  "subject": { "reference": "Group/example-target-population" },
+  "period": { "start": "2026-06-15", "end": "2026-06-26" },
+  "partOf": [{ "reference": "CarePlan/example-mr-sia-national" }],
+  "addresses": [{ "display": "Measles and rubella" }],
+  "activity": [
+    { "reference": { "reference": "Task/example-site-session-task" } },
+    { "reference": { "reference": "Task/example-mopup-task" } }
+  ],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/campaign-round",
+      "valuePositiveInt": 1
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/target-geography",
+      "valueReference": { "reference": "Location/example-district" }
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
+      "valueReference": { "reference": "Group/example-target-population" }
+    }
+  ]
+}
+```
+
+Annotated, reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §5.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the WHO — each scope its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §6.2), which is the concrete answer to c65: different numbers from different sources, *not* a partition of one total. `partOf` makes the round a child of the umbrella. `activity.reference` lists the round's Tasks (§5.4). The three extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (WHERE, `0..*` — here the district Location, §6.3), and the `planning-denominator` that singles out *the* denominator coverage is computed against. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference for the disease.)==}{>>ADDED in v0.5.0 (your c66): the umbrella and round CarePlans as annotated FHIR/JSON, with every reference resolved to the section that defines its target.<<}{id="c71" by="agent" at="2026-06-15T18:30:00.000Z" re="c66"}
 
 > [!warning] Questions
 > 
@@ -237,6 +367,39 @@ _A discrete work type within a campaign — "administer albendazole to children 
 
 {==**Rationale.** `kind = #Task` hard-wires the instantiation target: activities become Tasks, not ServiceRequests. Product and dosage ride on the definition so the protocol carries the clinical content once.==}{>>Do activityies need to have a focus? or can that be defined at the task level.  Eg if the activity is spray house then the target would be the household structure.  if it's vaccinate it would be a child in the household, if it's get a fly trap it wouldl be the fly trap.<<}{id="c11" by="mberg" at="2026-06-12T20:42:16.549Z"}{>>Exactly as you intuit: defined at the Task level. The ActivityDefinition is deliberately target-agnostic — it says WHAT (spray / vaccinate / set trap, with product and dosage) and at most what KIND of target is eligible (subject[x] can say "children 9m–14y" as a category); the concrete thing acted on — THIS structure, THIS child's household, THIS trap site — is Task.focus, per unit of work. Your three examples land as: spray-house activity → Tasks whose focus is each structure (a Location); vaccinate activity → Tasks whose focus is the household Group, with the per-child detail in the Immunization records hanging off Task.output (see my c32 reply below on the per-member question); fly-trap activity → Tasks whose focus is the trap site (a Location). One honest gap your examples expose: vector-control work (traps, larviciding) is in neither the working doc's program scope nor the delivery-event profiles — fine for v0.1, but if entomological surveillance is in ICR's future, flag it now and I'll add it to the open questions.<<}{id="c31" by="claude" at="2026-06-12T21:03:09.000Z" re="c11"}{>>flesh this out in the rewrite<<}{id="c47" by="mberg" at="2026-06-13T01:21:24.473Z" re="c31"}{>>APPLIED in v0.4.0: fleshed out in the "activity gallery / what lives here vs what lives on the Task" block just above this paragraph, with your three examples (spray→structure, vaccinate→household+Immunizations, fly trap→site) worked in and the vector-control scope boundary noted.<<}{id="c55" by="claude" at="2026-06-13T01:31:20.000Z" re="c47"}
 
+{==**The activity as FHIR/JSON.** `example-mcv-activity` — the activity the protocol's `action` points at:
+
+```json
+{
+  "resourceType": "ActivityDefinition",
+  "id": "example-mcv-activity",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignActivity"] },
+  "status": "active",
+  "name": "AdministerMCV",
+  "title": "Administer MCV, 9 months–14 years",
+  "kind": "Task",
+  "code": { "text": "Vaccinate — measles–rubella–containing vaccine" },
+  "productCodeableConcept": {
+    "coding": [{ "system": "http://hl7.org/fhir/sid/cvx", "code": "05", "display": "measles virus vaccine" }]
+  },
+  "dosage": [{
+    "route": { "text": "subcutaneous" },
+    "doseAndRate": [{ "doseQuantity": {
+      "value": 0.5, "unit": "mL", "system": "http://unitsofmeasure.org", "code": "mL"
+    } }]
+  }],
+  "extension": [{
+    "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+    "valueCodeableConcept": { "coding": [{
+      "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+      "code": "fixed-post"
+    }] }
+  }]
+}
+```
+
+Annotated: `kind` is **fixed to `Task`** — instantiating this activity produces ICRCampaignTasks (§5.4), not ServiceRequests; `code` is the intervention; `productCodeableConcept` is the CVX vaccine code (the albendazole / ITN / IRS activities in the gallery above swap in an ATC code or free-text product instead); `dosage` rides on the definition so the clinical content is stated **once**. What's *not* here is any concrete target — no household, no child: the activity is target-agnostic, and the thing acted on is each Task's `focus`. The same shape holds for the other three gallery activities.==}{>>ADDED in v0.5.0 (your c10/c67): the activity as annotated FHIR/JSON, the product end of the §5.1 `action.definitionCanonical` link.<<}{id="c72" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
+
 > [!warning] Questions
 > 
 > 1. `product[x]` is MS but **unbound** — CVX/ATC are mentioned in the `^short` only. The delivery-event profiles do bind product codes; should the definition side bind too, for consistency?
@@ -261,6 +424,53 @@ _The assignable, trackable operational unit of work — one Task per site-sessio
 {==**Task granularity: one Task per visit, person-level detail in the delivery events.** A polio team's doorstep visit is **one** Task — it closes when the visit completes — and each child vaccinated gets their own `Immunization` resource hanging off `Task.output`, pointing at their `Patient`. So person-level capture happens in the **delivery-event layer**, not by multiplying Tasks: the Task is the unit of _work_ (one visit), the delivery events are the units of _service_ (three drops given). The IG's mop-up example shows the full chain: one household Task → output → the MCV dose for one child. **The deliberate exception is person-targeted follow-up**: when a specific missed or zero-dose child needs chasing, a new Task is spawned whose `focus` IS that child's `Patient` record (the §4.4 routine-enrolment pattern) — which is exactly why `focus` allows `Patient` alongside the delivery-unit Group and the site Location, and it is the _only_ intended use of a person-focused Task. Routine per-child Tasks would multiply Task volume ~5× (the open-question-#1 scale concern) while adding nothing the Immunization records don't already carry.==}{>>ADDED in v0.4.0 (your c12/c48): the one-Task-per-visit pattern documented with the follow-up exception called out; Task.focus widened to admit Patient for exactly that case (IG commit 4b49ab0).<<}{id="c56" by="claude" at="2026-06-13T01:31:20.000Z" re="c48"}
 
 **Rationale.** This is where campaign type A/B/C polymorphism lands: the _same_ profile serves a fixed-post site-session and a house-to-house visit, discriminated by `focus` type and the mandatory coded `deliveryStrategy`. The optional count/reason extensions are exactly the house-to-house data elements (houses visited, present/absent, missed/noncompliance reasons, finger marking) that only exist for strategy B — they're 0..x because they're meaningless for fixed-post tallies. `taskOrigin` **is mandatory** (the same required-coded-attribute pattern as delivery strategy and record origin): Tasks need not be pre-generated — a team that discovers an unenumerated household creates the ICRDeliveryUnit and its Task on the spot — and the count of field-registered Tasks per area is itself a measurement of how incomplete the microplan's enumeration was, feeding the next round's denominators. Delivery events hang off `Task.output` because **R4 Immunization has no** `basedOn` (the reverse link doesn't exist; see §7).
+
+{==**The Task as FHIR/JSON.** `example-mopup-task` — the Type-B house-to-house visit, the richer of the two Task shapes and the one that chains to a delivery event:
+
+```json
+{
+  "resourceType": "Task",
+  "id": "example-mopup-task",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignTask"] },
+  "status": "completed",
+  "intent": "order",
+  "code": { "text": "Administer MCV — house-to-house mop-up visit" },
+  "focus": { "reference": "Group/example-household" },
+  "for": { "reference": "Group/example-household" },
+  "location": { "reference": "Location/example-dwelling" },
+  "executionPeriod": { "start": "2026-06-24", "end": "2026-06-24" },
+  "owner": { "display": "CDD team 7, Rokupr" },
+  "output": [{
+    "type": { "text": "Immunization administered" },
+    "valueReference": { "reference": "Immunization/example-mcv-dose" }
+  }],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "valueCodeableConcept": { "coding": [{
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+        "code": "house-to-house"
+      }] }
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/task-origin",
+      "valueCode": "field-registered"
+    },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-present", "valueUnsignedInt": 2 },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-absent", "valueUnsignedInt": 1 },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/missed-reason",
+      "valueCodeableConcept": { "coding": [{
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason",
+        "code": "absent"
+      }] }
+    },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/finger-marked", "valueBoolean": true }
+  ]
+}
+```
+
+Annotated, with the links read out: `focus` and `for` point at the **household delivery-unit Group** (§6.1) — this is the Type-B shape (a Type-A site-session Task instead focuses on the fixed-post Location); `location` is where the work happened (the dwelling, §6.3). `output` is the **whole Task→event mechanism** — it references the `Immunization` in §7.1 (R4 Immunization has no `basedOn`, so the link runs this way). The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin` — here **`field-registered`**, the discovery-mode pattern: this household wasn't in the microplan; the team created it and its Task on the doorstep. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason absent`, `finger-marked`) only exist for strategy B — they'd be meaningless on a fixed-post session.==}{>>ADDED in v0.5.0 (your c12/c67): the Task as annotated FHIR/JSON, showing the `Task.output → Immunization` chain into §7.1.<<}{id="c73" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
 
 > [!warning] Questions
 > 
@@ -292,6 +502,30 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 | `extension[groupLocation]` | **1..1 MS** → `Reference(ICRLocation)` — **residence/base, not service point**: the dwelling (household), settlement/community point (community), or school (school-cohort) |
 
 **Rationale.** Separating _who_ (Group) from _where_ (Location) means the location's identity (GERS building/place ID) survives group composition changes, and the group survives re-mapping. The second-pass generalization (was: ICRHousehold) reflects that households and communities are the _same pattern at two scales_ — one profile with a coded kind beats two near-identical profiles, and it lets `Task.focus` and `MedicationAdministration.subject` be narrowed to ICR-conformant targets; `school-cohort` (third pass) demonstrates the kind list extends to non-obvious delivery units (nomadic groups, camp populations) as country demand appears. `quantity` covers the common case where campaigns count members without registering individuals — person-level `member` entries are optional by design. {==`groupLocation` **is residence, not service point**: where service actually happened is `Task.location` and the delivery event's own `location`. A household that walks to a village distribution center keeps its dwelling here unchanged — the Task records the center.==}{>>ADDED in v0.4.0 (your c13): the residence-vs-service-point decoupling stated explicitly, here and in the IG extension definition.<<}{id="c57" by="claude" at="2026-06-13T01:31:20.000Z" re="c33"}
+
+{==**The delivery unit as FHIR/JSON.** `example-household` — the Type-B unit a mop-up Task focuses on:
+
+```json
+{
+  "resourceType": "Group",
+  "id": "example-household",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"] },
+  "type": "person",
+  "actual": true,
+  "code": { "coding": [{
+    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind",
+    "code": "household"
+  }] },
+  "quantity": 6,
+  "member": [{ "entity": { "reference": "Patient/example-child" } }],
+  "extension": [{
+    "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location",
+    "valueReference": { "reference": "Location/example-dwelling" }
+  }]
+}
+```
+
+Annotated: `code` is the **required** group-kind (`household` here; `community` or `school-cohort` for the other delivery units, same profile); `quantity` 6 is the head-count even though only one `member` (the child, `Patient/example-child`, §7.1) is individually enumerated; `group-location` is the dwelling Location (§6.3) — **residence, not service point** (where service actually happened is the Task's `location`). Swap `code` to `community` and point `group-location` at a settlement and this same JSON becomes the Type-C community delivery unit.==}{>>ADDED in v0.5.0 (your c67): the delivery-unit Group as annotated FHIR/JSON, the target of the §5.4 Task `focus`.<<}{id="c74" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
 
 > [!warning] Questions
 > 
@@ -327,6 +561,40 @@ _A target-population denominator: a conceptual cohort (_`actual=false`_) with a 
 
 The first two are **the same geography disagreeing by ~7%**: GRID3 says 48k, the enumeration says 52k. Both are retained — each with its source and date — and exactly one carries the planning flag, so coverage is computed against a _declared_ choice while the disagreement stays visible instead of being silently overwritten. Run the consequence: 47,766 children reached is **99% coverage against GRID3 but 92% against the enumeration** — the denominator you pick changes the answer, which is the §4.1 Cuamba lesson in miniature and the entire reason source + date are mandatory.==}{>>ADDED in v0.4.0 (your c15/c19): the competing-denominator walk-through; the third (enumeration) instance is new in the IG (commit 4b49ab0).<<}{id="c58" by="claude" at="2026-06-13T01:31:20.000Z" re="c35"}
 
+{==**The denominator as FHIR/JSON.** `example-target-population` — Kambia's GRID3 planning denominator (the `subject` of the round CarePlan in §5.2):
+
+```json
+{
+  "resourceType": "Group",
+  "id": "example-target-population",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"] },
+  "type": "person",
+  "actual": false,
+  "quantity": 48250,
+  "characteristic": [{
+    "code": { "coding": [{
+      "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-characteristic",
+      "code": "geography"
+    }] },
+    "valueReference": { "reference": "Location/example-district" },
+    "exclude": false
+  }],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source",
+      "valueCodeableConcept": { "coding": [{
+        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source",
+        "code": "grid3"
+      }] }
+    },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/estimate-date", "valueDate": "2026-01-15" },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/is-planning-denominator", "valueBoolean": true }
+  ]
+}
+```
+
+Annotated: `actual: false` is what makes this a *conceptual cohort* — a denominator, not a roster of real people (contrast `example-household`, `actual: true`). `quantity` is the denominator count. The `geography` characteristic is the **computable** scope link — `valueReference` → the district Location (§6.3), so estimates join to the hierarchy by reference, not by parsing a name. The two provenance extensions are **mandatory** (`denominator-source: grid3`, `estimate-date: 2026-01-15`) — no denominator without source + date. `is-planning-denominator: true` flags this as *the* one coverage is computed against. The competing `example-target-population-enumerated` (51,800, microcensus, `is-planning-denominator: false`) is the identical shape with a different source, date, and flag — which is exactly how the same geography keeps two disagreeing estimates side by side.==}{>>ADDED in v0.5.0 (your c67): the planning denominator as annotated FHIR/JSON, the `subject` end of the §5.2 CarePlan.<<}{id="c75" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
+
 > [!warning] Questions
 > 
 > 1. **"Exactly one is the planning denominator" is not machine-enforced** — no invariant prevents two Groups for the same geography both setting the flag true (or none). Enforceable only with an invariant scoped to "same geography + campaign", which is hard; the `ICRCampaign.planningDenominator` extension (which _is_ singular, 0..1) may be the real enforcement point. Worth documenting that resolution.
@@ -351,6 +619,33 @@ _The most-customized ICR resource: nested administrative hierarchy (6+ levels), 
 | `extension[overlaysAdminUnit]` | 0..\* → `Reference(ICRLocation)` — for operational geography: the admin unit(s) this area overlays |
 
 {==**Rationale.** Design decision #8. Open slicing means national location codes coexist with GERS/P-codes without profile changes. The GERS `^short` carries an operationally crucial instruction: **record the Overture release version alongside the ID** (GERS IDs are stable but the registry versions).==}{>>We sohuld be able to assign multiple external ids to locations.  Ideally GERS  Id can be the unique identifier.  the system will need to generate an internal unique location id too.  In many cases new locations will not have a GERS ID.  The system will be built to try and update these new locations with a GERS ID after they have been added in an async way.<<}{id="c16" by="mberg" at="2026-06-12T20:50:18.299Z"}{>>The profile already supports every piece of that workflow: (1) multiple external IDs — identifier slicing is OPEN, so any number of identifier systems coexist (GERS, P-code, national facility code, project codes); (2) internal unique ID — every FHIR resource has a server-assigned Resource.id, so that's free; (3) GERS as 0..1 not 1..1 — precisely because new/unmapped locations won't have one at creation; (4) async enrichment — adding a GERS ID later is just an update to the Location appending the gers identifier slice, with FHIR versioning + Provenance recording when/how it was matched. So nothing blocks the build-flow you describe. What the IG does NOT yet say is that this async-enrichment loop is the EXPECTED lifecycle (create unmatched → conflate → backfill GERS — the §9.1 OSM→Overture loop, operationalized). I'll add that as explicit implementer guidance in the next IG pass, plus one open design point it raises: should an enrichment job also be allowed to MERGE two Locations it discovers are the same place (ties into the dedup open question #9)?<<}{id="c36" by="claude" at="2026-06-12T21:03:09.000Z" re="c16"}{>>APPLIED in v0.4.0: the IG background page now states the async-enrichment lifecycle as the EXPECTED workflow ("Location identity lifecycle: GERS enrichment" section, commit 4b49ab0) — create with internal id + national codes → async match against Overture (directly or via the OSM→Overture loop) → append the GERS identifier to the same resource with versioning + Provenance, recording the Overture release version — and parks the merge-on-enrichment question alongside the record-linkage open question.<<}{id="c59" by="claude" at="2026-06-13T01:31:20.000Z" re="c36"} The boundary extension mirrors the R5 standard extension on R4 (working doc §10 q6). {==The second-pass additions give **"operational ≠ administrative geography" a real mechanism** (working-doc comment c74): `partOf` can express only _one_ hierarchy, so a supervisory/operational area is typed via the new location-type codes and linked to the admin units it covers via `overlays-admin-unit` — that is what makes it linkable-but-distinct rather than just distinct.==}{>>I don't understand this explain it further.<<}{id="c17" by="mberg" at="2026-06-12T20:53:01.299Z"}{>>Plain version. The admin hierarchy is the official tree: country → district → ward, expressed by each Location's partOf pointing at its single parent. Campaign programs draw their OWN areas that don't respect that tree — a polio supervision zone might cover all of ward 3 plus half of ward 4. Problem: partOf gives a location exactly one parent, so the zone can't sit INSIDE the admin tree without lying about the hierarchy (which ward would be its parent?). Old state of the IG: we said "keep operational areas distinct" but gave you no way to relate them to admin units at all — distinct but UNLINKABLE, so you couldn't answer "which districts does zone 2's data roll up into?". The fix: the zone is its own Location, typed supervisory-area, NOT in any partOf chain, carrying an overlays-admin-unit extension that points at the admin unit(s) it covers (can be several). Concrete: example-supervisory-area "Kambia supervision zone 2" overlays Kambia District — so zone-level tallies can be related to district reporting, while the official hierarchy stays clean. That's all "linkable-but-distinct" means: distinct = not in the admin tree; linkable = the overlays pointer.<<}{id="c37" by="claude" at="2026-06-12T21:03:09.000Z" re="c17"}
+
+{==**The location as FHIR/JSON.** `example-district` — Kambia District, showing the multi-system identity and the admin hierarchy:
+
+```json
+{
+  "resourceType": "Location",
+  "id": "example-district",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRLocation"] },
+  "status": "active",
+  "name": "Kambia District",
+  "physicalType": { "coding": [{
+    "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+    "code": "jdn", "display": "Jurisdiction"
+  }] },
+  "type": [{ "coding": [{
+    "system": "https://fhir.icr.unicef.org/CodeSystem/icr-location-type",
+    "code": "admin-unit"
+  }] }],
+  "partOf": { "reference": "Location/example-country" },
+  "identifier": [
+    { "system": "https://fhir.icr.unicef.org/identifiers/pcode", "value": "SL0201" },
+    { "system": "https://fhir.icr.unicef.org/identifiers/overture-gers", "value": "overture-division-kambia-example" }
+  ]
+}
+```
+
+Annotated: `partOf` climbs the admin tree (district → `example-country`; the full chain runs country → district → settlement → dwelling, each its own ICRLocation). `type` is the ICR location-type (`admin-unit`); `physicalType` carries the base-FHIR shape. The **sliced `identifier`** is the multi-system identity — a P-code **and** a GERS ID coexisting, each tagged by its `system` URI (the mechanism behind cross-campaign joins, §3); both slices are `0..1`, so a brand-new unmapped location can exist with national codes only and get its GERS ID back-filled async (the lifecycle described just above). A delivery-site Location (the fixed post) additionally carries a `delivery-strategy` extension; a supervisory area carries `overlays-admin-unit` *instead of* sitting in the `partOf` tree.==}{>>ADDED in v0.5.0 (your c67): a Location as annotated FHIR/JSON — the target shared by `target-geography`, the denominator's geography characteristic, and `group-location`.<<}{id="c76" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
 
 > [!warning] Questions
 > 
@@ -379,6 +674,31 @@ All three share two design constants: a **mandatory** `record-origin` **extensio
 | `extension[recordOrigin]` | **1..1 MS** (code: campaign \| routine, required binding) |
 
 `lotNumber`/`manufacturer` MS = lot accountability (AEFI traceability); `protocolApplied` is the bridge to routine-immunization series logic.
+
+{==**The dose as FHIR/JSON.** `example-mcv-dose` — the delivery event the mop-up Task's `output` points at, closing the chain protocol → activity → campaign → task → **dose → patient**:
+
+```json
+{
+  "resourceType": "Immunization",
+  "id": "example-mcv-dose",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRImmunizationEvent"] },
+  "status": "completed",
+  "vaccineCode": { "coding": [{ "system": "http://hl7.org/fhir/sid/cvx", "code": "05", "display": "measles virus vaccine" }] },
+  "patient": { "reference": "Patient/example-child" },
+  "occurrenceDateTime": "2026-06-24",
+  "location": { "reference": "Location/example-dwelling" },
+  "lotNumber": "MRV-2026-0412",
+  "manufacturer": { "display": "Serum Institute of India" },
+  "performer": [{ "actor": { "display": "CDD team 7, Rokupr" } }],
+  "protocolApplied": [{ "doseNumberPositiveInt": 1 }],
+  "extension": [{
+    "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
+    "valueCode": "campaign"
+  }]
+}
+```
+
+Annotated: `patient` is the **person-level capture** — the same `example-child` who is the household's `member` (§6.1) — which is how polio-style member-level data lands without multiplying Tasks (§5.4): one Task per visit, one Immunization per child off `Task.output`. `vaccineCode` is the CVX matching the activity's product (§5.3). The **mandatory** `record-origin: campaign` is the firewall keeping SIA doses out of routine coverage analytics. `lotNumber`/`manufacturer` give AEFI lot traceability; `protocolApplied.doseNumber` bridges to routine-series logic.==}{>>ADDED in v0.5.0 (your c67): the dose as annotated FHIR/JSON — the terminal link of the interlinked chain, `Task.output → Immunization → Patient`.<<}{id="c77" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
 ### 7.2 ICRMedicationAdministration — `MedicationAdministration`
 | Element | Constraint |
 |---|---|
@@ -426,6 +746,54 @@ _Administrative and independently-measured coverage are distinct lineages of the
 | Extensions | `coverageSource` **1..1 MS**, value bound **required** to ICRIndependentCoverageSourceVS (survey \| lqas \| rcm) · `sampleDesign` 0..1 MS (string — "WHO 30×10 cluster survey…") · `dataLineage` **1..1 MS** |
 
 **Rationale.** The "never merge" rule is enforced _structurally_: the admin profile pins `coverageSource` to the single code `administrative`; the survey profile re-binds the same extension to a value set that _excludes_ `administrative`. A resource can't be both. Admin coverage additionally carries its denominator's provenance (because admin coverage is only as good as its denominator). {==**Lineage is now required (1..1) on both coverage profiles** (third pass): coverage reports are where the realtime/reconciled distinction has teeth — preliminary in-campaign figures vs final close-out figures must be machine-distinguishable, including preliminary-vs-final survey results. Elsewhere (CarePlan, Task) the flag stays optional with a documented default: **absent ⇒ realtime**.==}{>>ADDED in v0.4.0 (your c20): both fixes from the c40 thread — documented default + 1..1 on coverage MeasureReports (commit 4b49ab0).<<}{id="c60" by="claude" at="2026-06-13T01:31:20.000Z" re="c40"}
+
+{==**The coverage pair as FHIR/JSON — 99% vs 76%.** The two MeasureReports for the **same** Kambia round — the structural "never merge":
+
+```json
+{
+  "resourceType": "MeasureReport",
+  "id": "example-admin-coverage",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"] },
+  "status": "complete",
+  "type": "summary",
+  "measure": "https://fhir.icr.unicef.org/Measure/icr-admin-coverage",
+  "reporter": { "reference": "Location/example-district" },
+  "period": { "start": "2026-06-15", "end": "2026-06-26" },
+  "group": [{
+    "measureScore": { "value": 0.99 },
+    "population": [
+      { "code": { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/measure-population", "code": "numerator" }] }, "count": 47766 },
+      { "code": { "coding": [{ "system": "http://terminology.hl7.org/CodeSystem/measure-population", "code": "denominator" }] }, "count": 48250 }
+    ]
+  }],
+  "extension": [
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source", "valueCode": "administrative" },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source", "valueCodeableConcept": { "coding": [{ "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source", "code": "grid3" }] } },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled", "valueCode": "reconciled" }
+  ]
+}
+```
+
+```json
+{
+  "resourceType": "MeasureReport",
+  "id": "example-survey-coverage",
+  "meta": { "profile": ["https://fhir.icr.unicef.org/StructureDefinition/ICRSurveyCoverage"] },
+  "status": "complete",
+  "type": "summary",
+  "measure": "https://fhir.icr.unicef.org/Measure/icr-survey-coverage",
+  "reporter": { "reference": "Location/example-district" },
+  "period": { "start": "2026-07-06", "end": "2026-07-12" },
+  "group": [{ "measureScore": { "value": 0.76 } }],
+  "extension": [
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source", "valueCode": "survey" },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/sample-design", "valueString": "WHO 30×10 cluster survey, post-campaign" },
+    { "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled", "valueCode": "reconciled" }
+  ]
+}
+```
+
+Annotated: the same conceptual quantity — coverage of the Kambia round — reported **23 points apart** (mirroring Cuamba's 99-vs-76). They can never be merged because `coverage-source` is structurally pinned: `administrative` is **fixed** on the first profile, and the survey profile binds the same extension to a value set that *excludes* `administrative`. The admin report shows its `numerator`/`denominator` populations (47,766 / 48,250 = 99% against GRID3 — against the enumerated 51,800 it would read 92%, §6.2); the survey carries its `sample-design` *instead of* a denominator (its denominator IS the sample). `realtime-vs-reconciled` is **1..1** on both — these are final close-out figures (`reconciled`), machine-distinguishable from preliminary in-campaign numbers.==}{>>ADDED in v0.5.0 (your c67): the admin-vs-survey coverage pair as annotated FHIR/JSON — the never-merge rule made literal.<<}{id="c78" by="agent" at="2026-06-15T18:30:00.000Z" re="c67"}
 
 > [!warning] Questions
 > 
