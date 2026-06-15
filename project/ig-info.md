@@ -1469,7 +1469,7 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
   
 5. FR translations reviewed by a francophone public-health reviewer — now also group-kind (incl. school-cohort) and task-origin (§10).
   
-6. Geography characteristic 0..1 → 1..1 once pilots confirm every estimate has a Location (§6.2; the resolved geography-linkage question is archived to §16). _(The `overlays-admin-unit`-required question is now resolved — enforced via the `icr-loc-overlays` invariant, v0.7.0.)_
+6. Geography characteristic 0..1 → 1..1 once pilots confirm every estimate has a Location (§6.2; the resolved geography-linkage question is archived to §16). _(The_ `overlays-admin-unit`_-required question is now resolved — enforced via the_ `icr-loc-overlays` _invariant, v0.7.0.)_
   
 7. Vector control / entomological surveillance — in ICR's future scope or not (§5.3 boundary note)?
   
@@ -1481,37 +1481,62 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
 _Questions that were resolved/addressed have been moved out of the per-section "[!warning] Questions" blocks (so those lists show only what's still open) and parked here, grouped by section, with how each was closed. Nothing is lost; this list grew in v0.8.0. The pass-by-pass §15 checklist remains the changelog view — this is the by-section view._
 
 **§5.1 — ICRCampaignProtocol**
+
 - ✅ `action.definition[x]` was unenforced → now constrained to `Canonical(ICRCampaignActivity)`, so the protocol→activity wiring is machine-enforced (first pass).
+  
 
 **§5.2 — ICRCampaign**
+
 - ✅ `dataLineage` was the only campaign extension not marked MS → now **MS** on ICRCampaign (v0.4.0); the §5.2 extensions row reflects it.
+  
 
 **§5.3 — ICRCampaignActivity**
+
 - ✅ No real activity example → `example-mcv-activity` exists and the protocol wires it via `action.definitionCanonical` (first pass); the four-activity gallery was added (v0.4.0).
+  
 
 **§5.4 — ICRCampaignTask**
+
 - ✅ `focus` typing → narrowed to `ICRDeliveryUnit | ICRLocation` (second pass), then widened to also admit `Patient` for person-targeted follow-up tasks only (third pass).
+  
 
 **§6.1 — ICRDeliveryUnit**
+
 - ✅ `member.entity` = Patient → confirmed correct: it excludes Practitioner/Device, and R4 `Group.member` never allowed RelatedPerson (R5 only). Full explanation now in the §6.1 rationale (v0.7.0).
+  
 - ✅ `school-cohort` added as the third group kind, with FR designation (third pass).
+  
 - ✅ `groupLocation` (née `householdLocation`) targets `Reference(ICRLocation)` (first pass); household/community split → one profile + required coded kind (second pass).
+  
 
 **§6.2 — ICRTargetPopulation**
+
 - ✅ Geography linkage → profiled `characteristic[geography]` slice → `Reference(ICRLocation)`, exercised by all three example denominators (second pass). Residual (slice 0..1 → 1..1 once pilots confirm) is tracked in §15 decision #6.
+  
 
 **§6.3 — ICRLocation**
+
 - ✅ `Location.type` unbound → bound **extensible** to ICRLocationTypeVS (second pass). _Watch item:_ a strict base-binding validator may flag codes like `supervisory-area` — worth a Connectathon sanity check.
+  
 - ✅ `overlays-admin-unit` required on operational-area types → now enforced by the `icr-loc-overlays` invariant (1..* when `type ∈ {supervisory-area, operational-area}`) (v0.7.0).
+  
 
 **§8 — Coverage**
+
 - ✅ Survey preliminary-vs-final lineage → `ICRSurveyCoverage.dataLineage` is now **1..1** (third pass); it still has no `denominatorSource` (correct — a survey's denominator is its sample design).
+  
 - ✅ Sample-design had no home → `SampleDesign` extension added, 0..1 MS on ICRSurveyCoverage (first pass); both coverage profiles now have examples.
+  
 
 **§9 — Extensions**
+
 - ✅ `RealtimeVsReconciled` default + enforcement → `absent ⇒ realtime` documented and the flag **1..1 on both coverage profiles** (third pass).
+  
 - ✅ `children-present/absent` → renamed `eligible-present`/`eligible-absent` before the names ossified (third pass).
+  
 - ✅ Reference-target tightening (`TargetGeography`/`PlanningDenominator`/`GroupLocation`), `DeliveryStrategy` wired onto ICRLocation, `SampleDesign` (first pass); `TaskOrigin`, `OverlaysAdminUnit` added (second pass).
+  
 
 **§10 — Terminology**
+
 - ✅ FR designations now cover all five required-binding systems and the file comment matches; the MDA VS description matches its content (first pass). _(Still open, kept in §10: francophone reviewer check + localization policy.)_
