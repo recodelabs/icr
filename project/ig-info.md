@@ -1,11 +1,11 @@
 ---
-version: 0.7.0
-last_modified: 2026-06-15T20:45:00.000Z
+version: 0.7.1
+last_modified: 2026-06-15T21:30:00.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.7.0 · Last modified Jun 15, 2026 at 4:45 PM EDT`
+`v0.7.1 · Last modified Jun 15, 2026 at 5:30 PM EDT`
 
 ⁠
 
@@ -64,7 +64,7 @@ File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `
 > 
 > 1. **Canonical URL ownership** — does UNICEF actually control `fhir.icr.unicef.org` (or intend to)? Changing canonicals after publication is painful; this needs early confirmation.
 >   
-> 2. {==**No dependencies declared** — the background page commits to aligning with WHO SMART Immunizations / the Immunization DAK, but the config declares no dependency on it (or on IHE mCSD, etc.). Intentional for v0.1, but worth deciding when the dependency gets declared and what "alignment" concretely means.==}{>>We need to do a pass to compare agains the WHO Smart Guideline<<}{id="c129" by="mberg" at="2026-06-15T21:00:51.103Z"}{>>Add this as a task in linear.<<}{id="c130" by="mberg" at="2026-06-15T21:01:33.851Z" re="c129"}
+> 2. {==**No dependencies declared** — the background page commits to aligning with WHO SMART Immunizations / the Immunization DAK, but the config declares no dependency on it (or on IHE mCSD, etc.). Intentional for v0.1, but worth deciding when the dependency gets declared and what "alignment" concretely means.==}{>>We need to do a pass to compare agains the WHO Smart Guideline<<}{id="c129" by="mberg" at="2026-06-15T21:00:51.103Z"}{>>Add this as a task in linear.<<}{id="c130" by="mberg" at="2026-06-15T21:01:33.851Z" re="c129"}{>>Agreed a structured WHO SMART Guidelines comparison is a real work item — map ICR's profiles, extensions, and terminology against the WHO SMART Immunizations DAK / Immunization IG, reuse the DAK data elements where they align, and decide where to declare a formal `dependsOn` (this is exactly §2 q3's "what alignment concretely means" plus the §12 DAK commitment). On filing it in Linear: I **can't** — this runner session is sandboxed with no network or Linear access, so I can't create the issue (that's also why BERG-45/46 were filed from a different, networked pass, not by me). Could you or the next networked pass file it alongside BERG-45/46 — suggested title "ICR ↔ WHO SMART Immunizations DAK alignment pass"? Flagging it here so it's captured, and I can draft the comparison scope/checklist once the issue exists.<<}{id="c133" by="agent" at="2026-06-15T21:30:00.000Z" re="c130"}
 >   
 > 3. `id: unicef.fhir.icr` — confirm this fits the package-naming convention UNICEF wants (most are `<org>.fhir.<scope>`, so it's plausible, but it's permanent).
 >   
@@ -98,7 +98,7 @@ Three groups:
 >   
 
 * * *
-## 4. {==The architecture at a glance==}{>>I think CareTeams are missing from this no?<<}{id="c131" by="mberg" at="2026-06-15T21:11:06.668Z"}
+## 4. {==The architecture at a glance==}{>>I think CareTeams are missing from this no?<<}{id="c131" by="mberg" at="2026-06-15T21:11:06.668Z"}{>>From the §4 diagram, yes — but not from the model: `ICRCampaign.careTeam` is a **MS** element (see the §5.2 element table), so a campaign already points at FHIR CareTeam(s). The §4 graphic is just the simplified resource-to-resource spine; it also omits `addresses` and several extensions to stay readable. That said, you've surfaced two **real gaps** worth tracking: (1) there is **no ICRCareTeam profile and no example CareTeam instance** yet — `careTeam` is referenced but unprofiled, and team identity in the examples is **display-only** (e.g. `Task.owner` = "CDD team 7, Rokupr" is a plain display string, not a CareTeam reference); (2) the worker/team model (vaccination teams, CDD teams, supervisors, and their link to supervisory-areas §6.3) isn't fleshed out. If team-level reporting matters — team productivity, supervisor assignment, who-worked-which-zone — we should add an ICRCareTeam profile, wire `Task.owner`/`Task.performer` + `ICRCampaign.careTeam` to it, ship an example, and add CareTeam to the §4 diagram. Want me to add that as an open question and sketch the profile in a rewrite?<<}{id="c134" by="agent" at="2026-06-15T21:30:00.000Z" re="c131"}
 FHIR has no native `Campaign` resource, so the IG profiles core will be based on the CarePlan resource.
 
 ```mermaid
@@ -702,7 +702,7 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 
 Annotated: `code` is the **required** group-kind (`household` here; `community` or `school-cohort` for the other delivery units, same profile); `quantity` 6 is the head-count even though only one `member` (the child, `Patient/example-child`, §7.1) is individually enumerated; `group-location` is the dwelling Location (§6.3) — **residence, not service point** (where service actually happened is the Task's `location`). Swap `code` to `community` and point `group-location` at a settlement and this same JSON becomes the Type-C community delivery unit.⁠
 
-> [!warning] {==Questions==}{>>Which of these questions are still open?<<}{id="c132" by="mberg" at="2026-06-15T21:17:21.092Z"}
+> [!warning] {==Questions==}{>>Which of these questions are still open?<<}{id="c132" by="mberg" at="2026-06-15T21:17:21.092Z"}{>>For §6.1's three questions (this is on that heading): **q2** (Patient vs RelatedPerson/Person) and **q3** (school-cohort) are **closed** — q2 was the v0.7.0 correction, q3 the third-pass addition; both now read as resolved notes, not live questions. **q1** (household identity across campaigns) is **mostly settled** — the approach is fixed: identify by head-of-household + the dwelling's stable GERS ID, folded into the record-linkage work — but it still carries **two genuinely open follow-ups**: (a) whether to *also* stamp a convenience `Group.identifier` for direct lookup, and (b) how to handle head-of-household churn (death, migration, household splits). So in §6.1, only those two sub-points of q1 are actually live. If useful, I can do a **doc-wide open-questions triage** — every section's "[!warning] Questions" block sorted into resolved / still-open / needs-your-decision — and park it in §15 in a rewrite. Say the word.<<}{id="c135" by="agent" at="2026-06-15T21:30:00.000Z" re="c132"}
 > 
 > 1. **Household identity across campaigns — resolved approach.** A household is identified by its **members**, anchored on the head of household (keyed by `Patient.id` or, better, an established external ID such as a national ID); **cross-campaign linkage** joins on the **dwelling**, whose `group-location` Location carries a stable GERS building ID that survives household composition changes. `Group.identifier` itself stays light — identity is reconstructed from head-of-household + dwelling GERS ID — so this folds into the record-linkage work (background §12) rather than minting a new household-identifier scheme. Remaining follow-ups: whether to _also_ stamp a convenience `Group.identifier` for direct lookup, and handling head-of-household churn (death, migration, household splits) — the dwelling GERS ID is the durable join key, the person ID disambiguates which household at that structure.
 >   
