@@ -335,7 +335,7 @@ The first two are **the same geography disagreeing by ~7%**: GRID3 says 48k, the
 >   
 > 3. `confidence` as free string — fine for v0.1; consider coded confidence later.
 >   
-### 6.3 ICRLocation — {==`Location`==}{>>Did you see this?<<}{id="c65" by="mberg" at="2026-06-15T15:41:11.487Z"}{>>Yes — §6.3 and its threads are processed. The multi-system identifier slicing (GERS / P-code / national codes, open slicing) and the async GERS-enrichment lifecycle you asked for in c16 are both applied (v0.4.0, commit 4b49ab0, SUSHI-clean). If "this" points at a specific change you want in this section, tell me which element and I'll make it.<<}{id="c66" by="agent" at="2026-06-15T16:00:00.000Z" re="c65"}
+### 6.3 ICRLocation — `Location`
 _The most-customized ICR resource: nested administrative hierarchy (6+ levels), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases._ (working doc §7.7, §9)
 
 | Element | Constraint |
