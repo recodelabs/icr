@@ -1,15 +1,17 @@
 ---
-version: 0.7.1
-last_modified: 2026-06-15T21:30:00.000Z
+version: 0.8.0
+last_modified: 2026-06-15T21:45:00.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.7.1 · Last modified Jun 15, 2026 at 5:30 PM EDT`
+`v0.8.0 · Last modified Jun 15, 2026 at 5:45 PM EDT`
 
 ⁠
 
 > [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to** `ig/`; those are flagged in-thread and in the v0.7.0 changelog note below.
+
+> [!tip] v0.8.0 — section Question-blocks pruned to OPEN items only; resolved questions archived to §16 Each section's "[!warning] Questions" callout now lists **only genuinely-open questions**; every question already addressed/resolved was moved to the new **§16. Closed questions — archive** (grouped by section) so nothing is lost. Open decisions that still carry live comment threads stay in place (§2 WHO SMART alignment c129; §6.3 Overture release-version c86 and `partOf`-typing c87, plus the addressed-but-awaiting-confirm admin-identifier c88 and breadcrumb c89). This is a documentation-organization pass — no profile/FSH change.
 
 > [!tip] v0.7.0 — fourth-pass revision: your Jun 15 comments folded into the main text (this doc's comments c80–c95) Your latest review round is now **incorporated into this doc's prose**, and each comment thread carries an **APPLIED in v0.7.0 … OK to close** note so you can decide which to close. The substance: **publisher → UNICEF** of record, Ona + Crosscut credited via `contact` (c94, §2); a **planned-vs-executed** explanation on the round CarePlans (c95, §5.2); a **worked** `dataLineage` **(realtime vs reconciled) example** (c80, §8); the **Patient-vs-RelatedPerson/Person** explanation folded into §6.1 with the q2 wording corrected (c83); **GRID3 → WorldPop** relabelled across the example denominators (c84, §6.2/§8/§11); a **two-hierarchy mermaid diagram** for Location (c85, §6.3); **admin-level identifier rules** — ≥1 identifier required at admin-unit level, plus national/internal-code and ISO 3166 slices (c88, §3/§6.3); a proposed `location-ancestors` **breadcrumb extension** for partOf-depth performance (c89, §6.3/§9); an `overlays-admin-unit` _1.. invariant_* on operational-area types (c90, §6.3); and an **inline albendazole MedicationAdministration example** for §7.2 (c91). Explanations were added for the Overture release-version purpose (c86) and the `partOf`-only-ICRLocation trade-off (c87), both left open pending your/Overture's decision. **This pass edits this explainer doc only** — IG/FSH artifact changes implied by c84/c88/c89/c90/c94 are flagged in-thread and tracked for the next IG build, not yet committed to `ig/`.
 
@@ -235,8 +237,6 @@ Annotated: `type` is the **required** campaign-type code (what kind of campaign 
 >   
 > 2. No `library`/eligibility-logic story yet (age-band eligibility as CQL?) — presumably deferred along with the DAK alignment.
 >   
-> 
-> _Resolved in first pass:_ `action.definition[x]` is now constrained to `Canonical(ICRCampaignActivity)`, so the protocol→activity wiring is machine-enforced.
 ### 5.2 ICRCampaign — `CarePlan` (the keystone)
 _A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via_ `partOf`_._ (working doc §7.2, §6.3)
 
@@ -426,9 +426,7 @@ Annotated, reading the links out: `instantiatesCanonical` (**1..1**) makes both 
 >   
 > 3. The umbrella campaign is itself an ICRCampaign, so it too needs `instantiatesCanonical`, `category`, `subject`, `period` — i.e. the umbrella must carry its own (national) denominator. The new umbrella example demonstrates this works, but confirm it's the intended modeling burden.
 >   
-> 4. `dataLineage` is the only campaign extension _not_ marked MS — deliberate (lineage matters more on Task/MeasureReport) or an oversight?
->   
-> 5. `activity.reference` locked to Task only — excludes the R4 alternative `activity.detail` (inline activities). Worth stating in narrative that inline activities are out. _(The annotated umbrella + round JSON above was added in response to the request for a worked CarePlan example.)_
+> 4. `activity.reference` locked to Task only — excludes the R4 alternative `activity.detail` (inline activities). Worth stating in narrative that inline activities are out. _(The annotated umbrella + round JSON above was added in response to the request for a worked CarePlan example.)_
 >   
 ### 5.3 ICRCampaignActivity — {==`ActivityDefinition`==}{>>Woud really help to have some real examples.<<}{id="c10" by="mberg" at="2026-06-12T20:36:45.686Z"}{>>One exists (`example-mcv-activity`: "Administer MCV, 9m–14y" — kind=Task, product=CVX 05, dosage "0.5 mL subcutaneous") but agreed, one isn't enough to make the concept land. In the rewrite I'll inline a trio spanning the campaign types: (1) "Administer albendazole, 5–14y" — ATC P02CA03, dose-pole-derived tablet count (Type C MDA); (2) "Distribute 1 ITN per 2 household members" — GS1 commodity, household-level (Type B-then-A); (3) "Spray interior structure walls" — IRS, structure-level (Type B). Together with the MCV one they show the point of the layer: the protocol carries the clinical/commodity content ONCE, and thousands of Tasks instantiate it without repeating it.<<}{id="c30" by="claude" at="2026-06-12T21:03:09.000Z" re="c10"}{>>Add this to the main text during rewrite<<}{id="c46" by="mberg" at="2026-06-13T01:20:49.728Z" re="c30"}
 _A discrete work type within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households" — instantiated as ICRCampaignTask resources._ (working doc §7.3)
@@ -523,8 +521,6 @@ Annotated: `kind` is **fixed to** `Task` — instantiating this activity produce
 >   
 > 2. `deliveryStrategy` is 0..1 here but 1..* on the protocol and 1..1 on the Task — the asymmetry is defensible (strategy resolved per-task) but worth a sentence of narrative.
 >   
-> 
-> _Resolved in first pass:_ an example now exists (`example-mcv-activity`), and the protocol example wires it in via `action.definitionCanonical`.
 ### 5.4 ICRCampaignTask — `Task`
 _The assignable, trackable operational unit of work — one Task per site-session (Type A, focus = the site Location) or per household_ _(Type B, focus = the household Group). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice._ (working doc §7.4)
 
@@ -633,15 +629,13 @@ Annotated, with the links read out: `focus` and `for` point at the **household d
 > 
 > 1. **Task granularity at scale** is the IG's own #1 open question (one Task per household × national campaign = millions of Tasks). The profile keeps both options open — and field-registration (lazy Task creation on discovery) softens the pre-generation side of the worst case — but make sure pilots test the household-level path.
 >   
-> 2. _(Resolved in second pass; amended in third.)_ `focus` was narrowed to `ICRDeliveryUnit or ICRLocation` once ICRDeliveryUnit generalized the household profile — and then widened to also admit `Patient`, exclusively for person-targeted follow-up tasks (see the granularity block above).
+> 2. The count extensions (`housesVisited`, `eligiblePresent`/`Absent`) are unsignedInt **point values** — no age-band or sex disaggregation. Real tally sheets disaggregate; is the answer "use `output` with aggregate counts" and if so, where's the pattern documented?
 >   
-> 3. The count extensions (`housesVisited`, `eligiblePresent`/`Absent`) are unsignedInt **point values** — no age-band or sex disaggregation. Real tally sheets disaggregate; is the answer "use `output` with aggregate counts" and if so, where's the pattern documented?
+> 3. `missedReason`/`noncompliance` at Task level aggregates over the whole visit — per-child reasons would need person-level records. Worth stating which level the data is expected at.
 >   
-> 4. `missedReason`/`noncompliance` at Task level aggregates over the whole visit — per-child reasons would need person-level records. Worth stating which level the data is expected at.
+> 4. No constraint ties `output.valueReference` to the three delivery-event profiles — the `^short` says it; the profile doesn't enforce it.
 >   
-> 5. No constraint ties `output.valueReference` to the three delivery-event profiles — the `^short` says it; the profile doesn't enforce it.
->   
-> 6. `taskOrigin` 1..1 means **retrofitting existing datasets requires assigning an origin** — acceptable forcing function, or should historical imports get a third code (`unknown`)?
+> 5. `taskOrigin` 1..1 means **retrofitting existing datasets requires assigning an origin** — acceptable forcing function, or should historical imports get a third code (`unknown`)?
 >   
 
 * * *
@@ -706,12 +700,6 @@ Annotated: `code` is the **required** group-kind (`household` here; `community` 
 > 
 > 1. **Household identity across campaigns — resolved approach.** A household is identified by its **members**, anchored on the head of household (keyed by `Patient.id` or, better, an established external ID such as a national ID); **cross-campaign linkage** joins on the **dwelling**, whose `group-location` Location carries a stable GERS building ID that survives household composition changes. `Group.identifier` itself stays light — identity is reconstructed from head-of-household + dwelling GERS ID — so this folds into the record-linkage work (background §12) rather than minting a new household-identifier scheme. Remaining follow-ups: whether to _also_ stamp a convenience `Group.identifier` for direct lookup, and handling head-of-household churn (death, migration, household splits) — the dwelling GERS ID is the durable join key, the person ID disambiguates which household at that structure.
 >   
-> 2. `actual = true` + `type = #person` is right, and `member.entity` is locked to Patient — which excludes Practitioner/Device/etc.; R4 `Group.member` never permitted RelatedPerson in the first place (that arrives in R5). Deliberate and correct — see the "Why `member.entity` is Patient" note in the rationale above.
->   
-> 3. _(Resolved in third pass.)_ `school-cohort` added as the third group kind (with FR designation), per your c49 — chosen over nomadic/camp/institutional candidates to demonstrate extensibility with a clearly in-scope case; the others wait for pilot demand.
->   
-> 
-> _Resolved in first pass:_ `groupLocation` (née `householdLocation`) targets `Reference(ICRLocation)`. _Resolved in second pass:_ the household/community split (working-doc comment c72) — one profile, required coded kind. _Note on q2's wording (my error, caught in the c14 thread):_ R4 `Group.member` never allowed RelatedPerson — locking to Patient excludes Practitioner/Device/etc., and RelatedPerson membership only arrives in R5.
 ### 6.2 ICRTargetPopulation — `Group`
 _A target-population denominator: a conceptual cohort (_`actual=false`_) with a count, eligibility characteristics, and — critically — source and date provenance. Multiple competing estimates per geography are retained; exactly one is flagged as the planning denominator._ (working doc §7.6, §4.2)
 
@@ -796,9 +784,7 @@ Annotated: `actual: false` is what makes this a _conceptual cohort_ — a denomi
 > 
 > 1. **"Exactly one is the planning denominator" is not machine-enforced** — no invariant prevents two Groups for the same geography both setting the flag true (or none). Enforceable only with an invariant scoped to "same geography + campaign", which is hard; the `ICRCampaign.planningDenominator` extension (which _is_ singular, 0..1) may be the real enforcement point. Worth documenting that resolution.
 >   
-> 2. _(Resolved in second pass.)_ Geography linkage is now a profiled characteristic slice — `code = geography`, `valueReference(ICRLocation)` — and all three example denominators exercise it (district ×2 and country). Remaining nuance: the slice is 0..1, so a geography-less estimate is still conformant; consider 1..1 once pilot data confirms every estimate has a Location.
->   
-> 3. `confidence` as free string — fine for v0.1; consider coded confidence later.
+> 2. `confidence` as free string — fine for v0.1; consider coded confidence later.
 >   
 ### 6.3 ICRLocation — `Location`
 _The most-customized ICR resource: nested administrative hierarchy (6+ levels), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases._ (working doc §7.7, §9)
@@ -905,10 +891,6 @@ Annotated: `partOf` climbs the admin tree (district → `example-country`; the f
 > 3. Both GERS and P-code slices are 0..1 — so a Location with **no stable identifier at all** is conformant. Should at least one identifier be required at, say, {==admin-unit levels?==}{>>Yes at admin level. We should allow the country / impelmentor to assign their own internal admin codes if they want. eg they don't need to be p-codes. In many case it'll be a national code they use for the ID.  We sould also support iso codes for higher level eg admin 0-3 administrative areas.<<}{id="c88" by="mberg" at="2026-06-15T19:31:24.605Z"}{>>Got it — three concrete changes for the rewrite: (1) REQUIRE ≥1 identifier at admin-unit levels — an invariant on ICRLocation so that when `type = admin-unit`, `identifier` is 1..* (any system), while sites/dwellings stay loose; an admin area shouldn't exist with no stable code. (2) OPEN the slicing to national/internal codes — the slicing is already open (§6.3) so a country's own admin-code system URI coexists with GERS/P-code; I'll add a named `national`/`internal-admin` slice + alias so it's first-class rather than just an unsliced extra. (3) ISO codes for admin 0–3 — add an `$ISO` system (ISO 3166-1 alpha for admin-0 countries, ISO 3166-2 for admin-1/subdivisions) as a recognized slice for the upper levels. Net: every admin unit carries ≥1 of {ISO, national/internal code, P-code, GERS}, implementer's choice. I'll write this into §6.3 + the §3 aliases next rewrite — say if you'd rather a specific identifier (e.g. national code) be REQUIRED vs any-one-of.<<}{id="c105" by="agent" at="2026-06-15T20:20:00.000Z" re="c88"}{>>APPLIED in v0.7.0: §6.3 now has `national` + `iso` identifier slices and the `icr-loc-admin-id` invariant (≥1 identifier when `type = admin-unit`) — see the identifier row and the "Identity & hierarchy refinements" list; `$NationalAdminCode` + `$ISO` aliases added to §3. The matching FSH/aliases edits are flagged for the next IG build. The rule is "any one of {ISO, national, P-code, GERS}" — OK to close if any-one-of is acceptable; tell me if you'd rather force a specific system.<<}{id="c122" by="agent" at="2026-06-15T20:45:00.000Z" re="c88"}
 >   
 > 4. {==The 6+-level `partOf` chain's query performance (deep `Location.partOf` recursion on mobile) is a flagged open question — nothing in the profile mitigates it (no `ancestor` denormalization extension). Fine for v0.1; track it.==}{>>For perofrmance reasons we may want ot create a breadcrumb in the location resource.  Eg. Adm 0,  adm1, adm2, etc that can be used to help with searches filtering.<<}{id="c89" by="mberg" at="2026-06-15T19:32:47.595Z"}{>>Agreed — that's the standard denormalization fix for deep `partOf` recursion (the §6.3 q4 open question). I'll propose an ancestor "breadcrumb" extension on ICRLocation: a repeating, level-tagged element carrying each ancestor — `adm0 → Sierra Leone`, `adm1 → (region)`, `adm2 → Kambia District`, `adm3 → ward`, … — so "everything in Kambia District" is a single indexed search instead of walking partOf N times on-device. Two design points to settle: (a) store ancestors as `Reference(ICRLocation)` (joins cleanly, must resolve) vs the admin CODE string (filter-friendly, fully denormalized) — probably both: a coded level + a reference; (b) it's DERIVED data, so the IG must document that the server maintains it on write and re-derives it on re-parenting — it must never be hand-authored out of sync with `partOf`. I'll add this as a proposed `location-ancestors` extension in §6.3/§9 next rewrite, with the maintenance rule stated.<<}{id="c106" by="agent" at="2026-06-15T20:20:00.000Z" re="c89"}{>>APPLIED in v0.7.0: the proposed `location-ancestors` breadcrumb extension is now in the §6.3 element table, the "Identity & hierarchy refinements" list, and the §9 extensions table — server-maintained from `partOf`, per-level coded ancestor + reference. It's a v0.7.0 **proposal** (not yet an IG/FSH artifact). OK to close, or keep open if you want the reference-vs-code storage detail nailed down first.<<}{id="c123" by="agent" at="2026-06-15T20:45:00.000Z" re="c89"}
->   
-> 5. _(Resolved in second pass.)_ `Location.type` is now bound (extensible) to the new ICRLocationTypeVS. Note the base R4 binding on `Location.type` is also extensible (v3 ServiceDeliveryLocationRoleType); re-binding is common IG practice but a strict base-binding validator may flag codes like `supervisory-area` — worth a Connectathon sanity check.
->   
-> 6. Should an operational area's `overlays-admin-unit` be **required** when `type = supervisory-area/operational-area`? An invariant could enforce it; left loose for v0.1.
 >   
 
 * * *
@@ -1209,10 +1191,6 @@ Annotated: the same conceptual quantity — coverage of the Kambia round — rep
 >   
 > 2. Neither profile constrains `measure` (the canonical Measure being reported) — unavoidable until the Measure definitions ship, but it means v0.1 coverage reports aren't yet comparable by measure identity. (The new examples use placeholder canonicals under the ICR namespace.)
 >   
-> 3. _(Resolved in third pass.)_ `ICRSurveyCoverage` now carries `dataLineage` 1..1 — preliminary vs final survey results ARE a lineage distinction, answering this question in the affirmative. It still has no `denominatorSource` (correct: a survey's denominator is its sample design).
->   
-> 
-> _Resolved in first pass:_ sample design now has a home — the new `SampleDesign` extension (string, 0..1 MS) — and both profiles have examples (`example-admin-coverage` / `example-survey-coverage`, a 99%-vs-76% divergent pair).
 
 * * *
 ## 9. Extensions (`extensions.fsh`) — all 23
@@ -1266,14 +1244,8 @@ _FHIR has no native campaign semantics; these extensions carry them on profiled 
 
 > [!warning] Questions
 > 
-> 1. `RealtimeVsReconciled` — _(Resolved in third pass.)_ Both fixes applied: the default is documented (**absent ⇒ realtime**) and the flag is **1..1 on both coverage profiles** (§8).
+> 1. `LocationBoundaryGeoJson`: when ICR eventually moves to R5 (or the cross-version extension), migration of stored attachments is trivial, but the **URL** changes — the alignment path is parked as working doc §10 q6; keep it on the v1.0 checklist.
 >   
-> 2. _(Resolved in third pass.)_ Renamed to `eligible-present` / `eligible-absent` before the names ossified (your c18).
->   
-> 3. `LocationBoundaryGeoJson`: when ICR eventually moves to R5 (or the cross-version extension), migration of stored attachments is trivial, but the **URL** changes — the alignment path is parked as working doc §10 q6; keep it on the v1.0 checklist.
->   
-> 
-> _Resolved in first pass:_ `TargetGeography`/`PlanningDenominator`/`HouseholdLocation` (since renamed `GroupLocation`) now target ICRLocation/ICRTargetPopulation; `DeliveryStrategy`'s Location context is now used — ICRLocation carries it (0..1) for delivery sites; `SampleDesign` added (the §8 fix). _Added in second pass:_ `TaskOrigin` (required on Task), `OverlaysAdminUnit` (operational geography). _Changed in third pass:_ `children-present/absent` → `eligible-present/absent`; lineage default + coverage cardinality; `GroupLocation` residence semantics.
 
 * * *
 ## 10. Terminology (`codesystems.fsh`, `valuesets.fsh`)
@@ -1311,8 +1283,6 @@ Domain notes a reviewer might verify: `sleeping` is the polio doorstep conventio
 >   
 > 3. The new FR designations were drafted in-pass — **have a francophone public-health reviewer check them** (esp. "Monitorage rapide de convenance" for RCM). Localization policy generally (which languages, where) still deserves a stated rule.
 >   
-> 
-> _Resolved in first pass:_ FR designations now cover **all five** required-binding systems and the file comment matches; the MDA VS description matches its content.
 
 * * *
 ## 11. Examples (`examples.fsh`) — the scenario walkthrough
@@ -1495,13 +1465,53 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
   
 3. Aggregate-vs-individual representation for Type-A tally campaigns — the site-session example uses `Task.output` counts; document the `Task.output` / MeasureReport split as the official pattern (§7).
   
-4. Closed required-bound code sets exhaustive? `taskOrigin` for historical imports (`unknown` code? §5.4 q6)? Disease-agnostic campaign typing OK with polio program? (§9/§10).
+4. Closed required-bound code sets exhaustive? `taskOrigin` for historical imports (`unknown` code? §5.4 q5)? Disease-agnostic campaign typing OK with polio program? (§9/§10).
   
 5. FR translations reviewed by a francophone public-health reviewer — now also group-kind (incl. school-cohort) and task-origin (§10).
   
-6. Geography characteristic 0..1 → 1..1 once pilots confirm every estimate has a Location (§6.2 q2)? `overlays-admin-unit` required on operational-area types (§6.3 q6)?
+6. Geography characteristic 0..1 → 1..1 once pilots confirm every estimate has a Location (§6.2; the resolved geography-linkage question is archived to §16). _(The `overlays-admin-unit`-required question is now resolved — enforced via the `icr-loc-overlays` invariant, v0.7.0.)_
   
 7. Vector control / entomological surveillance — in ICR's future scope or not (§5.3 boundary note)?
   
 
 **Hold for community review (already flagged in the IG)** 8. Task granularity at scale; deep partOf performance; MeasureReport vs Observation; GeoJSON on R4; record-linkage pattern; Bulk Data access (§12 of background page).
+
+* * *
+## 16. Closed questions — archive
+_Questions that were resolved/addressed have been moved out of the per-section "[!warning] Questions" blocks (so those lists show only what's still open) and parked here, grouped by section, with how each was closed. Nothing is lost; this list grew in v0.8.0. The pass-by-pass §15 checklist remains the changelog view — this is the by-section view._
+
+**§5.1 — ICRCampaignProtocol**
+- ✅ `action.definition[x]` was unenforced → now constrained to `Canonical(ICRCampaignActivity)`, so the protocol→activity wiring is machine-enforced (first pass).
+
+**§5.2 — ICRCampaign**
+- ✅ `dataLineage` was the only campaign extension not marked MS → now **MS** on ICRCampaign (v0.4.0); the §5.2 extensions row reflects it.
+
+**§5.3 — ICRCampaignActivity**
+- ✅ No real activity example → `example-mcv-activity` exists and the protocol wires it via `action.definitionCanonical` (first pass); the four-activity gallery was added (v0.4.0).
+
+**§5.4 — ICRCampaignTask**
+- ✅ `focus` typing → narrowed to `ICRDeliveryUnit | ICRLocation` (second pass), then widened to also admit `Patient` for person-targeted follow-up tasks only (third pass).
+
+**§6.1 — ICRDeliveryUnit**
+- ✅ `member.entity` = Patient → confirmed correct: it excludes Practitioner/Device, and R4 `Group.member` never allowed RelatedPerson (R5 only). Full explanation now in the §6.1 rationale (v0.7.0).
+- ✅ `school-cohort` added as the third group kind, with FR designation (third pass).
+- ✅ `groupLocation` (née `householdLocation`) targets `Reference(ICRLocation)` (first pass); household/community split → one profile + required coded kind (second pass).
+
+**§6.2 — ICRTargetPopulation**
+- ✅ Geography linkage → profiled `characteristic[geography]` slice → `Reference(ICRLocation)`, exercised by all three example denominators (second pass). Residual (slice 0..1 → 1..1 once pilots confirm) is tracked in §15 decision #6.
+
+**§6.3 — ICRLocation**
+- ✅ `Location.type` unbound → bound **extensible** to ICRLocationTypeVS (second pass). _Watch item:_ a strict base-binding validator may flag codes like `supervisory-area` — worth a Connectathon sanity check.
+- ✅ `overlays-admin-unit` required on operational-area types → now enforced by the `icr-loc-overlays` invariant (1..* when `type ∈ {supervisory-area, operational-area}`) (v0.7.0).
+
+**§8 — Coverage**
+- ✅ Survey preliminary-vs-final lineage → `ICRSurveyCoverage.dataLineage` is now **1..1** (third pass); it still has no `denominatorSource` (correct — a survey's denominator is its sample design).
+- ✅ Sample-design had no home → `SampleDesign` extension added, 0..1 MS on ICRSurveyCoverage (first pass); both coverage profiles now have examples.
+
+**§9 — Extensions**
+- ✅ `RealtimeVsReconciled` default + enforcement → `absent ⇒ realtime` documented and the flag **1..1 on both coverage profiles** (third pass).
+- ✅ `children-present/absent` → renamed `eligible-present`/`eligible-absent` before the names ossified (third pass).
+- ✅ Reference-target tightening (`TargetGeography`/`PlanningDenominator`/`GroupLocation`), `DeliveryStrategy` wired onto ICRLocation, `SampleDesign` (first pass); `TaskOrigin`, `OverlaysAdminUnit` added (second pass).
+
+**§10 — Terminology**
+- ✅ FR designations now cover all five required-binding systems and the file comment matches; the MDA VS description matches its content (first pass). _(Still open, kept in §10: francophone reviewer check + localization policy.)_
