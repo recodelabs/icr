@@ -1275,7 +1275,7 @@ Pattern (working doc §8): **ICR defines only campaign semantics**; product code
 
 | CodeSystem | Codes | FR? | Bound (strength) |
 | --- | --- | --- | --- |
-| {==ICRCampaignTypeCS==}{>>What does CS stand for?<<}{id="c144" by="mberg" at="2026-06-16T01:29:23.605Z"} | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔   | Protocol.type, Campaign.category (**required**) |
+| {==ICRCampaignTypeCS==}{>>Is adding CS normal in a profile?<<}{id="c144" by="mberg" at="2026-06-16T01:30:07.802Z"} | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔   | Protocol.type, Campaign.category (**required**) |
 | ICRDeliveryStrategyCS | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed` (6) | ✔   | delivery-strategy ext (**required**) |
 | ICRRecordOriginCS | `campaign`, `routine` (2) | ✔   | record-origin ext (**required**) |
 | ICRGroupKindCS | `household`, `community` + `school-cohort` (3) | ✔   | ICRDeliveryUnit.code (**required**) |
