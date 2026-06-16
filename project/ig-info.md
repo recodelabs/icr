@@ -1,15 +1,15 @@
 ---
-version: 0.12.0
-last_modified: 2026-06-16T18:30:00.000Z
+version: 0.13.0
+last_modified: 2026-06-16T21:45:00.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.12.0 · Last modified Jun 16, 2026 at 2:30 PM EDT`
+`v0.13.0 · Last modified Jun 16, 2026 at 5:45 PM EDT`
 
 ⁠
 
-> [!note] What this document is A component-by-component walkthrough of the draft **ICR** (Integrated Campaign Registry) **FHIR** (Fast Healthcare Interoperability Resources) Implementation Guide (**IG**) in `ig/`, written for review. _New here? See the_ **_Abbreviations & glossary_** _immediately below — every abbreviation used in this document is defined there, and the common ones are also spelled out on first use._ For every artifact it covers **what it is** and **the rationale** (with pointers back to [[icr-v1]] sections). It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with later additions folded into the prose but **not yet committed to** `ig/`. Open decisions still awaiting a project call are consolidated in **§15**; the prioritized proposal backlog for the next IG-editing round lives in **§17** (field-evidence synthesis) and **§18** (WHO SMART alignment). As of v0.12.0 the review-comment threads have been resolved and the per-section question callouts retired — the doc now reads as settled narrative plus the §15/§17/§18 backlog.
+> [!note] What this document is A component-by-component walkthrough of the draft **ICR** (Integrated Campaign Registry) **FHIR** (Fast Healthcare Interoperability Resources) Implementation Guide (**IG**) in `ig/`, written for review. _New here? See the_ **_Abbreviations & glossary_** _immediately below — every abbreviation used in this document is defined there, and the common ones are also spelled out on first use._ For every artifact it covers **what it is** and **the rationale** (with pointers back to [[icr-v1]] sections). It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with later additions folded into the prose but **not yet committed to** `ig/`. Open decisions still awaiting a project call are consolidated in **§15**; the prioritized proposal backlog for the next IG-editing round lives in **§17** (field-evidence synthesis) and **§18** (WHO SMART alignment). As of v0.13.0 the review-comment threads have been resolved and the per-section question callouts retired — the doc now reads as settled narrative plus the §15/§17/§18 backlog. v0.13.0 also folds in your Jun 16 comment round (c1–c7): a proposed **ICRCareTeam** walkthrough with an example (**§5.5**), `activity-type` shown in the §5.1 protocol example, a direct answer to "one CarePlan per district?" (§5.2), the GeoJSON boundary extension shown in the §6.3 location example, the **structure-applied-intervention (IRS) event gap** addressed in §7.4, and the `eligible-` vs `children-` naming flagged for input (§15).
 
 * * *
 ## Abbreviations & glossary
@@ -107,6 +107,8 @@ _Quick reference for every abbreviation used in this document, grouped by area. 
 
 * * *
 
+> [!tip] v0.13.0 — your Jun 16 comment round folded in (c1–c7); CareTeam section added This pass applies your latest seven comments and resolves the threads. **§5.5 — a new proposed `ICRCareTeam` walkthrough** (CareTeam) now sits after the Task section, with an element table, a worked FHIR/JSON example (a vaccinator/CDD team + a supervisor with roles), and the supervisor-as-reporter wiring — the concrete answer to c1 ("add a section for CareTeam with an example"), folded together with §17.3's Supervision/QA proposal. **§5.1** now shows the proposed `activity-type` extension **in the PlanDefinition example JSON** (c2), clearly marked proposed (§17.2 A1). **§5.2** gives a direct answer to "do I need a CarePlan per district?" — `targetGeography` is `0..*` so one CarePlan may name several geographies when they share one denominator, but each scope with its own denominator/coverage becomes its own `partOf` round CarePlan (c3/c4). **§6.3** now shows the **`location-boundary-geojson` extension in the example-district JSON**, with the note that a GeoJSON Attachment carries either a Point (GPS) or a Polygon/shape, while `Location.position` carries the simple GPS point (c5). **§7.4 (new)** addresses **structure-applied interventions like IRS** — spraying targets a *structure*, not a person, so MedicationAdministration doesn't fit; the interim model is the **Task itself** (`Task.for` = the structure Location, already allowed) with a proposed broader **`ICRStructureTreatment` event** for a subsequent round (c6, added to §17). And the **`eligible-` vs `children-` count-extension naming** is flagged for input in §15 (c7). No FSH/profile artifact changed in this pass; the implied IG edits (ICRCareTeam, activity-type, IRS event) are tracked in §15/§17 for the next round.
+
 > [!tip] v0.12.0 — review comments incorporated; per-section question/proposed callouts retired (your Jun 16 request) This pass **folds your open review comments into the main text and resolves the threads**, and **removes the per-section "[!warning] Questions" and "[!warning] Proposed (§17/§18)" callouts** — the proposed-addition pointers are redundant with §17/§18, and the genuinely-open project decisions are consolidated in **§15**. Substantive changes incorporated this round: **§4** — the **CareTeam / supervisor** gap is now stated in the architecture (supervisor is both a delivery actor and typically the reporter; an `ICRCareTeam` profile is the next-round fix, folded together with §17.3's supervision/QA work) and CareTeam added to the §4 diagram (c131/c136); **§5.1** — the `activity-type`**/**`sia-type` axis is now described in the main body as **orthogonal to** `campaign-type` (c137/c154), and age-band-eligibility-as-CQL is explicitly **deferred** (c155); **§5.4** — `Task.for` now carries the **target** (household / patient / community) and `Task.focus` is reserved for **workflow lineage** (CarePlan / activity / prior Task), per your traceability steer (c156), and a **disaggregation pattern** (age/sex via coded `Task.output` or person-level events) is documented (c157); **§6.1** — the residence Location extension stays `group-location` (it generalizes household/community/school — can't revert to `household-location` without losing the non-household cases), now stated at the example (c158); **§6.2** — **denominator source + date relaxed from mandatory (1..1) to recommended (0..1 MS)** since the population is often unknown up front (c159), with §13 #4 updated; **§6.3** — accessibility/travel-time, georegistry-match-status, endemicity, and the TAS gate are **rejected as out-of-IG-scope** (link externally by location ID), leaving only the `structure`/footprint location-type as a possible keeper (c138/c139); **§7** — "AEFI" is spelled out and the aggregate-vs-individual rule is stated (individual record when you have a person; aggregate on `Task.output` when you don't; `MeasureReport` only for derived coverage; MDA may use `subject = Group`) (c140/c141); **§8/§9/§10** — RCM is defined inline, structured `sample-design` is confirmed **deferred (free-text for v1)**, and the "is minting a CodeSystem normal?" / disease-agnostic-campaign-type questions are answered in prose (c142/c143/c144/c145). No FSH/profile artifact changed in this pass; the implied IG edits are tracked in §15/§17/§18 for the next round.
 
 > [!tip] v0.11.0 — Abbreviations spelled out + a glossary added at the top (your Jun 16 request) A new **Abbreviations & glossary** section now sits right under the intro note — a grouped quick-reference for **every** abbreviation in the document (campaign types & programmes, vaccines/products, geography/identifiers, FHIR/technical, WHO-SMART/reporting). The headline abbreviations are also **written out in full on first use** in the intro and §1 — e.g. **SIA** → Supplementary Immunization Activity, plus MDA / ITN / IRS / MCV and FHIR / IG / FSH / SUSHI / R4. This is a documentation-only pass — no profile/FSH change — and the glossary is the canonical reference for any abbreviation used deeper in the doc that isn't expanded inline at its first occurrence.
@@ -197,7 +199,7 @@ Three groups:
 ## 4. The architecture at a glance
 FHIR has no native `Campaign` resource, so the IG's core profiles are based on the CarePlan resource.
 
-{==**Teams and the supervisor (the CareTeam gap).**==}{>>Please add a section for CareTeam with an example.<<}{id="c1" by="mberg" at="2026-06-16T20:56:17.828Z"} `ICRCampaign.careTeam` is already a **MS** element, so a campaign points at FHIR CareTeam(s) — but the team/worker model is **not yet fleshed out**: there is no `ICRCareTeam` profile, and team identity in the examples is **display-only** (`Task.owner` = "CDD team 7, Rokupr" is a plain string, not a CareTeam reference). This matters because the **supervisor is both a delivery actor and, very often, the one doing the reporting**. The next-round fix is an `ICRCareTeam` **profile** with roles (vaccinator / CDD, **supervisor**), wired to `Task.owner`/`Task.performer` and `ICRCampaign.careTeam`; the supervisor typically also owns the **supervisory-area** Location (§6.3) and is the `MeasureReport.reporter` on the rolled-up coverage — so "who reported this number" becomes queryable. This is folded together with §17.3's **Supervision/QA** proposal (one piece of work, not two). One open sub-decision for that round: whether **supervisor-as-reporter** is an explicit invariant (campaign MeasureReports SHALL name a `reporter`) or stays MS for v1 (§15 #7-bis). CareTeam is shown in the diagram below.
+**Teams and the supervisor (the CareTeam gap).** `ICRCampaign.careTeam` is already a **MS** element, so a campaign points at FHIR CareTeam(s) — but the team/worker model is **not yet fleshed out**: there is no `ICRCareTeam` profile, and team identity in the examples is **display-only** (`Task.owner` = "CDD team 7, Rokupr" is a plain string, not a CareTeam reference). This matters because the **supervisor is both a delivery actor and, very often, the one doing the reporting**. The next-round fix is an `ICRCareTeam` **profile** with roles (vaccinator / CDD, **supervisor**), wired to `Task.owner`/`Task.performer` and `ICRCampaign.careTeam`; the supervisor typically also owns the **supervisory-area** Location (§6.3) and is the `MeasureReport.reporter` on the rolled-up coverage — so "who reported this number" becomes queryable. This is folded together with §17.3's **Supervision/QA** proposal (one piece of work, not two). One open sub-decision for that round: whether **supervisor-as-reporter** is an explicit invariant (campaign MeasureReports SHALL name a `reporter`) or stays MS for v1 (§15 #7-bis). CareTeam is shown in the diagram below, and **§5.5 now gives a proposed `ICRCareTeam` profile walkthrough with a worked example** (the concrete answer to your "add a section for CareTeam" request).
 
 ```mermaid
 graph TD
@@ -244,7 +246,7 @@ _Reading the element tables in §5–§9:_ **_MS_** _= Must Support (a FHIR conf
 ### 5.1 ICRCampaignProtocol — `PlanDefinition`
 _The reusable, version-controlled template for a campaign type — what a measles SIA_ **_is_** _(products, age bands, activity sequence, coverage goals), instantiated by every execution in every country._ (working doc §7.1)
 
-{==`activity-type`==}{>>can you include activity-type in the example below? eg in the FHIR resource for the PlanDefinition.<<}{id="c2" by="mberg" at="2026-06-16T21:07:44.360Z"} **/** `sia-type` **is a separate axis from** `campaign-type` **(proposed, §17.2 P1).** A campaign needs two **orthogonal** coded axes, not one. `campaign-type` answers **what intervention** (vaccination-sia / mda / itn-distribution / irs — the delivery model). The proposed `activity-type` / `sia-type` answers **the operational mode or trigger** of the round: routine / preventive-mass (pmvc) / catch-up / follow-up / mop-up / reactive-outbreak-response. They are genuinely different questions — a measles **follow-up SIA** (run every 2–4 years to clear accumulated susceptibles) and a measles **outbreak-response SIA** are _both_ `campaign-type = vaccination-sia` but differ in mode: different trigger, often a different target age band, analyzed separately. Keeping the axes orthogonal lets you query "all reactive campaigns, any disease" or "all measles, any mode" independently (WHO's EYE programme uses exactly this 4-type taxonomy). One caution when this is drafted: don't let `activity-type` overlap `record-origin` (campaign-vs-routine) — `routine` would only ever be an `activity-type` value for the RI baseline, not a campaign mode. A companion `coverage-target` element should store the programme-defined threshold (≥95% SIA / ≥65% LF epidemiological / EYE 50-60-80%), not just achieved coverage. Both are proposed for a subsequent round — see §17.2.
+`activity-type` **/** `sia-type` **is a separate axis from** `campaign-type` **(proposed, §17.2 P1).** A campaign needs two **orthogonal** coded axes, not one. `campaign-type` answers **what intervention** (vaccination-sia / mda / itn-distribution / irs — the delivery model). The proposed `activity-type` / `sia-type` answers **the operational mode or trigger** of the round: routine / preventive-mass (pmvc) / catch-up / follow-up / mop-up / reactive-outbreak-response. They are genuinely different questions — a measles **follow-up SIA** (run every 2–4 years to clear accumulated susceptibles) and a measles **outbreak-response SIA** are _both_ `campaign-type = vaccination-sia` but differ in mode: different trigger, often a different target age band, analyzed separately. Keeping the axes orthogonal lets you query "all reactive campaigns, any disease" or "all measles, any mode" independently (WHO's EYE programme uses exactly this 4-type taxonomy). One caution when this is drafted: don't let `activity-type` overlap `record-origin` (campaign-vs-routine) — `routine` would only ever be an `activity-type` value for the RI baseline, not a campaign mode. A companion `coverage-target` element should store the programme-defined threshold (≥95% SIA / ≥65% LF epidemiological / EYE 50-60-80%), not just achieved coverage. Both are proposed for a subsequent round — see §17.2.
 
 | Element | Constraint |
 |---|---|
@@ -316,6 +318,17 @@ Every execution then points back at it: the national umbrella and the Kambia rou
           }
         ]
       }
+    },
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/activity-type",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-activity-type",
+            "code": "follow-up"
+          }
+        ]
+      }
     }
   ],
   "goal": [
@@ -334,7 +347,7 @@ Every execution then points back at it: the national umbrella and the Kambia rou
 }
 ```
 
-Annotated: `type` is the **required** campaign-type code (what kind of campaign this is); the two `delivery-strategy` extensions are the `1..*` repeat saying MR SIAs run posts **and** mop-up; `goal.description` is the coverage target every execution inherits; `action.definitionCanonical` is the wiring to the activity in §5.3 — **locked to** `Canonical(ICRCampaignActivity)`, so the protocol→activity link is machine-checked, not just narrated. Note what is **absent**: no geography, no dates, no denominator — those live on the executions (§5.2) that point back here via `instantiatesCanonical`.⁠
+Annotated: `type` is the **required** campaign-type code (what kind of campaign this is); the two `delivery-strategy` extensions are the `1..*` repeat saying MR SIAs run posts **and** mop-up; the **`activity-type` extension** (`follow-up`) is shown at your request (c2) to illustrate where the operational-mode axis would sit — it is **proposed, not yet in `ig/`** (§17.2 A1), and is **orthogonal** to `campaign-type`: this is a `vaccination-sia` run as a `follow-up` round, and an outbreak-response SIA would be the same `type` with `activity-type = reactive`; `goal.description` is the coverage target every execution inherits; `action.definitionCanonical` is the wiring to the activity in §5.3 — **locked to** `Canonical(ICRCampaignActivity)`, so the protocol→activity link is machine-checked, not just narrated. Note what is **absent**: no geography, no dates, no denominator — those live on the executions (§5.2) that point back here via `instantiatesCanonical`.⁠
 
 **Two notes carried forward.** `PlanDefinition.type` is `1..1` and repurposed here for campaign type (base FHIR uses it to distinguish plan kinds like order-set vs protocol) — reasonable, though reviewers may ask whether `topic` or a dedicated extension is cleaner. And **age-band eligibility as CQL** (a `library`/eligibility-logic story) is **explicitly deferred** to a later round — it pairs with the WHO DAK/CQL alignment (§18.3).
 ### 5.2 ICRCampaign — `CarePlan` (the keystone)
@@ -391,7 +404,7 @@ graph TD
     D1 -.uses.-> W
 ```
 
-{==One subject per CarePlan==}{>>So say I have a region with 3 districts under it.  Does that mean I have to create a careplan per district or can I have a careplan that has three different target locations?<<}{id="c3" by="mberg" at="2026-06-16T21:12:19.107Z"}{>>What i'm trying to understand is that if each admin area has to have it's own careplan.<<}{id="c4" by="mberg" at="2026-06-16T21:13:30.480Z" re="c3"}; as many CarePlans as the campaign has nested scopes, linked by `partOf`; finer-grained targets (per-ward) exist as additional geography-scoped ICRTargetPopulation Groups that planning and coverage reference without being anyone's `subject`. These nested scopes do **not** sum to the parent total — each carries its own denominator from its own source and method (national 2,150,000 census-projection vs Kambia 48,250 GRID3), so a district and the nation legitimately disagree (§6.2); they nest _conceptually_ via `partOf`, not arithmetically.
+**One subject per CarePlan — so do three districts need three CarePlans? (re c3/c4).** Not necessarily — it depends on whether the districts share a denominator. The key constraint is that `subject` (the denominator) is **exactly one** ICRTargetPopulation per CarePlan, while `targetGeography` is **`0..*`**. So you have two valid shapes: **(a) one CarePlan, three target locations** — legitimate when the three districts are planned and reported as a single scope against **one** regional denominator (set `targetGeography` to all three district Locations, keep the one regional `subject`); **(b) three round CarePlans under a regional umbrella** via `partOf` — the usual case, needed the moment each district carries **its own** denominator, period, or coverage rollup (which is almost always true, because each district's population comes from its own source and its coverage must be computed separately). Put plainly: you do **not** have to mint a CarePlan per admin area just because it is an admin area — you mint one per *denominator/reporting scope*. Below the umbrella, finer-grained targets (per-ward) exist as additional geography-scoped ICRTargetPopulation Groups that planning and coverage reference without being anyone's `subject`. These nested scopes do **not** sum to the parent total — each carries its own denominator from its own source and method (national 2,150,000 census-projection vs Kambia 48,250 GRID3), so a district and the nation legitimately disagree (§6.2); they nest _conceptually_ via `partOf`, not arithmetically.
 
 **The campaign as FHIR/JSON — umbrella + round.** Two `ICRCampaign` (CarePlan) instances from the scenario. First the **national umbrella** (the microplan shell):
 
@@ -721,6 +734,89 @@ Annotated, with the links read out: `for` points at the **household delivery-uni
 **How to disaggregate (recommended pattern).** The count extensions (`eligible-present`/`eligible-absent`, `houses-visited`) are deliberately **point values** — a quick visit-level tally. Age-band/sex disaggregation should **not** be done by multiplying those extensions; do it one of two ways: (a) `Task.output` **as coded aggregate counts** — emit one output entry per stratum, each carrying a coded `type` for the age band / sex (e.g. "9–59 months, female"); or (b) where person-level data exists, **derive disaggregation from the individual** `Immunization`**/**`MedicationAdministration` **records**, which already carry the patient's age and sex. The point-value extensions stay as the visit-level summary; the disaggregated truth lives in `output` or the delivery events. The same principle governs per-child reasons: `missed-reason`/`noncompliance-reason` at Task level aggregate over the whole visit, so per-child reasons require person-level records.
 
 Two smaller items: `output.valueReference` is not yet structurally constrained to the three delivery-event profiles (the `^short` says it; the profile doesn't enforce it); and `task-origin` `1..1` means historical imports must assign an origin — acceptable as a forcing function, or add an `unknown` code for back-loaded datasets (§15 #4).
+### 5.5 ICRCareTeam — `CareTeam` (proposed — the team & supervisor model)
+> [!note] Status — _proposed_, not committed `ICRCareTeam` is **not yet in `ig/`** — `ICRCampaign.careTeam` already references a base FHIR CareTeam (the MS element shown in §4), but there is no profile constraining it and team identity in the examples is still **display-only** (`Task.owner` = "CDD team 7, Rokupr" is a plain string). This section is the proposed profile and an illustrative example, added per your c1 request; it is the §4 CareTeam gap and §17.3's Supervision/QA item, drafted as one piece of work.
+
+_The campaign delivery team — the vaccinators / CDDs who do the work and the **supervisor** who oversees them and very often files the report. It answers "who did this, and who is accountable for this number": the team is referenced from `ICRCampaign.careTeam` (the campaign-level roster) and from `Task.owner` / `Task.performer` (the team that worked a given Task), and the supervisor surfaces again as the `MeasureReport.reporter` on rolled-up coverage (§8) and typically owns the **supervisory-area** Location (§6.3)._
+
+| Element | Proposed constraint |
+|---|---|
+| `status` | MS — "proposed → active → inactive" |
+| `name` | MS — human-readable team label (replaces today's display-only `Task.owner` string) |
+| `subject` | MS — the campaign/population the team serves (`Reference(ICRTargetPopulation)`) |
+| `participant` | **1..\* MS** — the members |
+| `participant.role` | **1..1 MS**, bound **extensible** to a proposed **ICRTeamRoleVS** — `vaccinator` \| `cdd` (community drug distributor) \| `supervisor` \| `social-mobilizer` \| `recorder` |
+| `participant.member` | MS — `Reference(Practitioner \| PractitionerRole \| RelatedPerson)` (the CDD/vaccinator; a community volunteer is a RelatedPerson) |
+| `managingOrganization` | MS — the implementing partner / district health office |
+| `extension[overseesArea]` | 0..\* (proposed) → `Reference(ICRLocation)` — the supervisory-area(s) this team's supervisor covers, tying CareTeam to the operational geography (§6.3) |
+
+**The care team as FHIR/JSON (proposed).** `example-careteam` — CDD team 7 and its supervisor, the team that would own the mop-up Task and report Kambia's coverage:
+
+```json
+{
+  "resourceType": "CareTeam",
+  "id": "example-careteam",
+  "meta": {
+    "profile": [
+      "https://fhir.icr.unicef.org/StructureDefinition/ICRCareTeam"
+    ]
+  },
+  "status": "active",
+  "name": "CDD team 7, Rokupr",
+  "subject": {
+    "reference": "Group/example-target-population"
+  },
+  "participant": [
+    {
+      "role": [
+        {
+          "coding": [
+            {
+              "system": "https://fhir.icr.unicef.org/CodeSystem/icr-team-role",
+              "code": "vaccinator"
+            }
+          ]
+        }
+      ],
+      "member": {
+        "display": "Fatmata Sesay (vaccinator)"
+      }
+    },
+    {
+      "role": [
+        {
+          "coding": [
+            {
+              "system": "https://fhir.icr.unicef.org/CodeSystem/icr-team-role",
+              "code": "supervisor"
+            }
+          ]
+        }
+      ],
+      "member": {
+        "display": "Ibrahim Conteh (supervisor)"
+      }
+    }
+  ],
+  "managingOrganization": [
+    {
+      "display": "Kambia District Health Management Team"
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/oversees-area",
+      "valueReference": {
+        "reference": "Location/example-supervisory-area"
+      }
+    }
+  ]
+}
+```
+
+Annotated: `name` carries the team label that is **display-only today** on `Task.owner` (§5.4) — the proposed wiring makes `Task.owner` a `Reference(CareTeam)` instead, so "who did this visit" becomes a real join rather than a string. Each `participant` pairs a **coded `role`** (the new `vaccinator` / `supervisor` / `cdd` / … vocabulary) with the person. The **supervisor** is the load-bearing role: the proposed `oversees-area` extension points at the supervisory-area Location (§6.3) the supervisor covers, and on the rolled-up coverage MeasureReport that same supervisor is the `reporter` — so "who reported this number, and which zone do they own" is queryable end to end. (The members are shown `display`-only because the scenario ships no Practitioner instances yet; in production they would reference `Practitioner`/`PractitionerRole` records.)
+
+**Rationale.** A campaign without a team model can't answer two operational questions every supervisor asks: *who worked this area* and *who is accountable for this reported figure*. Profiling CareTeam (rather than leaning on display strings) makes both queryable, and folds the **supervisor-as-reporter** semantics (§4) into one place. One open sub-decision carries forward to the drafting round (§15 #7-bis): whether campaign MeasureReports **SHALL** name a `reporter` (an explicit invariant) or whether that stays MS for v1. Because this overlaps §17.3's Supervision/QA proposal and the §17.3 "Team / CareTeam + microplan-resource" item, the three are drafted together, not piecemeal.
 
 * * *
 ## 6. Population & geography profiles (`profiles-population.fsh`)
@@ -916,7 +1012,7 @@ Reading it: every box on the solid `partOf` spine is an ICRLocation pointing at 
 - **A breadcrumb to tame deep** `partOf` **(c89).** A proposed, **server-maintained** `location-ancestors` extension denormalizes the chain into per-level pointers (`adm0`…`adm3+`), so "everything in Kambia District" is one indexed search instead of N `partOf` hops on a mobile client. It is derived data — re-computed on write and on re-parenting, never hand-authored out of sync with `partOf`.
   
 
-{==**The location as FHIR/JSON.** `example-district` — Kambia District, showing the multi-system identity and the admin hierarchy:==}{>>We need to add a geojson extension for the location.  This can take in a gps point or a shape.<<}{id="c5" by="mberg" at="2026-06-16T21:19:35.563Z"}
+**The location as FHIR/JSON.** `example-district` — Kambia District, showing the multi-system identity, the admin hierarchy, and (re c5) the **GeoJSON boundary extension**. ICR already ships this extension — `location-boundary-geojson` (§6.3 element table / §9) — and a GeoJSON object can carry **either a Point (a GPS coordinate) or a Polygon/MultiPolygon (a shape)**, so the one extension covers both of the cases you raised; the simple GPS point also has a native home in `Location.position`. The example now populates it:
 
 ```json
 {
@@ -960,11 +1056,25 @@ Reading it: every box on the solid `partOf` spine is an ICRLocation pointing at 
       "system": "https://fhir.icr.unicef.org/identifiers/overture-gers",
       "value": "overture-division-kambia-example"
     }
+  ],
+  "position": {
+    "longitude": -12.9176,
+    "latitude": 9.1247
+  },
+  "extension": [
+    {
+      "url": "https://fhir.icr.unicef.org/StructureDefinition/location-boundary-geojson",
+      "valueAttachment": {
+        "contentType": "application/geo+json",
+        "title": "Kambia District boundary (GeoJSON Polygon)",
+        "url": "https://fhir.icr.unicef.org/geo/kambia-district.geojson"
+      }
+    }
   ]
 }
 ```
 
-Annotated: `partOf` climbs the admin tree (district → `example-country`; the full chain runs country → district → settlement → dwelling, each its own ICRLocation). `type` is the ICR location-type (`admin-unit`); `physicalType` carries the base-FHIR shape. The **sliced** `identifier` is the multi-system identity — a P-code **and** a GERS ID coexisting, each tagged by its `system` URI (the mechanism behind cross-campaign joins, §3); both slices are `0..1`, so a brand-new unmapped location can exist with national codes only and get its GERS ID back-filled async (the lifecycle described just above). A delivery-site Location (the fixed post) additionally carries a `delivery-strategy` extension; a supervisory area carries `overlays-admin-unit` _instead of_ sitting in the `partOf` tree.⁠
+Annotated: `partOf` climbs the admin tree (district → `example-country`; the full chain runs country → district → settlement → dwelling, each its own ICRLocation). `type` is the ICR location-type (`admin-unit`); `physicalType` carries the base-FHIR shape. The **sliced** `identifier` is the multi-system identity — a P-code **and** a GERS ID coexisting, each tagged by its `system` URI (the mechanism behind cross-campaign joins, §3); both slices are `0..1`, so a brand-new unmapped location can exist with national codes only and get its GERS ID back-filled async (the lifecycle described just above). The **two geometry carriers** answer c5: `position` is the simple **GPS point** (a longitude/latitude pair, base FHIR), and the `location-boundary-geojson` extension is the **shape** — a GeoJSON Attachment (`contentType` fixed `application/geo+json`) whose payload is a Polygon/MultiPolygon (here referenced by `url`; it may instead be inline base64 `data`). Because GeoJSON itself supports `Point` as well as `Polygon`, the **same** extension can carry a coordinate *or* a footprint where a richer point is wanted. A delivery-site Location (the fixed post) additionally carries a `delivery-strategy` extension; a supervisory area carries `overlays-admin-unit` _instead of_ sitting in the `partOf` tree.⁠
 
 **Two open decisions carried forward** (the admin-identifier and breadcrumb items above are applied; these two are not):
 
@@ -1046,7 +1156,7 @@ _Proposed for a subsequent round (§17.2 P1 / §17.3): an_ **_AEFI profile_** _�
 ```
 
 Annotated: `patient` is the **person-level capture** — the same `example-child` who is the household's `member` (§6.1) — which is how polio-style member-level data lands without multiplying Tasks (§5.4): one Task per visit, one Immunization per child off `Task.output`. `vaccineCode` is the CVX matching the activity's product (§5.3). The **mandatory** `record-origin: campaign` is the firewall keeping SIA doses out of routine coverage analytics. `lotNumber`/`manufacturer` give AEFI lot traceability; `protocolApplied.doseNumber` bridges to routine-series logic.⁠
-### {==7.2 ICRMedicationAdministration — `MedicationAdministration`==}{>>What do we do for indoor residual spraying?  This is applied to the structure.  It's not an administration.  We probably need some other kind of broader event type to capture these type of things.<<}{id="c6" by="mberg" at="2026-06-16T21:20:26.150Z"}
+### 7.2 ICRMedicationAdministration — `MedicationAdministration`
 | Element | Constraint |
 |---|---|
 | `status`, `effective[x]` | MS |
@@ -1122,6 +1232,12 @@ Annotated, with the distinctly-MDA pieces called out: `medicationCodeableConcept
 **Aggregate vs individual records — the rule (resolves c141).** The split is: **individual record when you have a person; aggregate count on** `Task.output` **when you don't;** `MeasureReport` **only for derived coverage** (numerator/denominator/score), never a raw tally. Concretely — **MDA / drugs:** `ICRMedicationAdministration.subject` already allows an **ICRDeliveryUnit Group** (§7.2), so a community-register aggregate is a perfectly consistent MedicationAdministration (exactly the consistency c141 asks for). **Vaccines:** R4 `Immunization.patient` is `1..1 Reference(Patient)` and **cannot** point at a Group, and re-housing a vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention (and the WHO `IMMZ.Immunization` alignment, §18.3); so a Type-A vaccine **session tally** lives as an aggregate count on `Task.output` (example #20 = 412 doses), and individual `Immunization`s are minted only when person-level data exists (the registry-need case). MeasureReport is not a tally store.
 
 Three smaller delivery-layer items: `vaccineCode` binds to the generic FHIR VS rather than an ICR-curated SIA subset (fine — extensible — though countries will ask which codes to use for MR/bOPV/nOPV2); there is still **no GS1 binding/alias** for `suppliedItem.item[x]` (the ITN example uses free text, §3); and `recordOrigin` is the only mandatory delivery-event extension — `dataLineage` (realtime/reconciled) lives on CarePlan/Task/MeasureReport, not the events, so if an individual event arrives in both streams the consumer distinguishes them via the parent Task.
+### 7.4 Structure-applied interventions — IRS and the "treat a place" gap (re c6)
+**The problem you flagged.** Indoor Residual Spraying (IRS) — and larviciding, and bed-net hanging — is applied to a **structure**, not to a person. It genuinely does **not** fit `ICRMedicationAdministration`: that profile's `subject` is a `Patient` or an ICRDeliveryUnit **Group of people** (§7.2), and FHIR's `MedicationAdministration` semantics are "a medication given to a subject who receives it." Spraying a house is not an administration to anyone, so forcing it through that profile would be a category error — you are right that a broader event type is needed.
+
+**What the IG can do today (interim, no new profile).** The act already has a home: the **Task itself**. `ICRCampaignTask.for` is `Reference(ICRDeliveryUnit | ICRLocation | Patient)` (§5.4), so an IRS Task's `for` is the **structure Location** being sprayed (`physicalType` building/house, §6.3) and `Task.location` is where it happened; the spray's product is the activity it instantiates (`example-irs-activity`, Pirimiphos-methyl, §5.3), and per-house results (sprayed / refused / locked, rooms or surface area, insecticide quantity) sit on `Task.output` as coded aggregate counts (the §5.4 disaggregation pattern) or future structured fields. So for v1 an IRS round is fully recordable as **structure-targeted Tasks with no delivery-event resource hanging off them** — the Task *is* the event. The same shape covers any "treat a place" intervention (larviciding a water body, fogging a block).
+
+**What's proposed for a subsequent round (added to §17).** A dedicated **`ICRStructureTreatment` event profile** for structure-applied interventions, so IRS/larviciding get a first-class event (parallel to Immunization/MedicationAdministration/SupplyDelivery) rather than living only on `Task.output`. FHIR R4 has no perfectly-shaped base resource here — the realistic candidates are a **profiled `Procedure`** (whose `subject` is unfortunately still `Patient`, so it would need an extension carrying the structure Location — awkward) or a **profiled `SupplyDelivery`/custom event keyed to a Location** (cleaner for "a treatment delivered to a place"); the choice is a drafting-round decision. Either way it carries the same `record-origin` firewall (§7) and references the structure Location. Tracked at **§17.3 / §17.4** as the *structure-applied-intervention event* item.
 
 * * *
 ## 8. Coverage profiles (`profiles-coverage.fsh`)
@@ -1293,7 +1409,7 @@ _Proposed for a subsequent round (§17): the §17 additions imply_ **_new extens
 | --- | --- |
 | HousesVisited (`houses-visited`) | unsignedInt |
 | ChildrenPresent (`children-present`) → now **EligiblePresent (**`eligible-present`**)** | unsignedInt |
-| {==ChildrenAbsent (`children-absent`) → now **EligibleAbsent (**`eligible-absent`**)**==}{>>Flag that this is something we need to get input on which one is better.<<}{id="c7" by="mberg" at="2026-06-16T21:21:56.422Z"} | unsignedInt |
+| ChildrenAbsent (`children-absent`) → now **EligibleAbsent (**`eligible-absent`**)** — _naming under review (c7): get partner input on whether `eligible-` or `children-` reads better; §15_ | unsignedInt |
 | MissedReason (`missed-reason`) | CodeableConcept, **extensible** → ICRMissedReasonVS |
 | NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS |
 | FingerMarked (`finger-marked`) | boolean — "the in-field 'already covered' flag" |
@@ -1547,6 +1663,21 @@ These are the gaps ICR already _knew_ about. **§17** adds a second, larger clas
 - ~~RCM /~~ `sample-design` ~~/ CodeSystem / disease-agnostic typing~~ — all answered in prose: RCM defined inline (§8), structured `sample-design` confirmed **deferred** (§9), minting CodeSystems confirmed standard practice (§10), disease-agnostic campaign-type worked example (§10) (c142–c145).
   
 
+**✅ Addressed in the sixth-pass revision (v0.13.0 — this doc only, from comments c1–c7; IG/FSH edits flagged for the next round)**
+
+- ~~CareTeam section + example missing~~ — new **§5.5 ICRCareTeam** proposed profile with element table, a worked FHIR/JSON example (vaccinator + supervisor with coded roles), and the supervisor-as-reporter wiring; §4 points at it (c1).
+  
+- ~~`activity-type` not shown in the protocol example~~ — added to the §5.1 PlanDefinition example JSON (`activity-type: follow-up`), clearly marked **proposed** (§17.2 A1) and orthogonal to `campaign-type` (c2).
+  
+- ~~"One CarePlan per district?" unclear~~ — direct answer in §5.2: `targetGeography` is `0..*` so one CarePlan may name several geographies sharing one denominator, but each scope with its own denominator/coverage becomes its own `partOf` round CarePlan; you mint one per *denominator/reporting scope*, not per admin area (c3/c4).
+  
+- ~~GeoJSON extension not shown on the location~~ — the §6.3 `example-district` JSON now carries `location-boundary-geojson` (shape) **and** `position` (GPS point); a GeoJSON Attachment can be a Point or a Polygon, so the one extension covers both (c5).
+  
+- ~~IRS / structure-applied events~~ — new **§7.4** explains why IRS doesn't fit MedicationAdministration (it targets a structure, not a person), gives the interim model (the **Task itself**, `for` = structure Location), and proposes an `ICRStructureTreatment` event for a later round (c6; added to §17).
+  
+- ~~`eligible-` vs `children-` naming~~ — flagged inline in §9 and as open decision #7-ter below; needs partner input (c7).
+  
+
 **Decisions needed (open — for Matt / project)**
 
 1. Canonical URL ownership + dependency declaration + package-id confirmed with UNICEF (§2 q1/q3/q4). **Publisher attribution is now decided — UNICEF (c94, v0.7.0).**
@@ -1564,7 +1695,11 @@ These are the gaps ICR already _knew_ about. **§17** adds a second, larger clas
 7. Vector control / entomological surveillance — in ICR's future scope or not (§5.3 boundary note)?
   
 
-7-bis. **Supervisor-as-reporter** — when the `ICRCareTeam` profile is drafted, decide whether it's an explicit invariant (campaign MeasureReports SHALL name a `reporter`) or stays MS for v1 (§4).
+7-bis. **Supervisor-as-reporter** — when the `ICRCareTeam` profile is drafted (§5.5), decide whether it's an explicit invariant (campaign MeasureReports SHALL name a `reporter`) or stays MS for v1 (§4/§5.5).
+
+7-ter. **`eligible-` vs `children-` count-extension naming (c7)** — the house-to-house present/absent extensions were renamed `eligible-present`/`eligible-absent` (from `children-…`) before the names ossified; get **partner input** on which reads better (`eligible-` is accurate for MDA/ITN where the target isn't children, but `children-` is more familiar to EPI staff) before v1 locks the IDs (§9).
+
+7-quater. **Structure-applied-intervention event (c6)** — decide the base for the proposed `ICRStructureTreatment` event (profiled `Procedure` with a structure-Location extension, vs a Location-keyed custom/SupplyDelivery-style event) so IRS/larviciding get a first-class event rather than living only on `Task.output` (§7.4/§17).
 
 **Hold for community review (already flagged in the IG)** 8. Task granularity at scale; deep partOf performance; MeasureReport vs Observation; GeoJSON on R4; record-linkage pattern; Bulk Data access (§12 of background page).
 
@@ -1685,9 +1820,11 @@ The field evidence strongly endorses these; they are listed so the next round kn
   
 - **Defaulter / dropout / zero-dose** disposition + a **dropout Measure** + zero-dose hand-off-to-routine. _(R, M; S/N ~.)_
   
-- **Supervision / QA** profile; **social-mobilization / demand** axis; **population-vulnerability / equity** taxonomy (characteristic). _(S, R, M; N/G ~ for equity.)_ **Note (c131/c136):** the supervision/QA piece overlaps the open **ICRCareTeam / supervisor** gap flagged at §4 — the supervisor is a key delivery actor and often the reporter; fold the two together when drafting.
+- **`ICRStructureTreatment` event profile (c6)** — a first-class delivery event for **structure-applied interventions** (IRS, larviciding, fogging) that don't fit `MedicationAdministration` because they target a *structure/Location*, not a person (§7.4). Base TBD: profiled `Procedure` (with a structure-Location extension) vs a Location-keyed custom event; carries `record-origin`. Interim, the act lives on the IRS **Task** (`for` = structure Location). _(S ~ for vector control; the irs `campaign-type` already exists.)_
   
-- `outreach` **delivery-strategy** (distinct from mobile/temporary-post); **CDD / community-distributor performer role**; a **Team / CareTeam + microplan-resource** profile (every geo/microplanning source models team-areas + workload; the IG has none — ties to the §4 CareTeam gap). _(R, N, G.)_
+- **Supervision / QA** profile; **social-mobilization / demand** axis; **population-vulnerability / equity** taxonomy (characteristic). _(S, R, M; N/G ~ for equity.)_ **Note (c131/c136 + c1):** the supervision/QA piece overlaps the **ICRCareTeam / supervisor** model now drafted at **§5.5** (proposed) — the supervisor is a key delivery actor and often the reporter; fold the two together when drafting.
+  
+- `outreach` **delivery-strategy** (distinct from mobile/temporary-post); **CDD / community-distributor performer role**; a **Team / CareTeam + microplan-resource** profile (every geo/microplanning source models team-areas + workload — the proposed **§5.5 ICRCareTeam** is the start of this; pair it with a microplan resource). _(R, N, G.)_
   
 - **Survey evidence-source + crude-vs-valid coverage** (card/recall/register) — overlaps B2. _(CS.)_
   
