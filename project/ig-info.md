@@ -801,7 +801,7 @@ Annotated: `actual: false` is what makes this a _conceptual cohort_ — a denomi
 ### 6.3 ICRLocation — `Location`
 _The most-customized ICR resource: nested administrative hierarchy (6+ levels), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases._ (working doc §7.7, §9)
 
-> [!warning] Proposed (§17.4 P3 — for a subsequent IG round) Geography refinements: a `structure` **/ footprint** location-type + **accessibility / travel-time**, a **georegistry-match-status** value set, and (NTD) **endemicity + TAS/impact-survey gate** on ICRLocation. The synthesis also says the GeoJSON "open question" can be closed — `location-boundary-geojson` already ships (§9). See §17.
+> [!warning] Proposed (§17.4 P3 — for a subsequent IG round) Geography refinements: a `structure` **/ footprint** location-type + {==**accessibility / travel-time**, a **georegistry-match-status**==}{>>This meta data should not be in the IG. It can be linked outside based on the location and location id.  Accessiblity / travel time can vary based on factors and we don't need a georegistry match status.<<}{id="c138" by="mberg" at="2026-06-16T01:22:36.926Z"}{>>endemicity + TAS/impact-survey gate Same with these too.  The piont of a static location ID is to be able to link to external datasets for additional context. I don't think they belong in the core IG.<<}{id="c139" by="mberg" at="2026-06-16T01:23:27.828Z" re="c138"} value set, and (NTD) **endemicity + TAS/impact-survey gate** on ICRLocation. The synthesis also says the GeoJSON "open question" can be closed — `location-boundary-geojson` already ships (§9). See §17.
 
 **The two hierarchies, side by side.** The `partOf` chain is the **administrative** tree (one parent each); operational geography sits **beside** it — its own Location, _not_ in the `partOf` chain, linked to the admin unit(s) it covers by `overlays-admin-unit`:
 
@@ -911,7 +911,7 @@ Annotated: `partOf` climbs the admin tree (district → `example-country`; the f
 ## 7. Delivery-event profiles (`profiles-delivery.fsh`)
 All three share two design constants: a **mandatory** `record-origin` **extension (1..1 MS)** — campaign vs routine, so SIA doses never contaminate routine coverage analytics (working doc §4.4) — and the **Task→event link running through** `Task.output` because R4 Immunization has no `basedOn` element to point back with.
 
-> [!warning] Proposed (§17.2 P1 / §17.3 — for a subsequent IG round) An **AEFI** profile + `aefi-causal-type` VS (C1); **wastage / vial-accountability** (C2) and a `stockpile-source` axis (ICG / national / Gavi, A3) on ICRSupplyDelivery; and **cold-chain / stock-readiness** beyond SupplyDelivery (§17.4). See §17.
+> [!warning] Proposed (§17.2 P1 / §17.3 — for a subsequent IG round) An {==**AEFI** profile==}{>>What is an AEFI profile? Can you spell that out.<<}{id="c140" by="mberg" at="2026-06-16T01:24:34.333Z"} + `aefi-causal-type` VS (C1); **wastage / vial-accountability** (C2) and a `stockpile-source` axis (ICG / national / Gavi, A3) on ICRSupplyDelivery; and **cold-chain / stock-readiness** beyond SupplyDelivery (§17.4). See §17.
 ### 7.1 ICRImmunizationEvent — `Immunization`
 | Element | Constraint |
 |---|---|
@@ -1051,7 +1051,7 @@ Annotated, with the distinctly-MDA pieces called out: `medicationCodeableConcept
 
 > [!warning] Questions (delivery layer)
 > 
-> 1. **Aggregate vs individual records** is a flagged open question; these profiles are individual-event-shaped. `ICRMedicationAdministration.subject` pointing at a Group is the aggregate escape hatch — but Immunization.patient cannot be a Group in R4, so **type-A tally-only campaigns have no Immunization representation**; presumably aggregate counts live in `Task.output`/MeasureReport. The narrative should state this split explicitly.
+> 1. {==**Aggregate vs individual records** is a flagged open question; these profiles are individual-event-shaped. `ICRMedicationAdministration.subject` pointing at a Group is the aggregate escape hatch — but Immunization.patient cannot be a Group in R4, so **type-A tally-only campaigns have no Immunization representation**; presumably aggregate counts live in `Task.output`/MeasureReport. The narrative should state this split explicitly.==}{>>Can this be a medication administration? I think it seem ok to be consistent. If we have an individual record need for a registry then we would need the immunization. I think this is more appropriate then the MesaureReport.<<}{id="c141" by="mberg" at="2026-06-16T01:25:58.588Z"}
 >   
 > 2. `vaccineCode` binds to the generic FHIR VS rather than an ICR-curated SIA vaccine subset — fine (extensible), but countries will ask which codes to use for MR/bOPV/nOPV2.
 >   
@@ -1064,7 +1064,7 @@ Annotated, with the distinctly-MDA pieces called out: `medicationCodeableConcept
 ## 8. Coverage profiles (`profiles-coverage.fsh`)
 _Administrative and independently-measured coverage are distinct lineages of the same conceptual quantity — separately profiled, never merged._ (working doc §4.1; the recurring evidence: **Cuamba, Mozambique — ~99% admin vs ~76% survey**.) Measure definitions are meant to align with what ministries already owe: WHO JAP, ICG M&E minimum dataset, ESPEN treatment-coverage schema, WHO EPI — the `Measure` resources themselves are deferred (§13).
 
-> [!warning] Proposed (§17.2 P1 — the biggest rework, for a subsequent IG round) Coverage is keyed only by data-source today. Add **denominator-type** (total vs at-risk) and **unit** (people vs implementation-units → geographic coverage) axes (B1); **structure** `sample-design` into sub-elements and **bind both coverage profiles to** `Measure` **definitions** (B2 — closes the §14 Measure gap); and make **RCM = pass/fail + triggers, not a coverage rate** explicit (B4). See §17.
+> [!warning] Proposed (§17.2 P1 — the biggest rework, for a subsequent IG round) Coverage is keyed only by data-source today. Add **denominator-type** (total vs at-risk) and **unit** (people vs implementation-units → geographic coverage) axes (B1); **structure** `sample-design` into sub-elements and **bind both coverage profiles to** `Measure` **definitions** (B2 — closes the §14 Measure gap); and make {==**RCM = pass/fail + triggers, not a coverage rate**==}{>>What does RCM meant?<<}{id="c142" by="mberg" at="2026-06-16T01:27:10.996Z"} explicit (B4). See §17.
 ### 8.1 ICRAdministrativeCoverage — `MeasureReport`
 | Element | Constraint |
 | --- | --- |
