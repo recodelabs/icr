@@ -1046,7 +1046,7 @@ _Proposed for a subsequent round (§17.2 P1 / §17.3): an_ **_AEFI profile_** _�
 ```
 
 Annotated: `patient` is the **person-level capture** — the same `example-child` who is the household's `member` (§6.1) — which is how polio-style member-level data lands without multiplying Tasks (§5.4): one Task per visit, one Immunization per child off `Task.output`. `vaccineCode` is the CVX matching the activity's product (§5.3). The **mandatory** `record-origin: campaign` is the firewall keeping SIA doses out of routine coverage analytics. `lotNumber`/`manufacturer` give AEFI lot traceability; `protocolApplied.doseNumber` bridges to routine-series logic.⁠
-### 7.2 ICRMedicationAdministration — `MedicationAdministration`
+### {==7.2 ICRMedicationAdministration — `MedicationAdministration`==}{>>What do we do for indoor residual spraying?  This is applied to the structure.  It's not an administration.  We probably need some other kind of broader event type to capture these type of things.<<}{id="c6" by="mberg" at="2026-06-16T21:20:26.150Z"}
 | Element | Constraint |
 |---|---|
 | `status`, `effective[x]` | MS |
