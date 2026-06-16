@@ -596,41 +596,7 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 **The delivery unit as FHIR/JSON.** `example-household` — the Type-B unit a mop-up Task focuses on:
 
 ```json
-{
-  "resourceType": "Group",
-  "id": "example-household",
-  "meta": {
-    "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"
-    ]
-  },
-  "type": "person",
-  "actual": true,
-  "code": {
-    "coding": [
-      {
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind",
-        "code": "household"
-      }
-    ]
-  },
-  "quantity": 6,
-  "member": [
-    {
-      "entity": {
-        "reference": "Patient/example-child"
-      }
-    }
-  ],
-  "extension": [
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location",
-      "valueReference": {
-        "reference": "Location/example-dwelling"
-      }
-    }
-  ]
-}
+{ "resourceType": "Group", "id": "example-household", "meta": { "profile": [ "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit" ] }, "type": "person", "actual": true, "code": { "coding": [ { "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind", "code": "household" } ] }, "quantity": 6, "member": [ { "entity": { "reference": "Patient/example-child" } } ], "extension": [ { "url": "https://fhir.icr.unicef.org/StructureDefinition/{==group-location",==}{>>can we call this household-location instead?<<}{id="c158" by="mberg" at="2026-06-16T17:54:26.420Z"} "valueReference": { "reference": "Location/example-dwelling" } } ] }
 ```
 
 Annotated: `code` is the **required** group-kind (`household` here; `community` or `school-cohort` for the other delivery units, same profile); `quantity` 6 is the head-count even though only one `member` (the child, `Patient/example-child`, §7.1) is individually enumerated; `group-location` is the dwelling Location (§6.3) — **residence, not service point** (where service actually happened is the Task's `location`). Swap `code` to `community` and point `group-location` at a settlement and this same JSON becomes the Type-C community delivery unit.⁠
