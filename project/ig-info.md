@@ -1293,7 +1293,7 @@ _Proposed for a subsequent round (§17): the §17 additions imply_ **_new extens
 | --- | --- |
 | HousesVisited (`houses-visited`) | unsignedInt |
 | ChildrenPresent (`children-present`) → now **EligiblePresent (**`eligible-present`**)** | unsignedInt |
-| ChildrenAbsent (`children-absent`) → now **EligibleAbsent (**`eligible-absent`**)** | unsignedInt |
+| {==ChildrenAbsent (`children-absent`) → now **EligibleAbsent (**`eligible-absent`**)**==}{>>Flag that this is something we need to get input on which one is better.<<}{id="c7" by="mberg" at="2026-06-16T21:21:56.422Z"} | unsignedInt |
 | MissedReason (`missed-reason`) | CodeableConcept, **extensible** → ICRMissedReasonVS |
 | NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS |
 | FingerMarked (`finger-marked`) | boolean — "the in-field 'already covered' flag" |
