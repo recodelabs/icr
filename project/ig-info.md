@@ -109,7 +109,7 @@ _Quick reference for every abbreviation used in this document, grouped by area. 
 
 > [!tip] v0.11.0 — Abbreviations spelled out + a glossary added at the top (your Jun 16 request) A new **Abbreviations & glossary** section now sits right under the intro note — a grouped quick-reference for **every** abbreviation in the document (campaign types & programmes, vaccines/products, geography/identifiers, FHIR/technical, WHO-SMART/reporting). The headline abbreviations are also **written out in full on first use** in the intro and §1 — e.g. **SIA** → Supplementary Immunization Activity, plus MDA / ITN / IRS / MCV and FHIR / IG / FSH / SUSHI / R4. This is a documentation-only pass — no profile/FSH change — and the glossary is the canonical reference for any abbreviation used deeper in the doc that isn't expanded inline at its first occurrence.
 
-> [!tip] v0.10.0 — WHO SMART Immunizations comparison folded in as §18 (addresses §2 c129) New **§18. WHO SMART Immunizations alignment** delivers the WHO SMART-Guidelines comparison the §2 thread (c129/c130) asked for, vs [`smart-immunizations`](https://worldhealthorganization.github.io/smart-immunizations/) (`smart.who.int.immunizations#0.2.0`). Headline: the **WHO IG is routine-immunization only** — no Campaign/CarePlan, denominator, coverage-survey, or operational-geography model — so **ICR is its campaign complement**, and (per your steer) alignment means **adopting WHO's IG structure where possible** and **reusing WHO artifacts at the seams**. Concrete proposals: adopt the WHO **SMART-Guidelines IG skeleton** (L1 Home / L2 Business Requirements / Data Models & Exchange / Deployment / Indices — the biggest structural gap, §18.2); make `ICRImmunizationEvent` **derived-from `IMMZ.Immunization`** and **reuse `IMMZ.AdverseEvent`** instead of a new AEFI VS (§18.3, supersedes §17 C1); add **ConceptMaps ICR ↔ `IMMZ.*`** terminology and **derive coverage `Measure`s from `IMMZIND01–45`** (§18.4); declare **`dependsOn smart.who.int.base`** (§18.5). All **proposed** — no FSH change. Each affected section (§2, §3, §5.1, §6.1, §6.3, §7, §7.1, §8, §10, §12) now carries an inline **"[!info] WHO SMART alignment (§18)"** callout.
+> [!tip] v0.10.0 — WHO SMART Immunizations comparison folded in as §18 (addresses §2 c129) New **§18. WHO SMART Immunizations alignment** delivers the WHO SMART-Guidelines comparison the §2 thread (c129/c130) asked for, vs `smart-immunizations` (`smart.who.int.immunizations#0.2.0`). Headline: the **WHO IG is routine-immunization only** — no Campaign/CarePlan, denominator, coverage-survey, or operational-geography model — so **ICR is its campaign complement**, and (per your steer) alignment means **adopting WHO's IG structure where possible** and **reusing WHO artifacts at the seams**. Concrete proposals: adopt the WHO **SMART-Guidelines IG skeleton** (L1 Home / L2 Business Requirements / Data Models & Exchange / Deployment / Indices — the biggest structural gap, §18.2); make `ICRImmunizationEvent` **derived-from** `IMMZ.Immunization` and **reuse** `IMMZ.AdverseEvent` instead of a new AEFI VS (§18.3, supersedes §17 C1); add **ConceptMaps ICR ↔** `IMMZ.*` terminology and **derive coverage** `Measure`**s from** `IMMZIND01–45` (§18.4); declare `dependsOn smart.who.int.base` (§18.5). All **proposed** — no FSH change. Each affected section (§2, §3, §5.1, §6.1, §6.3, §7, §7.1, §8, §10, §12) now carries an inline **"[!info] WHO SMART alignment (§18)"** callout.
 
 > [!tip] v0.9.0 — field-evidence synthesis folded in as §17 (a prioritized list of _proposed_ IG additions for a subsequent round) New **§17. Research-validated proposed additions** rolls up the eight-document global-health field-evidence synthesis (`_SYNTHESIS-research-vs-ICR-IG.md`: WHO SIA/RED/measles guides, the cluster-survey manual, GTFCC OCV, NTD-MDA, WHO EYE/yellow-fever, and geo-microplanning) into one decision-ready change-list. The headline: the evidence **validates the IG's spine** (plan→order lifecycle, one-Task-per-visit, the campaign/routine `record-origin` firewall, denominator-with-provenance, the never-merged coverage lineages, and operational-geography-overlays-admin — the standout win) and surfaces a **prioritized set of additions** — the highest-priority themes being a **programme-semantics quartet** (activity/SIA-type, coverage-target-as-data, stockpile-source, dosing-regimen) and a **coverage-model overhaul** (denominator-type + unit axes, structured `sample-design`, `Measure` bindings, a multi-dose "fully-immunized" measure). **Everything in §17 is _proposed_ — like the v0.7.0 items, nothing here is committed to** `ig/`; the actual IG/FSH edits are deferred to a subsequent round. §14 (Known gaps) and §15 (checklist) point at §17, and each affected section (§4, §5.1–5.3, §6.2/§6.3, §7, §8, §9, §10) now carries a short inline **"[!warning] Proposed (§17)"** callout linking back, so the proposal is visible where the artifact is described. This pass adds the synthesis section + cross-reference callouts only — no profile/FSH change and no change to the IG-as-committed prose.
 
@@ -164,7 +164,7 @@ File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `
 
 **Rationale.** The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace; the same base hosts the two provisional identifier-system URIs (§3). The toolchain (FSH/SUSHI/IG Publisher) deliberately matches WHO SMART Guidelines practice (working doc §11).
 
-> [!info] WHO SMART alignment (§18 — addresses c129) The toolchain already matches WHO practice. §18 proposes going further: adopt the WHO SMART-Guidelines IG **skeleton** (L1 Home / L2 Business Requirements / Data Models & Exchange / Deployment / Indices) and declare a formal **`dependsOn smart.who.int.base`** once alignment hardens — the concrete answer to §2 q2. The WHO IG is routine-only, so ICR is its **campaign complement**. See §18.
+> [!info] WHO SMART alignment (§18 — addresses c129) The toolchain already matches WHO practice. §18 proposes going further: adopt the WHO SMART-Guidelines IG **skeleton** (L1 Home / L2 Business Requirements / Data Models & Exchange / Deployment / Indices) and declare a formal `dependsOn smart.who.int.base` once alignment hardens — the concrete answer to §2 q2. The WHO IG is routine-only, so ICR is its **campaign complement**. See §18.
 
 > [!warning] Questions
 > 
@@ -187,7 +187,7 @@ Three groups:
     
   - `$PCode = https://fhir.icr.unicef.org/identifiers/pcode` — OCHA P-codes
     
-  - `$ISO = urn:iso:std:iso:3166` — ISO 3166-1/-2 country & subdivision codes, for admin 0–3 (added v0.7.0, c88) — _WHO-aligned: matches WHO's `country-of-vaccination` (ISO 3166-1) + `administrative-area` extensions (§18.4)_
+  - `$ISO = urn:iso:std:iso:3166` — ISO 3166-1/-2 country & subdivision codes, for admin 0–3 (added v0.7.0, c88) — _WHO-aligned: matches WHO's_ `country-of-vaccination` _(ISO 3166-1) +_ `administrative-area` _extensions (§18.4)_
     
   - `$NationalAdminCode = https://fhir.icr.unicef.org/identifiers/national-admin-code` — the country/implementer's own administrative code, where they don't use a P-code (added v0.7.0, c88; the per-country base URI is expected to be overridden in implementation)
     
@@ -251,7 +251,7 @@ _Reading the element tables in §5–§9: **MS** = Must Support (a FHIR conforma
 ### 5.1 ICRCampaignProtocol — `PlanDefinition`
 _The reusable, version-controlled template for a campaign type — what a measles SIA_ **_is_** _(products, age bands, activity sequence, coverage goals), instantiated by every execution in every country._ (working doc §7.1)
 
-> [!warning] {==Proposed (§17.2 P1 — for a subsequent IG round) An `activity-type` **/** `sia-type` coded axis (routine / pmvc / catch-up / follow-up / mop-up / reactive), orthogonal to `campaign-type`;==}{>>should this be different then campaign type?<<}{id="c137" by="mberg" at="2026-06-16T01:14:10.748Z"}{>>Yes — they answer different questions and should stay separate axes. `campaign-type` is **WHAT intervention** (vaccination-sia / mda / itn-distribution / irs — the delivery model). The proposed `activity-type`/`sia-type` is **the operational mode / trigger** of the round: preventive-mass vs catch-up vs follow-up vs mop-up vs **reactive/outbreak-response**. Worked example: a measles **follow-up SIA** (scheduled every 2–4y to clear accumulated susceptibles) and a measles **outbreak-response SIA** are *both* `campaign-type = vaccination-sia` but differ in mode — different trigger, often a different target age band, analyzed separately. Keeping the axes orthogonal lets you query "all reactive campaigns, any disease" or "all measles, any mode" independently (WHO's EYE programme uses exactly this 4-type taxonomy — §17.2 A1, source Y). One caution when drafting: don't let it overlap `record-origin` (campaign-vs-routine) — `routine` would only ever be an `activity-type` value for the RI baseline, not a campaign mode.<<}{id="c147" by="agent" at="2026-06-16T02:00:00.000Z" re="c137"} and a `coverage-target` element to store the programme threshold (≥95% SIA / ≥65% LF / EYE 50-60-80%), not just achieved coverage. See §17.
+> [!warning] {==Proposed (§17.2 P1 — for a subsequent IG round) An `activity-type` **/** `sia-type` coded axis (routine / pmvc / catch-up / follow-up / mop-up / reactive), orthogonal to `campaign-type`;==}{>>should this be different then campaign type?<<}{id="c137" by="mberg" at="2026-06-16T01:14:10.748Z"}{>>Yes — they answer different questions and should stay separate axes. `campaign-type` is **WHAT intervention** (vaccination-sia / mda / itn-distribution / irs — the delivery model). The proposed `activity-type`/`sia-type` is **the operational mode / trigger** of the round: preventive-mass vs catch-up vs follow-up vs mop-up vs **reactive/outbreak-response**. Worked example: a measles **follow-up SIA** (scheduled every 2–4y to clear accumulated susceptibles) and a measles **outbreak-response SIA** are *both* `campaign-type = vaccination-sia` but differ in mode — different trigger, often a different target age band, analyzed separately. Keeping the axes orthogonal lets you query "all reactive campaigns, any disease" or "all measles, any mode" independently (WHO's EYE programme uses exactly this 4-type taxonomy — §17.2 A1, source Y). One caution when drafting: don't let it overlap `record-origin` (campaign-vs-routine) — `routine` would only ever be an `activity-type` value for the RI baseline, not a campaign mode.<<}{id="c147" by="agent" at="2026-06-16T02:00:00.000Z" re="c137"}{>>ok make sure this is included in the main body,.<<}{id="c154" by="mberg" at="2026-06-16T17:24:02.449Z" re="c147"} and a `coverage-target` element to store the programme threshold (≥95% SIA / ≥65% LF / EYE 50-60-80%), not just achieved coverage. See §17.
 
 | Element | Constraint |
 |---|---|
@@ -265,7 +265,7 @@ _The reusable, version-controlled template for a campaign type — what a measle
 
 **Rationale.** Separating protocol from execution is design decision #2: a country defines "measles–rubella SIA, 9m–14y" once and every district/round instantiates it, giving cross-campaign comparability for free. Delivery strategy is **mandatory and repeatable** at protocol level because hybrid strategies are the norm (background page: "an ITN campaign is B then A"). Naming: "Protocol" is retained per review — it is FHIR's own term for what PlanDefinition holds, so it signals the exact resource and usage pattern to IG reviewers.
 
-> [!info] WHO SMART alignment (§18) **Naming-collision caution:** WHO uses `PlanDefinition` for *decision-support schedules* (`IMMZ.D2/D5/D18` — recommend/contraindication/next-visit), whereas ICR uses it for the *campaign protocol*. Same resource, opposite role — document the distinction so a WHO-familiar consumer isn't surprised. Age-band-eligibility-as-CQL (q2) could later reuse WHO's CQL libraries. See §18.3.
+> [!info] WHO SMART alignment (§18) **Naming-collision caution:** WHO uses `PlanDefinition` for _decision-support schedules_ (`IMMZ.D2/D5/D18` — recommend/contraindication/next-visit), whereas ICR uses it for the _campaign protocol_. Same resource, opposite role — document the distinction so a WHO-familiar consumer isn't surprised. Age-band-eligibility-as-CQL (q2) could later reuse WHO's CQL libraries. See §18.3.
 
 **What a protocol actually looks like.** A protocol is the reusable recipe card for a campaign type — the IG's `example-mr-sia-protocol` in full:
 
@@ -347,7 +347,7 @@ Annotated: `type` is the **required** campaign-type code (what kind of campaign 
 > 
 > 1. `type` is 1..1, but `PlanDefinition.type` semantically distinguishes plan kinds (order-set vs protocol…) in base FHIR — here it's repurposed for campaign type. Reasonable, but reviewers may ask whether `topic` or a dedicated extension is cleaner.
 >   
-> 2. No `library`/eligibility-logic story yet (age-band eligibility as CQL?) — presumably deferred along with the DAK alignment.
+> 2. {==No `library`/eligibility-logic story yet (age-band eligibility as CQL?) — presumably deferred along with the DAK alignment.==}{>>Def this to later.<<}{id="c155" by="mberg" at="2026-06-16T17:32:07.849Z"}
 >   
 ### 5.2 ICRCampaign — `CarePlan` (the keystone)
 _A specific campaign execution. Begins life as a microplan (_`intent=plan`_) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via_ `partOf`_._ (working doc §7.2, §6.3)
@@ -657,86 +657,7 @@ _The assignable, trackable operational unit of work — one Task per site-sessio
 **The Task as FHIR/JSON.** `example-mopup-task` — the Type-B house-to-house visit, the richer of the two Task shapes and the one that chains to a delivery event:
 
 ```json
-{
-  "resourceType": "Task",
-  "id": "example-mopup-task",
-  "meta": {
-    "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignTask"
-    ]
-  },
-  "status": "completed",
-  "intent": "order",
-  "code": {
-    "text": "Administer MCV — house-to-house mop-up visit"
-  },
-  "focus": {
-    "reference": "Group/example-household"
-  },
-  "for": {
-    "reference": "Group/example-household"
-  },
-  "location": {
-    "reference": "Location/example-dwelling"
-  },
-  "executionPeriod": {
-    "start": "2026-06-24",
-    "end": "2026-06-24"
-  },
-  "owner": {
-    "display": "CDD team 7, Rokupr"
-  },
-  "output": [
-    {
-      "type": {
-        "text": "Immunization administered"
-      },
-      "valueReference": {
-        "reference": "Immunization/example-mcv-dose"
-      }
-    }
-  ],
-  "extension": [
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
-      "valueCodeableConcept": {
-        "coding": [
-          {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
-            "code": "house-to-house"
-          }
-        ]
-      }
-    },
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/task-origin",
-      "valueCode": "field-registered"
-    },
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-present",
-      "valueUnsignedInt": 2
-    },
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-absent",
-      "valueUnsignedInt": 1
-    },
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/missed-reason",
-      "valueCodeableConcept": {
-        "coding": [
-          {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason",
-            "code": "absent"
-          }
-        ]
-      }
-    },
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/finger-marked",
-      "valueBoolean": true
-    }
-  ]
-}
+{ "resourceType": "Task", "id": "example-mopup-task", "meta": { "profile": [ "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignTask" ] }, "status": "completed", "intent": "order", "code": { "text": "Administer MCV — house-to-house mop-up visit" }, {=="focus": { "reference": "Group/example-household" }, "for": { "reference": "Group/example-household" },==}{>>I’d probably reserve focus for workflow lineage (CarePlan, CampaignActivity, ServiceRequest, previous Task) and use for consistently for the household/patient/community being targeted. That gives you much better traceability later.<<}{id="c156" by="mberg" at="2026-06-16T17:44:52.192Z"} "location": { "reference": "Location/example-dwelling" }, "executionPeriod": { "start": "2026-06-24", "end": "2026-06-24" }, "owner": { "display": "CDD team 7, Rokupr" }, "output": [ { "type": { "text": "Immunization administered" }, "valueReference": { "reference": "Immunization/example-mcv-dose" } } ], "extension": [ { "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy", "valueCodeableConcept": { "coding": [ { "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy", "code": "house-to-house" } ] } }, { "url": "https://fhir.icr.unicef.org/StructureDefinition/task-origin", "valueCode": "field-registered" }, { "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-present", "valueUnsignedInt": 2 }, { "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-absent", "valueUnsignedInt": 1 }, { "url": "https://fhir.icr.unicef.org/StructureDefinition/missed-reason", "valueCodeableConcept": { "coding": [ { "system": "https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason", "code": "absent" } ] } }, { "url": "https://fhir.icr.unicef.org/StructureDefinition/finger-marked", "valueBoolean": true } ] }
 ```
 
 Annotated, with the links read out: `focus` and `for` point at the **household delivery-unit Group** (§6.1) — this is the Type-B shape (a Type-A site-session Task instead focuses on the fixed-post Location); `location` is where the work happened (the dwelling, §6.3). `output` is the **whole Task→event mechanism** — it references the `Immunization` in §7.1 (R4 Immunization has no `basedOn`, so the link runs this way). The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin` — here `field-registered`, the discovery-mode pattern: this household wasn't in the microplan; the team created it and its Task on the doorstep. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason absent`, `finger-marked`) only exist for strategy B — they'd be meaningless on a fixed-post session.⁠
@@ -745,7 +666,7 @@ Annotated, with the links read out: `focus` and `for` point at the **household d
 > 
 > 1. **Task granularity at scale** is the IG's own #1 open question (one Task per household × national campaign = millions of Tasks). The profile keeps both options open — and field-registration (lazy Task creation on discovery) softens the pre-generation side of the worst case — but make sure pilots test the household-level path.
 >   
-> 2. The count extensions (`housesVisited`, `eligiblePresent`/`Absent`) are unsignedInt **point values** — no age-band or sex disaggregation. Real tally sheets disaggregate; is the answer "use `output` with aggregate counts" and if so, where's the pattern documented?
+> 2. {==The count extensions (`housesVisited`, `eligiblePresent`/`Absent`) are unsignedInt **point values** — no age-band or sex disaggregation. Real tally sheets disaggregate; is the answer "use `output` with aggregate counts" and if so, where's the pattern documented?==}{>>how do you recommend we do the disaggreagtions?<<}{id="c157" by="mberg" at="2026-06-16T17:51:06.073Z"}
 >   
 > 3. `missedReason`/`noncompliance` at Task level aggregates over the whole visit — per-child reasons would need person-level records. Worth stating which level the data is expected at.
 >   
@@ -770,46 +691,12 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 
 **Rationale.** Separating _who_ (Group) from _where_ (Location) means the location's identity (GERS building/place ID) survives group composition changes, and the group survives re-mapping. The second-pass generalization (was: ICRHousehold) reflects that households and communities are the _same pattern at two scales_ — one profile with a coded kind beats two near-identical profiles, and it lets `Task.focus` and `MedicationAdministration.subject` be narrowed to ICR-conformant targets; `school-cohort` (third pass) demonstrates the kind list extends to non-obvious delivery units (nomadic groups, camp populations) as country demand appears. `quantity` covers the common case where campaigns count members without registering individuals — person-level `member` entries are optional by design. **Why** `member.entity` **is Patient (re c14/c83):** FHIR has four person-shaped resources — **Patient** (anyone who might receive a service: despite the name, a healthy child getting a measles dose or a household member receiving a net is a Patient, and it is the resource every clinical/delivery record points at — `Immunization.patient` can _only_ be a Patient), **RelatedPerson** (a caregiver in relation to a patient), **Practitioner** (workers — CDDs, vaccinators), and **Person** (an identity-linkage resource matching one human across systems — plumbing, not a care-record subject). So every enumerated household member is a Patient (the standard household-registration pattern, as in OpenSRP). Locking `member.entity` to Patient therefore excludes Practitioner/Device/etc. — **not** RelatedPerson, which R4 `Group.member` never permitted in the first place (RelatedPerson membership only arrives in R5). `groupLocation` **is residence, not service point**: where service actually happened is `Task.location` and the delivery event's own `location`. A household that walks to a village distribution center keeps its dwelling here unchanged — the Task records the center.
 
-> [!info] WHO SMART alignment (§18) WHO's **`IMMZ.Patient`** profiles **base R4 Patient** (not IPS, despite its own narrative claiming so) with required identifier / name / phone / gender / birthDate / address. Proposed: align ICR's person records to `IMMZ.Patient` (or note a deliberate divergence) so household members are WHO-conformant. WHO's caregiver is `IMMZ.Caregiver` (RelatedPerson). See §18.3.
+> [!info] WHO SMART alignment (§18) WHO's `IMMZ.Patient` profiles **base R4 Patient** (not IPS, despite its own narrative claiming so) with required identifier / name / phone / gender / birthDate / address. Proposed: align ICR's person records to `IMMZ.Patient` (or note a deliberate divergence) so household members are WHO-conformant. WHO's caregiver is `IMMZ.Caregiver` (RelatedPerson). See §18.3.
 
 **The delivery unit as FHIR/JSON.** `example-household` — the Type-B unit a mop-up Task focuses on:
 
 ```json
-{
-  "resourceType": "Group",
-  "id": "example-household",
-  "meta": {
-    "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"
-    ]
-  },
-  "type": "person",
-  "actual": true,
-  "code": {
-    "coding": [
-      {
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind",
-        "code": "household"
-      }
-    ]
-  },
-  "quantity": 6,
-  "member": [
-    {
-      "entity": {
-        "reference": "Patient/example-child"
-      }
-    }
-  ],
-  "extension": [
-    {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location",
-      "valueReference": {
-        "reference": "Location/example-dwelling"
-      }
-    }
-  ]
-}
+{ "resourceType": "Group", "id": "example-household", "meta": { "profile": [ "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit" ] }, "type": "person", "actual": true, "code": { "coding": [ { "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind", "code": "household" } ] }, "quantity": 6, "member": [ { "entity": { "reference": "Patient/example-child" } } ], "extension": [ { "url": "https://fhir.icr.unicef.org/StructureDefinition/{==group-location",==}{>>can we call this household-location instead?<<}{id="c158" by="mberg" at="2026-06-16T17:54:26.420Z"} "valueReference": { "reference": "Location/example-dwelling" } } ] }
 ```
 
 Annotated: `code` is the **required** group-kind (`household` here; `community` or `school-cohort` for the other delivery units, same profile); `quantity` 6 is the head-count even though only one `member` (the child, `Patient/example-child`, §7.1) is individually enumerated; `group-location` is the dwelling Location (§6.3) — **residence, not service point** (where service actually happened is the Task's `location`). Swap `code` to `community` and point `group-location` at a settlement and this same JSON becomes the Type-C community delivery unit.⁠
@@ -832,7 +719,7 @@ _A target-population denominator: a conceptual cohort (_`actual=false`_) with a 
 | `characteristic[geography]` | 0..1 MS — `code` fixed to `icr-group-characteristic-cs#geography`; `value[x]` only `Reference(ICRLocation)`; `exclude` fixed `false` |
 | Extensions | `denominatorSource` **1..1 MS** (CodeableConcept, extensible) · `estimateDate` **1..1 MS** (date) · `isPlanningDenominator` 0..1 MS (boolean) · `confidence` 0..1 (string) |
 
-**Rationale.** Design decision #6 ("denominator-first"): the denominator is the dominant error source in campaign analytics, so an estimate without source+date is not allowed to exist — both provenance extensions are **mandatory**. Keeping _competing_ estimates (census projection vs WorldPop vs microcensus) as sibling Groups and flagging one (`isPlanningDenominator`) preserves the audit trail instead of overwriting. The second-pass **geography characteristic** makes the estimate's scope computable at **any level** — country, district, ward, settlement, or operational area (working-doc comment c70: target populations are _not_ household-bound; that's what ICRDeliveryUnit is for) — so estimates are joinable to the location hierarchy by reference, not by parsing `name`.
+**Rationale.** D{==esign decision #6 ("denominator-first"): the denominator is the dominant error source in campaign analytics, so an estimate without source+date is not allowed to exist — both provenance extensions are **mandatory**.==}{>>I don't think these can be mandatory a lto of time you may not know the population for these.<<}{id="c159" by="mberg" at="2026-06-16T17:56:43.260Z"} Keeping _competing_ estimates (census projection vs WorldPop vs microcensus) as sibling Groups and flagging one (`isPlanningDenominator`) preserves the audit trail instead of overwriting. The second-pass **geography characteristic** makes the estimate's scope computable at **any level** — country, district, ward, settlement, or operational area (working-doc comment c70: target populations are _not_ household-bound; that's what ICRDeliveryUnit is for) — so estimates are joinable to the location hierarchy by reference, not by parsing `name`.
 
 **Worked example — competing denominators, as shipped in the IG.** Three ICRTargetPopulation instances now tell the whole story:
 
@@ -941,7 +828,7 @@ Reading it: every box on the solid `partOf` spine is an ICRLocation pointing at 
 | `extension[overlaysAdminUnit]` | 0..\* → `Reference(ICRLocation)` — for operational geography: the admin unit(s) this area overlays; **1..\* required when `type ∈ {supervisory-area, operational-area}`** (invariant `icr-loc-overlays`, c90) |
 | `extension[locationAncestors]` | 0..\* (proposed, c89) — denormalized admin breadcrumb: per-level ancestor (`adm0`…`adm3+`) as a coded level + `Reference(ICRLocation)`, **server-maintained** from `partOf`, for fast hierarchy filtering without deep recursion |
 
-> [!info] WHO SMART alignment (§18) WHO models geography only as `country-of-vaccination` (ISO 3166-1) + `administrative-area` extensions on the immunization event — ICRLocation (GERS, operational geography, GeoJSON, admin hierarchy) is far richer and maps onto WHO's **`IMMZ.A` Vaccination-location registration** process. ICR leads here; reuse WHO's two extensions where they overlap, and reference the `IMMZ.A` process. See §18.2–18.4.
+> [!info] WHO SMART alignment (§18) WHO models geography only as `country-of-vaccination` (ISO 3166-1) + `administrative-area` extensions on the immunization event — ICRLocation (GERS, operational geography, GeoJSON, admin hierarchy) is far richer and maps onto WHO's `IMMZ.A` **Vaccination-location registration** process. ICR leads here; reuse WHO's two extensions where they overlap, and reference the `IMMZ.A` process. See §18.2–18.4.
 
 **Rationale.** Design decision #8. Open slicing means national location codes coexist with GERS/P-codes without profile changes. The GERS `^short` carries an operationally crucial instruction: **record the Overture release version alongside the ID** (GERS IDs are stable but the registry versions). The boundary extension mirrors the R5 standard extension on R4 (working doc §10 q6). {==The second-pass additions give **"operational ≠ administrative geography" a real mechanism** (working-doc comment c74): `partOf` can express only _one_ hierarchy, so a supervisory/operational area is typed via the new location-type codes and linked to the admin units it covers via `overlays-admin-unit` — that is what makes it linkable-but-distinct rather than just distinct.==}{>>I don't understand this explain it further.<<}{id="c17" by="mberg" at="2026-06-12T20:53:01.299Z"}{>>Plain version. The admin hierarchy is the official tree: country → district → ward, expressed by each Location's partOf pointing at its single parent. Campaign programs draw their OWN areas that don't respect that tree — a polio supervision zone might cover all of ward 3 plus half of ward 4. Problem: partOf gives a location exactly one parent, so the zone can't sit INSIDE the admin tree without lying about the hierarchy (which ward would be its parent?). Old state of the IG: we said "keep operational areas distinct" but gave you no way to relate them to admin units at all — distinct but UNLINKABLE, so you couldn't answer "which districts does zone 2's data roll up into?". The fix: the zone is its own Location, typed supervisory-area, NOT in any partOf chain, carrying an overlays-admin-unit extension that points at the admin unit(s) it covers (can be several). Concrete: example-supervisory-area "Kambia supervision zone 2" overlays Kambia District — so zone-level tallies can be related to district reporting, while the official hierarchy stays clean. That's all "linkable-but-distinct" means: distinct = not in the admin tree; linkable = the overlays pointer.<<}{id="c37" by="claude" at="2026-06-12T21:03:09.000Z" re="c17"}
 
@@ -1021,9 +908,9 @@ Annotated: `partOf` climbs the admin tree (district → `example-country`; the f
 ## 7. Delivery-event profiles (`profiles-delivery.fsh`)
 All three share two design constants: a **mandatory** `record-origin` **extension (1..1 MS)** — campaign vs routine, so SIA doses never contaminate routine coverage analytics (working doc §4.4) — and the **Task→event link running through** `Task.output` because R4 Immunization has no `basedOn` element to point back with.
 
-> [!info] WHO SMART alignment (§18) WHO already ships an **`IMMZ.AdverseEvent`** profile (base AdverseEvent, from `IMMZ.D17 Report AEFI`, bound to `IMMZ.D.DE95/DE107/DE115`) — **reuse it** rather than minting a new `aefi-causal-type` VS (supersedes §17 C1). The `record-origin` campaign/routine flag is ICR's own — it's the seam that lets a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` coexist in one store. See §18.1/§18.3.
+> [!info] WHO SMART alignment (§18) WHO already ships an `IMMZ.AdverseEvent` profile (base AdverseEvent, from `IMMZ.D17 Report AEFI`, bound to `IMMZ.D.DE95/DE107/DE115`) — **reuse it** rather than minting a new `aefi-causal-type` VS (supersedes §17 C1). The `record-origin` campaign/routine flag is ICR's own — it's the seam that lets a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` coexist in one store. See §18.1/§18.3.
 
-> [!warning] Proposed (§17.2 P1 / §17.3 — for a subsequent IG round) An {==**AEFI** profile==}{>>What is an AEFI profile? Can you spell that out.<<}{id="c140" by="mberg" at="2026-06-16T01:24:34.333Z"}{>>**AEFI = Adverse Event Following Immunization** — any untoward medical occurrence after a vaccination (fever, injection-site abscess, allergic/anaphylactic reaction, or a serious event such as hospitalization), whether or not it turns out to be caused by the vaccine. Immunization safety surveillance requires recording these and classifying their causality (the standard WHO/CIOMS scheme has **5 categories**: vaccine-product-related, vaccine-quality-defect-related, immunization-error-related, immunization-anxiety-related, and coincidental). An "AEFI profile" = a FHIR profile (on the `AdverseEvent` resource) to capture one, with a value set for those causality categories + serious-event criteria. Note (see the §18 callout just above): **WHO already ships exactly this** as `IMMZ.AdverseEvent` (from its `IMMZ.D17 Report AEFI` process), so ICR should **reuse** it rather than build its own.<<}{id="c141" by="agent" at="2026-06-16T01:40:00.000Z" re="c140"} + `aefi-causal-type` VS (C1); **wastage / vial-accountability** (C2) and a `stockpile-source` axis (ICG / national / Gavi, A3) on ICRSupplyDelivery; and **cold-chain / stock-readiness** beyond SupplyDelivery (§17.4). See §17.
+> [!warning] Proposed (§17.2 P1 / §17.3 — for a subsequent IG round) An {==**AEFI** profile==}{>>What is an AEFI profile? Can you spell that out.<<}{id="c140" by="mberg" at="2026-06-16T01:24:34.333Z"}{>>Can this be a medication administration? I think it seem ok to be consistent. If we have an individual record need for a registry then we would need the immunization. I think this is more appropriate then the MesaureReport.<<}{id="c141" by="mberg" at="2026-06-16T01:25:58.588Z"} + `aefi-causal-type` VS (C1); **wastage / vial-accountability** (C2) and a `stockpile-source` axis (ICG / national / Gavi, A3) on ICRSupplyDelivery; and **cold-chain / stock-readiness** beyond SupplyDelivery (§17.4). See §17.
 ### 7.1 ICRImmunizationEvent — `Immunization`
 | Element | Constraint |
 |---|---|
@@ -1034,7 +921,7 @@ All three share two design constants: a **mandatory** `record-origin` **extensio
 
 `lotNumber`/`manufacturer` MS = lot accountability (AEFI traceability); `protocolApplied` is the bridge to routine-immunization series logic.
 
-> [!info] WHO SMART alignment (§18) WHO's **`IMMZ.Immunization`** is also base-R4 Immunization with required `vaccineCode`/`patient`/`occurrence` and `protocolApplied` series/dose (already aligned), plus type-of-dose / vaccine-brand / market-authorization-holder / country-of-vaccination extensions. Proposed: make `ICRImmunizationEvent` **compatible-with / derived-from `IMMZ.Immunization`** so a campaign dose is a valid WHO immunization carrying `record-origin`. One divergence to reconcile: WHO uses its own **`IMMZ.Z` vaccine codes**, not CVX → bridge via ConceptMap (§18.4). The type-of-dose extension overlaps the §17 A4 dosing-regimen proposal. See §18.3.
+> [!info] WHO SMART alignment (§18) WHO's `IMMZ.Immunization` is also base-R4 Immunization with required `vaccineCode`/`patient`/`occurrence` and `protocolApplied` series/dose (already aligned), plus type-of-dose / vaccine-brand / market-authorization-holder / country-of-vaccination extensions. Proposed: make `ICRImmunizationEvent` **compatible-with / derived-from** `IMMZ.Immunization` so a campaign dose is a valid WHO immunization carrying `record-origin`. One divergence to reconcile: WHO uses its own `IMMZ.Z` **vaccine codes**, not CVX → bridge via ConceptMap (§18.4). The type-of-dose extension overlaps the §17 A4 dosing-regimen proposal. See §18.3.
 
 **The dose as FHIR/JSON.** `example-mcv-dose` — the delivery event the mop-up Task's `output` points at, closing the chain protocol → activity → campaign → task → **dose → patient**:
 
@@ -1192,7 +1079,7 @@ _Administrative and independently-measured coverage are distinct lineages of the
 | `period` | **1..1 MS** |
 | Extensions | `coverageSource` **1..1 MS**, value bound **required** to ICRIndependentCoverageSourceVS (survey \| lqas \| rcm) · `sampleDesign` 0..1 MS (string — "WHO 30×10 cluster survey…") · `dataLineage` **1..1 MS** |
 
-> [!info] WHO SMART alignment (§18) WHO defines **45 FHIR `Measure`s (`IMMZIND01–45`)** — coverage, drop-out, wastage, AEFI, session-completion — each a COUNT-numerator / target-denominator / disaggregation (admin-area, sex, age) template aggregating into HMIS/DHIS2. Proposed: **derive ICR's `Measure` definitions from the IMMZ ones where they overlap** (this is the support for §17 B2's "bind coverage to a Measure"), then add the campaign-only ones WHO lacks — **admin-vs-survey, RCM/LQAS, at-risk/epidemiological denominator, geographic coverage**. ICR's denominator-with-provenance and admin-vs-survey split are *richer* than WHO's "denominator set by Member States". See §18.4.
+> [!info] WHO SMART alignment (§18) WHO defines **45 FHIR** `Measure`**s (**`IMMZIND01–45`**)** — coverage, drop-out, wastage, AEFI, session-completion — each a COUNT-numerator / target-denominator / disaggregation (admin-area, sex, age) template aggregating into HMIS/DHIS2. Proposed: **derive ICR's** `Measure` **definitions from the IMMZ ones where they overlap** (this is the support for §17 B2's "bind coverage to a Measure"), then add the campaign-only ones WHO lacks — **admin-vs-survey, RCM/LQAS, at-risk/epidemiological denominator, geographic coverage**. ICR's denominator-with-provenance and admin-vs-survey split are _richer_ than WHO's "denominator set by Member States". See §18.4.
 
 **Rationale.** The "never merge" rule is enforced _structurally_: the admin profile pins `coverageSource` to the single code `administrative`; the survey profile re-binds the same extension to a value set that _excludes_ `administrative`. A resource can't be both. Admin coverage additionally carries its denominator's provenance (because admin coverage is only as good as its denominator). **Lineage is now required (1..1) on both coverage profiles** (third pass): coverage reports are where the realtime/reconciled distinction has teeth — preliminary in-campaign figures vs final close-out figures must be machine-distinguishable, including preliminary-vs-final survey results. Elsewhere (CarePlan, Task) the flag stays optional with a documented default: **absent ⇒ realtime**.
 
@@ -1413,7 +1300,7 @@ Value sets: one whole-system VS per code system (except ICRGroupCharacteristicCS
 
 Domain notes a reviewer might verify: `sleeping` is the polio doorstep convention; `community-directed` is CDTI, the NTD-MDA backbone; campaign types are grouped **by delivery model, not disease** (the background page's Type A/B/C table); `integrated` exists because co-delivered campaigns are the norm and component activities carry their own types.
 
-> [!info] WHO SMART alignment (§18) WHO owns its terminology — **`IMMZ.Z`** vaccine codes, **`IMMZ.<letter>.DE<n>`** data elements (`IMMZ.C/D/I`), ConceptMaps out to **ICD-11 MMS / LOINC / SNOMED CT / ISO 3166-1**. Proposed: keep ICR's CVX/ATC/GS1 backbone but add **ConceptMaps ICR ↔ `IMMZ.*`** — the concrete "reuse the DAK data elements where they align" action (c133) and the WHO-facing half of the §14 ConceptMap gap. ICR's `record-origin` / `delivery-strategy` / `denominator-source` / coverage-source etc. have **no WHO equivalent** and stay ICR-owned. Mirror WHO's *data-dictionary-row → stable artifact id + paired ValueSet* discipline so a Mappings page can line them up 1:1. See §18.4–18.5.
+> [!info] WHO SMART alignment (§18) WHO owns its terminology — `IMMZ.Z` vaccine codes, `IMMZ.<letter>.DE<n>` data elements (`IMMZ.C/D/I`), ConceptMaps out to **ICD-11 MMS / LOINC / SNOMED CT / ISO 3166-1**. Proposed: keep ICR's CVX/ATC/GS1 backbone but add **ConceptMaps ICR ↔** `IMMZ.*` — the concrete "reuse the DAK data elements where they align" action (c133) and the WHO-facing half of the §14 ConceptMap gap. ICR's `record-origin` / `delivery-strategy` / `denominator-source` / coverage-source etc. have **no WHO equivalent** and stay ICR-owned. Mirror WHO's _data-dictionary-row → stable artifact id + paired ValueSet_ discipline so a Mappings page can line them up 1:1. See §18.4–18.5.
 
 > [!warning] Questions
 > 
@@ -1805,16 +1692,13 @@ The field evidence strongly endorses these; they are listed so the next round kn
 - Some web sources 403'd or were thin (GTFCC §9, JHU stop-cholera, the WHO geo-handbook landing page); those analyses leaned on substituted primary sources, flagged inline in each file. A few measles-guide annexes are scanned images; two of its `missed-reason` proposals are inferred from body text.
   
 - Downloaded source PDFs live in `docs/research/` (untracked). Each analysis checked the IG against the committed FSH; **confirm exact CodeSystem URLs against** `ig/input/fsh/` **before drafting changes.**
+  
 
 * * *
 ## 18. WHO SMART Immunizations alignment — comparison & proposed structural alignment
-
-> [!note] Status — *proposed*, not committed; addresses §2 c129/c130
-> This section delivers the **WHO SMART Guidelines comparison** the §2 thread (c129/c130) asked for. It compares ICR against the **WHO SMART Immunizations IG** ([`worldhealthorganization.github.io/smart-immunizations`](https://worldhealthorganization.github.io/smart-immunizations/) — package `smart.who.int.immunizations#0.2.0`, canonical `http://smart.who.int/immunizations`, FHIR R4, publisher WHO, the L3 FHIR companion to the **WHO Immunization DAK** `smart.who.int.base`-based). Everything here is **proposed** for a subsequent round — no FSH/profile change in this pass. The stance per your steer: **align with the WHO IG's structure where possible**, and reuse WHO artifacts at the seams rather than re-inventing them.
-
-### 18.1 The headline — ICR is the *campaign* complement to WHO's *routine* IG
-The WHO IG is **routine-immunization only**. Its DAK explicitly scopes itself to routine RI; "mass immunization campaigns" appears in exactly **one** asserted sentence and has **no** dedicated persona, business process, data element, decision table, schedule, or indicator. There is **no `Campaign`/`CarePlan` concept, no denominator/coverage-survey model, and no operational-geography model** anywhere in it. So the two IGs are **largely complementary, not competing**: ICR models exactly the half WHO omits (campaigns: SIA/MDA/ITN/IRS, denominator-first analytics, operational geography, admin-vs-survey coverage). Alignment is therefore mostly about **shared structure + reuse at the touch-points** (the immunization event, the person, AEFI, terminology, indicators, geography), not about reconciling overlapping models. The clean framing to adopt: **ICR = "the campaign SMART-Guidelines IG"**, same skeleton and conventions as WHO, complementary content, joined by the `record-origin` campaign/routine firewall (§13 #2) — a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` should be able to coexist in one store, distinguished by that flag.
-
+> [!note] Status — _proposed_, not committed; addresses §2 c129/c130 This section delivers the **WHO SMART Guidelines comparison** the §2 thread (c129/c130) asked for. It compares ICR against the **WHO SMART Immunizations IG** (`worldhealthorganization.github.io/smart-immunizations` — package `smart.who.int.immunizations#0.2.0`, canonical `http://smart.who.int/immunizations`, FHIR R4, publisher WHO, the L3 FHIR companion to the **WHO Immunization DAK** `smart.who.int.base`-based). Everything here is **proposed** for a subsequent round — no FSH/profile change in this pass. The stance per your steer: **align with the WHO IG's structure where possible**, and reuse WHO artifacts at the seams rather than re-inventing them.
+### 18.1 The headline — ICR is the _campaign_ complement to WHO's _routine_ IG
+The WHO IG is **routine-immunization only**. Its DAK explicitly scopes itself to routine RI; "mass immunization campaigns" appears in exactly **one** asserted sentence and has **no** dedicated persona, business process, data element, decision table, schedule, or indicator. There is **no** `Campaign`**/**`CarePlan` **concept, no denominator/coverage-survey model, and no operational-geography model** anywhere in it. So the two IGs are **largely complementary, not competing**: ICR models exactly the half WHO omits (campaigns: SIA/MDA/ITN/IRS, denominator-first analytics, operational geography, admin-vs-survey coverage). Alignment is therefore mostly about **shared structure + reuse at the touch-points** (the immunization event, the person, AEFI, terminology, indicators, geography), not about reconciling overlapping models. The clean framing to adopt: **ICR = "the campaign SMART-Guidelines IG"**, same skeleton and conventions as WHO, complementary content, joined by the `record-origin` campaign/routine firewall (§13 #2) — a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` should be able to coexist in one store, distinguished by that flag.
 ### 18.2 Structural alignment — adopt the WHO SMART-Guidelines IG skeleton (biggest structural gap)
 WHO organizes every SMART-Guidelines IG into a standard skeleton (= the HL7 CPG "levels of knowledge representation"). ICR today ships only `index.md` + `background.md` (§12). **Proposed: restructure the ICR IG narrative to mirror this skeleton**, filling the campaign-specific content (and leaving titled stubs where content is pending, exactly as WHO does):
 
@@ -1827,9 +1711,7 @@ WHO organizes every SMART-Guidelines IG into a standard skeleton (= the HL7 CPG 
 | **Indices** | Artifact Index, Mappings, **DAK API** | auto Artifact Index | Add a **Mappings** page (ICR ↔ WHO IMMZ data elements) and consider a **DAK-API**-style JSON-Schema/OpenAPI surface |
 
 **Business-process mapping (ICR extends WHO's routine A–I).** WHO's processes are `IMMZ.A` Vaccination-location registration · `B` Plan service delivery · `C` Client registration · `D` Administer vaccine · `E` Client reminder · `F` Defaulter tracing · `G/H` De-duplication · `I` Report generation. ICR's spine slots in as the **campaign extension** of these — ICRLocation ≈ A, microplanning/Protocol/Campaign ≈ B, delivery events ≈ D, the proposed defaulter/zero-dose work (§17.3) ≈ F, coverage ≈ I — so ICR should **reference WHO's A–I numbering** and add campaign-only processes rather than coin an unrelated scheme.
-
 ### 18.3 Profile / resource alignment (reuse WHO's where they touch)
-
 | Touch-point | WHO artifact | ICR today | Proposed alignment |
 |---|---|---|---|
 | **Immunization event** | `IMMZ.Immunization` (base R4 Immunization; required `vaccineCode`, `patient`, `occurrence`; `protocolApplied` series/dose; type-of-dose, vaccine-brand, market-authorization, country-of-vaccination extensions) | `ICRImmunizationEvent` (Immunization + `record-origin`) | Make `ICRImmunizationEvent` **compatible-with / derived-from `IMMZ.Immunization`** so a campaign dose is a valid WHO immunization + the `record-origin` flag; reuse `protocolApplied` (already aligned) and the **type-of-dose** extension (overlaps §17 A4 dosing-regimen) |
@@ -1839,18 +1721,21 @@ WHO organizes every SMART-Guidelines IG into a standard skeleton (= the HL7 CPG 
 | **Observation** | `IMMZ.Observation` (serostatus/HIV/screening feeding decision logic) | none | Reuse if ICR ever carries the dose-pole/eligibility Observation (§7.2 dangling thread) |
 | **Decision support** | `PlanDefinition` + CQL (per-antigen schedules/contraindications, `IMMZ.D2/D5/D18`) | `PlanDefinition` = **campaign protocol** | **Naming-collision caution:** WHO uses PlanDefinition for *decision-support schedules*; ICR uses it for the *campaign protocol* (§5.1). Same resource, different role — document the distinction so a consumer isn't surprised. Age-band eligibility-as-CQL (the §5.1 q2 deferral) could later reuse WHO's CQL libraries |
 | **Campaign spine** | *(none — WHO has no CarePlan/Campaign/Task/Group denominator/coverage model)* | ICRCampaign / Task / TargetPopulation / coverage / Location | **ICR's distinctive contribution** — keep as-is; offer it back as the campaign extension WHO lacks |
-
-### 18.4 Terminology & indicators alignment
-- **Terminology ownership differs.** WHO owns its vaccine + data-element terminology (`IMMZ.Z` vaccine codes; `IMMZ.C/D/I` data elements as `IMMZ.<letter>.DE<n>`; ConceptMaps out to **ICD-11 MMS, LOINC, SNOMED CT, ISO 3166-1**). ICR uses **CVX/ATC/GS1**. **Proposed:** keep CVX/ATC (the international product backbone, §10) but **add ConceptMaps ICR ↔ `IMMZ.Z`/`IMMZ.D.DE*`** — this is the concrete "reuse the DAK data elements where they align" action (c133), and it's the §14 ConceptMap gap pointed at WHO specifically. ICR's `record-origin`, `delivery-strategy`, `denominator-source`, coverage-source etc. have **no WHO equivalent** → they stay ICR-owned.
+### 18.4 Terminology & indicators alignment - **Terminology ownership differs.** WHO owns its vaccine + data-element terminology (`IMMZ.Z` vaccine codes; `IMMZ.C/D/I` data elements as `IMMZ..DE`; ConceptMaps out to **ICD-11 MMS, LOINC, SNOMED CT, ISO 3166-1**). ICR uses **CVX/ATC/GS1**. **Proposed:** keep CVX/ATC (the international product backbone, §10) but **add ConceptMaps ICR ↔** `IMMZ.Z`**/**`IMMZ.D.DE*` — this is the concrete "reuse the DAK data elements where they align" action (c133), and it's the §14 ConceptMap gap pointed at WHO specifically. ICR's `record-origin`, `delivery-strategy`, `denominator-source`, coverage-source etc. have **no WHO equivalent** → they stay ICR-owned.
 - **ISO 3166 already aligned.** ICR's v0.7.0 `iso` identifier slice + `$ISO` alias (§3/§6.3, c88) matches WHO's `country-of-vaccination` (ISO 3166-1) and `administrative-area` extensions — note WHO's two Location-ish extensions as prior art for the ICRLocation work.
-- **Indicators as FHIR `Measure`.** WHO defines **45 Measures `IMMZIND01–45`** (coverage, drop-out, wastage, AEFI, session-completion) with a COUNT-numerator / target-denominator / disaggregation (admin-area, sex, age) template, aggregating into HMIS/DHIS2. This is **strong support for §17 B2** (bind ICR coverage to `Measure` definitions) and §17.3 (dropout/defaulter, wastage): **derive ICR's Measures from the IMMZ ones where they overlap** (coverage, dropout, wastage, AEFI), then add the campaign-only ones WHO lacks — **admin-vs-survey coverage, RCM/LQAS, at-risk/epidemiological denominator, geographic coverage**. ICR's denominator-with-provenance and admin-vs-survey split are *richer* than WHO (whose denominators are just "set by Member States").
-
+  
+- **Indicators as FHIR** `Measure`**.** WHO defines **45 Measures** `IMMZIND01–45` (coverage, drop-out, wastage, AEFI, session-completion) with a COUNT-numerator / target-denominator / disaggregation (admin-area, sex, age) template, aggregating into HMIS/DHIS2. This is **strong support for §17 B2** (bind ICR coverage to `Measure` definitions) and §17.3 (dropout/defaulter, wastage): **derive ICR's Measures from the IMMZ ones where they overlap** (coverage, dropout, wastage, AEFI), then add the campaign-only ones WHO lacks — **admin-vs-survey coverage, RCM/LQAS, at-risk/epidemiological denominator, geographic coverage**. ICR's denominator-with-provenance and admin-vs-survey split are _richer_ than WHO (whose denominators are just "set by Member States").
+  
 ### 18.5 Dependency & conventions
-- **Declare a formal `dependsOn`** on `smart.who.int.base` (and, where ICR reuses immunization artifacts, `smart.who.int.immunizations`) once alignment hardens — this is the concrete answer to §2 q2 ("what alignment concretely means" / when the dependency is declared). The WHO base brings the CPG/CQL/CRMI/SDC stack if ICR adopts the DAK pattern.
-- **Canonical / id conventions.** WHO: reverse-domain `smart.who.int.immunizations`, canonical `http://smart.who.int/immunizations`, data elements keyed `IMMZ.<letter>.DE<n>`. ICR: `unicef.fhir.icr`, canonical `https://fhir.icr.unicef.org`, ICR-prefixed kebab-case. **Keep ICR's** (it's a different publisher/namespace), but **mirror the *data-dictionary-row → artifact-id* discipline** (every coded element gets a stable id + paired ValueSet) so a Mappings page can line ICR elements up against `IMMZ.*` 1:1.
+- **Declare a formal** `dependsOn` on `smart.who.int.base` (and, where ICR reuses immunization artifacts, `smart.who.int.immunizations`) once alignment hardens — this is the concrete answer to §2 q2 ("what alignment concretely means" / when the dependency is declared). The WHO base brings the CPG/CQL/CRMI/SDC stack if ICR adopts the DAK pattern.
+  
+- **Canonical / id conventions.** WHO: reverse-domain `smart.who.int.immunizations`, canonical `http://smart.who.int/immunizations`, data elements keyed `IMMZ.<letter>.DE<n>`. ICR: `unicef.fhir.icr`, canonical `https://fhir.icr.unicef.org`, ICR-prefixed kebab-case. **Keep ICR's** (it's a different publisher/namespace), but **mirror the _data-dictionary-row → artifact-id_ discipline** (every coded element gets a stable id + paired ValueSet) so a Mappings page can line ICR elements up against `IMMZ.*` 1:1.
+  
 - **Modeling-pattern divergence (optional, heavier lift).** WHO's source-of-truth is **LogicalModels → SDC Questionnaires → StructureMaps → thin profiled events**; ICR profiles resources directly. Full adoption (logical models + the DAK-API JSON-Schema/OpenAPI surface) would maximize structural alignment but is a large lift — flag as **aspirational**, not v1. The cheap, high-value subset is the **skeleton (18.2), the AEFI/Immunization reuse (18.3), the ConceptMaps and Measure derivation (18.4), and the declared dependency (18.5)**.
-
+  
 ### 18.6 Caveats
-- WHO IG is **v0.2.0, draft**, and **skeleton-heavy**: many Deployment/Indices pages are titled **stubs** ("Feel free to modify this index page…"). Align to the *skeleton and conventions*, but don't assume filled-in content behind every page.
+- WHO IG is **v0.2.0, draft**, and **skeleton-heavy**: many Deployment/Indices pages are titled **stubs** ("Feel free to modify this index page…"). Align to the _skeleton and conventions_, but don't assume filled-in content behind every page.
+  
 - One narrative claim in the WHO IG (an **IPS Patient** dependency) is **not** borne out by its artifacts — `IMMZ.Patient` derives from **base R4 Patient** and IPS is not a declared dependency. Don't inherit the IPS assumption.
+  
 - This comparison was done against the WHO IG as published June 2026; re-verify artifact ids/bindings against the live IG before authoring the alignment FSH.
