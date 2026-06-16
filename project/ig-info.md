@@ -1214,7 +1214,7 @@ Annotated: the same conceptual quantity — coverage of the Kambia round — rep
 ## 9. Extensions (`extensions.fsh`) — all 23
 _FHIR has no native campaign semantics; these extensions carry them on profiled core resources._ (working doc §7)
 
-> [!warning] Proposed (§17 — for a subsequent IG round) The §17 additions imply **new extensions** here — `activity-type`, `coverage-target`, `dosing-regimen`, `stockpile-source`, `wastage`/vial-accountability, `aefi-causal-type`, an at-risk-denominator flag, and a structured (complex) `sample-design` replacing today's free-text string. See §17.
+> [!warning] Proposed (§17 — for a subsequent IG round) The §17 additions imply **new extensions** here — `activity-type`, `coverage-target`, `dosing-regimen`, `stockpile-source`, `wastage`/vial-accountability, `aefi-causal-type`, an at-risk-denominator flag, and a structured (complex) {==`sample-design`==}{>>Can you elaborate why this is needed? My be too complicated for v1<<}{id="c143" by="mberg" at="2026-06-16T01:28:32.601Z"} replacing today's free-text string. See §17.
 
 **Campaign mechanics**
 
