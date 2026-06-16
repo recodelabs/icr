@@ -1,15 +1,113 @@
 ---
-version: 0.10.1
-last_modified: 2026-06-16T02:00:00.000Z
+version: 0.11.0
+last_modified: 2026-06-16T03:00:00.000Z
 tags: [icr, fhir, ig, review]
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.10.1 · Last modified Jun 15, 2026 at 10:00 PM EDT`
+`v0.11.0 · Last modified Jun 15, 2026 at 11:00 PM EDT`
 
 ⁠
 
-> [!note] What this document is A component-by-component walkthrough of the draft FHIR IG in `ig/`, written for review. For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to** `ig/`; those are flagged in-thread and in the v0.7.0 changelog note below.
+> [!note] What this document is A component-by-component walkthrough of the draft **ICR** (Integrated Campaign Registry) **FHIR** (Fast Healthcare Interoperability Resources) Implementation Guide (**IG**) in `ig/`, written for review. _New here? See the **Abbreviations & glossary** immediately below — every abbreviation used in this document is defined there, and the common ones are also spelled out on first use._ For every artifact it covers **what it is**, **the rationale** (with pointers back to [[icr-v1]] sections), and **questions worth asking** before this hardens into v1.0. It describes the IG as committed through v0.6.x — every cardinality, binding, and fixed value was checked against the FSH source — with **v0.7.0 additions (c80–c95) folded into the prose but not yet committed to** `ig/`; those are flagged in-thread and in the v0.7.0 changelog note below.
+
+* * *
+## Abbreviations & glossary
+_Quick reference for every abbreviation used in this document, grouped by area. The common ones are also written out in full on their first use in §1 onward. Names in `code font` (e.g._ `ICRCampaign`_) are FHIR artifacts defined in the section noted, not abbreviations._
+
+**Campaign types & public-health programmes**
+
+| Abbrev. | Meaning |
+| --- | --- |
+| **ICR** | Integrated Campaign Registry — the project and FHIR IG this document describes |
+| **SIA** | Supplementary Immunization Activity — a **mass vaccination campaign** (as opposed to routine immunization) |
+| **PMVC** | Preventive Mass Vaccination Campaign (e.g. yellow-fever) |
+| **MDA** | Mass Drug Administration — a campaign giving a drug to a whole eligible population |
+| **ITN / LLIN** | Insecticide-Treated Net / Long-Lasting Insecticidal Net (bed-net distribution) |
+| **IRS** | Indoor Residual Spraying (anti-malaria) |
+| **RI** | Routine Immunization — the everyday schedule (contrast SIA) |
+| **EPI** | Expanded Programme on Immunization — the routine-immunization programme |
+| **NTD / PC-NTD** | Neglected Tropical Disease / Preventive-Chemotherapy NTD |
+| **CDD** | Community Drug Distributor — the front-line MDA worker |
+| **CDTI** | Community-Directed Treatment with Ivermectin — the NTD-MDA delivery model |
+| **RCM** | Rapid Convenience Monitoring — a quick, non-probability in-campaign check; **pass/fail with a trigger, not a coverage rate** |
+| **LQAS** | Lot Quality Assurance Sampling — a small-sample accept/reject decision rule |
+| **AEFI** | Adverse Event Following Immunization |
+| **DOC** | Directly Observed Consumption — in MDA, the drug is swallowed under supervision |
+| **TAS** | Transmission Assessment Survey — an NTD-elimination decision gate |
+| **RED** | Reaching Every District — WHO microplanning approach |
+| **EYE** | Eliminate Yellow fever Epidemics — WHO strategy |
+| **FIP** | Fully Immunized Person |
+| **Type A / B / C** | the campaign delivery-model typology — A = fixed/temporary-post session, B = house-to-house, C = community/MDA (`background.md`) |
+
+**Vaccines, diseases & product codings**
+
+| Abbrev. | Meaning |
+| --- | --- |
+| **MR** | Measles–Rubella |
+| **MCV** | Measles-Containing Vaccine |
+| **OCV** | Oral Cholera Vaccine |
+| **YF** | Yellow Fever |
+| **HPV** | Human Papillomavirus |
+| **bOPV / nOPV2** | bivalent / novel-type-2 Oral Polio Vaccine |
+| **CVX** | the US-CDC vaccine-code system (standard vaccine codes) |
+| **ATC** | Anatomical Therapeutic Chemical classification — WHO drug codes |
+| **GS1 / GTIN** | global commodity-coding standards / Global Trade Item Number |
+| **UCUM** | Unified Code for Units of Measure |
+| **VVM / WMF** | Vaccine Vial Monitor / Wastage Monitoring Form |
+
+**Geography & identifiers**
+
+| Abbrev. | Meaning |
+| --- | --- |
+| **GERS** | Global Entity Reference System — Overture Maps' stable place IDs |
+| **P-code** | Place code — OCHA humanitarian administrative-area code |
+| **OCHA** | UN Office for the Coordination of Humanitarian Affairs |
+| **ISO 3166** | the ISO country (-1) and subdivision (-2) code standard |
+| **GIS / MFL** | Geographic Information System / Master Facility List |
+| **GeoJSON** | a geospatial JSON data format |
+| **GPS** | Global Positioning System — a coordinate point |
+| **OSM** | OpenStreetMap |
+| **PSU / EA** | Primary Sampling Unit / Enumeration Area (survey sampling, §17) |
+
+**FHIR & technical**
+
+| Abbrev. | Meaning |
+| --- | --- |
+| **FHIR** | Fast Healthcare Interoperability Resources — the HL7 health-data standard |
+| **IG** | Implementation Guide — a packaged set of FHIR profiles/rules for one use-case |
+| **FSH / SUSHI** | FHIR Shorthand (the authoring language) / its compiler |
+| **R4 / R5** | FHIR Release 4 (this IG) / Release 5 |
+| **MS** | Must Support — a FHIR conformance flag ("implementations must populate/process this element") |
+| **VS / CS** | ValueSet / CodeSystem |
+| **CQL** | Clinical Quality Language — decision logic |
+| **IPS** | International Patient Summary |
+| **SNOMED CT / ICD-11 / LOINC** | clinical terminologies (concepts / diseases / observations) |
+| **JSON** | JavaScript Object Notation |
+| **FR** | French-language (`fr`) designations on code systems |
+
+**WHO SMART Guidelines, organizations & reporting (mostly §17–§18)**
+
+| Abbrev. | Meaning |
+| --- | --- |
+| **WHO / UNICEF** | World Health Organization / UN Children's Fund |
+| **DAK** | Digital Adaptation Kit — WHO SMART-Guidelines content |
+| **IMMZ** | the artifact prefix of the WHO SMART Immunizations IG |
+| **L1 / L2 / L3** | WHO SMART-Guidelines "levels of knowledge representation" — narrative / semi-structured / machine-readable FHIR |
+| **VPD** | Vaccine-Preventable Disease (surveillance) |
+| **HMIS / DHIS2** | Health Management Information System / District Health Information Software 2 |
+| **JAP** | Joint Appraisal — annual immunization-programme report |
+| **ICG** | International Coordinating Group — vaccine-stockpile provision (OCV/YF) |
+| **ESPEN** | Expanded Special Project for Elimination of NTDs (WHO-AFRO) |
+| **GTFCC** | Global Task Force on Cholera Control |
+| **VCQI** | Vaccination Coverage Quality Indicators — survey toolkit |
+| **M&E** | Monitoring and Evaluation |
+| **mCSD** | Mobile Care Services Discovery — an IHE location-directory profile |
+| **CPG / CRMI / SDC** | HL7 frameworks: Clinical Practice Guidelines / Canonical Resource Management Infrastructure / Structured Data Capture |
+
+* * *
+
+> [!tip] v0.11.0 — Abbreviations spelled out + a glossary added at the top (your Jun 16 request) A new **Abbreviations & glossary** section now sits right under the intro note — a grouped quick-reference for **every** abbreviation in the document (campaign types & programmes, vaccines/products, geography/identifiers, FHIR/technical, WHO-SMART/reporting). The headline abbreviations are also **written out in full on first use** in the intro and §1 — e.g. **SIA** → Supplementary Immunization Activity, plus MDA / ITN / IRS / MCV and FHIR / IG / FSH / SUSHI / R4. This is a documentation-only pass — no profile/FSH change — and the glossary is the canonical reference for any abbreviation used deeper in the doc that isn't expanded inline at its first occurrence.
 
 > [!tip] v0.10.0 — WHO SMART Immunizations comparison folded in as §18 (addresses §2 c129) New **§18. WHO SMART Immunizations alignment** delivers the WHO SMART-Guidelines comparison the §2 thread (c129/c130) asked for, vs [`smart-immunizations`](https://worldhealthorganization.github.io/smart-immunizations/) (`smart.who.int.immunizations#0.2.0`). Headline: the **WHO IG is routine-immunization only** — no Campaign/CarePlan, denominator, coverage-survey, or operational-geography model — so **ICR is its campaign complement**, and (per your steer) alignment means **adopting WHO's IG structure where possible** and **reusing WHO artifacts at the seams**. Concrete proposals: adopt the WHO **SMART-Guidelines IG skeleton** (L1 Home / L2 Business Requirements / Data Models & Exchange / Deployment / Indices — the biggest structural gap, §18.2); make `ICRImmunizationEvent` **derived-from `IMMZ.Immunization`** and **reuse `IMMZ.AdverseEvent`** instead of a new AEFI VS (§18.3, supersedes §17 C1); add **ConceptMaps ICR ↔ `IMMZ.*`** terminology and **derive coverage `Measure`s from `IMMZIND01–45`** (§18.4); declare **`dependsOn smart.who.int.base`** (§18.5). All **proposed** — no FSH change. Each affected section (§2, §3, §5.1, §6.1, §6.3, §7, §7.1, §8, §10, §12) now carries an inline **"[!info] WHO SMART alignment (§18)"** callout.
 
@@ -29,7 +127,7 @@ tags: [icr, fhir, ig, review]
 
 * * *
 ## 1. Orientation — what's in the IG
-The IG consists of FHIR Shorthand (FSH), compiled by SUSHI into FHIR R4 artifacts.
+The IG consists of FHIR Shorthand (FSH — a concise authoring language for FHIR), compiled by SUSHI (the FSH compiler) into FHIR R4 (Release 4) artifacts.
 
 | Layer | Count | Artifacts |
 | --- | --- | --- |
@@ -40,7 +138,7 @@ The IG consists of FHIR Shorthand (FSH), compiled by SUSHI into FHIR R4 artifact
 | **Extensions** | 23  | See §8 |
 | **CodeSystems** | 12  | campaign-type, delivery-strategy, record-origin, missed-reason, noncompliance-reason, denominator-source, data-lineage, coverage-source, group-kind, task-origin, location-type, group-characteristic |
 | **ValueSets** | 13  | One per code system (except group-characteristic, used as a fixed code), plus a narrowed independent-coverage set and an ATC-based MDA medication set |
-| **Example instances** | 26  | A coherent measles–rubella SIA scenario (umbrella + round, Type A & B tasks, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery (MCV, albendazole, ITN, IRS) + an MDA event + an ITN delivery (§11) |
+| **Example instances** | 26  | A coherent measles–rubella **SIA** (Supplementary Immunization Activity — a mass vaccination campaign) scenario (umbrella + round, **Type A & B** tasks — fixed-post and house-to-house, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery (**MCV** measles-containing vaccine, albendazole, **ITN** insecticide-treated net, **IRS** indoor residual spraying) + an **MDA** (Mass Drug Administration) event + an ITN delivery (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
 File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `examples.fsh`.
@@ -148,6 +246,8 @@ Reading order for a reviewer: protocol → campaign → task → delivery events
 
 * * *
 ## 5. Campaign-architecture profiles (`profiles-campaign.fsh`)
+_Reading the element tables in §5–§9: **MS** = Must Support (a FHIR conformance flag — a conformant implementation must be able to populate and process the element); **1..1 / 0..\* / 1..\*** are cardinalities (min..max occurrences); a **binding** ties a coded element to a ValueSet at a given strength (**required** = must use a code from it, **extensible** = use one if it fits, else add your own)._
+
 ### 5.1 ICRCampaignProtocol — `PlanDefinition`
 _The reusable, version-controlled template for a campaign type — what a measles SIA_ **_is_** _(products, age bands, activity sequence, coverage goals), instantiated by every execution in every country._ (working doc §7.1)
 
