@@ -916,7 +916,7 @@ Reading it: every box on the solid `partOf` spine is an ICRLocation pointing at 
 - **A breadcrumb to tame deep** `partOf` **(c89).** A proposed, **server-maintained** `location-ancestors` extension denormalizes the chain into per-level pointers (`adm0`…`adm3+`), so "everything in Kambia District" is one indexed search instead of N `partOf` hops on a mobile client. It is derived data — re-computed on write and on re-parenting, never hand-authored out of sync with `partOf`.
   
 
-**The location as FHIR/JSON.** `example-district` — Kambia District, showing the multi-system identity and the admin hierarchy:
+{==**The location as FHIR/JSON.** `example-district` — Kambia District, showing the multi-system identity and the admin hierarchy:==}{>>We need to add a geojson extension for the location.  This can take in a gps point or a shape.<<}{id="c5" by="mberg" at="2026-06-16T21:19:35.563Z"}
 
 ```json
 {
