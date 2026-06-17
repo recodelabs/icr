@@ -269,9 +269,7 @@ All three carry a mandatory `record-origin` flag (campaign vs routine).
   
 - **ICRSurveyCoverage** _(MeasureReport)_ — coverage measured independently (cluster survey, LQAS, RCM). Structurally prevented from ever being merged with administrative coverage.
   
-### 2.3 Reading order for a reviewer
-`protocol → campaign → task → delivery events` is the operational spine; `Group`/`Location` is the identity spine; `MeasureReport` is the analytics readout. The whole model is held together by five recurring invariants (§2.4).
-### 2.4 The five cross-cutting invariants
+### 2.3 The five cross-cutting invariants
 These five rules recur across the profiles and are the things to hold the design against (expanded in §9):
 
 1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is _the_ discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
@@ -284,7 +282,7 @@ These five rules recur across the profiles and are the things to hold the design
   
 5. **Geospatial identity is multi-system, GERS-preferred** — open identifier slicing on Location; operational geography overlays the admin hierarchy rather than pretending to be it.
   
-### 2.5 Aliases & identifier systems
+### 2.4 Aliases & identifier systems
 The IG defines aliases (short names) for the external and internal systems it references:
 
 - **External terminologies** — `$CVX` (vaccine codes, `http://hl7.org/fhir/sid/cvx`), `$ATC` (WHO drug codes, `http://www.whocc.no/atc`), `$VaccineCodeVS` (the core FHIR vaccine ValueSet), `$MeasurePopulation` (the HL7 measure-population code system used by coverage examples).
