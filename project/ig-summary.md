@@ -338,7 +338,7 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 
 * * *
 ## 4. Campaign-architecture profiles
-The four profiles that model the structure of a campaign: the template (Protocol), the execution (Campaign), the work types (Activity), and the units of work (Task). A fifth, proposed CareTeam profile (§5) completes the team/supervisor picture.
+{==The four profiles that model the structure of a campaign: the template (Protocol), the execution (Campaign), the work types (Activity), and the units of work (Task). A fifth, proposed CareTeam profile (§5) completes the team/supervisor picture.==}{>>CareTeam is not proposed include it as one of the profiles.<<}{id="c6" by="mberg" at="2026-06-17T02:31:28.678Z"}
 ### 4.1 ICRCampaignProtocol — `PlanDefinition`
 **Purpose.** The reusable, version-controlled **template** for a campaign type — what a measles SIA _is_ (products, age bands, activity sequence, coverage goals), instantiated by every execution in every country. A country defines "measles–rubella SIA, 9 months–14 years" once, and every district and round instantiates it, which gives cross-campaign comparability for free.
 
