@@ -276,7 +276,7 @@ These five rules recur across the profiles and are the things to hold the design
   
 2. {==**Record origin is mandatory on every delivery event** (`1..1`) — the firewall that keeps campaign doses out of routine coverage analytics.==}{>>Restate this in clear englsh.  don't use terms like firewal.  Just say differentiates data captured in a campaing from routine immunization programs.<<}{id="c4" by="mberg" at="2026-06-17T02:17:27.820Z"}
   
-3. **Three lineages, never merged** — planned (CarePlan/Group), delivered (Task/events → administrative coverage), and independently measured (survey coverage) are kept structurally distinct.
+3. {==**Three lineages, never merged** — planned (CarePlan/Group), delivered (Task/events → administrative coverage), and independently measured (survey coverage) are kept structurally distinct.==}{>>I don't really understand what this means. Can you state this in a simpler way and why it's important?<<}{id="c5" by="mberg" at="2026-06-17T02:18:14.136Z"}
   
 4. **Denominator provenance is recommended on every estimate** — source + date travel with each denominator; competing estimates coexist; one is flagged as _the_ planning denominator.
   
