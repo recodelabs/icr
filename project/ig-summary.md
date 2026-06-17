@@ -168,7 +168,7 @@ The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace;
 ### 1.5 What the IG contains
 | Layer | Count | Artifacts |
 | --- | --- | --- |
-| **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
+| **Profiles — campaign architecture** | 5   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task), ICRCareTeam (CareTeam) |
 | **Profiles — population & geography** | 3   | ICRDeliveryUnit (Group), ICRTargetPopulation (Group), ICRLocation (Location) |
 | **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
@@ -178,7 +178,7 @@ The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace;
 | **Example instances** | 26  | A coherent measles–rubella SIA scenario plus an activity gallery, an MDA event and an ITN delivery (see §12) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
-A proposed fifth campaign-architecture profile, **ICRCareTeam** (CareTeam), is documented in §5 but is not yet committed to the IG.
+The fifth campaign-architecture profile, **ICRCareTeam** (CareTeam) — the team & supervisor model — is documented in §5.
 
 * * *
 ## 2. Architecture at a glance
@@ -199,7 +199,7 @@ graph TD
     SUP["ICRSupplyDelivery"]
     AC["ICRAdministrativeCoverage<br/>(MeasureReport)"]
     SC["ICRSurveyCoverage<br/>(MeasureReport)"]
-    CT["ICRCareTeam<br/>(CareTeam — proposed)<br/><i>vaccinator/CDD + supervisor</i>"]
+    CT["ICRCareTeam<br/>(CareTeam)<br/><i>vaccinator/CDD + supervisor</i>"]
 
     PD -- "action" --> AD
     CP -- "instantiatesCanonical 1..1" --> PD
@@ -225,7 +225,7 @@ The IG reads most easily as three intersecting "spines":
 
 - **The operational spine** — `protocol → campaign → task → delivery events`. This is the chain of work: a reusable template (PlanDefinition), instantiated as a specific campaign/round (CarePlan), broken into units of work (Task), each producing concrete delivery events (doses, drug administrations, deliveries).
   
-- {==**The identity spine** — `Group` + `Location`. _Who_ a campaign acts on (denominators and the actual households/communities) is kept strictly separate from _where_ they live and where work happens. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.==}{>>Probably indicate a group can be a household or community.<<}{id="c1" by="mberg" at="2026-06-17T01:45:12.612Z"}
+- **The identity spine** — `Group` + `Location`. _Who_ a campaign acts on is kept strictly separate from _where_ they live and where work happens. The _who_ is a **Group** — and in ICR a Group is either a **household** (a Type-B house-to-house unit) or a **community** (a Type-C MDA unit), modelled by `ICRDeliveryUnit`, alongside the denominator cohorts modelled by `ICRTargetPopulation`. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.
   
 - **The analytics spine** — `MeasureReport`. The coverage readout sits to the side, computed from the other two, and deliberately keeps administrative and survey coverage as separate records that are never merged.
   
@@ -234,13 +234,13 @@ The IG reads most easily as three intersecting "spines":
 
 - **ICRCampaignProtocol** _(PlanDefinition)_ — the reusable, versioned **template** for a campaign type. It says what a "measles–rubella SIA" _is_ (products, age bands, activity sequence, coverage goals) once, so every country and round can instantiate the same recipe and stay comparable.
   
-- **ICRCampaign** _(CarePlan)_ — **one specific campaign execution or round.** It is the core resource that represents campaigns. {==It begins life as a microplan and matures into the execution record as Tasks complete. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.==}{>>Say instead it starts as a microplan and changes to an execution record etc<<}{id="c2" by="mberg" at="2026-06-17T01:46:53.806Z"}
+- **ICRCampaign** _(CarePlan)_ — **one specific campaign execution or round.** It is the core resource that represents campaigns. It **starts as a microplan and changes into an execution record** as Tasks complete — the same resource, evolving rather than being replaced. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.
   
 - **ICRCampaignActivity** _(ActivityDefinition)_ — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). Campaigns can contain multiple activities. It carries the clinical/commodity content once; thousands of Tasks instantiate it.
   
-- **ICRCampaignTask** _(Task)_ — **the assignable, trackable unit of work** — one Task per site-session {==(Type A) or per household/community visit (Type B/C). It is where the A/B/C==}{>>Spell out what A B and C types are.<<}{id="c3" by="mberg" at="2026-06-17T01:51:47.931Z"} delivery models converge into one profile.
+- **ICRCampaignTask** _(Task)_ — **the assignable, trackable unit of work** — one Task per site-session (**Type A** — people come to a fixed or temporary post) or per household/community visit (**Type B** — workers go house to house; **Type C** — a whole community is treated, often register-level, as in MDA). It is where these three delivery models converge into one profile.
   
-- **ICRCareTeam** _(CareTeam — proposed)_ — **the delivery team and supervisor model.** Who did the work and who is accountable for a reported number.
+- **ICRCareTeam** _(CareTeam)_ — **the delivery team and supervisor model.** Who did the work and who is accountable for a reported number.
   
 
 **Population & geography (§6)**
@@ -274,9 +274,9 @@ These five rules recur across the profiles and are the things to hold the design
 
 1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is _the_ discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
   
-2. {==**Record origin is mandatory on every delivery event** (`1..1`) — the firewall that keeps campaign doses out of routine coverage analytics.==}{>>Restate this in clear englsh.  don't use terms like firewal.  Just say differentiates data captured in a campaing from routine immunization programs.<<}{id="c4" by="mberg" at="2026-06-17T02:17:27.820Z"}
+2. **Record origin is mandatory on every delivery event** (`1..1`) — it differentiates data captured in a campaign from data captured by routine immunization programmes, so the two are never mixed together when coverage is calculated.
   
-3. {==**Three lineages, never merged** — planned (CarePlan/Group), delivered (Task/events → administrative coverage), and independently measured (survey coverage) are kept structurally distinct.==}{>>I don't really understand what this means. Can you state this in a simpler way and why it's important?<<}{id="c5" by="mberg" at="2026-06-17T02:18:14.136Z"}
+3. **Three views of coverage, kept separate and never blended.** A campaign produces three different counts of "how many people were reached": what was *planned* (the target population/denominator), what the campaign's *own records* say it delivered (administrative coverage), and what an *independent survey* later measured (survey coverage). ICR stores these as three separate records and never merges them — because they routinely disagree (in the documented Cuamba, Mozambique case the campaign's own tally said ~99% but a survey found ~76%), and blending them would hide that gap. Being able to *see* the disagreement is exactly what tells you whether to trust the numbers.
   
 4. **Denominator provenance is recommended on every estimate** — source + date travel with each denominator; competing estimates coexist; one is flagged as _the_ planning denominator.
   
@@ -338,7 +338,7 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 
 * * *
 ## 4. Campaign-architecture profiles
-{==The four profiles that model the structure of a campaign: the template (Protocol), the execution (Campaign), the work types (Activity), and the units of work (Task). A fifth, proposed CareTeam profile (§5) completes the team/supervisor picture.==}{>>CareTeam is not proposed include it as one of the profiles.<<}{id="c6" by="mberg" at="2026-06-17T02:31:28.678Z"}
+The profiles that model the structure of a campaign: the template (Protocol, §4.1), the execution (Campaign, §4.2), the work types (Activity, §4.3), the units of work (Task, §4.4), and the team & supervisor model (**ICRCareTeam**, §5).
 ### 4.1 ICRCampaignProtocol — `PlanDefinition`
 **Purpose.** The reusable, version-controlled **template** for a campaign type — what a measles SIA _is_ (products, age bands, activity sequence, coverage goals), instantiated by every execution in every country. A country defines "measles–rubella SIA, 9 months–14 years" once, and every district and round instantiates it, which gives cross-campaign comparability for free.
 
@@ -421,7 +421,9 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `status`, `version`, `title` | MS | | | Lifecycle status, the protocol version, and a human title. Protocols are versioned — "MR SIA per 2026 guidance" and its 2028 revision are distinct, citable things. |
+| `status` | MS | | code | Lifecycle status of the protocol definition (`draft` / `active` / `retired`). |
+| `version` | MS | | string | The protocol version — "MR SIA per 2026 guidance" and its 2028 revision are distinct, citable things. |
+| `title` | MS | | string | Human-readable title of the protocol. |
 | `type` | MS | 1..1 | CodeableConcept, **required** → ICRCampaignTypeVS | **What kind of campaign** this is (`vaccination-sia`, `mda`, `itn-distribution`, `irs`, …). Deliberately disease-agnostic — the disease lives in the execution's `addresses` and the vaccine/drug code. |
 | `subject[x]` | MS | | | Target-population definition (age band, eligibility) — "children 9m–14y". |
 | `goal` | MS | | | Coverage targets / thresholds every execution inherits (e.g. ≥95% admin coverage). |
@@ -453,7 +455,7 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 ### 4.2 ICRCampaign — `CarePlan` (the keystone)
 **Purpose.** A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the execution record as Tasks complete and coverage accumulates against it — the _same_ resource matures through its lifecycle. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
 
-{==**Lifecycle.** A campaign is born as a microplan and matures into the execution record of the **same** resource: `intent` flips `plan → order`, `status` walks `draft → active → completed`, and Tasks plus coverage accumulate against it.==}{>>Say this is direct, simple terms.<<}{id="c7" by="mberg" at="2026-06-17T02:46:35.566Z"}
+**Lifecycle — in plain terms.** One CarePlan, two stages. It starts as the **plan** (a microplan: `intent = plan`, `status = draft`), then becomes the **record of what actually happened** as the work is done — `intent` changes to `order` and `status` moves `draft → active → completed`, with Tasks and coverage accumulating against that same resource. You do not create a second resource for "the execution"; the plan grows into it.
 
 ```mermaid
 graph LR
@@ -620,7 +622,7 @@ graph TD
 | `category` | MS | 1..* | CodeableConcept, **required** → ICRCampaignTypeVS | The campaign type(s), echoing the protocol's `type`. |
 | `subject` | MS | | `Reference(ICRTargetPopulation)` only | The single denominator (the *who*) — makes the denominator a first-class participant, not an afterthought. |
 | `period` | MS | 1..1 | Period | Campaign/round dates. |
-| `careTeam` | MS | | `Reference(CareTeam)` | The team(s) running the campaign (see the proposed ICRCareTeam, §5). |
+| `careTeam` | MS | | `Reference(ICRCareTeam)` | The team(s) running the campaign — see ICRCareTeam (§5). |
 | `addresses` | MS | | `Reference(Condition)` | The disease/condition targeted (where the specific disease lives, since `type` is disease-agnostic). |
 | `partOf` | | | `Reference(ICRCampaign)` only | The umbrella/round pattern — a round is `partOf` its umbrella. |
 | `activity` | MS | | `activity.reference` → `Reference(ICRCampaignTask)` only | The round's Tasks. Inline activities (`activity.detail`) are out — the work is always a referenced Task. |
@@ -740,7 +742,7 @@ graph TD
 - **Delivery-strategy cardinality is intentionally asymmetric** — `0..1` on the activity, `1..*` on the protocol, `1..1` on the Task. The strategy is resolved per-Task, so the activity need not pin it.
   
 ### 4.4 ICRCampaignTask — `Task`
-**Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the A/B/C delivery-model {==polymorphism lands==}{>>explain in simpler terms.<<}{id="c8" by="mberg" at="2026-06-17T02:55:30.616Z"}: the _same_ profile serves a fixed-post session and a house-to-house visit, discriminated by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
+**Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models (A/B/C) **all use one and the same profile**: the _same_ `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
 **Two reference roles —** `for` **vs** `focus`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for`. `Task.focus` is reserved for **workflow lineage** — the CarePlan, activity, or prior Task this work derives from. This split keeps "what we acted on" and "where this work came from" separate and queryable.
 
@@ -834,7 +836,9 @@ graph TD
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
 | `status` | MS | | | `requested → in-progress → completed / failed`. |
-| `intent`, `owner`, `executionPeriod`, `output` | MS | | | Workflow intent, the team that owns the work, the execution window, and the outputs (the delivery events / aggregate counts). |
+| `intent` | MS | | code | Workflow intent (`order` for an executing Task). |
+| `owner` | MS | | Reference | The team that owns/performs the work — ideally a `Reference(ICRCareTeam)` (§5) rather than a display string. |
+| `executionPeriod` | MS | | Period | When the work was carried out. |
 | `code` | MS | 1..1 | CodeableConcept | What the Task is. |
 | `for` | MS | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit being **targeted**: a household/community delivery-unit Group (Type B/C), the site Location (Type A), or a Patient for person-targeted follow-up. |
 | `focus` | MS | | `Reference(CarePlan \| ActivityDefinition \| ServiceRequest \| Task)` | **Workflow lineage**: the campaign/activity this work instantiates, or the prior Task it follows (e.g. a mop-up Task following the session Task that missed a child). |
@@ -875,12 +879,12 @@ graph TD
   
 
 * * *
-## 5. ICRCareTeam — `CareTeam` _(proposed — the team & supervisor model)_
-> **Status — proposed, not committed.** `ICRCampaign.careTeam` already references a base FHIR CareTeam (the MS element in §2/§4.2), but there is no profile constraining it and team identity in the examples is still **display-only** (`Task.owner` = "CDD team 7, Rokupr" is a plain string). This section is the proposed profile and an illustrative example.
+## 5. ICRCareTeam — `CareTeam` _(the team & supervisor model)_
+> **What this profile does.** `ICRCampaign.careTeam` references a CareTeam (the MS element in §2/§4.2); `ICRCareTeam` constrains it into the campaign team & supervisor model — coded participant roles, the managing organization, and the supervisory area a team covers. (In some v0.1 examples team identity is still recorded display-only — `Task.owner` = "CDD team 7, Rokupr" as a plain string — which this profile replaces with a real `Reference(ICRCareTeam)`.)
 
 **Purpose.** The campaign delivery team — the vaccinators / CDDs who do the work and the **supervisor** who oversees them and very often files the report. It answers two operational questions every supervisor asks: _who worked this area_, and _who is accountable for this reported number_. The team is referenced from `ICRCampaign.careTeam` (the campaign roster) and from `Task.owner`/`Task.performer` (the team that worked a given Task), and the supervisor surfaces again as the `MeasureReport.reporter` on rolled-up coverage (§8) and typically owns the **supervisory-area** Location (§6.3).
 
-**Example (proposed).** `example-careteam` — CDD team 7 and its supervisor:
+**Example.** `example-careteam` — CDD team 7 and its supervisor:
 
 ```json
 {
@@ -944,11 +948,11 @@ graph TD
 }
 ```
 
-**Properties (proposed).**
+**Properties.**
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `status` | MS | | | `proposed → active → inactive`. |
+| `status` | MS | | code (base CareTeam status) | `proposed → active → inactive` (FHIR CareTeam status values). |
 | `name` | MS | | | Human-readable team label (replaces today's display-only `Task.owner` string). |
 | `subject` | MS | | `Reference(ICRTargetPopulation)` | The campaign/population the team serves. |
 | `participant` | MS | 1..* | | The members. |
@@ -1235,7 +1239,8 @@ Every box on the solid `partOf` spine is an ICRLocation pointing at its single p
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `name`, `status` | MS | | | Name and active/inactive status. |
+| `name` | MS | | string | The location's name. |
+| `status` | MS | | code | Active/inactive status. |
 | `partOf` | MS | | `Reference(ICRLocation)` only | The administrative parent — country → region → district → ward → settlement. |
 | `physicalType` | MS | | CodeableConcept | The base-FHIR shape — jurisdiction / site / building / household. |
 | `type` | MS | | CodeableConcept, **extensible** → ICRLocationTypeVS | The ICR location type — `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area`. |
@@ -1276,7 +1281,7 @@ Every box on the solid `partOf` spine is an ICRLocation pointing at its single p
 ## 7. Delivery-event profiles
 The concrete record of what was delivered — a vaccine dose, a drug administration, a commodity delivery. All three share two design constants:
 
-- **A mandatory** `record-origin` **extension (**`1..1 MS`**)** — campaign vs routine, so SIA doses never contaminate routine coverage analytics.
+- **A mandatory** `record-origin` **extension (**`1..1 MS`**)** — campaign vs routine, so campaign doses are never mixed into routine coverage analytics.
   
 - **The Task→event link runs through** `Task.output`, because R4 `Immunization` has no `basedOn` element to point back with — the reverse link doesn't exist in the base resource.
   
@@ -1340,10 +1345,16 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `status`, `patient`, `occurrence[x]`, `location`, `lotNumber`, `manufacturer`, `performer` | MS | | | Standard immunization fields; `patient` is the person-level capture (only a `Patient`, never a Group). |
+| `status` | MS | | code | Immunization status (`completed`, etc.). |
+| `patient` | MS | | `Reference(Patient)` | The person who received the dose — the person-level capture (only a `Patient`, never a Group). |
+| `occurrence[x]` | MS | | dateTime / string | When the dose was given. |
+| `location` | MS | | `Reference(Location)` | Where the dose was given. |
+| `lotNumber` | MS | | string | Vaccine lot number — for stock accountability and AEFI traceability. |
+| `manufacturer` | MS | | Reference | Vaccine manufacturer — paired with the lot for traceability. |
+| `performer` | MS | | | Who administered the dose (the team/worker). |
 | `vaccineCode` | MS | | CodeableConcept, **extensible** → core FHIR vaccine VS (CVX) | The vaccine; local codes map back via ConceptMap. |
 | `protocolApplied` | MS | | | Dose number / series — supports multi-dose campaigns (OCV) and routine integration. |
-| `extension[recordOrigin]` | MS | 1..1 | code, **required** → ICRRecordOriginVS (`campaign` \| `routine`) | The firewall keeping SIA doses out of routine coverage analytics. |
+| `extension[recordOrigin]` | MS | 1..1 | code, **required** → ICRRecordOriginVS (`campaign` \| `routine`) | Differentiates campaign-captured doses from routine-immunization doses, keeping them separate in coverage analytics. |
 
 **Key observations.**
 
@@ -1419,12 +1430,13 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `status`, `effective[x]` | MS | | | Status and when it happened. |
+| `status` | MS | | code | Administration status (`completed`, etc.). |
+| `effective[x]` | MS | | dateTime / Period | When the drug was administered. |
 | `medication[x]` | | | CodeableConcept only, **extensible** → ICRMDAMedicationVS (WHO ATC) | The drug. |
 | `subject` | MS | | `Reference(Patient \| ICRDeliveryUnit)` only | The treated person, **or the community/household delivery-unit Group** for register-level capture. |
 | `dosage` | MS | | | Tablet count — usually derived from a dose-pole height-band Observation. |
 | `supportingInformation` | MS | | | e.g. the dose-pole Observation the dosage was derived from. |
-| `extension[recordOrigin]` | MS | 1..1 | code, **required** → ICRRecordOriginVS | Campaign-vs-routine firewall. |
+| `extension[recordOrigin]` | MS | 1..1 | code, **required** → ICRRecordOriginVS | Differentiates campaign data from routine-programme data. |
 | `extension[directlyObserved]` | MS | 0..1 | boolean | The MDA DOC protocol — distinguishes "handed out" from "actually swallowed". |
 
 **Relevant terminology.** `medication[x]` binds extensible to **ICRMDAMedicationVS** (all of ATC; typical PC-NTD codes: albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01, azithromycin J01FA10, DEC P02CB02).
@@ -1485,9 +1497,11 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
 | `status` | MS | | | Status. |
-| `suppliedItem`, `suppliedItem.quantity`, `suppliedItem.item[x]` | MS | | (item unbound — GS1 GTIN where applicable) | The commodity and how much. |
+| `suppliedItem` | MS | | BackboneElement | The commodity delivered. |
+| `suppliedItem.quantity` | MS | | SimpleQuantity | How much was delivered (e.g. 3 nets, UCUM `{Net}`). |
+| `suppliedItem.item[x]` | MS | | CodeableConcept / Reference (unbound — GS1 GTIN where applicable) | Which commodity — free text today, pending a GS1 binding. |
 | `destination` | MS | | `Reference(Location)` | Where the commodity went (post, household). |
-| `extension[recordOrigin]` | MS | 1..1 | code, **required** → ICRRecordOriginVS | Campaign-vs-routine firewall. |
+| `extension[recordOrigin]` | MS | 1..1 | code, **required** → ICRRecordOriginVS | Differentiates campaign data from routine-programme data. |
 
 **Aggregate vs individual records — the rule.** The split is: **individual record when you have a person; aggregate count on** `Task.output` **when you don't;** `MeasureReport` **only for derived coverage (numerator/denominator/score), never a raw tally.** Concretely:
 
@@ -1528,7 +1542,10 @@ Both profiles are based on **MeasureReport** (its numerator/denominator `group.p
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `status`, `type`, `reporter`, `group` | MS | | | Standard MeasureReport fields; `group.population` carries numerator/denominator counts and `measureScore` the rate. |
+| `status` | MS | | code | Report status (`complete`, etc.). |
+| `type` | MS | | code | MeasureReport type (`summary`). |
+| `reporter` | MS | | Reference | Who reported the figure — e.g. the district Location, or the supervisor's ICRCareTeam (§5). |
+| `group` | MS | | BackboneElement | Carries `group.population` (numerator/denominator counts) and `measureScore` (the rate). |
 | `period` | MS | 1..1 | Period | The coverage window. |
 | `extension[coverageSource]` | MS | 1..1 | code, **fixed** `#administrative` | Pins this report as administrative — structurally cannot be a survey. |
 | `extension[denominatorSource]` | MS | 0..1 | CodeableConcept, **extensible** → ICRDenominatorSourceVS | The provenance of the denominator used. |
@@ -1540,7 +1557,10 @@ Both profiles are based on **MeasureReport** (its numerator/denominator `group.p
 
 | Element | Flags | Card. | Type / Binding | Description |
 |---|---|---|---|---|
-| `status`, `type`, `reporter`, `group` | MS | | | Standard MeasureReport fields. |
+| `status` | MS | | code | Report status (`complete`, etc.). |
+| `type` | MS | | code | MeasureReport type (`summary`). |
+| `reporter` | MS | | Reference | Who reported the survey result. |
+| `group` | MS | | BackboneElement | Carries `measureScore` (the survey coverage rate); the denominator *is* the sample, so no numerator/denominator population is required. |
 | `period` | MS | 1..1 | Period | The survey window. |
 | `extension[coverageSource]` | MS | 1..1 | code, **required** → ICRIndependentCoverageSourceVS (`survey` \| `lqas` \| `rcm`) | The independent-measurement method — the value set *excludes* `administrative`. |
 | `extension[sampleDesign]` | MS | 0..1 | string | The survey/LQAS/RCM method & sample design (e.g. "WHO 30×10 cluster survey, post-campaign"). |
@@ -1704,7 +1724,7 @@ These are the design rules that recur across the profiles — the things to hold
 
 1. **Delivery strategy is first-class and coded.** Required binding; mandatory on Protocol (`1..*`) and Task (`1..1`), optional on Activity and site Locations. It is _the_ discriminator because strategy determines which data elements exist (house-to-house tallies are meaningless at a fixed post).
   
-2. **Record origin is mandatory on every delivery event** (`1..1`, required binding) — the firewall between SIA doses and routine coverage.
+2. **Record origin is mandatory on every delivery event** (`1..1`, required binding) — it differentiates campaign-captured data from routine-immunization data, so the two are never mixed in coverage analytics.
   
 3. **Three lineages, never merged** — _planned_ (CarePlan/Group), _delivered_ (Task/events → administrative coverage), _independently measured_ (survey coverage). Enforced by the fixed `#administrative` code on one coverage profile and the exclusion ValueSet on the other.
   
@@ -1916,7 +1936,7 @@ A synthesis of eight global-health source analyses (WHO SIA/RED/measles guides, 
 
 **Scope decision — reference, don't model.** Surveillance & outbreak response (case-based surveillance, lab confirmation, susceptibility/inter-epidemic modelling) are the _trigger and evaluation context_ for a campaign, not its execution data. ICR should hold only a **thin reference** (the signal that justified the SIA, the case-age distribution that set the target age) and link out to a VPD-surveillance IG. Likewise, the Location contextual metadata rejected in §6.3 (accessibility/travel-time, georegistry-match-status, endemicity, the TAS gate) links externally by location ID rather than living in the core IG.
 ### 13.3 WHO SMART Immunizations alignment
-**The headline — ICR is the _campaign_ complement to WHO's _routine_ IG.** The WHO SMART Immunizations IG is routine-immunization only: it has **no** `Campaign`/`CarePlan` concept, no denominator/coverage-survey model, and no operational-geography model. So the two IGs are largely complementary, joined by the `record-origin` firewall — a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` can coexist in one store, distinguished by that flag. The clean framing: **ICR = "the campaign SMART-Guidelines IG."** Alignment means adopting WHO's structure where possible and reusing WHO artifacts at the seams.
+**The headline — ICR is the _campaign_ complement to WHO's _routine_ IG.** The WHO SMART Immunizations IG is routine-immunization only: it has **no** `Campaign`/`CarePlan` concept, no denominator/coverage-survey model, and no operational-geography model. So the two IGs are largely complementary, joined by the `record-origin` flag that differentiates campaign data from routine data — a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` can coexist in one store, told apart by that flag. The clean framing: **ICR = "the campaign SMART-Guidelines IG."** Alignment means adopting WHO's structure where possible and reusing WHO artifacts at the seams.
 
 **Proposed alignment work (all forward-looking):**
 
