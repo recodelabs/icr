@@ -427,9 +427,16 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
 }
 ```
 
-> The `activity-type` extension (`follow-up`) shown here is **proposed** (§13), not yet in the IG. It is included to illustrate where the operational-mode axis would sit — see the observations below.
-
-**Relevant terminology.** `type` binds to **ICRCampaignTypeVS** (`vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated`); the strategy extension binds to **ICRDeliveryStrategyVS** (`fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed`). Both are required bindings (§10).
+> The `activity-type` extension (`follow-up`) shown here is **proposed** (§13), not yet in the IG.
+> 
+> **Relevant terminology.**
+> 
+> - `type` binds to **ICRCampaignTypeVS** (`vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated`)
+>   
+> - the strategy extension binds to **ICRDeliveryStrategyVS** (`fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed`).
+>   
+> 
+> Both are required bindings (§10).
 
 **Key observations.**
 
@@ -439,7 +446,7 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
   
 - `type` **is disease-agnostic.** The campaign type (`vaccination-sia`) records the intervention model, not the disease. A measles SIA and a polio SIA are both `vaccination-sia`; they are distinguished by `addresses` (the target Condition) and the vaccine code. Encoding the disease in `type` would duplicate `addresses` and the product code and would enlarge the code list, so disease-specific campaign codes were not added.
   
-- `campaign-type` **and the proposed** `activity-type` **capture different axes.** `campaign-type` records _what intervention_ is delivered (the delivery model). The proposed `activity-type`/`sia-type` axis records _the operational mode_ of a round — routine, preventive-mass, catch-up, follow-up, mop-up, or reactive/outbreak-response. The two are independent: a measles follow-up SIA and a measles outbreak-response SIA share `campaign-type = vaccination-sia` but differ in mode, target age band, and analysis. Keeping the axes separate allows "all reactive campaigns, any disease" and "all measles campaigns, any mode" to be queried independently. WHO's EYE (Eliminate Yellow fever Epidemics) programme uses this same four-type taxonomy. A companion proposed `coverage-target` element would store the programme-defined threshold — for example ≥95% for an SIA, ≥65% epidemiological for lymphatic filariasis, or EYE's 50/60/80%.
+- `campaign-type` **and the proposed** `activity-type` **capture different axes.** `campaign-type` records _what intervention_ is delivered (the delivery model). The proposed `activity-type`/`sia-type` axis records _the operational mode_ of a round — routine, preventive-mass, catch-up, follow-up, mop-up, or reactive/outbreak-response. The two are independent: a measles follow-up SIA and a measles outbreak-response SIA share `campaign-type = vaccination-sia` but differ in mode, target age band, and analysis. Keeping the axes separate allows "all reactive campaigns, any disease" and "all measles campaigns, any mode" to be queried independently. A companion proposed `coverage-target` element would store the programme-defined threshold — for example ≥95% for an SIA, ≥65% epidemiological for lymphatic filariasis.
   
 
 **Open questions.**
