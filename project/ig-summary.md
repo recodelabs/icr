@@ -740,7 +740,7 @@ graph TD
 - **Delivery-strategy cardinality is intentionally asymmetric** — `0..1` on the activity, `1..*` on the protocol, `1..1` on the Task. The strategy is resolved per-Task, so the activity need not pin it.
   
 ### 4.4 ICRCampaignTask — `Task`
-**Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the A/B/C delivery-model polymorphism lands: the _same_ profile serves a fixed-post session and a house-to-house visit, discriminated by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
+**Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the A/B/C delivery-model {==polymorphism lands==}{>>explain in simpler terms.<<}{id="c8" by="mberg" at="2026-06-17T02:55:30.616Z"}: the _same_ profile serves a fixed-post session and a house-to-house visit, discriminated by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
 **Two reference roles —** `for` **vs** `focus`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for`. `Task.focus` is reserved for **workflow lineage** — the CarePlan, activity, or prior Task this work derives from. This split keeps "what we acted on" and "where this work came from" separate and queryable.
 
