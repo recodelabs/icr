@@ -647,7 +647,7 @@ graph TD
 - The relief valve, if `instantiatesCanonical 1..1` ever proves too strict for emergencies, is to relax it to `0..1` with a flag.
   
 ### 4.3 ICRCampaignActivity — `ActivityDefinition`
-**Purpose.** A discrete **work type** within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households", "spray structures" — instantiated as ICRCampaignTask resources. It carries the intervention, product, and dosage **once**; thousands of Tasks instantiate it without repeating the clinical content. It is deliberately **target-agnostic**: it says _what_ to do and at most the _kind_ of eligible target, never which concrete household/structure/session.
+**Purpose.** A discrete **activity** within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households", "spray structures" — instantiated as ICRCampaignTask resources. It carries the intervention, product, and dosage **once**; thousands of Tasks instantiate it without repeating the clinical content. It is deliberately **target-agnostic**: it says _what_ to do and at most the _kind_ of eligible target, never which concrete household/structure/session.
 
 **Example.** `example-mcv-activity` — the activity the protocol's `action` points at:
 
