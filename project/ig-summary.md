@@ -274,7 +274,7 @@ These five rules recur across the profiles and are the things to hold the design
 
 1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is _the_ discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
   
-2. **Record origin is mandatory on every delivery event** (`1..1`) — the firewall that keeps campaign doses out of routine coverage analytics.
+2. {==**Record origin is mandatory on every delivery event** (`1..1`) — the firewall that keeps campaign doses out of routine coverage analytics.==}{>>Restate this in clear englsh.  don't use terms like firewal.  Just say differentiates data captured in a campaing from routine immunization programs.<<}{id="c4" by="mberg" at="2026-06-17T02:17:27.820Z"}
   
 3. **Three lineages, never merged** — planned (CarePlan/Group), delivered (Task/events → administrative coverage), and independently measured (survey coverage) are kept structurally distinct.
   
