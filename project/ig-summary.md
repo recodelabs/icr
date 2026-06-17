@@ -236,7 +236,7 @@ The IG reads most easily as three intersecting "spines":
   
 - **ICRCampaign** _(CarePlan)_ — **one specific campaign execution or round.** It is the core resource that represents campaigns. {==It begins life as a microplan and matures into the execution record as Tasks complete. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.==}{>>Say instead it starts as a microplan and changes to an execution record etc<<}{id="c2" by="mberg" at="2026-06-17T01:46:53.806Z"}
   
-- **ICRCampaignActivity** _(ActivityDefinition)_ — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). It carries the clinical/commodity content once; thousands of Tasks instantiate it.
+- **ICRCampaignActivity** _(ActivityDefinition)_ — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). Campaigns can contain multiple activities. It carries the clinical/commodity content once; thousands of Tasks instantiate it.
   
 - **ICRCampaignTask** _(Task)_ — **the assignable, trackable unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). It is where the A/B/C delivery models converge into one profile.
   
