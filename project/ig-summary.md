@@ -433,7 +433,7 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 
 **Key observations.**
 
-- **Protocol is separated from execution by design.** Defining the campaign type once and instantiating it per district/round is what makes "all MR SIA rounds, anywhere, comparable" a query rather than a research project. Every execution carries `instantiatesCanonical → protocol`, and that link is `1..1` — non-negotiable.
+- **Protocol is separated from execution by design.** Defining the campaign type once and instantiating it per district/round is what makes "all MR SIA rounds, anywhere, comparable" a query. Every execution carries `instantiatesCanonical → protocol`, and that link is `1..1` — non-negotiable.
   
 - **A protocol carries no geography, dates, or denominator.** Those live on the executions (§4.2). The protocol is pure template: products, strategies, goals, activity sequence.
   
