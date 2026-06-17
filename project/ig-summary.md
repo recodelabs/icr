@@ -448,13 +448,6 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
   
 - `campaign-type` **and the proposed** `activity-type` **capture different axes.** `campaign-type` records _what intervention_ is delivered (the delivery model). The proposed `activity-type`/`sia-type` axis records _the operational mode_ of a round — routine, preventive-mass, catch-up, follow-up, mop-up, or reactive/outbreak-response. The two are independent: a measles follow-up SIA and a measles outbreak-response SIA share `campaign-type = vaccination-sia` but differ in mode, target age band, and analysis. Keeping the axes separate allows "all reactive campaigns, any disease" and "all measles campaigns, any mode" to be queried independently. A companion proposed `coverage-target` element would store the programme-defined threshold — for example ≥95% for an SIA, ≥65% epidemiological for lymphatic filariasis.
   
-
-**Open questions.**
-
-- `PlanDefinition.type` (`1..1`) is repurposed here for campaign type; base FHIR uses it to distinguish plan kinds (order-set vs protocol).
-  
-- **Naming-collision caution with WHO.** WHO uses `PlanDefinition` for _decision-support schedules_ (recommend/contraindicate/next-visit); ICR uses it for the _campaign protocol_. Same resource, opposite role — document the distinction so a WHO-familiar consumer isn't surprised.
-  
 ### 4.2 ICRCampaign — `CarePlan` (the keystone)
 **Purpose.** A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the execution record as Tasks complete and coverage accumulates against it — the _same_ resource matures through its lifecycle. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
 
