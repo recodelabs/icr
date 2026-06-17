@@ -739,11 +739,6 @@ graph TD
   
 - **Delivery-strategy cardinality is intentionally asymmetric** — `0..1` on the activity, `1..*` on the protocol, `1..1` on the Task. The strategy is resolved per-Task, so the activity need not pin it.
   
-
-**Open questions.**
-
-- A proposed `dosing-regimen` axis (single-dose-lifelong / multi-dose / fractional) on the activity (and event) is needed to define "fully immunized" (§13).
-  
 ### 4.4 ICRCampaignTask — `Task`
 **Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the A/B/C delivery-model polymorphism lands: the _same_ profile serves a fixed-post session and a house-to-house visit, discriminated by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
