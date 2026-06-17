@@ -234,7 +234,7 @@ The IG reads most easily as three intersecting "spines":
 
 - **ICRCampaignProtocol** _(PlanDefinition)_ — the reusable, versioned **template** for a campaign type. It says what a "measles–rubella SIA" _is_ (products, age bands, activity sequence, coverage goals) once, so every country and round can instantiate the same recipe and stay comparable.
   
-- **ICRCampaign** _(CarePlan)_ — **one specific campaign execution or round.** It is the core resource that represents campaigns. It begins life as a microplan and matures into the execution record as Tasks complete. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.
+- **ICRCampaign** _(CarePlan)_ — **one specific campaign execution or round.** It is the core resource that represents campaigns. {==It begins life as a microplan and matures into the execution record as Tasks complete. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.==}{>>Say instead it starts as a microplan and changes to an execution record etc<<}{id="c2" by="mberg" at="2026-06-17T01:46:53.806Z"}
   
 - **ICRCampaignActivity** _(ActivityDefinition)_ — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). It carries the clinical/commodity content once; thousands of Tasks instantiate it.
   
