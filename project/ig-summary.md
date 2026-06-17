@@ -220,14 +220,14 @@ graph TD
     CP -. "target-geography ext" .-> L
     AC -. "never merged" .- SC
 ```
-### 2.1 The three spines
-The IG reads most easily as three intersecting "spines":
+### 2.1 The three layers
+The IG reads most easily as three intersecting layers:
 
-- **The operational spine** — `protocol → campaign → task → delivery events`. This is the chain of work: a reusable template (PlanDefinition), instantiated as a specific campaign/round (CarePlan), broken into units of work (Task), each producing concrete delivery events (doses, drug administrations, deliveries).
+- **The operational layer** — `protocol → campaign → task → delivery events`. This is the chain of work: a reusable template (PlanDefinition), instantiated as a specific campaign/round (CarePlan), broken into units of work (Task), each producing concrete delivery events (doses, drug administrations, deliveries).
   
-- **The identity spine** — `Group` + `Location`. _Who_ a campaign acts on is kept strictly separate from _where_ they live and where work happens. The _who_ is a **Group** — and in ICR a Group is either a **household** (a Type-B house-to-house unit) or a **community** (a Type-C MDA unit), modelled by `ICRDeliveryUnit`, alongside the denominator cohorts modelled by `ICRTargetPopulation`. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.
+- **The identity layer** — `Group` + `Location`. _Who_ a campaign acts on is kept strictly separate from _where_ they live and where work happens. The _who_ is a **Group** — and in ICR a Group is either a **household** (a Type-B house-to-house unit) or a **community** (a Type-C MDA unit), modelled by `ICRDeliveryUnit`, alongside the denominator cohorts modelled by `ICRTargetPopulation`. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.
   
-- **The analytics spine** — `MeasureReport`. The coverage readout sits to the side, computed from the other two, and deliberately keeps administrative and survey coverage as separate records that are never merged.
+- **The analytics layer** — `MeasureReport`. The coverage readout sits to the side, computed from the other two, and deliberately keeps administrative and survey coverage as separate records that are never merged.
   
 ### 2.2 The key components
 **Campaign architecture (§3–§5)**
