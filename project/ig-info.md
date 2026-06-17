@@ -1,7 +1,12 @@
 ---
 version: 0.13.0
 last_modified: 2026-06-16T21:45:00.000Z
-tags: [icr, fhir, ig, review]
+tags:
+  - icr
+  - fhir
+  - ig
+  - review
+public: true
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
