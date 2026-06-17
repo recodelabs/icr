@@ -468,7 +468,7 @@ graph LR
     R1 -- "activity.reference" --> T
 ```
 
-The umbrella stays `intent = plan` — it is the planning shell holding the national denominator and binding the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query.
+The campaign umbrella (representing the microplan) stays `intent = plan` — it is the planning shell holding the national denominator and binding the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query.
 
 **Who vs where.** Each CarePlan has exactly **one** `subject` — the _who_, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250"). The _where_ is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round stack, not by overloading one CarePlan.
 
