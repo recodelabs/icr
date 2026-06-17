@@ -446,10 +446,9 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 
 **Open questions.**
 
-- `PlanDefinition.type` (`1..1`) is repurposed here for campaign type; base FHIR uses it to distinguish plan kinds (order-set vs protocol). Reviewers may ask whether `topic` or a dedicated extension is cleaner.
+- `PlanDefinition.type` (`1..1`) is repurposed here for campaign type; base FHIR uses it to distinguish plan kinds (order-set vs protocol).
   
-- **Age-band eligibility as CQL** (an executable `library`/eligibility-logic story) is deferred to a later round; it pairs with the WHO DAK/CQL alignment.
-  
+
 - **Naming-collision caution with WHO.** WHO uses `PlanDefinition` for _decision-support schedules_ (recommend/contraindicate/next-visit); ICR uses it for the _campaign protocol_. Same resource, opposite role — document the distinction so a WHO-familiar consumer isn't surprised.
   
 ### 4.2 ICRCampaign — `CarePlan` (the keystone)
