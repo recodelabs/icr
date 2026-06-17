@@ -756,7 +756,7 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 - **Delivery-strategy cardinality differs by resource by design** — `0..1` on the activity, `1..*` on the protocol, `1..1` on the Task. The strategy is resolved per Task, so the activity does not need to fix it.
   
 ### 4.4 ICRCampaignTask — `Task`
-**Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models (A/B/C) **all use one and the same profile**: the _same_ `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
+The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models (A/B/C) **all use one and the same profile**: the _same_ `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
 **Two reference roles —** `for` **vs** `focus`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for`. `Task.focus` is reserved for **workflow lineage** — the CarePlan, activity, or prior Task this work derives from. This split keeps "what we acted on" and "where this work came from" separate and queryable.
 
