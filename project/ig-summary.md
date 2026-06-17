@@ -453,7 +453,7 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
 ### 4.2 ICRCampaign — `CarePlan` (the keystone)
 **Purpose.** A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the execution record as Tasks complete and coverage accumulates against it — the _same_ resource matures through its lifecycle. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
 
-**Lifecycle.** A campaign is born as a microplan and matures into the execution record of the **same** resource: `intent` flips `plan → order`, `status` walks `draft → active → completed`, and Tasks plus coverage accumulate against it.
+{==**Lifecycle.** A campaign is born as a microplan and matures into the execution record of the **same** resource: `intent` flips `plan → order`, `status` walks `draft → active → completed`, and Tasks plus coverage accumulate against it.==}{>><<}{id="c7" by="mberg" at="2026-06-17T02:46:35.566Z"}
 
 ```mermaid
 graph LR
