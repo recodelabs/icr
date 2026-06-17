@@ -439,8 +439,7 @@ Profiles labelled **(proposed)** are described for completeness but are not yet 
   
 - `type` **is disease-agnostic.** `vaccination-sia` does not say _which_ disease — a measles SIA and a polio SIA are both `vaccination-sia`, told apart by `addresses` (the Condition) and the vaccine code. This keeps the code list small; disease-specific codes were rejected as duplicating `addresses` and the product code.
   
-- **"Protocol" is FHIR's own term** for what PlanDefinition holds, so the name signals the exact resource and usage pattern to reviewers.
-  
+
 - `campaign-type` **answers a different question than the proposed** `activity-type`**.** `campaign-type` = _what intervention_ (the delivery model). The proposed `activity-type`/`sia-type` axis = _the operational mode/trigger_ of the round (routine / preventive-mass / catch-up / follow-up / mop-up / reactive-outbreak-response). They are orthogonal: a measles _follow-up_ SIA and a measles _outbreak-response_ SIA are both `vaccination-sia` but differ in mode, age band, and analysis. Keeping the axes separate lets you query "all reactive campaigns, any disease" independently of "all measles, any mode" (WHO's EYE programme uses exactly this 4-type taxonomy). A companion proposed `coverage-target` element would store the programme-defined threshold (≥95% SIA, ≥65% LF epidemiological, EYE 50/60/80%).
   
 
