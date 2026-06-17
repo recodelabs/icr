@@ -631,8 +631,6 @@ graph TD
 
 **Key observations.**
 
-- **CarePlan was chosen over a custom resource, Encounter, and RequestGroup** because it natively supports the plan→execution lifecycle, `instantiatesCanonical`, population subjects, and `partOf` composition.
-  
 - **Planned-vs-executed is captured by the lifecycle of one resource, not a duplicate.** The microplan and the execution record are the same CarePlan at different `intent` values; the planned figure is retained in the `planningDenominator` extension, and the planned-vs-actual audit trail comes from FHIR resource history / Provenance — ICR does **not** mint a separate planning-snapshot Group.
   
 - **One subject per CarePlan, so do three districts need three CarePlans?** It depends on the denominator, not on admin boundaries. Two valid shapes: **(a) one CarePlan, several target geographies** — legitimate when the districts are planned and reported as one scope against _one_ shared denominator (`targetGeography` lists all of them, `subject` is the one regional denominator); **(b) several round CarePlans under a regional umbrella** via `partOf` — the usual case, needed the moment each district carries its own denominator, period, or coverage rollup (almost always true). You mint one CarePlan per **denominator/reporting scope**, not per admin area.
