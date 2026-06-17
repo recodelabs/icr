@@ -744,8 +744,6 @@ graph TD
 
 - A proposed `dosing-regimen` axis (single-dose-lifelong / multi-dose / fractional) on the activity (and event) is needed to define "fully immunized" (§13).
   
-- Vector-control work like fly-traps and larviciding is outside v0.1 program scope and has no delivery-event profile — flag it if entomological surveillance enters ICR's future.
-  
 ### 4.4 ICRCampaignTask — `Task`
 **Purpose.** The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the A/B/C delivery-model polymorphism lands: the _same_ profile serves a fixed-post session and a house-to-house visit, discriminated by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
