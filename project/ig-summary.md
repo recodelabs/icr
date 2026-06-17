@@ -269,7 +269,7 @@ All three carry a mandatory `record-origin` flag (campaign vs routine).
   
 - **ICRSurveyCoverage** _(MeasureReport)_ — coverage measured independently (cluster survey, LQAS, RCM). Structurally prevented from ever being merged with administrative coverage.
   
-### 2.3 The five cross-cutting invariants
+### 2.3 The five cross-cutting principals
 These five rules recur across the profiles and are the things to hold the design against (expanded in §9):
 
 1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is _the_ discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
