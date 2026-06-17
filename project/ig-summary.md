@@ -269,18 +269,16 @@ All three carry a mandatory `record-origin` flag (campaign vs routine).
   
 - **ICRSurveyCoverage** _(MeasureReport)_ — coverage measured independently (cluster survey, LQAS, RCM). Structurally prevented from ever being merged with administrative coverage.
   
-### 2.3 The five cross-cutting principals
-These five rules recur across the profiles and are the things to hold the design against (expanded in §9):
-
+### 2.3 Five cross-cutting principals
 1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is _the_ discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
   
 2. **Record origin is mandatory on every delivery event** (`1..1`) — it differentiates data captured in a campaign from data captured by routine immunization programmes, so the two are never mixed together when coverage is calculated.
   
-3. **Three views of coverage, kept separate and never blended.** A campaign produces three different counts of "how many people were reached": what was _planned_ (the target population/denominator), what the campaign's _own records_ say it delivered (administrative coverage), and what an _independent survey_ later measured (survey coverage). ICR stores these as three separate records and never merges them — because they routinely disagree (in the documented Cuamba, Mozambique case the campaign's own tally said ~99% but a survey found ~76%), and blending them would hide that gap. Being able to _see_ the disagreement is exactly what tells you whether to trust the numbers.
+3. **Three views of coverage, kept separate and never blended.** A campaign produces three different counts of "how many people were reached": what was _planned_ (the target population/denominator), what the campaign's _own records_ say it delivered (administrative coverage), and what an _independent survey_ later measured (survey coverage). ICR stores these as three separate records and never merges them — because they routinely disagree in reality. Eg. a campaign tally may report 99% coverage while a post event coverage survey reports 76%
   
 4. **Denominator provenance is recommended on every estimate** — source + date travel with each denominator; competing estimates coexist; one is flagged as _the_ planning denominator.
   
-5. **Geospatial identity is multi-system, GERS-preferred** — open identifier slicing on Location; operational geography overlays the admin hierarchy rather than pretending to be it.
+5. **Geospatial identity is multi-system, GERS-preferred** — locations can map to multiple identifiers. Operational geography overlays the admin hierarchy rather than pretending to be it.
   
 ### 2.4 Aliases & identifier systems
 The IG defines aliases (short names) for the external and internal systems it references:
