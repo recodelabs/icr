@@ -664,7 +664,7 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 
 | Element | Flags | Card. | Type / Binding | Description |
 | --- | --- | --- | --- | --- |
-| `status` | MS  |     |     | Lifecycle status. |
+| `status` | MS  |     |     | {==Lifecycle status.==}{>>can we include the status states here?<<}{id="c2" by="mberg" at="2026-06-17T19:40:01.396Z"} |
 | `kind` |     |     | fixed `#Task` | Hard-wires the instantiation target: instantiating this activity produces ICRCampaignTasks, not ServiceRequests. |
 | `code` | MS  | 1..1 | CodeableConcept | The intervention: vaccinate / treat / distribute / spray. |
 | `product[x]` | MS  |     | (unbound — CVX/ATC/GS1 in `^short` only) | The product: vaccine (CVX), drug (ATC), or commodity (GS1). |
