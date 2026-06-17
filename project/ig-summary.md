@@ -182,7 +182,7 @@ The fifth campaign-architecture profile, **ICRCareTeam** (CareTeam) — the team
 
 * * *
 ## 2. Architecture at a glance
-FHIR has no native `Campaign` resource, so ICR builds its campaign spine on the **CarePlan** resource and surrounds it with profiles for population, geography, delivery events, and coverage. The diagram below shows how the pieces connect.
+FHIR has no native `Campaign` resource, so ICR builds its campaign layer on the **CarePlan** resource and surrounds it with profiles for population, geography, delivery events, and coverage. The diagram below shows how the pieces connect.
 
 ```mermaid
 graph TD
@@ -1169,7 +1169,7 @@ graph TD
     Z -. "overlays-admin-unit" .-> D
 ```
 
-Every box on the solid `partOf` spine is an ICRLocation pointing at its single parent (country → district → settlement → dwelling, 6+ levels in practice). "Kambia supervision zone 2" is the operational exception: it hangs off _nothing_ in the admin tree (a supervisory zone can straddle several wards, so it can't have one parent) and instead carries a dashed `overlays-admin-unit` pointer at the district it reports into — which is what makes operational geography linkable-but-distinct.
+Every box on the solid `partOf` layer is an ICRLocation pointing at its single parent (country → district → settlement → dwelling, 6+ levels in practice). "Kambia supervision zone 2" is the operational exception: it hangs off _nothing_ in the admin tree (a supervisory zone can straddle several wards, so it can't have one parent) and instead carries a dashed `overlays-admin-unit` pointer at the district it reports into — which is what makes operational geography linkable-but-distinct.
 
 **Example.** `example-district` — Kambia District, showing multi-system identity, the admin hierarchy, a GPS point, and a GeoJSON boundary:
 
@@ -1836,7 +1836,7 @@ FHIR has no native campaign semantics, so 23 extensions carry them on the profil
 ## 12. The worked scenario
 The IG ships one coherent story: a **Sierra Leone measles–rubella SIA, 2026** — a national umbrella campaign with the **Kambia District June round** as a `partOf` child — exercising fixed-post (Type A) and house-to-house mop-up (Type B) tasks, the divergent admin-vs-survey coverage pair, plus a standalone MDA event (Type C) and an ITN delivery. The figures (48,250; 99% vs 76%) are an **illustrative composite** constructed to exercise the profiles, with the 99-vs-76 divergence modelled on the documented Cuamba, Mozambique case; they are not a transcription of a specific published SIA.
 
-**The end-to-end chain.** The scenario's spine is a single traceable thread from template to person:
+**The end-to-end chain.** This scenario is single traceable thread from template to person:
 
 ```mermaid
 graph LR
@@ -1917,9 +1917,9 @@ Stated in the IG's own README/index — absent by design, not oversight:
 - No `CapabilityStatement`, search-parameter, or Bulk-Data/cohort-export guidance yet (the access-pattern open question).
   
 ### 13.2 Research-validated proposed additions (field-evidence synthesis)
-A synthesis of eight global-health source analyses (WHO SIA/RED/measles guides, the cluster-survey manual, GTFCC OCV, NTD-MDA, WHO EYE/yellow-fever, and geo-microplanning) was compared against the IG. **The convergence is the signal: no source contradicts the IG's spine, and the same gaps recur across very different campaign types.**
+A synthesis of eight global-health source analyses (WHO SIA/RED/measles guides, the cluster-survey manual, GTFCC OCV, NTD-MDA, WHO EYE/yellow-fever, and geo-microplanning) was compared against the IG. **The convergence is the signal: no source contradicts the IG's layers, and the same gaps recur across very different campaign types.**
 
-**Validated — do not change (the spine holds).** Plan→order lifecycle; one-Task-per-visit with per-person delivery events; the `record-origin` firewall; denominator-with-provenance; the three never-merged coverage lineages; realtime-vs-reconciled; coded delivery strategy; GERS-preferred multi-system identity; configurable age bands; the MDA model (ATC, subject = DeliveryUnit, directlyObserved); integrated multi-intervention on a shared denominator. **Operational geography overlaying the admin hierarchy is called out as the standout win**, validated by every GIS/operational source. GeoJSON-on-R4 is effectively already resolved (the extension ships; only `background.md`'s "open question" wording lags).
+**Validated — do not change (the layers holds).** Plan→order lifecycle; one-Task-per-visit with per-person delivery events; the `record-origin` firewall; denominator-with-provenance; the three never-merged coverage lineages; realtime-vs-reconciled; coded delivery strategy; GERS-preferred multi-system identity; configurable age bands; the MDA model (ATC, subject = DeliveryUnit, directlyObserved); integrated multi-intervention on a shared denominator. **Operational geography overlaying the admin hierarchy is called out as the standout win**, validated by every GIS/operational source. GeoJSON-on-R4 is effectively already resolved (the extension ships; only `background.md`'s "open question" wording lags).
 
 **Priority-1 proposed additions (strongly convergent, load-bearing):**
 
@@ -1940,7 +1940,7 @@ A synthesis of eight global-health source analyses (WHO SIA/RED/measles guides, 
 
 - **Adopt the WHO SMART-Guidelines IG skeleton** (the biggest structural gap). ICR ships only `index.md` + `background.md`; restructure into WHO's standard layers — L1 Home (Summary / Changes / Dependencies / References / Country-adaptation), L2 Business Requirements (campaign personas, business processes mapped onto WHO's `IMMZ.A–I`, a Data Dictionary, decision support, indicators, requirements), Data Models & Exchange (System Actors, Transactions, Codings, Measures), Deployment (Security, Testing, Test Data, Reference Implementations, Trust, Downloads), and Indices (Artifact Index, a **Mappings** page, optionally a DAK-API surface) — filling campaign content and leaving titled stubs where pending, as WHO does.
   
-- **Reuse WHO artifacts at the touch-points.** Make `ICRImmunizationEvent` derived-from / compatible-with `IMMZ.Immunization` (a campaign dose becomes a valid WHO immunization + `record-origin`); align person records to `IMMZ.Patient` (base R4 Patient, _not_ IPS — a WHO narrative claim its artifacts don't bear out); **reuse** `IMMZ.AdverseEvent` for AEFI rather than minting a new value set. ICR's campaign spine (Campaign / Task / TargetPopulation / coverage / Location) is its distinctive contribution to offer back.
+- **Reuse WHO artifacts at the touch-points.** Make `ICRImmunizationEvent` derived-from / compatible-with `IMMZ.Immunization` (a campaign dose becomes a valid WHO immunization + `record-origin`); align person records to `IMMZ.Patient` (base R4 Patient, _not_ IPS — a WHO narrative claim its artifacts don't bear out); **reuse** `IMMZ.AdverseEvent` for AEFI rather than minting a new value set. ICR's campaign layer (Campaign / Task / TargetPopulation / coverage / Location) is its distinctive contribution to offer back.
   
 - **Terminology & indicators.** Keep ICR's CVX/ATC/GS1 backbone but add **ConceptMaps ICR ↔** `IMMZ.*`. WHO defines 45 FHIR `Measure`s (`IMMZIND01–45`); **derive ICR's Measures from the IMMZ ones where they overlap**, then add the campaign-only ones WHO lacks (admin-vs-survey, RCM/LQAS, at-risk/epidemiological denominator, geographic coverage). ICR's denominator-with-provenance and admin-vs-survey split are _richer_ than WHO's.
   
