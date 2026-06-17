@@ -2,7 +2,12 @@
 title: ICR FHIR Implementation Guide — Summary & Companion
 status: draft companion to ICR IG v0.1
 fhir_version: R4 (4.0.1)
-tags: [icr, fhir, ig, summary]
+tags:
+  - icr
+  - fhir
+  - ig
+  - summary
+public: true
 ---
 
 # ICR FHIR Implementation Guide — Summary & Companion
