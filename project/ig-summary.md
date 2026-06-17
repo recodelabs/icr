@@ -470,7 +470,11 @@ graph LR
 
 The campaign umbrella (representing the microplan) stays `intent = plan` — it is the planning shell holding the national denominator and binding the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query.
 
-**Who vs where.** Each CarePlan has exactly **one** `subject` — the _who_, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250"). The _where_ is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round stack, not by overloading one CarePlan.
+**Who vs Where**
+
+Each CarePlan has exactly **one** `subject` — the _who_, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250").
+
+The _where_ is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round stack, not by overloading one CarePlan.
 
 ```mermaid
 graph TD
@@ -645,9 +649,18 @@ graph TD
 - The relief valve, if `instantiatesCanonical 1..1` ever proves too strict for emergencies, is to relax it to `0..1` with a flag.
   
 ### 4.3 ICRCampaignActivity — `ActivityDefinition`
-**Purpose.** A discrete **activity** within a campaign — "administer albendazole to children 5–14", "distribute ITNs to households", "spray structures" — instantiated as ICRCampaignTask resources. It carries the intervention, product, and dosage **once**; thousands of Tasks instantiate it without repeating the clinical content. It is deliberately **target-agnostic**: it says _what_ to do and at most the _kind_ of eligible target, never which concrete household/structure/session.
+A **CampaignActivity** is a discrete **activity** within a campaign. For example:
 
-**Properties.**
+- Administer albendazole to children 5–14
+  
+- Distribute ITNs to households
+  
+- Spray a structure
+  
+
+CampaignActivities are instantiated as ICRCampaignTask resources. The Activity defines the the intervention activity once eg. product and dosage **once** which is then used to create thousands of identical tasks under it without needing to repeat clinical content. CampaignActivities are also deliberately to not define the the target (target-agnostic). They define _what_ to do in a campaign at _most the kind_ of eligible target but they never define the specific household or community to target.
+
+**Properties**
 
 | Element | Flags | Card. | Type / Binding | Description |
 | --- | --- | --- | --- | --- |
