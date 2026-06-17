@@ -225,7 +225,7 @@ The IG reads most easily as three intersecting "spines":
 
 - **The operational spine** — `protocol → campaign → task → delivery events`. This is the chain of work: a reusable template (PlanDefinition), instantiated as a specific campaign/round (CarePlan), broken into units of work (Task), each producing concrete delivery events (doses, drug administrations, deliveries).
   
-- {==**The identity spine** — `Group` + `Location`. _Who_ a campaign acts on (denominators and the actual households/communities) is kept strictly separate from _where_ they live and where work happens. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.==}{>>Probably indicate a group can be a household or a an area;<<}{id="c1" by="mberg" at="2026-06-17T01:45:12.612Z"}
+- {==**The identity spine** — `Group` + `Location`. _Who_ a campaign acts on (denominators and the actual households/communities) is kept strictly separate from _where_ they live and where work happens. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.==}{>>Probably indicate a group can be a household or community.<<}{id="c1" by="mberg" at="2026-06-17T01:45:12.612Z"}
   
 - **The analytics spine** — `MeasureReport`. The coverage readout sits to the side, computed from the other two, and deliberately keeps administrative and survey coverage as separate records that are never merged.
   
