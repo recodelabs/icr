@@ -238,7 +238,7 @@ The IG reads most easily as three intersecting "spines":
   
 - **ICRCampaignActivity** _(ActivityDefinition)_ — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). Campaigns can contain multiple activities. It carries the clinical/commodity content once; thousands of Tasks instantiate it.
   
-- **ICRCampaignTask** _(Task)_ — **the assignable, trackable unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). It is where the A/B/C delivery models converge into one profile.
+- **ICRCampaignTask** _(Task)_ — **the assignable, trackable unit of work** — one Task per site-session {==(Type A) or per household/community visit (Type B/C). It is where the A/B/C==}{>>Spell out what A B and C types are.<<}{id="c3" by="mberg" at="2026-06-17T01:51:47.931Z"} delivery models converge into one profile.
   
 - **ICRCareTeam** _(CareTeam — proposed)_ — **the delivery team and supervisor model.** Who did the work and who is accountable for a reported number. Proposed; not yet in the IG.
   
