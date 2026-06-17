@@ -479,7 +479,7 @@ The campaign umbrella (representing the microplan) stays `intent = plan` — it 
 
 Each CarePlan has exactly **one** `subject` — the _who_, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250").
 
-The _where_ is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round stack, not by overloading one CarePlan.
+The _where_ is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round, not by overloading one CarePlan.
 
 ```mermaid
 graph TD
