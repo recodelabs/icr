@@ -6,7 +6,6 @@ tags:
   - fhir
   - ig
   - review
-public: true
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
