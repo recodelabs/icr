@@ -229,7 +229,7 @@ The IG reads most easily as three intersecting "spines":
   
 - **The analytics spine** — `MeasureReport`. The coverage readout sits to the side, computed from the other two, and deliberately keeps administrative and survey coverage as separate records that are never merged.
   
-### 2.2 The key components, in plain language
+### 2.2 The key components
 **Campaign architecture (§3–§5)**
 
 - **ICRCampaignProtocol** _(PlanDefinition)_ — the reusable, versioned **template** for a campaign type. It says what a "measles–rubella SIA" _is_ (products, age bands, activity sequence, coverage goals) once, so every country and round can instantiate the same recipe and stay comparable.
