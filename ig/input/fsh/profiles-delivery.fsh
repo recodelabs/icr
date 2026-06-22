@@ -14,6 +14,8 @@ Description: "A vaccination delivery event: CVX-coded, with lot accountability a
 * vaccineCode from $VaccineCodeVS (extensible)
 * vaccineCode ^short = "CVX-coded; local codes map back via ConceptMap (working doc §8)"
 * patient MS
+* patient only Reference(ICRPatient)
+* patient ^short = "The registered individual who received the dose (§6.4) — may stand alone, with no Group membership"
 * occurrence[x] MS
 * location MS
 * lotNumber MS
@@ -34,8 +36,8 @@ Description: "An MDA treatment event: ATC-coded preventive chemotherapy with dir
 * medicationCodeableConcept from ICRMDAMedicationVS (extensible)
 * medicationCodeableConcept ^short = "WHO ATC-coded (albendazole, ivermectin, praziquantel, azithromycin…)"
 * subject MS
-* subject only Reference(Patient or ICRDeliveryUnit)
-* subject ^short = "The treated person, or the community/household delivery-unit Group for register-level capture"
+* subject only Reference(ICRPatient or ICRDeliveryUnit)
+* subject ^short = "The treated person (§6.4), or the community/household delivery-unit Group for register-level capture"
 * effective[x] MS
 * dosage MS
 * dosage ^short = "Tablet count — in the field usually derived from a dose-pole height band Observation"

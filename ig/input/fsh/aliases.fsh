@@ -7,6 +7,8 @@ Alias: $VaccineCodeVS = http://hl7.org/fhir/ValueSet/vaccine-code
 // ICR identifier system URIs (provisional — to be confirmed before v1.0)
 Alias: $GERSId = https://fhir.icr.unicef.org/identifiers/overture-gers
 Alias: $PCode = https://fhir.icr.unicef.org/identifiers/pcode
+Alias: $NationalId = https://fhir.icr.unicef.org/identifiers/national-id
+Alias: $RegistryId = https://fhir.icr.unicef.org/identifiers/registry-id
 
 // ICR code systems
 Alias: $CampaignType = https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type-cs

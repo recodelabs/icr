@@ -88,8 +88,8 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 // norm remains one Task per visit/session with person-level detail in the
 // delivery events hanging off Task.output.
 * focus 1..1 MS
-* focus only Reference(ICRDeliveryUnit or ICRLocation or Patient)
-* focus ^short = "What the task acts on: site Location (Type A), household/community delivery-unit Group (Type B/C), or — for person-targeted follow-up tasks only — a Patient"
+* focus only Reference(ICRDeliveryUnit or ICRLocation or ICRPatient)
+* focus ^short = "What the task acts on: site Location (Type A), household/community delivery-unit Group (Type B/C), or — for person-targeted follow-up tasks only — an ICRPatient"
 * for MS
 * for ^short = "The target subject/population"
 * owner MS

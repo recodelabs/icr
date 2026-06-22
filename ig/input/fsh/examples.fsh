@@ -93,9 +93,11 @@ Usage: #example
 // --- Population: a household, a community, and the planning denominators -----
 
 Instance: example-child
-InstanceOf: Patient
+InstanceOf: ICRPatient
 Title: "Example Child"
 Usage: #example
+* identifier[nationalId].system = $NationalId
+* identifier[nationalId].value = "SL-2023-04-0099812"
 * name.given = "Aminata"
 * name.family = "Kamara"
 * gender = #female
@@ -110,6 +112,45 @@ Usage: #example
 * code = $GroupKind#household "Household"
 * quantity = 6
 * member.entity = Reference(example-child)
+* extension[groupLocation].valueReference = Reference(example-dwelling)
+
+// The mainline house-to-house shape: every member enumerated, each an ICRPatient.
+// quantity equals the member count because nobody is left un-enumerated (contrast
+// example-household above, which enumerates only the one child it serves).
+
+Instance: example-head
+InstanceOf: ICRPatient
+Title: "Example Head of Household"
+Usage: #example
+* identifier[nationalId].system = $NationalId
+* identifier[nationalId].value = "SL-1989-11-0042317"
+* name.given = "Mohamed"
+* name.family = "Kamara"
+* gender = #male
+* birthDate = "1989-11-03"
+
+Instance: example-sibling
+InstanceOf: ICRPatient
+Title: "Example Sibling"
+Usage: #example
+* identifier[nationalId].system = $NationalId
+* identifier[nationalId].value = "SL-2019-08-0071554"
+* name.given = "Fatmata"
+* name.family = "Kamara"
+* gender = #female
+* birthDate = "2019-08-21"
+
+Instance: example-household-enumerated
+InstanceOf: ICRDeliveryUnit
+Title: "Example Household — fully enumerated"
+Usage: #example
+* type = #person
+* actual = true
+* code = $GroupKind#household "Household"
+* quantity = 3
+* member[0].entity = Reference(example-head)
+* member[1].entity = Reference(example-sibling)
+* member[2].entity = Reference(example-child)
 * extension[groupLocation].valueReference = Reference(example-dwelling)
 
 // A community delivery unit (Type C): the same Group + Location pattern as the

@@ -4,6 +4,34 @@
 // denominator provenance and a computable geography characteristic; Location is the
 // most-customized resource — multi-identifier with GERS as the cross-campaign join key.
 
+Profile: ICRPatient
+Parent: Patient
+Id: ICRPatient
+Title: "ICR Patient (Registered Individual)"
+Description: "An individual person registered in a campaign — a household or community member, and the subject of every person-level delivery event. Person registration is a mainline capture mode in community-and-household campaigns, not an exception. Base R4 Patient aligned to WHO IMMZ.Patient (required gender/birthDate; MS name/phone/address), with a sliced cross-campaign identifier (national ID preferred, registry-assigned ID as fallback) so the same person is rejoinable across rounds. A person need not belong to any Group: they may be a household member, a community member, or simply the patient/subject of a standalone event. The caregiver is a RelatedPerson (WHO IMMZ.Caregiver), not an ICRPatient (working doc §6.4)."
+* ^experimental = false
+* identifier 1..* MS
+* identifier ^slicing.discriminator.type = #value
+* identifier ^slicing.discriminator.path = "system"
+* identifier ^slicing.rules = #open
+* identifier ^short = "At least one stable identifier so a person is rejoinable across rounds"
+* identifier contains
+    nationalId 0..1 MS and
+    registryId 0..1 MS
+* identifier[nationalId].system = $NationalId
+* identifier[nationalId] ^short = "The country's person ID — the preferred cross-campaign join key"
+* identifier[registryId].system = $RegistryId
+* identifier[registryId] ^short = "A registry-assigned ID where no national ID exists"
+* name MS
+* gender 1..1 MS
+* gender ^short = "Drives sex-disaggregated coverage and eligibility"
+* birthDate 1..1 MS
+* birthDate ^short = "Drives age-band eligibility; where only an approximate age is known, use the data-absent-reason + age extension pattern"
+* telecom MS
+* telecom ^short = "Phone where collected (IMMZ requires it; ICR relaxes to MS — campaign rosters often lack it)"
+* address MS
+* address ^short = "Administrative residence; the geospatial home is the household's group-location Location (§6.1), not duplicated here"
+
 Profile: ICRDeliveryUnit
 Parent: Group
 Id: ICRDeliveryUnit
@@ -16,10 +44,10 @@ Description: "The actual Group of people a campaign Task acts on — a household
 * code from ICRGroupKindVS (required)
 * code ^short = "household | community | school-cohort"
 * member MS
-* member.entity only Reference(Patient)
-* member.entity ^short = "Members, where person-level data is collected"
+* member.entity only Reference(ICRPatient)
+* member.entity ^short = "The enumerated individuals — the mainline capture mode for community-and-household campaigns; never a sub-Group"
 * quantity MS
-* quantity ^short = "Group size where individuals are not enumerated"
+* quantity ^short = "Head-count fallback where individuals are not enumerated (register-level MDA); coexists with an enumerated member list"
 * extension contains GroupLocation named groupLocation 1..1 MS
 * extension[groupLocation] ^short = "Residence/base, not service point: the dwelling (household), settlement/community point (community), or school (school-cohort)"
 
