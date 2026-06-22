@@ -58,6 +58,18 @@ def dose_pole_tablets(height_cm: float) -> int:
     return 0
 
 
+# School-age (5-14) share among IVM-treated [WHO/demography, demo-calibrated].
+SHARE_TREATED_5_14 = 0.32
+
+# Representative heights (cm) of treated people (all >=90 cm; <90 excluded),
+# used to DERIVE mean ivermectin tablets/person from the dose-pole bands
+# rather than hardcoding it [WHO Mectizan dose pole].
+_REP_TREATED_HEIGHTS = [95, 105, 115, 125, 135, 145, 150, 160, 165, 170]
+IVM_TABLETS_PER_PERSON_AVG = round(
+    sum(dose_pole_tablets(h) for h in _REP_TREATED_HEIGHTS) / len(_REP_TREATED_HEIGHTS)
+)
+
+
 def split_age_bands(total: int) -> dict[str, int]:
     out = {b: int(round(total * AGE_PYRAMID[b])) for b in AGE_BANDS}
     # fix rounding drift onto the largest band

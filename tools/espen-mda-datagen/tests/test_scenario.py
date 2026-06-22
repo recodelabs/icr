@@ -57,3 +57,17 @@ def test_form2_received_totals_reconcile():
     alb = sum(int(r.values["p_total_alb"]) for r in c.records if r.form_key == "2_part")
     assert ivm == c.received["ivm"]
     assert alb == c.received["alb"]
+
+
+def test_calculate_nodes_match_form_formulas():
+    c = build_campaign()
+    for r in c.records:
+        if r.form_key == "3_med_treatment":
+            v = r.values
+            assert int(v["ivm_men_treated"]) == int(v["ivm_5_14_male_treated"]) + int(v["ivm_15_male_treated"])
+            assert int(v["ivm_women_treated"]) == int(v["ivm_5_14_female_treated"]) + int(v["ivm_15_female_treated"])
+        if r.form_key == "1_location":
+            v = r.values
+            assert int(v["l_eligible_pop"]) == (
+                int(v["I_total_popn_1_4"]) + int(v["I_total_popn_5_14"]) + int(v["I_total_popn_15_More"])
+            )

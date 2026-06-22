@@ -117,8 +117,8 @@ def build_campaign(cfg: Config = Config()) -> Campaign:
             v.alb_distributed = 0
         villages.append(v)
 
-    # IVM tablets used ~ height-banded; approximate 2 tablets/treated person.
-    ivm_used = sum(v.treated for v in villages) * 2
+    # IVM tablets used ~ height-banded; derive avg tablets/person from dose-pole bands.
+    ivm_used = sum(v.treated for v in villages) * R.IVM_TABLETS_PER_PERSON_AVG
     alb_used = sum(v.alb_distributed for v in villages)
     received = {"ivm": int(ivm_used * 1.15) + 50, "alb": int(alb_used * 1.15) + 50}
     distributed = {"ivm": ivm_used, "alb": alb_used}
@@ -138,11 +138,12 @@ def build_campaign(cfg: Config = Config()) -> Campaign:
 def _split_treated(treated: int, rng) -> dict:
     """Split treated count across age-band x sex cells used by form 3 (IVM/ALB)."""
     # IVM excludes <90cm (~under-5), so treated are 5-14 and 15+ only.
-    share_5_14 = 0.32
+    share_5_14 = R.SHARE_TREATED_5_14
     n_5_14 = int(round(treated * share_5_14))
     n_15 = treated - n_5_14
-    f5 = n_5_14 // 2
-    f15 = n_15 // 2
+    fshare = rng.uniform(0.47, 0.53)   # mild, realistic sex imbalance
+    f5 = int(round(n_5_14 * fshare))
+    f15 = int(round(n_15 * fshare))
     return {
         "5_14_female": f5,
         "5_14_male": n_5_14 - f5,
@@ -169,7 +170,7 @@ def _form1_records(villages, cfg, start_date):
             "I_total_popn_1_4": str(v.age_bands["1_4"]),
             "I_total_popn_5_14": str(v.age_bands["5_14"]),
             "I_total_popn_15_More": str(v.age_bands["15_plus"]),
-            "l_eligible_pop": str(v.eligible),
+            "l_eligible_pop": str(v.age_bands["1_4"] + v.age_bands["5_14"] + v.age_bands["15_plus"]),
             "l_gps": f"{v.lat} {v.lon} 0 5",
             "l_submitting_report": f"Recorder {v.recorder_id}",
             "l_additional_note": "",
@@ -211,8 +212,10 @@ def _form3_records(villages, cfg, start_date):
             d = start_date + timedelta(days=day)
             frac = [0.45, 0.35, 0.20][day] if cfg.campaign_days == 3 else 1.0 / cfg.campaign_days
             ts = v.treated_by_band_sex
-            day_men = int(round((ts["15_male"]) * frac))
-            day_women = int(round((ts["15_female"]) * frac))
+            d_5_14_m = int(round(ts["5_14_male"] * frac))
+            d_5_14_f = int(round(ts["5_14_female"] * frac))
+            d_15_m = int(round(ts["15_male"] * frac))
+            d_15_f = int(round(ts["15_female"] * frac))
             vals = {
                 "p_recorder_id": v.recorder_id,
                 "p_state": cfg.province, "p_district": v.district,
@@ -226,12 +229,12 @@ def _form3_records(villages, cfg, start_date):
                 "census_men": str(v.age_bands["15_plus"] // 2),
                 "census_women": str(v.age_bands["15_plus"] - v.age_bands["15_plus"] // 2),
                 # IVM cube
-                "ivm_5_14_female_treated": str(int(round(ts["5_14_female"] * frac))),
-                "ivm_5_14_male_treated": str(int(round(ts["5_14_male"] * frac))),
-                "ivm_15_female_treated": str(day_women),
-                "ivm_15_male_treated": str(day_men),
-                "ivm_men_treated": str(day_men),
-                "ivm_women_treated": str(day_women),
+                "ivm_5_14_female_treated": str(d_5_14_f),
+                "ivm_5_14_male_treated": str(d_5_14_m),
+                "ivm_15_female_treated": str(d_15_f),
+                "ivm_15_male_treated": str(d_15_m),
+                "ivm_men_treated": str(d_5_14_m + d_15_m),
+                "ivm_women_treated": str(d_5_14_f + d_15_f),
                 # reasons not treated only logged day 1
                 "ivm_child": str(v.not_treated["child"] if day == 0 else 0),
                 "ivm_pregnant": str(v.not_treated["pregnant"] if day == 0 else 0),
@@ -262,7 +265,7 @@ def _form4_records(villages, cfg, distributed, start_date):
             "p_state": cfg.province, "p_district": hf_villages[0].district,
             "p_health_facility": hf,
             "p_disease": " ".join(cfg.diseases), "p_medicine": cfg.medicine,
-            "p_total_ivm_dist": str(treated * 2),
+            "p_total_ivm_dist": str(treated * R.IVM_TABLETS_PER_PERSON_AVG),
             "p_total_alb_dist": str(sum(v.alb_distributed for v in hf_villages)),
             "p_total_pzq_dist": "0", "p_total_meb_dist": "0", "p_total_dec_dist": "0",
             "p_total_az_sus_dist": "0", "p_total_az_tab_dist": "0", "p_total_tetra_dist": "0",
@@ -296,7 +299,7 @@ def _form5_records(villages, cfg, received, distributed, start_date):
         "s_stock_concordance_alb": "Yes",
         "s_dc_trained_h": "8", "s_dc_trained_f": "6", "s_manual_used": "Yes",
         "s_population_informed": "Yes",
-        "s_chanel_utilises": "Radio Community.leaders Town.criers",
+        "s_chanel_utilises": " ".join(R.COMM_CHANNELS[:3]),
         "s_dc_supervised": "12", "s_villages_supervised": str(treated_v),
         "s_side_effect": "Yes", "s_sever_side_effect": "No",
         "s_difficultes": "Difficult access to one village (insecurity).",

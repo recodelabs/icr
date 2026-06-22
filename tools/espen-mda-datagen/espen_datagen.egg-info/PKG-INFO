@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: espen-datagen
+Version: 0.1.0
+Summary: Synthetic ESPEN MDA sample-data generator (ODK XML for Ona Data)
+Requires-Python: >=3.13
+Requires-Dist: pyxform==4.4.1
+Requires-Dist: openpyxl==3.1.5
+Requires-Dist: lxml
+Provides-Extra: dev
+Requires-Dist: pytest>=8; extra == "dev"
