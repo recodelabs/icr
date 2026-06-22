@@ -3,6 +3,8 @@ Alias: $CVX = http://hl7.org/fhir/sid/cvx
 Alias: $MeasurePopulation = http://terminology.hl7.org/CodeSystem/measure-population
 Alias: $ATC = http://www.whocc.no/atc
 Alias: $VaccineCodeVS = http://hl7.org/fhir/ValueSet/vaccine-code
+Alias: $LOINC = http://loinc.org
+Alias: $ConsentScope = http://terminology.hl7.org/CodeSystem/consentscope
 
 // ICR identifier system URIs (provisional — to be confirmed before v1.0)
 Alias: $GERSId = https://fhir.icr.unicef.org/identifiers/overture-gers

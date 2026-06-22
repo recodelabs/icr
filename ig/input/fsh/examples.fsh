@@ -153,6 +153,22 @@ Usage: #example
 * member[2].entity = Reference(example-child)
 * extension[groupLocation].valueReference = Reference(example-dwelling)
 
+// Person-data governance: the head of household permits the child's campaign
+// data to be held and shared in the registry (a v1 starting point — §6.4/§14).
+
+Instance: example-consent
+InstanceOf: ICRConsent
+Title: "Example Consent — registry data sharing"
+Usage: #example
+* status = #active
+* scope = $ConsentScope#patient-privacy "Privacy Consent"
+* category = $LOINC#59284-0 "Consent Document"
+* patient = Reference(example-child)
+* dateTime = "2026-06-15"
+* performer = Reference(example-head)
+* policyRule.text = "UNICEF ICR person-data governance policy v1 (placeholder pending publication)"
+* provision.type = #permit
+
 // A community delivery unit (Type C): the same Group + Location pattern as the
 // household, with the settlement as its Location — what a CDD's MDA register
 // entries and community-level Tasks act on.

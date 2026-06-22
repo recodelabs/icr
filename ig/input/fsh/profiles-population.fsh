@@ -22,7 +22,8 @@ Description: "An individual person registered in a campaign — a household or c
 * identifier[nationalId] ^short = "The country's person ID — the preferred cross-campaign join key"
 * identifier[registryId].system = $RegistryId
 * identifier[registryId] ^short = "A registry-assigned ID where no national ID exists"
-* name MS
+* name 1..* MS
+* name ^short = "Required — the registry stores a person's name (project decision, Jun 22); at least one"
 * gender 1..1 MS
 * gender ^short = "Drives sex-disaggregated coverage and eligibility"
 * birthDate 1..1 MS
