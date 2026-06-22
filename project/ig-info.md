@@ -1,6 +1,6 @@
 ---
-version: 0.16.0
-last_modified: 2026-06-22T17:01:21.000Z
+version: 0.17.0
+last_modified: 2026-06-22T17:09:41.000Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ public: true
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.16.0 · Last modified Jun 22, 2026 at 1:01 PM EDT`
+`v0.17.0 · Last modified Jun 22, 2026 at 1:09 PM EDT`
 
 ⁠
 
@@ -112,6 +112,8 @@ _Quick reference for every abbreviation used in this document, grouped by area. 
 
 * * *
 
+> [!tip] v0.17.0 — name required, `ICRConsent` added, event/task targets un-locked (your Jun 22 decisions) Three project calls applied and committed (IG commit `7cb0a72`, SUSHI-clean: **14 profiles, 30 examples**). **(1) Store a name** → `ICRPatient.name` is now **required `1..*`**; resolves c200 (see §6.4). **(2) Add Consent** → new **`ICRConsent`** profile (`profiles-consent.fsh`, §6.5) + `example-consent`, a v1 governance scaffold; §14 Consent gap closed. **(3) Don't lock targets to a person** → reverted the v0.16 over-narrowing: only `ICRDeliveryUnit.member.entity` is typed to `ICRPatient` (registration); `ICRCampaignTask.focus` (Group \| Location \| Patient), `ICRMedicationAdministration.subject` (Patient \| Group), and `ICRImmunizationEvent.patient` (base Patient) are permissive again, because a Task acts on a community/household **Group**, not a person. Doc synced: §1 counts (+governance profile, examples 29→30), §6.4 name row + new permissive-targets note, §6.5 (new), §17.2 A5/A6. **Still open (§15):** the deeper governance design — minimal cross-border data, retention, withdrawal.
+> 
 > [!tip] v0.16.0 — `ICRPatient` is now **in the IG** (FSH committed, SUSHI-clean) The v0.14/v0.15 person-registration changes are no longer just drafted in this doc — they are **committed to `ig/`** (commit `068ca32`). Built: a new **`ICRPatient`** profile (`profiles-population.fsh`), `ICRDeliveryUnit.member.entity` → `Reference(ICRPatient)`, and the person references on `ICRImmunizationEvent.patient` / `ICRMedicationAdministration.subject` / `ICRCampaignTask.focus` all narrowed to `ICRPatient`; new `$NationalId` / `$RegistryId` aliases; `example-child` upgraded to ICRPatient and a fully-enumerated `example-household-enumerated` added (with `example-head` / `example-sibling`). **SUSHI: 0 errors / 0 warnings — 13 profiles, 29 examples.** Doc synced: §1 counts (population 3→4, examples 26→29), §4 diagram, §6.1/§6.4 markers flipped from "proposed" to "in the IG", §17.2 A5 marked done. Still open: the data-minimisation call (c200) and the `Consent` companion (§14).
 > 
 > [!tip] v0.15.0 — person not tied to a household (your Jun 22 follow-up) Makes explicit what the model already allows: an `ICRPatient` need **not** belong to a household. **§6.1** now spells out three reach paths for the same person — a **household** member, a **community**-coded `ICRDeliveryUnit` member (enumerated at community scale, no dwelling in between), or a bare **event subject** (`Immunization.patient` / `MedicationAdministration.subject` with no Group at all) — alongside the register-level aggregate (`quantity`-only / `subject` = community Group). **§6.4** intro updated to match. Confirmed against the FSH: `member.entity` sits on `ICRDeliveryUnit` regardless of `code`, and `Immunization.patient` is a bare `Reference(Patient)`, so all three are valid today. No artifact change.
@@ -150,13 +152,14 @@ The IG consists of FHIR Shorthand (FSH — a concise authoring language for FHIR
 | **Profiles — population & geography** | 4   | ICRPatient (Patient — registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group), ICRLocation (Location) |
 | **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
+| **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance, §6.5) |
 | **Extensions** | 23  | See §8 |
 | **CodeSystems** | 12  | campaign-type, delivery-strategy, record-origin, missed-reason, noncompliance-reason, denominator-source, data-lineage, coverage-source, group-kind, task-origin, location-type, group-characteristic |
 | **ValueSets** | 13  | One per code system (except group-characteristic, used as a fixed code), plus a narrowed independent-coverage set and an ATC-based MDA medication set |
-| **Example instances** | 29  | A coherent measles–rubella **SIA** (Supplementary Immunization Activity — a mass vaccination campaign) scenario (umbrella + round, **Type A & B** tasks — fixed-post and house-to-house, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery (**MCV** measles-containing vaccine, albendazole, **ITN** insecticide-treated net, **IRS** indoor residual spraying) + an **MDA** (Mass Drug Administration) event + an ITN delivery (§11) |
+| **Example instances** | 30  | A coherent measles–rubella **SIA** (Supplementary Immunization Activity — a mass vaccination campaign) scenario (umbrella + round, **Type A & B** tasks — fixed-post and house-to-house, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery (**MCV** measles-containing vaccine, albendazole, **ITN** insecticide-treated net, **IRS** indoor residual spraying) + an **MDA** (Mass Drug Administration) event + an ITN delivery (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
-File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `examples.fsh`.
+File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `examples.fsh`.
 
 **Build:** `sushi build .` compiles FSH → JSON; `./_genonce.sh` renders the IG website (needs Java 17+). The commit is SUSHI-clean (compiles without errors).
 
@@ -1149,7 +1152,7 @@ _The individual person — enumerated within a delivery unit (**household or com
 | Element | Constraint |
 |---|---|
 | `identifier` | **1..\* MS**, sliced by `system` — at least one stable identifier so a person is rejoinable across rounds. Slices: `nationalId` (the country's person ID — the **preferred** cross-campaign join key) and `registryId` (a registry-assigned ID where no national ID exists). |
-| `name` | MS |
+| `name` | **1..\* MS** — required (project decision Jun 22: the registry stores a person's name) |
 | `gender` | **1..1 MS** — drives sex-disaggregated coverage (§5.4) and eligibility. |
 | `birthDate` | **1..1 MS** — drives age-band eligibility ("9 months–14 years", §5.1). Where only an approximate age is known, the WHO/IPS `data-absent-reason` + age extension pattern carries it. |
 | `telecom` | MS — phone where collected. (IMMZ requires it; ICR relaxes to MS because campaign rosters frequently lack it.) |
@@ -1159,7 +1162,7 @@ Aligned to `IMMZ.Patient` (identifier / name / phone / gender / birthDate / addr
 
 **Identity & dedup — the person half of record-linkage.** A person is rejoined by **(a)** their own stable identifier (`nationalId` preferred, `registryId` fallback) and **(b)** the household they were enumerated in — and the household, in turn, is rejoined across rounds by its **dwelling GERS ID** (§6.1), anchored on the head of household. So "same child, next round" resolves as _same person identifier_, or failing that _same structure + same head-of-household + plausible age/sex_. This folds into the record-linkage work (background §12); it does **not** mint a new person-ID scheme where a national ID exists.
 
-**Privacy is now load-bearing.** A shared, reusable registry holding named individuals with birthdates is a governance obligation, not just a modeling one. The `Consent` guidance gap (§14) is therefore promoted from "later draft" to a **v1 companion**: what is shared cross-border vs held in-country, {==data minimisation (do you need a name, or only an age band + identifier?)==}{>>Open project call: should `ICRPatient` require `name` at all, or make it `0..1` and lean on `identifier` + `gender` + `birthDate`? Storing names maximises matchability but is the heaviest PII to share across borders. My draft keeps `name` MS (not required) to leave the door open — confirm which way you want it and I'll pin the cardinality.<<}{id="c200" by="claude" at="2026-06-22T16:41:22.000Z"}, and retention. This is the one place where "register everyone" has a real cost to weigh, and it should be an explicit project decision (§15).
+**Privacy is now load-bearing.** A shared, reusable registry holding named individuals with birthdates is a governance obligation, not just a modeling one. The `Consent` guidance gap (§14) is therefore promoted from "later draft" to a **v1 companion**: what is shared cross-border vs held in-country, **data minimisation** (project decision Jun 22: **we store the name** — `ICRPatient.name` is **required, `1..*`**), and retention. {>>Resolved (was c200): name is required — `ICRPatient.name` set to `1..* MS` in the IG (commit `7cb0a72`). Trade-off on record: storing names maximises cross-round matchability at the cost of being the heaviest PII to share; cross-border sharing is now governed by the `ICRConsent` profile (§6.5).<<}{id="c201" by="claude" at="2026-06-22T17:09:41.000Z"} This is the one place where "register everyone" has a real cost to weigh, and it should be an explicit project decision (§15).
 
 **The person as FHIR/JSON.** `example-child` re-cast as an `ICRPatient` — the same member the household enumerates (§6.1) and the same person the MCV dose points at (§7.1):
 
@@ -1188,7 +1191,25 @@ Aligned to `IMMZ.Patient` (identifier / name / phone / gender / birthDate / addr
 
 Annotated: the **sliced** `identifier` is the cross-round join key (a national ID here; a `registryId` would stand in where none exists); `gender` and `birthDate` are **mandatory** because eligibility and disaggregation depend on them. No household pointer lives on the Patient — the link runs the other way, from `Group.member` to here (§6.1), and the place lives on the household's `group-location` (§6.3), so the person record stays minimal.
 
+**Only `member.entity` is typed to `ICRPatient` (re your Jun 22 steer).** Registration — listing the named individuals in a Group — is where the `ICRPatient` profile is enforced. The **event and Task targets are deliberately left permissive**, because a Task acts on a **Group**, not a person: `ICRCampaignTask.focus` accepts a community or household **delivery-unit Group** (the norm) or a site Location, with a `Patient` only for person-targeted follow-up; `ICRMedicationAdministration.subject` accepts a `Patient` **or** an `ICRDeliveryUnit` Group (register-level MDA); and `ICRImmunizationEvent.patient` is base `Patient` (a vaccine dose is intrinsically per-person — group-level vaccine capture is an aggregate count on `Task.output`, §7.3). So the person *is* an ICRPatient by virtue of being a registered member, but the campaign's units of work and group-level events are never forced down to an individual.
+
 **Caregiver ≠ ICRPatient.** The mother/guardian who answers the door is a `RelatedPerson` _in relation to_ the child, matching WHO `IMMZ.Caregiver` (§18.3) — **not** an ICRPatient. ICRPatient is reserved for the person who actually receives the intervention.
+
+### 6.5 ICRConsent — `Consent` (person-data governance)
+_The permission governing collection, storage, and — critically — **cross-border sharing** of a registered individual's campaign data. Because the registry now holds named people (§6.4), the decision to store a name (Jun 22) brings an obligation: a privacy/sharing permission travels with the person. A **v1 starting point**, not the final governance model._ (working doc §6.4 privacy, §14 — **in the IG** as of v0.17.0, commit `7cb0a72`)
+
+| Element | Constraint |
+|---|---|
+| `status` | MS — `draft \| proposed \| active \| rejected \| inactive \| entered-in-error` |
+| `scope` | MS — use `#patient-privacy` for ICR data-governance consents |
+| `category` | MS |
+| `patient` | **1..1 MS** → `Reference(ICRPatient)` — the individual the consent is about |
+| `performer` | MS — who granted it (typically the head of household or caregiver) |
+| `policyRule` | MS — the data-governance policy the consent is taken under (placeholder text until the policy is published) |
+| `provision.type` | MS — `permit \| deny` |
+| `provision.purpose` | MS — what the permission covers, e.g. cross-border sharing vs in-country use only |
+
+`example-consent` shows the head of household (`example-head`) permitting the child's (`example-child`) data to be held and shared. **This is a scaffold, not a finished governance design** — the policy text is a placeholder, and the real decisions (what minimal data crosses a border, retention periods, withdrawal) are project calls still open in §15. Adding the profile makes the obligation visible and gives implementers a conformant place to record consent from day one.
 
 * * *
 ## 7. Delivery-event profiles (`profiles-delivery.fsh`)
@@ -1658,7 +1679,7 @@ Stated in the README/index — i.e., absent **by design**, not oversight:
   
 - `ConceptMap` **scaffolds** for country/local code localization (the mechanism §10's extensible bindings rely on)
   
-- `Consent` **guidance** (household/person data governance) — **promoted to a v1 companion** now that person registration is mainline and `ICRPatient` (§6.4) holds named individuals; was "later draft"
+- ~~`Consent` **guidance** (household/person data governance)~~ — **shipped (v0.17.0):** `ICRConsent` profile + example now in the IG (§6.5), a v1 scaffold. The deeper governance design (minimal cross-border data, retention, withdrawal) remains a §15 project call.
   
 - `Measure` **definitions** aligned to WHO JAP / ICG / ESPEN / WHO EPI reporting minimums (what MeasureReports will point at)
   
@@ -1908,8 +1929,8 @@ The field evidence strongly endorses these; they are listed so the next round kn
 
 | # | Proposed addition | Where it lands | Sources |
 |---|---|---|---|
-| A5 | ✅ **DONE (v0.16.0, commit `068ca32`)** — **`ICRPatient` profile** built: base R4 Patient aligned to WHO `IMMZ.Patient` (required gender/birthDate, MS name/phone/address) with a **sliced cross-campaign `identifier`** (national-id preferred, registry-id fallback). `ICRDeliveryUnit.member.entity`, `ICRImmunizationEvent.patient`, `ICRMedicationAdministration.subject`, and `ICRCampaignTask.focus` all narrowed to `ICRPatient`. | new profile (population) | WHO IMMZ.Patient (§18.3); field steer |
-| A6 | **Person/household identity + `Consent` companion** — specify the dwelling-GERS + head-of-household + person-identifier join (§6.1/§6.4) and ship `Consent` data-governance guidance, now load-bearing because named individuals are stored. | record-linkage narrative (§12) + new `Consent` guidance | §14 gap, promoted |
+| A5 | ✅ **DONE (commits `068ca32` → `7cb0a72`)** — **`ICRPatient` profile** built: base R4 Patient aligned to WHO `IMMZ.Patient`, **`name` required `1..*`** (Jun 22 decision), required gender/birthDate, MS phone/address, **sliced cross-campaign `identifier`** (national-id preferred, registry-id fallback). Only **`ICRDeliveryUnit.member.entity`** is typed to `ICRPatient` (registration). Event/Task targets kept **permissive** — `ICRCampaignTask.focus` = Group \| Location \| Patient, `ICRMedicationAdministration.subject` = Patient \| Group, `ICRImmunizationEvent.patient` = base Patient — because a Task acts on a community/household **Group**, not a person (Jun 22 steer). | new profile (population) | WHO IMMZ.Patient (§18.3); field steer |
+| A6 | **`Consent` companion ✅ scaffolded (commit `7cb0a72`)** — `ICRConsent` profile + `example-consent` now in the IG (§6.5), a v1 starting point. **Still open:** the person/household identity join detail (dwelling-GERS + head-of-household + person-identifier, §6.1/§6.4) and the real governance decisions (minimal cross-border data, retention, withdrawal — §15). | `profiles-consent.fsh` (done) + record-linkage narrative (§12, open) | §14 gap, promoted |
 
 **B. Coverage-model overhaul** — the biggest analytic theme:
 
