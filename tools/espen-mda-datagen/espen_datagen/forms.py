@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import copy
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from lxml import etree
 import openpyxl
@@ -115,7 +115,7 @@ def load_form(xlsx_path: str) -> FormSchema:
     title_el = root.find(".//h:head/h:title", NS)
     title = title_el.text if title_el is not None else form_id
     leaves, meta_present = _collect_leaves(data_el)
-    key = "_".join(os.path.basename(xlsx_path).replace(".xlsx", "").split("_")[2:])
+    key = "_".join(os.path.basename(xlsx_path).replace(".xlsx", "").split("_")[3:])
     return FormSchema(
         key=key,
         form_id=form_id,

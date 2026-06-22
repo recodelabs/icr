@@ -4,6 +4,7 @@ from espen_datagen.forms import load_form, form_path, load_all, FORM_KEYS, FormS
 def test_load_location_form_schema(forms_dir):
     schema = load_form(form_path(forms_dir, "1_location"))
     assert isinstance(schema, FormSchema)
+    assert schema.key == "1_location"
     assert schema.form_id == "demo_mda_9999_1_location_v3"
     # value-bearing leaves present, meta excluded
     assert "l_total_pop" in schema.leaf_names
