@@ -1,6 +1,6 @@
 ---
-version: 0.15.0
-last_modified: 2026-06-22T16:53:18.000Z
+version: 0.16.0
+last_modified: 2026-06-22T17:01:21.000Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ public: true
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.15.0 · Last modified Jun 22, 2026 at 12:53 PM EDT`
+`v0.16.0 · Last modified Jun 22, 2026 at 1:01 PM EDT`
 
 ⁠
 
@@ -112,6 +112,8 @@ _Quick reference for every abbreviation used in this document, grouped by area. 
 
 * * *
 
+> [!tip] v0.16.0 — `ICRPatient` is now **in the IG** (FSH committed, SUSHI-clean) The v0.14/v0.15 person-registration changes are no longer just drafted in this doc — they are **committed to `ig/`** (commit `068ca32`). Built: a new **`ICRPatient`** profile (`profiles-population.fsh`), `ICRDeliveryUnit.member.entity` → `Reference(ICRPatient)`, and the person references on `ICRImmunizationEvent.patient` / `ICRMedicationAdministration.subject` / `ICRCampaignTask.focus` all narrowed to `ICRPatient`; new `$NationalId` / `$RegistryId` aliases; `example-child` upgraded to ICRPatient and a fully-enumerated `example-household-enumerated` added (with `example-head` / `example-sibling`). **SUSHI: 0 errors / 0 warnings — 13 profiles, 29 examples.** Doc synced: §1 counts (population 3→4, examples 26→29), §4 diagram, §6.1/§6.4 markers flipped from "proposed" to "in the IG", §17.2 A5 marked done. Still open: the data-minimisation call (c200) and the `Consent` companion (§14).
+> 
 > [!tip] v0.15.0 — person not tied to a household (your Jun 22 follow-up) Makes explicit what the model already allows: an `ICRPatient` need **not** belong to a household. **§6.1** now spells out three reach paths for the same person — a **household** member, a **community**-coded `ICRDeliveryUnit` member (enumerated at community scale, no dwelling in between), or a bare **event subject** (`Immunization.patient` / `MedicationAdministration.subject` with no Group at all) — alongside the register-level aggregate (`quantity`-only / `subject` = community Group). **§6.4** intro updated to match. Confirmed against the FSH: `member.entity` sits on `ICRDeliveryUnit` regardless of `code`, and `Immunization.patient` is a bare `Reference(Patient)`, so all three are valid today. No artifact change.
 > 
 > [!tip] v0.14.0 — person registration made mainline; **proposed `ICRPatient` profile added (§6.4)** Folds in your Jun 22 steer: in community-and-household campaigns we register the people *within* a household and record events (immunizations, MDA doses) on each — so person enumeration is a **mainline** capture mode, not the exception the doc previously framed. Changes: **§6.1** reframed — `member` is the enumerated individuals (the norm), `quantity` is the count-only *fallback*; community↔household stays a *where* relationship (dwelling `partOf` settlement Location), so members are individuals, never sub-Groups; `member.entity` now → `ICRPatient`; plus a **fully-enumerated-household example**. **§6.4 (new)** — a proposed **`ICRPatient`** profile (base Patient aligned to WHO `IMMZ.Patient`: mandatory gender/birthDate, sliced cross-campaign `identifier`), with identity/dedup (national-id + dwelling-GERS + head-of-household) and a worked example; caregiver stays a `RelatedPerson`. **§4** diagram gains the Patient node (household `member` → Patient; Immunization `patient` → Patient). **§13 #8** clarified (registration is mainline; per-child *Tasks* are not). **§14** `Consent` guidance **promoted to a v1 companion** (we now hold named individuals). **§17.2** adds P1 items **A5/A6** (the profile + identity/Consent work). Nothing committed to `ig/` yet — `ICRPatient` is proposed, like `ICRCareTeam`. **One open project call flagged inline at §6.4 (c200): data minimisation** — do we store names, or only age-band + identifier? — your decision.
@@ -145,13 +147,13 @@ The IG consists of FHIR Shorthand (FSH — a concise authoring language for FHIR
 | Layer | Count | Artifacts |
 | --- | --- | --- |
 | **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
-| **Profiles — population & geography** | 3   | ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group), ICRLocation (Location) |
+| **Profiles — population & geography** | 4   | ICRPatient (Patient — registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group), ICRLocation (Location) |
 | **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
 | **Extensions** | 23  | See §8 |
 | **CodeSystems** | 12  | campaign-type, delivery-strategy, record-origin, missed-reason, noncompliance-reason, denominator-source, data-lineage, coverage-source, group-kind, task-origin, location-type, group-characteristic |
 | **ValueSets** | 13  | One per code system (except group-characteristic, used as a fixed code), plus a narrowed independent-coverage set and an ATC-based MDA medication set |
-| **Example instances** | 26  | A coherent measles–rubella **SIA** (Supplementary Immunization Activity — a mass vaccination campaign) scenario (umbrella + round, **Type A & B** tasks — fixed-post and house-to-house, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery (**MCV** measles-containing vaccine, albendazole, **ITN** insecticide-treated net, **IRS** indoor residual spraying) + an **MDA** (Mass Drug Administration) event + an ITN delivery (§11) |
+| **Example instances** | 29  | A coherent measles–rubella **SIA** (Supplementary Immunization Activity — a mass vaccination campaign) scenario (umbrella + round, **Type A & B** tasks — fixed-post and house-to-house, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery (**MCV** measles-containing vaccine, albendazole, **ITN** insecticide-treated net, **IRS** indoor residual spraying) + an **MDA** (Mass Drug Administration) event + an ITN delivery (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
 File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `examples.fsh`.
@@ -219,7 +221,7 @@ graph TD
     T["ICRCampaignTask<br/>(Task)<br/><i>operational unit of work</i>"]
     TP["ICRTargetPopulation<br/>(Group, actual=false)<br/><i>denominator w/ provenance</i>"]
     HH["ICRDeliveryUnit<br/>(Group, actual=true)<br/><i>household or community</i>"]
-    PT["ICRPatient<br/>(Patient — proposed)<br/><i>enumerated household member</i>"]
+    PT["ICRPatient<br/>(Patient)<br/><i>registered individual</i>"]
     L["ICRLocation<br/><i>admin hierarchy + GERS identity</i>"]
     IMM["ICRImmunizationEvent"]
     MED["ICRMedicationAdministration"]
@@ -841,13 +843,13 @@ _The actual Group of people a campaign Task acts on — a household (Type B hous
 | `type` | fixed `#person` |
 | `actual` | fixed `true` |
 | `code` | **1..1 MS**, bound **required** to ICRGroupKindVS (`household` \| `community` \| `school-cohort`) |
-| `member` | MS; `member.entity` only `Reference(ICRPatient)` (§6.4 — proposed; base `Patient` until profiled) — **the enumerated individuals**, the mainline capture mode for community-and-household campaigns |
+| `member` | MS; `member.entity` only `Reference(ICRPatient)` (§6.4 — **in the IG** as of v0.16.0) — **the enumerated individuals**, the mainline capture mode for community-and-household campaigns |
 | `quantity` | MS — head-count **fallback** where individuals are not enumerated (register-level MDA); coexists with an enumerated `member` list |
 | `extension[groupLocation]` | **1..1 MS** → `Reference(ICRLocation)` — **residence/base, not service point**: the dwelling (household), settlement/community point (community), or school (school-cohort) |
 
 **Rationale.** Separating _who_ (Group) from _where_ (Location) means the location's identity (GERS building/place ID) survives group composition changes, and the group survives re-mapping. The second-pass generalization (was: ICRHousehold) reflects that households and communities are the _same pattern at two scales_ — one profile with a coded kind beats two near-identical profiles, and it lets `Task.focus` and `MedicationAdministration.subject` be narrowed to ICR-conformant targets; `school-cohort` (third pass) demonstrates the kind list extends to non-obvious delivery units (nomadic groups, camp populations) as country demand appears. **Person registration is a mainline mode, not an exception (re your Jun 22 steer).** In community-and-household campaigns the norm is to enumerate the people in each household: `member` carries those individuals — each an `ICRPatient` (§6.4) — and what each one received is recorded as a person-level delivery event (§7), the child's `Immunization`/`MedicationAdministration` pointing back at that same person. `quantity` is the **fallback**, not the default: a head-count for register-level capture (Type-C MDA, or any round that counts without enumerating); the two can coexist (an enumerated `member` list plus a `quantity` that also counts un-enumerated members). The community↔household relationship stays on the _where_ axis — a household's dwelling is `partOf` the community's settlement Location (§6.3) — **not** by nesting a household Group inside a community Group; `member.entity` is therefore individuals (ICRPatients), never sub-Groups. **A person need not be tied to a household at all.** Because `member.entity` sits on `ICRDeliveryUnit` regardless of its `code`, a `community`-coded delivery unit can enumerate `ICRPatient`s **directly** — a person captured at community scale with no household in between (think a community-session register, or an MDA round that lists individuals but not dwellings). And a person can be captured with **no Group whatsoever**: `Immunization.patient` / `MedicationAdministration.subject` (§7) point straight at an `ICRPatient`, so a standalone person-level event at a community session is fully valid without any delivery-unit roster. So the same `ICRPatient` is reachable three ways — as a **household** member, as a **community** member, or as a bare **event subject** — and the register-level aggregate (community `quantity` only, or `MedicationAdministration.subject` = the community Group) remains available for rounds that count without enumerating. **Why** `member.entity` **is a Patient profile, not RelatedPerson/Person (re c14/c83):** FHIR has four person-shaped resources — **Patient** (anyone who might receive a service: despite the name, a healthy child getting a measles dose or a household member receiving a net is a Patient, and it is the resource every clinical/delivery record points at — `Immunization.patient` can _only_ be a Patient), **RelatedPerson** (a caregiver in relation to a patient), **Practitioner** (workers — CDDs, vaccinators), and **Person** (an identity-linkage resource matching one human across systems — plumbing, not a care-record subject). So every enumerated household member is a Patient (the standard household-registration pattern, as in OpenSRP). Locking `member.entity` to Patient therefore excludes Practitioner/Device/etc. — **not** RelatedPerson, which R4 `Group.member` never permitted in the first place (RelatedPerson membership only arrives in R5). `groupLocation` **is residence, not service point**: where service actually happened is `Task.location` and the delivery event's own `location`. A household that walks to a village distribution center keeps its dwelling here unchanged — the Task records the center.
 
-> [!info] WHO SMART alignment (§18) WHO's `IMMZ.Patient` profiles **base R4 Patient** (not IPS, despite its own narrative claiming so) with required identifier / name / phone / gender / birthDate / address. Proposed: align ICR's person records to `IMMZ.Patient` (or note a deliberate divergence) so household members are WHO-conformant — **now drafted as the `ICRPatient` profile in §6.4.** WHO's caregiver is `IMMZ.Caregiver` (RelatedPerson). See §18.3.
+> [!info] WHO SMART alignment (§18) WHO's `IMMZ.Patient` profiles **base R4 Patient** (not IPS, despite its own narrative claiming so) with required identifier / name / phone / gender / birthDate / address. Proposed: align ICR's person records to `IMMZ.Patient` (or note a deliberate divergence) so household members are WHO-conformant — **now in the IG as the `ICRPatient` profile, §6.4.** WHO's caregiver is `IMMZ.Caregiver` (RelatedPerson). See §18.3.
 
 **The delivery unit as FHIR/JSON.** `example-household` — the Type-B unit a mop-up Task focuses on:
 
@@ -1139,8 +1141,8 @@ Annotated: `partOf` climbs the admin tree (district → `example-country`; the f
 - `partOf` **strict-typing vs widening (§15 #2).** `ICRLocation.partOf` is constrained to `Reference(ICRLocation)`, so the _entire_ ancestor chain must be ICR-conformant. Clean and fully queryable, but it means you can't hang an ICR site directly under a Location from a pre-existing national MFL/GIS without re-profiling that parent. The relief valve is to widen `partOf` to `Reference(Location)`. **Open design decision**, paired with the national/ISO admin-code work (c88) since both govern how ICR coexists with existing registries.
   
 
-### 6.4 ICRPatient — `Patient` (proposed — the registered individual)
-_The individual person — enumerated within a delivery unit (**household or community**), or captured standalone as the subject of a person-level event with no Group at all. The chain is plain FHIR: a household (or community) is an_ `ICRDeliveryUnit` _(Group, §6.1); its_ `member`_s are_ `ICRPatient`_s; each dose or treatment given to a member is an_ `Immunization`_/_`MedicationAdministration` _whose_ `patient`_/_`subject` _is that_ `ICRPatient` _(§7). Proposed: profile base R4 Patient, aligned to WHO_ `IMMZ.Patient`_, so a registered campaign member is a WHO-conformant immunization subject carrying a stable cross-campaign identity._ (re §6.1, §18.3 — proposed, not yet in `ig/`)
+### 6.4 ICRPatient — `Patient` (the registered individual)
+_The individual person — enumerated within a delivery unit (**household or community**), or captured standalone as the subject of a person-level event with no Group at all. The chain is plain FHIR: a household (or community) is an_ `ICRDeliveryUnit` _(Group, §6.1); its_ `member`_s are_ `ICRPatient`_s; each dose or treatment given to a member is an_ `Immunization`_/_`MedicationAdministration` _whose_ `patient`_/_`subject` _is that_ `ICRPatient` _(§7). Proposed: profile base R4 Patient, aligned to WHO_ `IMMZ.Patient`_, so a registered campaign member is a WHO-conformant immunization subject carrying a stable cross-campaign identity._ (re §6.1, §18.3 — **now in the IG** as of v0.16.0, commit `068ca32`, SUSHI-clean: 13 profiles, 29 examples)
 
 **Why a profile now.** Through v0.13.x a household member was a **bare base-FHIR** `Patient` — `member.entity` pointed at "a Patient" with no constraints. That is adequate while enumeration is the exception; it is **not** adequate once community-and-household campaigns register people as the norm. A house-to-house round walks every dwelling, lists the eligible individuals, and records what each received — so two things a bare Patient leaves open must be pinned down: **(1) what a registered person must carry** (so records are comparable and WHO-conformant), and **(2) how the same person is recognised across rounds** — the registry's reuse premise (§1) applies to people, not only to places. `ICRPatient` pins both.
 
@@ -1906,7 +1908,7 @@ The field evidence strongly endorses these; they are listed so the next round kn
 
 | # | Proposed addition | Where it lands | Sources |
 |---|---|---|---|
-| A5 | **`ICRPatient` profile** — base R4 Patient aligned to WHO `IMMZ.Patient` (required gender/birthDate, MS name/phone/address) with a **sliced cross-campaign `identifier`** (national-id preferred, registry-id fallback). Makes household-member registration first-class and rejoinable across rounds. | new profile (population); `ICRDeliveryUnit.member.entity` → `ICRPatient` (§6.1) | WHO IMMZ.Patient (§18.3); field steer |
+| A5 | ✅ **DONE (v0.16.0, commit `068ca32`)** — **`ICRPatient` profile** built: base R4 Patient aligned to WHO `IMMZ.Patient` (required gender/birthDate, MS name/phone/address) with a **sliced cross-campaign `identifier`** (national-id preferred, registry-id fallback). `ICRDeliveryUnit.member.entity`, `ICRImmunizationEvent.patient`, `ICRMedicationAdministration.subject`, and `ICRCampaignTask.focus` all narrowed to `ICRPatient`. | new profile (population) | WHO IMMZ.Patient (§18.3); field steer |
 | A6 | **Person/household identity + `Consent` companion** — specify the dwelling-GERS + head-of-household + person-identifier join (§6.1/§6.4) and ship `Consent` data-governance guidance, now load-bearing because named individuals are stored. | record-linkage narrative (§12) + new `Consent` guidance | §14 gap, promoted |
 
 **B. Coverage-model overhaul** — the biggest analytic theme:
