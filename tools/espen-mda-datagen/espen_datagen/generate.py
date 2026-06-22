@@ -35,11 +35,9 @@ def main(argv=None) -> int:
     p.add_argument("--forms-dir", default=_DEFAULT_FORMS)
     a = p.parse_args(argv)
     cfg = Config(seed=a.seed, n_villages=a.villages, campaign_days=a.days)
-    schemas = load_all(a.forms_dir)
-    campaign = build_campaign(cfg)
-    manifest = write_campaign(campaign, schemas, a.out)
+    manifest = run(a.forms_dir, a.out, cfg)
     print(f"Wrote {manifest['total_submissions']} submissions to {a.out}")
-    print(format_report(compute_indicators(campaign)))
+    print(format_report(manifest["_report"]))
     return 0
 
 

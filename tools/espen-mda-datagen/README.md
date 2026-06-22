@@ -22,6 +22,7 @@ deterministic per seed.
 sample-data/
   1_location/<uuid>.xml ...        # one ODK submission per form, per record
   3_med_treatment/<uuid>.xml ...
+  xform/1_location.xml ...         # compiled XForms to publish to Ona Data
   manifest.json                    # seed, footprint, counts, received/distributed, file list
 ```
 
