@@ -180,11 +180,14 @@ def _form1_records(villages, cfg, start_date):
 def _form2_records(villages, cfg, received, start_date):
     recs = []
     hfs = sorted({v.hf for v in villages})
-    per = max(1, received["ivm"] // max(1, len(hfs)))
-    per_alb = max(1, received["alb"] // max(1, len(hfs)))
+    n = len(hfs)
+    base_ivm, rem_ivm = divmod(received["ivm"], n)
+    base_alb, rem_alb = divmod(received["alb"], n)
     s = _iso_dt(start_date - timedelta(days=1), 9, 0)
     e = _iso_dt(start_date - timedelta(days=1), 9, 20)
-    for hf in hfs:
+    for idx, hf in enumerate(hfs):
+        ivm_hf = base_ivm + (rem_ivm if idx == 0 else 0)
+        alb_hf = base_alb + (rem_alb if idx == 0 else 0)
         recs.append(SubmissionRecord("2_part", {
             "p_recorder_id": "01",
             "p_state": cfg.province,
@@ -192,8 +195,8 @@ def _form2_records(villages, cfg, received, start_date):
             "p_health_facility": hf,
             "p_disease": " ".join(cfg.diseases),
             "p_medicine": cfg.medicine,
-            "p_total_ivm": str(per),
-            "p_total_alb": str(per_alb),
+            "p_total_ivm": str(ivm_hf),
+            "p_total_alb": str(alb_hf),
             "p_total_pzq": "0", "p_total_meb": "0", "p_total_dec": "0",
             "p_total_az_sus": "0", "p_total_az_tab": "0", "p_total_tetra": "0",
             "p_add_note": "",
@@ -250,12 +253,11 @@ def _form4_records(villages, cfg, distributed, start_date):
     recs = []
     hfs = sorted({v.hf for v in villages})
     end_date = start_date + timedelta(days=cfg.campaign_days)
-    n = len(hfs)
     for idx, hf in enumerate(hfs):
         hf_villages = [v for v in villages if v.hf == hf]
         treated = sum(v.treated for v in hf_villages)
         minor = int(round(treated * R.MINOR_AE_RATE))
-        serious = 1 if (idx == 0 and treated * R.SERIOUS_AE_RATE >= 0) and treated > 5000 else 0
+        serious = round(treated * R.SERIOUS_AE_RATE)
         recs.append(SubmissionRecord("4_case_mngnt", {
             "p_state": cfg.province, "p_district": hf_villages[0].district,
             "p_health_facility": hf,
@@ -314,9 +316,9 @@ def _form5_records(villages, cfg, received, distributed, start_date):
 def _form6_records(villages, cfg, start_date, rng):
     recs = []
     observed = [v for v in villages if v.treated_flag][:2]
+    yn = lambda p: "Yes" if rng.random() < p else "No"
     for v in observed:
         d = start_date + timedelta(days=1)
-        yn = lambda p: "Yes" if rng.random() < p else "No"
         recs.append(SubmissionRecord("6_supervision_CDD", {
             "s_supervisor": "District", "s_state": cfg.province, "s_district": v.district,
             "s_health_facility": v.hf, "s_location": v.name,

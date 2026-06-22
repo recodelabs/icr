@@ -49,3 +49,11 @@ def test_geo_anchored_in_ituri():
     # Ituri bounding box (approx): lat 0.5..3.5 N, lon 28..31 E
     for v in c.villages:
         assert 0.5 <= v.lat <= 3.5 and 28.0 <= v.lon <= 31.0
+
+
+def test_form2_received_totals_reconcile():
+    c = build_campaign()
+    ivm = sum(int(r.values["p_total_ivm"]) for r in c.records if r.form_key == "2_part")
+    alb = sum(int(r.values["p_total_alb"]) for r in c.records if r.form_key == "2_part")
+    assert ivm == c.received["ivm"]
+    assert alb == c.received["alb"]
