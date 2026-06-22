@@ -1,6 +1,6 @@
 ---
-version: 0.3.0
-last_modified: 2026-06-22T18:58:48.000Z
+version: 0.3.1
+last_modified: 2026-06-22T19:17:01.000Z
 tags:
   - icr
   - fhir
@@ -13,7 +13,7 @@ public: true
 ---
 
 # ESPEN MDA Forms ↔ ICR IG — Mapping (v3, post-v0.19.0)
-`v0.3.0 · Last modified Jun 22, 2026 at 2:58 PM EDT`
+`v0.3.1 · Last modified Jun 22, 2026 at 3:17 PM EDT`
 
 ⁠
 
@@ -29,7 +29,7 @@ SUSHI-clean: **17 profiles, 28 extensions, 18 CodeSystems, 20 ValueSets, 4 Measu
 | Denominator-type / unit (B1) | ❌   | ✅ `denominator-type` (total/at-risk) + `coverage-unit` (people/implementation-units) extensions; `example-geographic-coverage` |
 | Adverse event (C1) | ◑ reworded | ✅ `ICRAdverseEvent` (intervention-neutral) + `ICRAdverseEventCausalityCS`; `record-origin` on AdverseEvent; AEFI + MDA examples |
 | {==Supervision / CareTeam==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} | {==◑ deferred==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} | {==✅ first slice: `ICRCareTeam` + `ICRTeamRoleCS` + `oversees-area`; lightweight `ICRSupervisionReport`; examples==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} |
-| {==Dose-pole band==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} | {==◑ free text==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} | {==✅ `dose-pole-band` extension==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} |
+| {==Dose-pole band==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"}{>>Dose-pole band = the field dosing method for height-dosed PC-NTD drugs (praziquantel for schistosomiasis; ivermectin for oncho/LF). Weight is the correct dosing basis but can't be measured door-to-door, so the CDD stands the person against a **dose pole** — a height stick marked with bands — reads the band they fall into, and gives the tablet count printed for that band (height as a weight proxy). Example: a child measured at band B (110–124 cm) gets 2 PZQ tablets; the CDD records `dose-pole-band = band B` alongside `dosage = 2 tablets`, so the height→dose decision is auditable. The `<90 cm` cut-off is the bottom of the pole — too short to dose — captured as `exclusion-reason = under-height-age`. (This c1 highlight was auto-applied to several cells; answering once here. A one-line gloss + this example will be folded into v4 and the §7.2 dose-pole note in the rewrite pass.)<<}{id="c2" by="claude" at="2026-06-22T19:17:01.000Z" re="c1"} | {==◑ free text==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} | {==✅ `dose-pole-band` extension==}{>>What is dose-pole band mean? Can you provide an example of what this is used for?<<}{id="c1" by="mberg" at="2026-06-22T19:11:53.096Z"} |
 | Per-village disease | ◑ note | ✅ demonstrated via `Task.reasonCode` |
 | Not-treated disposition | ◑ Task counts | ✅ folded into the tally as a `disposition` stratifier |
 | Campaign-day | ◑ open | ✅ handled as event dates / `executionPeriod` (doc note) |
