@@ -11,6 +11,7 @@ def test_dose_pole_bands():
     assert R.dose_pole_tablets(80) == 0      # too short -> excluded
     assert R.dose_pole_tablets(90) == 1
     assert R.dose_pole_tablets(119) == 1
+    assert R.dose_pole_tablets(119.5) == 1   # float between marks rounds down to band 1
     assert R.dose_pole_tablets(120) == 2
     assert R.dose_pole_tablets(150) == 3
     assert R.dose_pole_tablets(170) == 4

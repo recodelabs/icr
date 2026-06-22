@@ -49,10 +49,11 @@ COMM_CHANNELS = ["Radio", "Town.criers", "Community.leaders", "Schools", "Poster
 
 
 def dose_pole_tablets(height_cm: float) -> int:
-    if height_cm < 90:
+    h = int(height_cm)  # dose poles are read at integer-cm marks
+    if h < 90:
         return 0
     for lo, hi, tabs in DOSE_POLE_BANDS:
-        if lo <= height_cm <= hi:
+        if lo <= h <= hi:
             return tabs
     return 0
 
