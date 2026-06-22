@@ -105,6 +105,57 @@ Builds **one campaign** as plain Python objects, **deterministic from a fixed se
 
 Output: a list of `SubmissionRecord{form_id, values: {node_path: value}}`.
 
+### 3.2.1 Realism profile & calibration — `realism.py`
+
+Realism is the make-or-break property, so the domain anchors live in **one documented
+module, no magic numbers** — every parameter named, commented, and tagged with its
+source. Calibration draws on **two clearly-labelled sources**, because the in-repo ESPEN
+Collect material intentionally carries the *reporting* layer, not the *clinical* layer:
+
+**Source 1 — in-repo ESPEN docs** (mined; cited inline):
+- **Campaign context** — the demo models the **oncho/LF → IVM(+ALB) stream** of the real
+  integrated Ituri/Maniema round on Country Deck slide 8 (Nov 2026: Oncho+LF+SCH+STH+
+  Trachoma+OPV; package IVM+PZQ+ALB+AZI+TEO; same CDD teams, co-administration). We model
+  a faithful subset — the ivermectin backbone — anchored at real Ituri districts (Bunia,
+  Mambasa).
+- **Geography** — Ituri province + districts/HFs/villages from the choices sheets.
+- **Reporting cadence** — daily field-activity reporting; campaign window of a few days;
+  end-of-day submission timestamps.
+- **Data quality** — **~2% data-entry error baseline** (Training Package p.59) → a small,
+  optional, realistic noise injection (e.g. occasional off-by-a-little tallies), flagged
+  in the manifest so it's intentional, not a bug.
+- **Not-treated taxonomy** — the supervision forms' real categories (Absence of
+  distributor, Population refusal, Medication shortage, Insecurity, Difficult access),
+  plus the per-individual reasons the treatment form carries (child <90 cm, pregnant,
+  breastfeeding, absent, refusal).
+
+**Source 2 — WHO PC-NTD / Mectizan / APOC CDTI guidance** (the clinical numbers the ESPEN
+docs omit; cited in comments):
+- **IVM dose-pole bands** (height as weight proxy): `<90 cm → not treated (too short)`,
+  `90–119 cm → 1 tablet`, `120–140 cm → 2`, `141–158 cm → 3`, `>158 cm → 4` (3 mg
+  tablets). LF adds ALB 400 mg single dose.
+- **Eligibility / exclusions for IVM** — exclude children <90 cm, pregnant women,
+  mothers breastfeeding an infant <1 week, the severely ill. These map directly to the
+  form's not-treated reasons.
+- **Coverage** — epidemiological coverage sampled from a realistic band (~70–85%) with
+  village-to-village variation; thresholds noted (oncho elimination target ≥80%
+  therapeutic; LF ≥65% of total population). Geographic coverage = most villages treated,
+  with a realistic miss (an **Insecurity** village is authentic for Ituri).
+- **Adverse events** — minor AEs (Mazzotti-type: itch, swelling, fever) at a low rate
+  (~1–5% of treated); serious AEs near-zero (0, occasionally 1) — Loa loa-related SAE
+  risk exists in DRC, so a rare serious event is plausible but must stay rare.
+- **CDD staffing** — ~1 community distributor per ~200–500 population (1–2 per village),
+  with a trained/recycled split.
+- **Eligible-population fraction** — for oncho CDTI the denominator is ~the whole
+  community minus the structurally-ineligible (<90 cm/under-5 ≈ 16–18%, plus a small
+  pregnant/breastfeeding share), giving eligible ≈ ~78–82% of total.
+- **Demography** — sub-Saharan/DRC age pyramid (under-5 ≈ 16%, 5–14 ≈ 29%, 15+ ≈ 55%),
+  driving the form's 1–4 / 5–14 / 15+ age bands; rural village sizes ~200–3,000.
+
+The scenario layer (§3.2) draws from these distributions and applies the per-drug
+eligibility logic, rather than uniform random fills — that is what makes the treatment
+cube medically correct, not merely numerically plausible.
+
 ### 3.3 Render layer — `render.py`
 - For each record: clone the form's instance template; set each leaf by node path
   (groups handled by path; `select_multiple` rendered space-separated per ODK);
@@ -138,7 +189,12 @@ Output: a list of `SubmissionRecord{form_id, values: {node_path: value}}`.
 3. **Invariants** — the scenario-layer `assert`s (§3.2) all pass.
 4. **Ona compatibility** — root `id` equals the compiled `form_id`; `meta/instanceID` is a
    unique `uuid:` URN; submission validates as OpenRosa instance shape.
-5. *(Optional, not required)* ODK Validate (Java) on the compiled XForms.
+5. **Face-validity report** — after each run, emit the aggregate indicators an
+   ESPEN reviewer eyeballs first (epidemiological coverage %, geographic coverage %,
+   age-band distribution, not-treated reason breakdown, stock balance, minor/serious
+   AE rate, CDD-to-population ratio) against their expected bands — turning “does
+   this look real?” into a five-second check that can be handed to a domain expert.
+6. *(Optional, not required)* ODK Validate (Java) on the compiled XForms.
 
 ## 6. Out of scope / YAGNI
 
