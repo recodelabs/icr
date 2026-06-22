@@ -135,6 +135,13 @@ Description: "Why an eligible person or household was not reached during a campa
 * #refusal "Refusal" "Caregiver or individual refused — capture the noncompliance reason separately."
 * #inaccessible "Inaccessible" "Dwelling or settlement could not be reached (security, terrain, weather)."
 * #not-visited "Not visited" "Household never reached by a team during the round."
+// Area-level non-treatment reasons (ESPEN supervision Form 5): why a whole
+// settlement/operational area went untreated — distinct from a person being
+// missed at a visit. Added v0.18.0 (espen.md rec 7 / §17.2 C3).
+* #medication-shortage "Medication shortage" "Area not treated because the medicine/commodity ran out or never arrived."
+* #insecurity "Insecurity" "Area not reached due to armed conflict, unrest, or security restrictions."
+* #difficult-access "Difficult access" "Area not reached due to terrain, distance, or seasonal inaccessibility."
+* #not-required "Not required" "Area not treated because it was not targeted this round (e.g. not co-endemic for the disease)."
 * #other "Other" "Other reason — record detail in text."
 
 CodeSystem: ICRNoncomplianceReasonCS
@@ -149,6 +156,18 @@ Description: "Why a household or caregiver declined the intervention — drives 
 * #campaign-fatigue "Campaign fatigue" "Too many rounds; declines further participation."
 * #misinformation "Misinformation / rumor" "Declines based on circulating misinformation."
 * #other "Other" "Other reason — record detail in text."
+
+CodeSystem: ICRExclusionReasonCS
+Id: icr-exclusion-reason-cs
+Title: "ICR Exclusion Reason"
+Description: "Why a PRESENT, age-eligible person was not treated because they are clinically ineligible/contraindicated for the intervention this round — as opposed to being MISSED (not reached, ICRMissedReasonCS) or DECLINING (ICRNoncomplianceReasonCS). The MDA case (ESPEN treatment Form 3): under the dose-pole minimum, pregnant, breastfeeding, acutely ill. Added v0.18.0 (espen.md rec 2 / §17.4 NTD specifics)."
+* ^caseSensitive = true
+* ^experimental = false
+* #under-height-age "Below dose-pole minimum (height/age)" "Below the intervention's minimum dose-pole height or age threshold (e.g. children under ~90 cm for height-dosed PC-NTD drugs; under the minimum age for azithromycin)."
+* #pregnant "Pregnant" "Excluded this round because pregnant (drug contraindicated in pregnancy)."
+* #breastfeeding "Breastfeeding / lactating" "Excluded this round because breastfeeding (drug contraindicated while lactating, per protocol)."
+* #acute-illness "Acute illness / clinical contraindication" "Excluded due to acute illness or a clinical contraindication at the time of the visit. Reconciles with the deferral sense of ICRMissedReasonCS#sick — see §17.2 C3."
+* #other "Other contraindication" "Other clinical exclusion — record detail in text."
 
 CodeSystem: ICRDenominatorSourceCS
 Id: icr-denominator-source-cs

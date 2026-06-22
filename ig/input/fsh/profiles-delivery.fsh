@@ -55,7 +55,8 @@ Description: "A commodity distribution event — ITNs, IRS consumables, vitamin 
 * suppliedItem MS
 * suppliedItem.quantity MS
 * suppliedItem.item[x] MS
-* suppliedItem.item[x] ^short = "GS1 GTIN-coded commodity where applicable"
+* suppliedItem.itemCodeableConcept from ICRSuppliedItemVS (extensible)
+* suppliedItem.item[x] ^short = "Drug commodity → WHO ATC (shares the ICRMedicationAdministration code); physical commodity → GS1 GTIN where applicable, else text"
 * destination MS
 * destination ^short = "Where the commodity went (post, household)"
 * extension contains RecordOrigin named recordOrigin 1..1 MS

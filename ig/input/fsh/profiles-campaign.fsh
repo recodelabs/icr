@@ -108,5 +108,6 @@ Description: "The assignable, trackable operational unit of work — one Task pe
     EligibleAbsent named eligibleAbsent 0..1 and
     MissedReason named missedReason 0..* and
     NoncomplianceReason named noncomplianceReason 0..* and
+    ExclusionReason named exclusionReason 0..* and
     FingerMarked named fingerMarked 0..1 and
     RealtimeVsReconciled named dataLineage 0..1

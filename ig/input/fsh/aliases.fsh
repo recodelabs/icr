@@ -18,6 +18,7 @@ Alias: $DeliveryStrategy = https://fhir.icr.unicef.org/CodeSystem/icr-delivery-s
 Alias: $RecordOrigin = https://fhir.icr.unicef.org/CodeSystem/icr-record-origin-cs
 Alias: $MissedReason = https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason-cs
 Alias: $NoncomplianceReason = https://fhir.icr.unicef.org/CodeSystem/icr-noncompliance-reason-cs
+Alias: $ExclusionReason = https://fhir.icr.unicef.org/CodeSystem/icr-exclusion-reason-cs
 Alias: $DenominatorSource = https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source-cs
 Alias: $DataLineage = https://fhir.icr.unicef.org/CodeSystem/icr-data-lineage-cs
 Alias: $CoverageSource = https://fhir.icr.unicef.org/CodeSystem/icr-coverage-source-cs

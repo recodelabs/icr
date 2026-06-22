@@ -94,6 +94,15 @@ Context: Task
 * value[x] only CodeableConcept
 * value[x] from ICRNoncomplianceReasonVS (extensible)
 
+Extension: ExclusionReason
+Id: exclusion-reason
+Title: "Exclusion Reason"
+Description: "Why a present, age-eligible person was clinically excluded from the intervention this round (under dose-pole height/age, pregnant, breastfeeding, acutely ill). Distinct from missed (not reached) and noncompliance (declined): the person was there and age-eligible but contraindicated. MDA treatment forms tally these per drug (espen.md rec 2 / §17.4)."
+Context: Task
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRExclusionReasonVS (extensible)
+
 Extension: TaskOrigin
 Id: task-origin
 Title: "Task Origin"

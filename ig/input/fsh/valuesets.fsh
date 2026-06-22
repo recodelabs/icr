@@ -57,6 +57,20 @@ Description: "Reasons for refusal/noncompliance. Binding: extensible — countri
 * ^experimental = false
 * include codes from system ICRNoncomplianceReasonCS
 
+ValueSet: ICRExclusionReasonVS
+Id: icr-exclusion-reason
+Title: "ICR Exclusion Reason"
+Description: "Reasons a present, age-eligible person was clinically excluded from treatment (under-height/age, pregnant, breastfeeding, acutely ill). Binding: extensible — countries may add local codes."
+* ^experimental = false
+* include codes from system ICRExclusionReasonCS
+
+ValueSet: ICRSuppliedItemVS
+Id: icr-supplied-item
+Title: "ICR Supplied Item"
+Description: "Coded products distributed via ICRSupplyDelivery. Binding: extensible. Drug commodities (MDA receipts/distribution) use WHO ATC; physical commodities (ITNs, IRS consumables, vitamin A) use GS1 GTIN where a local binding exists, otherwise text. Added v0.18.0 (espen.md rec 3) so a drug receipt → administration → reconciliation share one ATC code."
+* ^experimental = false
+* include codes from system $ATC
+
 ValueSet: ICRDenominatorSourceVS
 Id: icr-denominator-source
 Title: "ICR Denominator Source"

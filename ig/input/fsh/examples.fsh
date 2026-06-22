@@ -450,3 +450,83 @@ Usage: #example
 * extension[coverageSource].valueCode = #survey
 * extension[sampleDesign].valueString = "WHO 30×10 cluster survey, district-representative; card + caregiver recall"
 * extension[dataLineage].valueCode = #reconciled
+
+// --- ESPEN MDA scenario: aggregate community-directed treatment ----------------
+// The PC-NTD path the ESPEN demo forms collect (community-directed, register-level,
+// no per-person record). Demonstrates v0.18.0 additions (espen.md recs 1-3, 7):
+//   • a DRUG SupplyDelivery ATC-coded (rec 3) — same code as the administration;
+//   • a community Task carrying exclusion reasons (rec 2) and an area-level missed
+//     reason (rec 7), with aggregate counts on Task.output;
+//   • the disaggregated treatment tally as a STRATIFIED MeasureReport (rec 1 / §2.1)
+//     — sex × age-band stratifiers are how the drug×sex×age cube lands when there
+//     is no person to attach a MedicationAdministration to.
+
+Instance: example-albendazole-supply
+InstanceOf: ICRSupplyDelivery
+Title: "Albendazole receipt — Rokupr community (ATC-coded drug supply)"
+Usage: #example
+* status = #completed
+* suppliedItem.quantity = 3600 '{tbl}' "tablets"
+* suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
+* destination = Reference(example-settlement)
+* extension[recordOrigin].valueCode = #campaign
+
+Instance: example-mda-community-task
+InstanceOf: ICRCampaignTask
+Title: "Community-directed MDA — Rokupr, albendazole round"
+Usage: #example
+* status = #completed
+* intent = #order
+* code.text = "Community-directed MDA: albendazole (STH preventive chemotherapy)"
+* focus = Reference(example-community)
+* for = Reference(example-community)
+* location = Reference(example-settlement)
+* executionPeriod.start = "2026-02-08"
+* executionPeriod.end = "2026-02-12"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#community-directed "Community-directed distribution"
+* extension[taskOrigin].valueCode = #pre-planned
+* extension[dataLineage].valueCode = #reconciled
+* extension[exclusionReason][0].valueCodeableConcept = $ExclusionReason#under-height-age "Below dose-pole minimum (height/age)"
+* extension[exclusionReason][1].valueCodeableConcept = $ExclusionReason#pregnant "Pregnant"
+* extension[exclusionReason][2].valueCodeableConcept = $ExclusionReason#breastfeeding "Breastfeeding / lactating"
+* extension[missedReason].valueCodeableConcept = $MissedReason#absent "Absent"
+* extension[noncomplianceReason].valueCodeableConcept = $NoncomplianceReason#no-felt-need "No felt need"
+* output[0].type.text = "Persons treated with albendazole (community tally)"
+* output[0].valueUnsignedInt = 2900
+* output[1].type.text = "Disaggregated treatment coverage report"
+* output[1].valueReference = Reference(example-mda-treatment-tally)
+
+Instance: example-mda-treatment-tally
+InstanceOf: ICRAdministrativeCoverage
+Title: "MDA treatment coverage — Rokupr albendazole round (sex × age stratified)"
+Usage: #example
+* status = #complete
+* type = #summary
+* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
+* period.start = "2026-02-08"
+* period.end = "2026-02-12"
+* reporter.display = "Rokupr health-area CDD supervisor"
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 2900
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 3200
+* group.measureScore = 91 '%' "%"
+// The drug × sex × age-band cube the ESPEN treatment form collects, carried as
+// MeasureReport stratifiers — the canonical home for a disaggregated aggregate tally.
+* group.stratifier[0].code.text = "Sex"
+* group.stratifier[0].stratum[0].value.text = "female"
+* group.stratifier[0].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[0].population[0].count = 1500
+* group.stratifier[0].stratum[1].value.text = "male"
+* group.stratifier[0].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[1].population[0].count = 1400
+* group.stratifier[1].code.text = "Age band"
+* group.stratifier[1].stratum[0].value.text = "5–14 years"
+* group.stratifier[1].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[1].stratum[0].population[0].count = 1100
+* group.stratifier[1].stratum[1].value.text = "15+ years"
+* group.stratifier[1].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[1].stratum[1].population[0].count = 1800
+* extension[coverageSource].valueCode = #administrative
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[dataLineage].valueCode = #reconciled

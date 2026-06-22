@@ -18,6 +18,8 @@ public: true
 ⁠
 
 > [!note] What this document is
+> **Update (Jun 22, 2026):** the §7 recommendations have since been acted on — recs **1, 2, 3, 7 implemented** in the IG (v0.18.0) and recs **4, 5, 6 reworded/decided**. See **[[espen-v2]]** for the re-run fit analysis against the updated model; this doc is preserved as the original (v1) assessment.
+>
 > A field-evidence check of the **ESPEN NTD-MDA demo forms** (`forms/espen mda/`) against the draft ICR FHIR IG (`ig/`) as walked through in [[ig-info]]. For each form it asks: **does the campaign data these forms collect fit the proposed data model, or does it conflict?** The forms are a real (demo, DR Congo–shaped) set of **ODK XLSForms** for a community-directed PC-NTD mass-drug-administration round — exactly the `campaign-type = mda` + `community-directed` strategy the IG models. The companion **Country Deck** frames the strategic context: five-country **campaign integration** (Sierra Leone, Uganda, DR Congo, Angola, Rep. of Congo), with DRC already running a *5-disease NTD MDA co-administered with polio*. Cross-refs are to [[ig-info]] sections (§n) and the source design doc [[icr-v1]].
 
 * * *
