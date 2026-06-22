@@ -269,3 +269,33 @@ Description: "Role of a member within a campaign CareTeam — the front-line del
 * #supervisor "Supervisor" "Oversees a team/area and very often files the report; see the oversees-area extension and MeasureReport.reporter."
 * #social-mobilizer "Social mobilizer" "Conducts community sensitisation / demand generation ahead of and during the campaign."
 * #recorder "Recorder" "Captures and reports the data (tally sheets, registers, digital forms)."
+
+// --- v0.20.0 additions (espen-v4 round: fuller supervision + AE finish) --------
+
+CodeSystem: ICRCommunicationChannelCS
+Id: icr-communication-channel-cs
+Title: "ICR Communication Channel"
+Description: "Social-mobilization / demand-generation channels used to inform the population ahead of and during a campaign (ESPEN supervision Form 5). Bound extensible (espen-v4 / §17.3)."
+* ^caseSensitive = true
+* ^experimental = false
+* #radio "Radio" "Radio spots/announcements."
+* #town-criers "Town criers" "Community announcers / town criers."
+* #community-leaders "Community leaders" "Mobilization through community/religious leaders."
+* #schools "Schools" "Sensitisation through schools."
+* #posters "Posters" "Printed posters / banners."
+* #megaphone "Megaphone / public address" "Mobile public-address announcements."
+* #sms "SMS / mobile" "SMS or mobile-message campaigns."
+* #other "Other" "Other channel — record detail in text."
+
+CodeSystem: ICRSeriousCriteriaCS
+Id: icr-serious-criteria-cs
+Title: "ICR Serious-Event Criteria"
+Description: "WHO/CIOMS criteria that make an adverse event SERIOUS — the reason behind AdverseEvent.seriousness = serious. Intervention-neutral (AEFI and MDA pharmacovigilance) (espen-v4 / §17.2 C1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #death "Results in death" "The event resulted in death."
+* #life-threatening "Life-threatening" "The event was life-threatening."
+* #hospitalization "Requires/prolongs hospitalization" "Required inpatient hospitalization or prolonged an existing stay."
+* #disability "Persistent / significant disability" "Resulted in persistent or significant disability/incapacity."
+* #congenital-anomaly "Congenital anomaly / birth defect" "Resulted in a congenital anomaly/birth defect."
+* #medically-important "Other medically important event" "A medically important condition not otherwise listed (clinical judgement)."

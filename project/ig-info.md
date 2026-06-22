@@ -1,6 +1,6 @@
 ---
-version: 0.19.0
-last_modified: 2026-06-22T18:58:48.000Z
+version: 0.20.0
+last_modified: 2026-06-22T19:25:05.000Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ public: true
 ---
 
 # ICR FHIR IG v0.1 — Reviewer's Explainer
-`v0.19.0 · Last modified Jun 22, 2026 at 2:58 PM EDT`
+`v0.20.0 · Last modified Jun 22, 2026 at 3:25 PM EDT`
 
 ⁠
 
@@ -112,6 +112,8 @@ _Quick reference for every abbreviation used in this document, grouped by area. 
 
 * * *
 
+> [!tip] v0.20.0 — fuller supervision bundle, CareTeam wiring, adverse-event finish (committed; SUSHI-clean: **17 profiles, 32 extensions, 20 CodeSystems, 23 ValueSets, 4 Measures, 1 Questionnaire, 1 ConceptMap, ~40 examples**) The next three follow-ups, now in `ig/`; see [[espen-v4]]. **(1) Fuller supervision (§5.5, §17.3).** `ICRSupervisionReport` is now a **structured `QuestionnaireResponse`** against a shipped **`icr-mda-supervision-checklist` `Questionnaire`** (replacing the v0.19 text-component Observation); a **`StockAccountability`** extension on `ICRSupplyDelivery` (received/used/remaining/not-usable/returned + concordance + VVM — the C2 wastage axis); a **`SocialMobilization`** extension (population-informed + channels via `ICRCommunicationChannelCS`) on `ICRCampaign`/Task; and a **`WorkloadTarget`** extension on `ICRCareTeam` (area + population/households/days — the microplan team-workload, the ICRCampaign `intent=plan` being the microplan itself). **(2) CareTeam wiring (§5.4, §8, §15 #7-bis).** `ICRCampaignTask.owner` is now **`Reference(ICRCareTeam)`** (a real join, not a display string), and coverage **`MeasureReport.reporter` is promoted to `1..1`** (required) on both coverage profiles. **(3) Adverse-event finish (§7.5, §17.2 C1).** `ICRAdverseEvent.seriousness` bound (serious/non-serious) + a **`SeriousCriteria`** extension (`ICRSeriousCriteriaCS` — death/life-threatening/hospitalization/…); a **ConceptMap** (`conceptmaps.fsh`) maps ICR causality → WHO `IMMZ.AdverseEvent` (provisional targets). New examples: `example-aefi-serious`, plus stock/mobilization/workload/QR wiring on existing ones. **Deferred by your steer:** executable CQL + structured `sample-design` (§17.2 B2 remainder) — not done this round.
+> 
 > [!tip] v0.19.0 — coverage formalised, adverse-event & team profiles, minor ESPEN fixes (committed; SUSHI-clean: **17 profiles, 28 extensions, 18 CodeSystems, 20 ValueSets, 4 Measures, 38 examples**) The three big espen-v2 follow-ups plus all four minor form issues, now in `ig/`. See [[espen-v3]] for the re-run mapping. **(1) Stratified tally → a rule (§8, §17.2 B1/B2)** — four **`Measure` definitions** committed (`icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`), closing the §14 Measure gap; coverage `MeasureReport.measure` is now MS; standard **stratifier axes** named in `ICRCoverageStratifierCS` (sex, age-band, delivery-strategy, disposition, geography); new **`denominator-type`** (total vs at-risk → programme vs epidemiological coverage) and **`coverage-unit`** (people vs implementation-units → geographic coverage) extensions on the coverage profiles + `denominator-type` on `ICRTargetPopulation`; `example-mda-treatment-tally` upgraded to be conformant + a new `example-geographic-coverage` (villages-treated/total). **(2) Intervention-neutral adverse event (§7.5, §17.2 C1)** — new **`ICRAdverseEvent`** profile (base R4 AdverseEvent) serving AEFI *and* MDA pharmacovigilance, with `ICRAdverseEventCausalityCS` (WHO A/B/C/D), `record-origin` now valid on AdverseEvent, and `example-aefi` + `example-mda-adverse-event`. **(3) Team & supervision (§5.5, §17.3)** — **`ICRCareTeam`** committed (roles via `ICRTeamRoleCS`, `oversees-area` ext) + a lightweight **`ICRSupervisionReport`** (Observation) for Forms 5/6 findings; `example-careteam` + `example-supervision-report`. Fuller supervision/microplan/stock/social-mob bundle still scoped for the next round. **Minor fixes:** `dose-pole-band` extension (machine-readable height-band → dose), per-village **disease scoping** via `Task.reasonCode`, the not-treated **disposition** folded into the stratified tally, and campaign-day handled as event dates (doc note). The deeper coverage rework (structured `sample-design`, executable CQL) remains.
 > 
 > [!tip] v0.18.0 — ESPEN MDA field-fit additions (committed; SUSHI-clean: 14 profiles, 24 extensions, 13 CodeSystems, 15 ValueSets, 33 examples) The ESPEN NTD-MDA demo forms (DR Congo) were analysed against the IG ([[espen]]); four of its recommendations are now **committed to** `ig/`. **(1) Stratified aggregate tally (§7.3, §8.1)** → the disaggregated MDA treatment cube (drug × sex × age band) lands as a **`MeasureReport` with `group.stratifier`** — new `example-mda-treatment-tally` shows sex × age-band stratifiers; this is the canonical home when there is no person to hang a `MedicationAdministration` on. **(2) Eligibility-exclusion reasons (§9, §10)** → new **`ExclusionReason`** extension on Task (0..\*) + **`ICRExclusionReasonCS`/VS** (`under-height-age`, `pregnant`, `breastfeeding`, `acute-illness`, `other`) — *present-but-contraindicated*, distinct from missed (not reached) and noncompliance (declined); §17.4 NTD item promoted. **(3) ATC on drug supply (§7.3)** → `ICRSupplyDelivery.suppliedItem.item` now bound **extensible to `ICRSuppliedItemVS`** (ATC for drugs; GS1/text for commodities) so receipt → administration → reconciliation share one drug code; new `example-albendazole-supply`. **(4) Area-level non-treatment reasons (§10)** → `ICRMissedReasonCS` gains `medication-shortage`, `insecurity`, `difficult-access`, `not-required` (ESPEN supervision Form 5; §17.2 C3, partial). New `example-mda-community-task` ties them together. **Doc-only (still proposed):** AEFI made intervention-neutral (§17.2 C1), supervision/QA deferred-with-rationale (§17.3), and a §17.6 ingestion-mapping note on co-bundled surveillance. The deeper coverage rework (§17.2 B1 denominator-type/unit axes) still stands — the stratified tally is a down-payment on it. See [[espen-v2]] for the re-run fit analysis.
@@ -156,16 +158,17 @@ The IG consists of FHIR Shorthand (FSH — a concise authoring language for FHIR
 | **Profiles — population & geography** | 4   | ICRPatient (Patient — registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group), ICRLocation (Location) |
 | **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
-| **Profiles — safety & teams** _(v0.19.0)_ | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA, §7.5), ICRCareTeam (CareTeam, §5.5), ICRSupervisionReport (Observation — lightweight supervision finding, §5.5) |
+| **Profiles — safety & teams** _(v0.19.0+)_ | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA, §7.5), ICRCareTeam (CareTeam, §5.5), ICRSupervisionReport (**QuestionnaireResponse** — structured supervision/QA, §5.5, v0.20.0) |
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance, §6.5) |
 | **Measures** _(v0.19.0)_ | 4   | icr-admin-coverage, icr-survey-coverage, icr-mda-treatment-coverage, icr-geographic-coverage — the canonical definitions the coverage MeasureReports instance (§8) |
-| **Extensions** | 28  | See §9 (+`exclusion-reason` v0.18.0; +`denominator-type`, `coverage-unit`, `dose-pole-band`, `oversees-area` v0.19.0) |
-| **CodeSystems** | 18  | …missed-reason, noncompliance-reason, exclusion-reason, denominator-source, data-lineage, coverage-source, group-kind, task-origin, location-type, group-characteristic + (v0.19.0) **coverage-stratifier, denominator-type, coverage-unit, adverse-event-causality, team-role** |
-| **ValueSets** | 20  | One per code system (except group-characteristic), plus the narrowed independent-coverage and ATC sets — and (v0.19.0) the coverage-stratifier, denominator-type, coverage-unit, adverse-event-causality and team-role sets |
-| **Example instances** | 38  | The measles–rubella **SIA** scenario (umbrella + round, **Type A & B** tasks, coverage pair, country→dwelling hierarchy, household + community delivery units, supervisory area, competing denominators) + an activity gallery + an **MDA** event + an ITN delivery + (v0.18.0) an **ESPEN MDA aggregate scenario** (ATC drug supply, community-directed Task, stratified treatment tally) + (v0.19.0) **geographic coverage, AEFI + MDA adverse events, a care team, a supervision report** (§11) |
+| **Questionnaire / ConceptMap** _(v0.20.0)_ | 1 / 1 | `icr-mda-supervision-checklist` (the structured supervision checklist, §5.5); `icr-aefi-causality-to-immz` (ICR↔WHO IMMZ causality map, §7.5/§18.3) |
+| **Extensions** | 32  | See §9 (+`exclusion-reason` v0.18; +`denominator-type`/`coverage-unit`/`dose-pole-band`/`oversees-area` v0.19; +`stock-accountability`/`social-mobilization`/`workload-target`/`serious-criteria` v0.20) |
+| **CodeSystems** | 20  | …+ (v0.19.0) coverage-stratifier, denominator-type, coverage-unit, adverse-event-causality, team-role + (v0.20.0) **communication-channel, serious-criteria** |
+| **ValueSets** | 23  | One per code system (+ narrowed independent-coverage, ATC sets) + (v0.19.0) coverage-stratifier/denominator-type/coverage-unit/adverse-event-causality/team-role + (v0.20.0) **communication-channel, adverse-event-seriousness, serious-criteria** |
+| **Example instances** | 39  | The MR **SIA** scenario + activity gallery + **MDA** event + ITN delivery + (v0.18.0) **ESPEN MDA aggregate scenario** + (v0.19.0) **geographic coverage, AEFI + MDA adverse events, care team, supervision report** + (v0.20.0) **a serious AEFI** + stock/mobilization/workload/QR wiring on existing instances (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
-File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh` (v0.19.0), `profiles-careteam.fsh` (v0.19.0), `measures.fsh` (v0.19.0), `examples.fsh`.
+File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh` (v0.19.0), `profiles-careteam.fsh` (v0.19.0), `measures.fsh` (v0.19.0), `questionnaires.fsh` (v0.20.0), `conceptmaps.fsh` (v0.20.0), `examples.fsh`.
 
 **Build:** `sushi build .` compiles FSH → JSON; `./_genonce.sh` renders the IG website (needs Java 17+). The commit is SUSHI-clean (compiles without errors).
 
@@ -759,7 +762,7 @@ Annotated, with the links read out: `for` points at the **household delivery-uni
 
 Two smaller items: `output.valueReference` is not yet structurally constrained to the three delivery-event profiles (the `^short` says it; the profile doesn't enforce it); and `task-origin` `1..1` means historical imports must assign an origin — acceptable as a forcing function, or add an `unknown` code for back-loaded datasets (§15 #4).
 ### 5.5 ICRCareTeam — `CareTeam` (the team & supervisor model) + ICRSupervisionReport
-> [!check] Status — **in the IG (v0.19.0)** `ICRCareTeam` is **committed** (`profiles-careteam.fsh`) with the element shape below, plus a **new `ICRTeamRoleCS`** (vaccinator | cdd | supervisor | social-mobilizer | recorder) and the **`oversees-area`** extension, and a worked `example-careteam`. Alongside it ships a **lightweight `ICRSupervisionReport`** (profiled `Observation`) for ESPEN Forms 5/6 supervision-visit findings — checklist items as `component`s (DOC observed, height-chart used, stock concordance…), with `example-supervision-report`. This closes the §4 CareTeam gap and the *first slice* of §17.3's Supervision/QA item; the **fuller bundle** (a microplan/Team-workload resource, structured stock-readiness, a social-mobilization axis) stays scoped for the next major round (§17.3). `Task.owner` is still a display string in the examples — wiring it to `Reference(ICRCareTeam)` is the remaining hookup.
+> [!check] Status — **in the IG; bundle filled out in v0.20.0** `ICRCareTeam` (`profiles-careteam.fsh`) ships with the element shape below, `ICRTeamRoleCS` (vaccinator | cdd | supervisor | social-mobilizer | recorder), the **`oversees-area`** extension, and now a **`workload-target`** extension (area + expected population/households/days) — so the CareTeam is the typed **team-area-workload** unit of the microplan (the ICRCampaign with `intent=plan` being the microplan itself). The supervision report is now a **structured `ICRSupervisionReport` (`QuestionnaireResponse`)** against a shipped **`icr-mda-supervision-checklist` `Questionnaire`** (replacing v0.19's lightweight Observation) — each Forms 5/6 answer links to a coded question. The rest of the bundle landed too: **`StockAccountability`** on `ICRSupplyDelivery` (C2 wastage/stock-readiness) and **`SocialMobilization`** on `ICRCampaign`/Task (demand axis). And **`Task.owner` → `Reference(ICRCareTeam)`** (v0.20.0) makes "who worked this" a real join; `MeasureReport.reporter` is now **required (1..1)** so "who reported this number" is always answerable (§15 #7-bis). _Remaining for a later round:_ a standalone microplan resource (vs the CareTeam-carried workload), executable CQL, and richer QA analytics.
 
 _The campaign delivery team — the vaccinators / CDDs who do the work and the_ **_supervisor_** _who oversees them and very often files the report. It answers "who did this, and who is accountable for this number": the team is referenced from_ `ICRCampaign.careTeam` _(the campaign-level roster) and from_ `Task.owner` _/_ `Task.performer` _(the team that worked a given Task), and the supervisor surfaces again as the_ `MeasureReport.reporter` _on rolled-up coverage (§8) and typically owns the_ **_supervisory-area_** _Location (§6.3)._
 
@@ -1300,7 +1303,7 @@ Annotated: `patient` is the **person-level capture** — the same `example-child
 | `supportingInformation` | MS — "e.g. the dose-pole Observation the dosage was derived from" |
 | Extensions | `recordOrigin` **1..1 MS** · `directlyObserved` 0..1 MS (boolean — MDA DOC protocol) · `dosePoleBand` 0..1 MS (CodeableConcept — the measured height band that set the tablet count, v0.19.0) |
 
-The dose-pole pattern (dosage _derived from_ a height-band Observation referenced via `supportingInformation`) is the distinctly-MDA piece; `directlyObserved` captures the supervision protocol that distinguishes "handed out" from "swallowed".
+The dose-pole pattern (dosage _derived from_ a height-band Observation referenced via `supportingInformation`, with the band itself on `dosePoleBand`) is the distinctly-MDA piece; `directlyObserved` captures the supervision protocol that distinguishes "handed out" from "swallowed". _**Dose pole**_ _(gloss): in PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door, so the distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B (110–124 cm) gets 2 praziquantel tablets;_ `dosePoleBand` _records the band, making the height→dose decision auditable. The_ `<90 cm` _cut-off is the bottom of the pole — too short to dose — captured as_ `exclusion-reason = under-height-age` _(§9)._
 
 **The MDA administration as FHIR/JSON.** `example-albendazole-administration` (#23, §11) — an NTD drug given house-to-house, the MedicationAdministration counterpart to the §7.1 dose:
 
@@ -1362,7 +1365,7 @@ Annotated, with the distinctly-MDA pieces called out: `medicationCodeableConcept
 | `suppliedItem`, `suppliedItem.quantity` | MS |
 | `suppliedItem.item[x]` | MS, bound **extensible** to `ICRSuppliedItemVS` (v0.18.0): **WHO ATC** for drug commodities (the same code as the matching `ICRMedicationAdministration`), GS1 GTIN / text for physical commodities |
 | `destination` | MS — "Where the commodity went (post, household)" |
-| `extension[recordOrigin]` | **1..1 MS** |
+| Extensions | `recordOrigin` **1..1 MS** · **`stockAccountability` 0..1 MS** (v0.20.0 — received/used/remaining/not-usable/returned + concordance + VVM stage: the C2 wastage/stock-readiness axis, reusable for vaccines/drugs/ITNs) |
 
 > [!check] v0.18.0 — the **disaggregated** aggregate tally now has a worked shape (ESPEN [[espen]] rec 1) The c141/§7.3 rule below answered the *scalar* aggregate (one count on `Task.output`). The ESPEN treatment forms collect a **multi-dimensional** aggregate — treated counts by **drug × sex × age band**, plus exclusion dispositions — which a single Group-subject `MedicationAdministration` cannot hold. Resolution: carry it as an **`ICRAdministrativeCoverage` `MeasureReport` with `group.stratifier`** (sex, age band), the FHIR-native disaggregation mechanism — see `example-mda-treatment-tally` (§11) and §8.1. The operational per-visit scalar still rides `Task.output` (e.g. the community Task's `2900 treated`, which *references* the stratified report). This is also the down-payment on the §17.2 B1 coverage-stratification rework.
 
@@ -1384,12 +1387,13 @@ Three smaller delivery-layer items: `vaccineCode` binds to the generic FHIR VS r
 | `category`, `date`, `severity` | MS — `severity` = mild \| moderate \| severe |
 | `event` | MS — what happened (fever, abscess, abdominal pain, anaphylaxis…), clinically coded |
 | `subject` | MS, only `Reference(Patient or ICRDeliveryUnit)` — the affected person, or the community/household Group for aggregate counts |
-| `seriousness` | MS — the **minor vs serious** distinction the ESPEN forms collect |
+| `seriousness` | MS, bound **extensible** to `ICRAdverseEventSeriousnessVS` (serious / non-serious) — the **minor vs serious** distinction the ESPEN forms collect |
+| `extension[seriousCriteria]` | 0..\* MS _(v0.20.0)_ — **why** it is serious: WHO/CIOMS `ICRSeriousCriteriaCS` (death, life-threatening, hospitalization, disability, congenital-anomaly, medically-important) |
 | `suspectEntity.instance` | MS, only `Reference(ICRImmunizationEvent or ICRMedicationAdministration or Medication or Substance)` — the suspected dose/treatment or the product itself |
 | `suspectEntity.causality.assessment` | bound **extensible** to `ICRAdverseEventCausalityVS` — WHO/CIOMS **A/B/C/D**; immunization may use IMMZ's finer A1–A4 |
 | `extension[recordOrigin]` | **1..1 MS** — the same campaign-vs-routine firewall as the delivery events (`record-origin` now lists AdverseEvent in its context) |
 
-**Rationale.** R4 `AdverseEvent.subject` natively allows `Group`, so an aggregate community side-effect count is representable without contortion, and `suspectEntity.instance` points back at the exact `ICRImmunizationEvent`/`ICRMedicationAdministration` — making "which lot/which drug" traceable. The **immunization arm is meant to specialize WHO `IMMZ.AdverseEvent`** (§18.3) rather than reinvent it; ICR's contribution is the intervention-neutral framing + the `record-origin` seam. Examples: `example-aefi` (mild fever after MCV, causality A) and `example-mda-adverse-event` (abdominal pain after albendazole, causality C). _Still proposed (§17.2 C1 remainder):_ the full serious-criteria value set and the IMMZ ConceptMap.
+**Rationale.** R4 `AdverseEvent.subject` natively allows `Group`, so an aggregate community side-effect count is representable without contortion, and `suspectEntity.instance` points back at the exact `ICRImmunizationEvent`/`ICRMedicationAdministration` — making "which lot/which drug" traceable. The **immunization arm is meant to specialize WHO `IMMZ.AdverseEvent`** (§18.3) rather than reinvent it; ICR's contribution is the intervention-neutral framing + the `record-origin` seam. Examples: `example-aefi` (mild fever after MCV, causality A, non-serious), `example-mda-adverse-event` (abdominal pain after albendazole, causality C), and `example-aefi-serious` (anaphylaxis after MCV — serious, criteria life-threatening + hospitalization). **v0.20.0 finished C1:** the serious-criteria value set ships (`ICRSeriousCriteriaCS` + the `serious-criteria` extension), and a **ConceptMap** (`icr-aefi-causality-to-immz`, `conceptmaps.fsh`) maps ICR causality A/B/C/D → WHO `IMMZ.AdverseEvent` (target codes provisional pending the published IMMZ IG).
 
 > [!info] WHO SMART alignment (§18) WHO ships `IMMZ.AdverseEvent` (base AdverseEvent, from `IMMZ.D17 Report AEFI`, bound to `IMMZ.D.DE95/DE107/DE115`). `ICRAdverseEvent` is the intervention-neutral generalization; the plan is **derive-from / map-to** `IMMZ.AdverseEvent` for the immunization arm and reuse its AEFI value sets (§18.3) rather than minting parallel vocabulary.
 
@@ -1401,7 +1405,8 @@ _Proposed for a subsequent round (§17.2 P1 — the biggest coverage rework): co
 ### 8.1 ICRAdministrativeCoverage — `MeasureReport`
 | Element | Constraint |
 | --- | --- |
-| `status`, `type`, `reporter`, `group` | MS  |
+| `status`, `type`, `group` | MS  |
+| `reporter` | **1..1 MS** _(v0.20.0, §15 #7-bis)_ — who reported the figure (the supervisor's team/org) |
 | `measure` | MS — the canonical ICR coverage `Measure` this report instances (v0.19.0) |
 | `period` | **1..1 MS** |
 | `group.stratifier` | MS short — disaggregation by the standard axes the Measure declares (`ICRCoverageStratifierVS`: sex, age-band, delivery-strategy, disposition, geography) |
@@ -1411,7 +1416,8 @@ _Proposed for a subsequent round (§17.2 P1 — the biggest coverage rework): co
 ### 8.2 ICRSurveyCoverage — `MeasureReport`
 | Element | Constraint |
 |---|---|
-| `status`, `type`, `reporter`, `group` | MS |
+| `status`, `type`, `group` | MS |
+| `reporter` | **1..1 MS** _(v0.20.0)_ |
 | `measure` | MS — the canonical survey `Measure` (v0.19.0) |
 | `period` | **1..1 MS** |
 | Extensions | `coverageSource` **1..1 MS**, value bound **required** to ICRIndependentCoverageSourceVS (survey \| lqas \| rcm) · `sampleDesign` 0..1 MS (string) · **`denominatorType` 0..1 MS** · **`coverageUnit` 0..1 MS** · `dataLineage` **1..1 MS** |
@@ -1548,7 +1554,7 @@ Annotated: the same conceptual quantity — coverage of the Kambia round — rep
 **Two design notes.** MeasureReport-vs-Observation for coverage is a flagged open question; **MeasureReport won for v0.1** because its numerator/denominator `group.population` structure matches coverage natively. And neither profile yet constrains `measure` (the canonical Measure being reported) — unavoidable until the Measure definitions ship (§14), so v0.1 coverage reports aren't yet comparable by measure identity (the examples use placeholder canonicals under the ICR namespace).
 
 * * *
-## 9. Extensions (`extensions.fsh`) — all 28
+## 9. Extensions (`extensions.fsh`) — all 32
 _FHIR has no native campaign semantics; these extensions carry them on profiled core resources._ (working doc §7)
 
 _Proposed for a subsequent round (§17): the §17 additions imply_ **_new extensions_** _here —_ `activity-type`_,_ `coverage-target`_,_ `dosing-regimen`_,_ `stockpile-source`_,_ `wastage`_/vial-accountability,_ `aefi-causal-type`_, and an at-risk-denominator flag. A_ **_structured (complex)_** `sample-design` _would replace today's free-text string — but per review this is_ **_deferred: v1 keeps the free-text string_** _(enough to record the method narratively). Structuring it (method, #clusters, design-effect/ICC, sample size, evidence-source) makes survey quality machine-readable, but it's heavy and_ **_coupled to the Measure-binding work_** _(§17.2 B2) — both are "make coverage computable," so they ship together, not piecemeal. See §17._
@@ -1563,6 +1569,8 @@ _Proposed for a subsequent round (§17): the §17 additions imply_ **_new extens
 | PlanningDenominator (`planning-denominator`) | CarePlan | Reference(ICRTargetPopulation) | 0..1 |
 | RealtimeVsReconciled (`realtime-vs-reconciled`) | CarePlan, Task, MeasureReport | code, **required** → ICRDataLineageVS; documented default: **absent ⇒ realtime** | CarePlan 0..1 MS, Task 0..1, coverage MeasureReports **1..1 MS** |
 | TaskOrigin (`task-origin`) | Task | code, **required** → ICRTaskOriginVS (pre-planned \| field-registered) | Task **1..1** |
+| **SocialMobilization (`social-mobilization`)** — _v0.20.0_ | CarePlan, Task | complex: `populationInformed` (boolean) + `channel` (CodeableConcept 0..\*, **extensible** → ICRCommunicationChannelVS) | Campaign 0..1 |
+| **WorkloadTarget (`workload-target`)** — _v0.20.0_ | CareTeam | complex: `targetArea` (Ref ICRLocation 0..\*) + `targetPopulation`/`targetHouseholds`/`targetDays` (unsignedInt) — the microplan team-workload | CareTeam 0..1 |
 
 **House-to-house task data** (all Context: Task)
 
@@ -1597,6 +1605,8 @@ _Proposed for a subsequent round (§17): the §17 additions imply_ **_new extens
 | RecordOrigin (`record-origin`) | Immunization, MedicationAdministration, SupplyDelivery, **AdverseEvent** _(+v0.19.0)_ | code, **required** → ICRRecordOriginVS |
 | DirectlyObservedConsumption (`directly-observed-consumption`) | MedicationAdministration | boolean |
 | **DosePoleBand (`dose-pole-band`)** — _v0.19.0_ | MedicationAdministration, ActivityDefinition | CodeableConcept — the measured height band that set the tablet count |
+| **StockAccountability (`stock-accountability`)** — _v0.20.0_ | SupplyDelivery | complex: received/used/remaining/notUsable/returned (Quantity) + concordant (boolean) + vvmStage (integer) — wastage/vial-accountability (C2) |
+| **SeriousCriteria (`serious-criteria`)** — _v0.20.0_ | AdverseEvent | CodeableConcept, **extensible** → ICRSeriousCriteriaVS — why an AE is serious (WHO/CIOMS) |
 | CoverageSource (`coverage-source`) | MeasureReport | code, **required** → ICRCoverageSourceVS |
 | **CoverageUnit (`coverage-unit`)** — _v0.19.0_ | MeasureReport | code, **required** → ICRCoverageUnitVS — people \| implementation-units (geographic coverage); absent ⇒ people |
 | SampleDesign (`sample-design`) | MeasureReport | string — survey/LQAS/RCM method & sample-design detail |
@@ -1632,6 +1642,8 @@ _Proposed for a subsequent round (§17): new/extended terminology — an_ `activ
 | **ICRCoverageUnitCS** _(v0.19.0)_ | `people`, `implementation-units` (2) | —   | coverage-unit ext (**required**) |
 | **ICRAdverseEventCausalityCS** _(v0.19.0)_ | `a-consistent`, `b-indeterminate`, `c-coincidental`, `d-unclassifiable` (4) | —   | ICRAdverseEvent causality (extensible) — WHO/CIOMS A/B/C/D |
 | **ICRTeamRoleCS** _(v0.19.0)_ | `vaccinator`, `cdd`, `supervisor`, `social-mobilizer`, `recorder` (5) | —   | ICRCareTeam.participant.role (extensible) |
+| **ICRCommunicationChannelCS** _(v0.20.0)_ | `radio`, `town-criers`, `community-leaders`, `schools`, `posters`, `megaphone`, `sms`, `other` (8) | —   | social-mobilization channel (extensible) |
+| **ICRSeriousCriteriaCS** _(v0.20.0)_ | `death`, `life-threatening`, `hospitalization`, `disability`, `congenital-anomaly`, `medically-important` (6) | —   | serious-criteria ext (extensible) — WHO/CIOMS |
 
 Value sets: one whole-system VS per code system (except ICRGroupCharacteristicCS, whose single code is fixed directly in the characteristic slice), plus:
 
@@ -1642,6 +1654,10 @@ Value sets: one whole-system VS per code system (except ICRGroupCharacteristicCS
 - **ICRSuppliedItemVS** _(v0.18.0)_ — also all of ATC, the **extensible** binding on `ICRSupplyDelivery.suppliedItem.item` so a **drug receipt** carries the same ATC code as its administration (ESPEN rec 3); GS1 GTIN / text remain valid for physical commodities.
 
 - **ICRExclusionReasonVS** _(v0.18.0)_ — whole-system VS over ICRExclusionReasonCS; the **extensible** binding on the new `exclusion-reason` extension (ESPEN rec 2).
+
+- **ICRAdverseEventSeriousnessVS** _(v0.20.0)_ — reuses the HL7 `adverse-event-seriousness` CodeSystem (serious / non-serious); the **extensible** binding on `ICRAdverseEvent.seriousness` (no new CS minted — a standard one already exists).
+
+- **ICRCommunicationChannelVS / ICRSeriousCriteriaVS** _(v0.20.0)_ — whole-system VS over the two new code systems above.
   
 
 Domain notes a reviewer might verify: `sleeping` is the polio doorstep convention; `community-directed` is CDTI, the NTD-MDA backbone; campaign types are grouped **by delivery model, not disease** (the background page's Type A/B/C table); `integrated` exists because co-delivered campaigns are the norm and component activities carry their own types.
@@ -1705,6 +1721,19 @@ _(The table omits four v0.16/v0.17 population/governance instances — `example-
 | 37 | `example-careteam` | ICRCareTeam | "CDD team 7, Rokupr": vaccinator + CDD + **supervisor** roles; managingOrganization; **oversees-area → supervisory area** (#6) |
 | 38 | `example-supervision-report` | ICRSupervisionReport | ESPEN Form 6 CDD-observation as an Observation: subject → community; performer → supervisor; checklist **components** (DOC observed ✓, height-chart ✓, ineligibles identified ✓, sufficient medicines ✗) |
 | D1–D4 | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage` | Measure _(definition)_ | the canonical Measures the coverage reports instance — numerator/denominator + standard stratifier axes; placeholder CQL (§8, §14 gap closed) |
+
+**v0.20.0 additions** — supervision bundle, CareTeam wiring, adverse-event finish:
+
+| # | Instance | Profile | Key content |
+|---|---|---|---|
+| 39 | `example-aefi-serious` | ICRAdverseEvent | **serious** AEFI: anaphylaxis after MCV; `seriousness` serious; **`serious-criteria`** life-threatening + hospitalization; causality A; recordOrigin campaign |
+| D5 | `icr-mda-supervision-checklist` | Questionnaire _(def)_ | structured supervision checklist — groups: supplies / CDD-observation / stock / mobilization (coded linkIds) |
+| D6 | `icr-aefi-causality-to-immz` | ConceptMap _(def)_ | ICR causality A/B/C/D → WHO `IMMZ.AdverseEvent` (provisional targets) |
+| upd | `example-supervision-report` | ICRSupervisionReport | **now a QuestionnaireResponse** against D5 — coded answers (DOC ✓, height-chart ✓, ineligibles ✓, stock concordant ✗); author = supervisor |
+| upd | `example-careteam` | ICRCareTeam | + **`workload-target`** (area → supervisory area, 3,200 pop / 640 households / 5 days) |
+| upd | `example-albendazole-supply` | ICRSupplyDelivery | + **`stock-accountability`** (received 3,600 / used 3,080 / remaining 500 / not-usable 20 / concordant ✓) |
+| upd | `example-mr-sia-2026` | ICRCampaign | + **`social-mobilization`** (population informed; channels radio + community-leaders) |
+| upd | `example-mopup-task`, `example-mda-community-task` | ICRCampaignTask | **`owner` → `Reference(example-careteam)`** (real join, not a string) |
 
 What the scenario _demonstrates_: the full Location chain with GERS at every level, country → dwelling, plus a delivery site; **operational geography overlaying (not inside) the admin hierarchy**; the generalized delivery-unit pattern at **both scales** (household and community); **competing denominators for the same geography** (WorldPop vs enumeration, 7% apart, one planning flag) alongside the cross-level contrast (district WorldPop vs national census-projection), all computably geography-scoped; the **activity gallery** across campaign types; protocol→activity→campaign wiring; the umbrella/round `partOf` lifecycle (`plan` umbrella, `order` round); **both Task shapes** of the focus polymorphism _and_ **both task origins** (pre-planned session, field-registered mop-up); a Type-B trail end-to-end down to the dose; both non-vaccine delivery types; and the never-merge rule made visible by a 99-vs-76 coverage pair on the same round.
 
@@ -1892,7 +1921,7 @@ These are the gaps ICR already _knew_ about. **§17** adds a second, larger clas
 7. Vector control / entomological surveillance — in ICR's future scope or not (§5.3 boundary note)?
   
 
-7-bis. **Supervisor-as-reporter** — `ICRCareTeam` is now built (v0.19.0, §5.5); for v1 `MeasureReport.reporter` stays **MS** (not a SHALL invariant) — revisit promoting it to required once `Task.owner → Reference(ICRCareTeam)` wiring lands (§4/§5.5).
+7-bis. ~~**Supervisor-as-reporter**~~ — **resolved (v0.20.0):** `Task.owner` now references `ICRCareTeam` and coverage `MeasureReport.reporter` is **required (1..1)** on both coverage profiles, so "who worked this" and "who reported this number" are both queryable (§5.5, §8).
 
 7-ter. `eligible-` **vs** `children-` **count-extension naming (c7)** — the house-to-house present/absent extensions were renamed `eligible-present`/`eligible-absent` (from `children-…`) before the names ossified; get **partner input** on which reads better (`eligible-` is accurate for MDA/ITN where the target isn't children, but `children-` is more familiar to EPI staff) before v1 locks the IDs (§9).
 
@@ -2015,7 +2044,7 @@ The field evidence strongly endorses these; they are listed so the next round kn
 | #   | Proposed addition | Where it lands | Sources |
 | --- | --- | --- | --- |
 | C1  | **Adverse-event** profile + causal-type value set. ✅ **DONE (v0.19.0).** `ICRAdverseEvent` (base AdverseEvent) built **intervention-neutral** — serves AEFI *and* MDA drug pharmacovigilance (the ESPEN #4/#5 side-effect counts); `ICRAdverseEventCausalityCS` (WHO/CIOMS A/B/C/D); `record-origin` now valid on AdverseEvent; `example-aefi` + `example-mda-adverse-event` (§7.5). **Still proposed:** the full serious-criteria value set and the WHO `IMMZ.AdverseEvent` ConceptMap (§18.3). | new profile + CodeSystem/VS | S, R, M, ~Y, **N (ESPEN)** |
-| C2  | **Wastage / vial-accountability** axis (WMF; received/opened/not-usable/returned; VVM) — reusable for vaccines, drugs, ITNs. | extension on ICRSupplyDelivery | S, R, M |
+| C2  | **Wastage / vial-accountability** axis ✅ **DONE (v0.20.0)** — `StockAccountability` extension on `ICRSupplyDelivery` (received/used/remaining/not-usable/returned + concordance + VVM stage), reusable for vaccines, drugs, ITNs. | extension on ICRSupplyDelivery | S, R, M |
 | C3  | **Reconcile** `missed-reason` **/** `noncompliance-reason` with the WHO RCM field lists — add `unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`, `unknown-declined`; split out non-missed dispositions (`already-vaccinated`, `plan-to-go-later`); decide one home for `sick`. **Partly done (v0.18.0):** area-level reasons `medication-shortage`, `insecurity`, `difficult-access`, `not-required` added to ICRMissedReasonCS (ESPEN Form 5, rec 7); and the *present-but-contraindicated* dispositions split out into the new **`exclusion-reason`** axis (rec 2) — which is where `sick`/contraindication should ultimately land (`acute-illness`). Remaining: the WHO RCM demand-side codes and the non-missed dispositions. | extend ICRMissedReasonCS / ICRNoncomplianceReasonCS (§10) | S, R, ~M, ~N |
 ### 17.3 P2 — convergent, more design work
 - `stockpile-source`**,** `dosing-regimen` (also P1 above as A3/A4), `campaign-trigger` (reactive/preventive/outbreak), `campaign-cost` (cost-per-FIP/treated person, CholTool-aligned). _(O, Y; M ~; S/R ~ for cost.)_
@@ -2026,7 +2055,7 @@ The field evidence strongly endorses these; they are listed so the next round kn
   
 - `ICRStructureTreatment` **event profile (c6)** — a first-class delivery event for **structure-applied interventions** (IRS, larviciding, fogging) that don't fit `MedicationAdministration` because they target a _structure/Location_, not a person (§7.4). Base TBD: profiled `Procedure` (with a structure-Location extension) vs a Location-keyed custom event; carries `record-origin`. Interim, the act lives on the IRS **Task** (`for` = structure Location). _(S ~ for vector control; the irs_ `campaign-type` _already exists.)_
   
-- **Supervision / QA** profile; **social-mobilization / demand** axis; **population-vulnerability / equity** taxonomy (characteristic). _(S, R, M; N/G ~ for equity.)_ **Note (c131/c136 + c1):** the supervision/QA piece overlaps the **ICRCareTeam / supervisor** model now drafted at **§5.5** (proposed) — the supervisor is a key delivery actor and often the reporter; fold the two together when drafting. **Scope decision (v0.18.0 → first slice DONE v0.19.0, espen rec 4):** two of ESPEN's six MDA forms (#5 HF-supervision, #6 CDD-observation) are *entirely* supervision/QA + workforce/training + stock + social-mobilization. **v0.19.0 ships the first slice:** ✅ **`ICRCareTeam`** (roles via `ICRTeamRoleCS`, `oversees-area`) and a ✅ **lightweight `ICRSupervisionReport`** (Observation with checklist components) — so the team/supervisor model and a place to record Forms 5/6 findings now exist (§5.5). **Still deferred to the next major round:** a structured **microplan/Team-workload** resource, a **stock-readiness/wastage** axis (C2), a **social-mobilization/demand** axis, and wiring `Task.owner` → `Reference(ICRCareTeam)`. The supervision *findings* in v1 are component-coded Observations / free text, not a fully-structured QA profile.
+- **Supervision / QA** profile; **social-mobilization / demand** axis; **population-vulnerability / equity** taxonomy (characteristic). _(S, R, M; N/G ~ for equity.)_ **Note (c131/c136 + c1):** the supervision/QA piece overlaps the **ICRCareTeam / supervisor** model now drafted at **§5.5** (proposed) — the supervisor is a key delivery actor and often the reporter; fold the two together when drafting. **Scope decision (v0.18.0 → first slice v0.19.0 → bundle DONE v0.20.0, espen rec 4):** two of ESPEN's six MDA forms (#5 HF-supervision, #6 CDD-observation) are *entirely* supervision/QA + workforce/training + stock + social-mobilization. **Now largely committed:** ✅ **`ICRCareTeam`** (roles, `oversees-area`, **`workload-target`** = the team-area-workload microplan unit); ✅ a **structured `ICRSupervisionReport`** (`QuestionnaireResponse` over the `icr-mda-supervision-checklist` Questionnaire — replacing the v0.19 lightweight Observation); ✅ **`StockAccountability`** on `ICRSupplyDelivery` (C2 wastage/stock-readiness); ✅ **`SocialMobilization`** (demand axis) on `ICRCampaign`/Task; ✅ **`Task.owner` → `ICRCareTeam`** + **required `MeasureReport.reporter`**. **Remaining (next round):** a *standalone* microplan resource (vs the CareTeam-carried workload), training/workforce as typed counts (vs checklist items), and richer QA analytics/CQL.
   
 - `outreach` **delivery-strategy** (distinct from mobile/temporary-post); **CDD / community-distributor performer role**; a **Team / CareTeam + microplan-resource** profile (every geo/microplanning source models team-areas + workload — the proposed **§5.5 ICRCareTeam** is the start of this; pair it with a microplan resource). _(R, N, G.)_
   
@@ -2053,7 +2082,7 @@ The field evidence strongly endorses these; they are listed so the next round kn
 | Multi-dose "fully-immunized" measure + round linkage (B3) |     |     |     | ~   | ✓   |     | ~   |     | **P1** |
 | RCM = pass/fail + triggers, not a coverage rate (B4) | ✓   | ✓   | ✓   | ✓   |     |     |     |     | **P1** |
 | Adverse-event profile + causal value set (C1, intervention-neutral) | ✓   | ✓   | ✓   |     |     | ✓   | ~   |     | **✅ done v0.19.0** |
-| Wastage / vial-accountability axis (C2) | ✓   | ✓   | ✓   |     | ~   |     |     |     | **P1** |
+| Wastage / vial-accountability axis (C2) | ✓   | ✓   | ✓   |     | ~   |     |     |     | **✅ done v0.20.0 (stock-accountability ext)** |
 | Reconcile missed-/noncompliance-reason with WHO lists (C3) | ✓   | ✓   | ~   |     |     | ~   |     |     | **P1** |
 | Stockpile-source axis (A3) |     |     |     |     | ✓   |     | ✓   |     | **P2** |
 | Dosing-regimen (A4) |     |     |     |     | ✓   |     | ✓   |     | **P2** |
@@ -2061,12 +2090,12 @@ The field evidence strongly endorses these; they are listed so the next round kn
 | Campaign-cost axis | ~   | ~   |     |     | ✓   |     |     |     | **P2** |
 | Campaign-phase / readiness lifecycle | ✓   | ~   | ✓   |     |     |     |     |     | **P2** |
 | Defaulter / dropout / zero-dose + dropout Measure | ~   | ✓   | ✓   |     |     | ~   |     |     | **P2** |
-| Supervision / QA profile | ✓   | ✓   | ✓   |     |     | ~   |     |     | **◑ first slice v0.19.0 (ICRSupervisionReport); rest P2** |
-| Social-mobilization / demand axis | ✓   | ✓   | ✓   |     |     |     |     |     | **P2** |
+| Supervision / QA profile | ✓   | ✓   | ✓   |     |     | ~   |     |     | **✅ structured v0.20.0 (ICRSupervisionReport = QuestionnaireResponse + Questionnaire)** |
+| Social-mobilization / demand axis | ✓   | ✓   | ✓   |     |     |     |     |     | **✅ done v0.20.0 (social-mobilization ext)** |
 | Population-vulnerability / equity taxonomy | ✓   | ✓   | ✓   |     |     | ~   |     | ✓   | **P2** |
 | `outreach` delivery-strategy |     | ✓   |     |     |     | ~   |     | ~   | **P2** |
 | CDD / community-distributor performer role |     |     |     |     |     | ✓   |     |     | **P2** |
-| Team / CareTeam + microplan-resource profile |     | ~   |     |     |     | ~   |     | ✓   | **◑ ICRCareTeam done v0.19.0; microplan P2** |
+| Team / CareTeam + microplan-resource profile |     | ~   |     |     |     | ~   |     | ✓   | **◑ ICRCareTeam + workload-target done v0.20.0; standalone microplan resource P2** |
 | Survey evidence-source + crude-vs-valid coverage |     |     |     | ✓   |     |     |     |     | **P2** |
 | Population-estimation method + source-raster version/date | ~   | ~   |     |     |     | ~   |     | ✓   | **P3** |
 | Catchment-polygon geometry — adopt shipped GeoJSON ext |     |     |     |     |     |     |     | ✓   | **P3 (cheap)** |

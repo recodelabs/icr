@@ -61,4 +61,7 @@ Description: "A commodity distribution event — ITNs, IRS consumables, vitamin 
 * suppliedItem.item[x] ^short = "Drug commodity → WHO ATC (shares the ICRMedicationAdministration code); physical commodity → GS1 GTIN where applicable, else text"
 * destination MS
 * destination ^short = "Where the commodity went (post, household)"
-* extension contains RecordOrigin named recordOrigin 1..1 MS
+* extension contains
+    RecordOrigin named recordOrigin 1..1 MS and
+    StockAccountability named stockAccountability 0..1 MS
+* extension[stockAccountability] ^short = "Vial/commodity accountability & wastage — received/used/remaining/not-usable/returned, concordance, VVM (v0.20.0)"

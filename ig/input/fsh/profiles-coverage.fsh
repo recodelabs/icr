@@ -15,7 +15,8 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * measure MS
 * measure ^short = "The canonical ICR coverage Measure this report instances — declares the populations and standard stratifiers (§8, v0.19.0)"
 * period 1..1 MS
-* reporter MS
+* reporter 1..1 MS
+* reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — typically the supervisor's ICRCareTeam / their organization"
 * group MS
 * group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — ICRCoverageStratifierVS (v0.19.0)"
 * extension contains
@@ -40,7 +41,8 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * measure MS
 * measure ^short = "The canonical ICR coverage Measure this survey report instances (§8, v0.19.0)"
 * period 1..1 MS
-* reporter MS
+* reporter 1..1 MS
+* reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — typically the supervisor's ICRCareTeam / their organization"
 * group MS
 * group.stratifier ^short = "Disaggregation by the standard axes (ICRCoverageStratifierVS) the Measure declares (v0.19.0)"
 * extension contains

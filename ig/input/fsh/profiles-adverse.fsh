@@ -22,6 +22,7 @@ Description: "An adverse event following a campaign intervention — vaccine (AE
 * subject ^short = "The affected person, or the community/household delivery-unit Group for aggregate pharmacovigilance counts"
 * date MS
 * seriousness MS
+* seriousness from ICRAdverseEventSeriousnessVS (extensible)
 * seriousness ^short = "Serious vs non-serious — the ESPEN minor/serious side-effect distinction"
 * severity MS
 * severity ^short = "mild | moderate | severe"
@@ -32,4 +33,7 @@ Description: "An adverse event following a campaign intervention — vaccine (AE
 * suspectEntity.causality MS
 * suspectEntity.causality.assessment from ICRAdverseEventCausalityVS (extensible)
 * suspectEntity.causality.assessment ^short = "WHO/CIOMS causality category (A/B/C/D); immunization may use IMMZ finer A1–A4 subtypes"
-* extension contains RecordOrigin named recordOrigin 1..1 MS
+* extension contains
+    RecordOrigin named recordOrigin 1..1 MS and
+    SeriousCriteria named seriousCriteria 0..* MS
+* extension[seriousCriteria] ^short = "Why it is serious — WHO/CIOMS criteria (death, life-threatening, hospitalization…); present when seriousness = serious (v0.20.0)"

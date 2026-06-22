@@ -53,7 +53,9 @@ Description: "A specific campaign execution — the keystone resource. Begins li
     CampaignRound named campaignRound 0..1 MS and
     TargetGeography named targetGeography 0..* MS and
     PlanningDenominator named planningDenominator 0..1 MS and
+    SocialMobilization named socialMobilization 0..1 MS and
     RealtimeVsReconciled named dataLineage 0..1 MS
+* extension[socialMobilization] ^short = "Demand generation: population-informed + channels used (v0.20.0)"
 
 Profile: ICRCampaignActivity
 Parent: ActivityDefinition
@@ -93,7 +95,8 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * for MS
 * for ^short = "The target subject/population"
 * owner MS
-* owner ^short = "Assigned team member or team"
+* owner only Reference(ICRCareTeam)
+* owner ^short = "The assigned ICRCareTeam — a real join, not a display string (v0.20.0): 'who worked this' and (via the supervisor) 'who reports this'"
 * location 1..1 MS
 * location only Reference(ICRLocation)
 * location ^short = "Where the work happens: settlement, school, post, or dwelling"

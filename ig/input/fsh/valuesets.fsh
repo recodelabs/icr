@@ -136,6 +136,27 @@ Description: "Campaign CareTeam member roles. Binding: extensible on ICRCareTeam
 * ^experimental = false
 * include codes from system ICRTeamRoleCS
 
+ValueSet: ICRCommunicationChannelVS
+Id: icr-communication-channel
+Title: "ICR Communication Channel"
+Description: "Social-mobilization channels. Binding: extensible on the social-mobilization extension's channel."
+* ^experimental = false
+* include codes from system ICRCommunicationChannelCS
+
+ValueSet: ICRAdverseEventSeriousnessVS
+Id: icr-adverse-event-seriousness
+Title: "ICR Adverse Event Seriousness"
+Description: "Serious vs non-serious. Binding: extensible on ICRAdverseEvent.seriousness — uses the HL7 adverse-event-seriousness code system."
+* ^experimental = false
+* include codes from system $AESeriousness
+
+ValueSet: ICRSeriousCriteriaVS
+Id: icr-serious-criteria
+Title: "ICR Serious-Event Criteria"
+Description: "WHO/CIOMS serious-event criteria. Binding: extensible on the serious-criteria extension."
+* ^experimental = false
+* include codes from system ICRSeriousCriteriaCS
+
 ValueSet: ICRMDAMedicationVS
 Id: icr-mda-medication
 Title: "ICR MDA Medication"

@@ -330,6 +330,9 @@ Usage: #example
 * extension[campaignRound].valuePositiveInt = 1
 * extension[targetGeography].valueReference = Reference(example-district)
 * extension[planningDenominator].valueReference = Reference(example-target-population)
+* extension[socialMobilization].extension[populationInformed].valueBoolean = true
+* extension[socialMobilization].extension[channel][0].valueCodeableConcept = $CommunicationChannel#radio "Radio"
+* extension[socialMobilization].extension[channel][1].valueCodeableConcept = $CommunicationChannel#community-leaders "Community leaders"
 
 // --- The operational units: a Type A site-session and a Type B mop-up visit --
 
@@ -360,6 +363,7 @@ Usage: #example
 * code.text = "House-to-house mop-up: vaccinate children missed at fixed posts"
 * focus = Reference(example-household)
 * for = Reference(example-household)
+* owner = Reference(example-careteam)
 * location = Reference(example-dwelling)
 * executionPeriod.start = "2026-06-24T09:30:00Z"
 * executionPeriod.end = "2026-06-24T09:50:00Z"
@@ -471,6 +475,11 @@ Usage: #example
 * suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
 * destination = Reference(example-settlement)
 * extension[recordOrigin].valueCode = #campaign
+* extension[stockAccountability].extension[received].valueQuantity = 3600 '{tbl}' "tablets"
+* extension[stockAccountability].extension[used].valueQuantity = 3080 '{tbl}' "tablets"
+* extension[stockAccountability].extension[remaining].valueQuantity = 500 '{tbl}' "tablets"
+* extension[stockAccountability].extension[notUsable].valueQuantity = 20 '{tbl}' "tablets"
+* extension[stockAccountability].extension[concordant].valueBoolean = true
 
 Instance: example-mda-community-task
 InstanceOf: ICRCampaignTask
@@ -486,6 +495,7 @@ Usage: #example
 * reasonCode.text = "Soil-transmitted helminthiasis (STH)"
 * focus = Reference(example-community)
 * for = Reference(example-community)
+* owner = Reference(example-careteam)
 * location = Reference(example-settlement)
 * executionPeriod.start = "2026-02-08"
 * executionPeriod.end = "2026-02-12"
@@ -618,6 +628,23 @@ Usage: #example
 * suspectEntity.causality.assessment = $AdverseEventCausality#c-coincidental "C — Coincidental / inconsistent"
 * extension[recordOrigin].valueCode = #campaign
 
+// A SERIOUS AEFI — demonstrates seriousness + the serious-criteria extension.
+Instance: example-aefi-serious
+InstanceOf: ICRAdverseEvent
+Title: "AEFI — anaphylaxis following MCV dose (serious)"
+Usage: #example
+* actuality = #actual
+* event.text = "Anaphylaxis shortly after measles-containing vaccine"
+* subject = Reference(example-child)
+* date = "2026-06-24"
+* seriousness.text = "Serious"
+* severity.text = "severe"
+* suspectEntity.instance = Reference(example-mcv-dose)
+* suspectEntity.causality.assessment = $AdverseEventCausality#a-consistent "A — Consistent causal association"
+* extension[recordOrigin].valueCode = #campaign
+* extension[seriousCriteria][0].valueCodeableConcept = $SeriousCriteria#life-threatening "Life-threatening"
+* extension[seriousCriteria][1].valueCodeableConcept = $SeriousCriteria#hospitalization "Requires/prolongs hospitalization"
+
 // The delivery team and its supervisor (working doc §5.5) — the team that owns the
 // mop-up Task and whose supervisor reports Kambia's coverage.
 Instance: example-careteam
@@ -635,23 +662,36 @@ Usage: #example
 * participant[2].member.display = "Ibrahim Conteh (supervisor)"
 * managingOrganization.display = "Kambia District Health Management Team"
 * extension[overseesArea].valueReference = Reference(example-supervisory-area)
+* extension[workloadTarget].extension[targetArea].valueReference = Reference(example-supervisory-area)
+* extension[workloadTarget].extension[targetPopulation].valueUnsignedInt = 3200
+* extension[workloadTarget].extension[targetHouseholds].valueUnsignedInt = 640
+* extension[workloadTarget].extension[targetDays].valueUnsignedInt = 5
 
-// Lightweight supervision-visit record (ESPEN Form 6 CDD-observation) — checklist
-// items as Observation components; a v1 stopgap pending the full §17.3 profile.
+// Structured supervision-visit record (ESPEN Form 6 CDD-observation) as a
+// QuestionnaireResponse against the icr-mda-supervision-checklist — each answer
+// links to a coded question; author is the supervising CareTeam (v0.20.0).
 Instance: example-supervision-report
 InstanceOf: ICRSupervisionReport
 Title: "Supervision report — CDD observation, Rokupr"
 Usage: #example
-* status = #final
-* code.text = "MDA CDD supervision visit (observation checklist)"
+* questionnaire = "https://fhir.icr.unicef.org/Questionnaire/icr-mda-supervision-checklist"
+* status = #completed
 * subject = Reference(example-community)
-* effectiveDateTime = "2026-02-10"
-* performer.display = "Ibrahim Conteh (supervisor), CDD team 7"
-* component[0].code.text = "Medicine taken in presence of distributor (DOC)"
-* component[0].valueBoolean = true
-* component[1].code.text = "Height chart used correctly"
-* component[1].valueBoolean = true
-* component[2].code.text = "Ineligible individuals correctly identified"
-* component[2].valueBoolean = true
-* component[3].code.text = "Distributors with sufficient medicines"
-* component[3].valueBoolean = false
+* authored = "2026-02-10"
+* author.display = "Ibrahim Conteh (supervisor), CDD team 7"
+* item[0].linkId = "cdd-observation"
+* item[0].text = "CDD observation"
+* item[0].item[0].linkId = "cdd.doc"
+* item[0].item[0].text = "Medicine taken in the presence of the distributor (DOC)"
+* item[0].item[0].answer.valueBoolean = true
+* item[0].item[1].linkId = "cdd.height-chart-used"
+* item[0].item[1].text = "Height chart used correctly"
+* item[0].item[1].answer.valueBoolean = true
+* item[0].item[2].linkId = "cdd.ineligibles"
+* item[0].item[2].text = "Ineligible individuals correctly identified"
+* item[0].item[2].answer.valueBoolean = true
+* item[1].linkId = "stock"
+* item[1].text = "Stock & wastage"
+* item[1].item[0].linkId = "stock.concordant"
+* item[1].item[0].text = "Physical stock matches theoretical stock"
+* item[1].item[0].answer.valueBoolean = false

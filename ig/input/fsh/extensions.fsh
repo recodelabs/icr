@@ -238,3 +238,78 @@ Description: "The supervisory/operational-area Location(s) a CareTeam's supervis
 Context: CareTeam
 * ^experimental = false
 * value[x] only Reference(ICRLocation)
+
+// --- v0.20.0 additions (espen-v4 round) ---------------------------------------
+
+Extension: StockAccountability
+Id: stock-accountability
+Title: "Stock Accountability"
+Description: "Vial/commodity accountability and wastage on a supply event — received / used / remaining / not-usable (expired/damaged) / returned, plus physical-vs-theoretical concordance and (vaccines) the VVM stage. Reusable for vaccines, drugs and ITNs; the ESPEN supervision Form 5 stock block (espen-v4 / §17.2 C2)."
+Context: SupplyDelivery
+* ^experimental = false
+* extension contains
+    received 0..1 MS and
+    used 0..1 MS and
+    remaining 0..1 MS and
+    notUsable 0..1 MS and
+    returned 0..1 MS and
+    concordant 0..1 MS and
+    vvmStage 0..1
+* extension[received].value[x] only Quantity
+* extension[received] ^short = "Quantity received"
+* extension[used].value[x] only Quantity
+* extension[used] ^short = "Quantity used/administered/distributed"
+* extension[remaining].value[x] only Quantity
+* extension[remaining] ^short = "Quantity remaining in stock"
+* extension[notUsable].value[x] only Quantity
+* extension[notUsable] ^short = "Expired / damaged / otherwise not usable"
+* extension[returned].value[x] only Quantity
+* extension[returned] ^short = "Quantity returned to the next level"
+* extension[concordant].value[x] only boolean
+* extension[concordant] ^short = "Does physical stock match the theoretical/recorded stock?"
+* extension[vvmStage].value[x] only integer
+* extension[vvmStage] ^short = "Vaccine vial monitor stage 1–4 (vaccines only)"
+
+Extension: SocialMobilization
+Id: social-mobilization
+Title: "Social Mobilization"
+Description: "Demand-generation for a campaign/round: whether the population was informed beforehand and the channels used (ESPEN supervision Form 5). The demand axis of §17.3 (espen-v4)."
+Context: CarePlan, Task
+* ^experimental = false
+* extension contains
+    populationInformed 0..1 MS and
+    channel 0..* MS
+* extension[populationInformed].value[x] only boolean
+* extension[populationInformed] ^short = "Was the population informed before the campaign?"
+* extension[channel].value[x] only CodeableConcept
+* extension[channel].value[x] from ICRCommunicationChannelVS (extensible)
+* extension[channel] ^short = "Communication channel(s) used (radio, town-criers, community-leaders, schools, posters…)"
+
+Extension: WorkloadTarget
+Id: workload-target
+Title: "Workload Target"
+Description: "The microplan workload assigned to a CareTeam — the area(s) it covers and the expected volume (population / households / days). With oversees-area, makes the CareTeam the typed team-area-workload unit of the microplan (the ICRCampaign with intent=plan is the microplan itself) (espen-v4 / §17.3)."
+Context: CareTeam
+* ^experimental = false
+* extension contains
+    targetArea 0..* MS and
+    targetPopulation 0..1 MS and
+    targetHouseholds 0..1 MS and
+    targetDays 0..1 MS
+* extension[targetArea].value[x] only Reference(ICRLocation)
+* extension[targetArea] ^short = "Area(s) the team is assigned to cover"
+* extension[targetPopulation].value[x] only unsignedInt
+* extension[targetPopulation] ^short = "Expected eligible population to reach"
+* extension[targetHouseholds].value[x] only unsignedInt
+* extension[targetHouseholds] ^short = "Expected households to visit"
+* extension[targetDays].value[x] only unsignedInt
+* extension[targetDays] ^short = "Planned working days"
+
+Extension: SeriousCriteria
+Id: serious-criteria
+Title: "Serious-Event Criteria"
+Description: "Why an adverse event is serious — the WHO/CIOMS criterion/criteria behind AdverseEvent.seriousness = serious (death, life-threatening, hospitalization, disability, congenital anomaly, other medically important) (espen-v4 / §17.2 C1)."
+Context: AdverseEvent
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRSeriousCriteriaVS (extensible)
