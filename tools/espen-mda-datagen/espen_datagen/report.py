@@ -7,7 +7,7 @@ from . import realism as R
 def compute_indicators(campaign) -> dict:
     villages = campaign.villages
     treated_total = sum(v.treated for v in villages)
-    eligible_total = sum(v.eligible for v in villages if v.treated_flag) or 1
+    eligible_total = sum(v.eligible for v in villages) or 1
     nt = {}
     for v in villages:
         for k, n in v.not_treated.items():
@@ -17,17 +17,21 @@ def compute_indicators(campaign) -> dict:
     age = {b: sum(v.age_bands[b] for v in villages) / pop_total for b in R.AGE_BANDS}
     treated_villages = sum(1 for v in villages if v.treated_flag)
     rec, dist = campaign.received, campaign.distributed
+    minor_ae = sum(int(r.values["p_minor_side_effect"])
+                   for r in campaign.records if r.form_key == "4_case_mngnt")
+    serious_ae = sum(int(r.values["p_serious_side_effect"])
+                     for r in campaign.records if r.form_key == "4_case_mngnt")
     return {
         "epi_coverage": treated_total / eligible_total,
-        "geo_coverage": treated_villages / len(villages),
+        "geo_coverage": treated_villages / (len(villages) or 1),
         "age_distribution": age,
         "not_treated_mix": {k: nt[k] / nt_total for k in nt},
         "ivm_stock_balance": {
             "received": rec["ivm"], "distributed": dist["ivm"],
             "remaining": rec["ivm"] - dist["ivm"],
         },
-        "minor_ae_rate": R.MINOR_AE_RATE,
-        "serious_ae_total": 0,
+        "minor_ae_rate": minor_ae / treated_total if treated_total else 0.0,
+        "serious_ae_total": serious_ae,
         "cdd_total": sum(R.cdd_count(v.total_pop) for v in villages),
     }
 
