@@ -1,0 +1,6 @@
+pyxform==4.4.1
+openpyxl==3.1.5
+lxml
+
+[dev]
+pytest>=8

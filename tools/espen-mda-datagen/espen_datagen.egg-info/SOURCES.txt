@@ -1,0 +1,7 @@
+pyproject.toml
+espen_datagen/__init__.py
+espen_datagen.egg-info/PKG-INFO
+espen_datagen.egg-info/SOURCES.txt
+espen_datagen.egg-info/dependency_links.txt
+espen_datagen.egg-info/requires.txt
+espen_datagen.egg-info/top_level.txt
