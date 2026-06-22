@@ -74,9 +74,11 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * characteristic[geography].exclude = false
 * extension contains
     DenominatorSource named denominatorSource 1..1 MS and
+    DenominatorType named denominatorType 0..1 MS and
     EstimateDate named estimateDate 1..1 MS and
     IsPlanningDenominator named isPlanningDenominator 0..1 MS and
     EstimateConfidence named confidence 0..1
+* extension[denominatorType] ^short = "total-population vs at-risk/eligible — lets a campaign retain both a total and an eligible denominator for the same geography (programme vs epidemiological coverage, v0.19.0)"
 
 Profile: ICRLocation
 Parent: Location

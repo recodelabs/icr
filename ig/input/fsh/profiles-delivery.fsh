@@ -43,7 +43,9 @@ Description: "An MDA treatment event: ATC-coded preventive chemotherapy with dir
 * supportingInformation ^short = "e.g. the dose-pole Observation the dosage was derived from"
 * extension contains
     RecordOrigin named recordOrigin 1..1 MS and
-    DirectlyObservedConsumption named directlyObserved 0..1 MS
+    DirectlyObservedConsumption named directlyObserved 0..1 MS and
+    DosePoleBand named dosePoleBand 0..1 MS
+* extension[dosePoleBand] ^short = "The measured dose-pole height band that set the tablet count (machine-readable height-band → dose, v0.19.0)"
 
 Profile: ICRSupplyDelivery
 Parent: SupplyDelivery

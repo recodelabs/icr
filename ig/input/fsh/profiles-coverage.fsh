@@ -12,14 +12,21 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * ^experimental = false
 * status MS
 * type MS
+* measure MS
+* measure ^short = "The canonical ICR coverage Measure this report instances — declares the populations and standard stratifiers (§8, v0.19.0)"
 * period 1..1 MS
 * reporter MS
 * group MS
+* group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — ICRCoverageStratifierVS (v0.19.0)"
 * extension contains
     CoverageSource named coverageSource 1..1 MS and
     DenominatorSource named denominatorSource 0..1 MS and
+    DenominatorType named denominatorType 0..1 MS and
+    CoverageUnit named coverageUnit 0..1 MS and
     RealtimeVsReconciled named dataLineage 1..1 MS
 * extension[coverageSource].valueCode = #administrative
+* extension[denominatorType] ^short = "total-population vs at-risk/eligible (programme vs epidemiological coverage)"
+* extension[coverageUnit] ^short = "people vs implementation-units (geographic coverage); absent ⇒ people"
 * extension[dataLineage] ^short = "Required on coverage reports: preliminary in-campaign figures (realtime) vs final close-out figures (reconciled) must be distinguishable"
 
 Profile: ICRSurveyCoverage
@@ -30,12 +37,17 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * ^experimental = false
 * status MS
 * type MS
+* measure MS
+* measure ^short = "The canonical ICR coverage Measure this survey report instances (§8, v0.19.0)"
 * period 1..1 MS
 * reporter MS
 * group MS
+* group.stratifier ^short = "Disaggregation by the standard axes (ICRCoverageStratifierVS) the Measure declares (v0.19.0)"
 * extension contains
     CoverageSource named coverageSource 1..1 MS and
     SampleDesign named sampleDesign 0..1 MS and
+    DenominatorType named denominatorType 0..1 MS and
+    CoverageUnit named coverageUnit 0..1 MS and
     RealtimeVsReconciled named dataLineage 1..1 MS
 * extension[coverageSource].value[x] from ICRIndependentCoverageSourceVS (required)
 * extension[sampleDesign] ^short = "Method / sample design of the independent measurement (e.g. WHO 30×10 cluster survey)"

@@ -13,8 +13,8 @@ Context: PlanDefinition, ActivityDefinition, Task, Location
 Extension: RecordOrigin
 Id: record-origin
 Title: "Record Origin"
-Description: "Whether this delivery event was recorded during a campaign or a routine facility visit. REQUIRED on all ICR delivery-event profiles — without it, SIA doses contaminate routine coverage analytics (working doc §4.4)."
-Context: Immunization, MedicationAdministration, SupplyDelivery
+Description: "Whether this delivery event was recorded during a campaign or a routine facility visit. REQUIRED on all ICR delivery-event profiles — without it, SIA doses contaminate routine coverage analytics (working doc §4.4). Also valid on AdverseEvent so a campaign-context AEFI/side-effect stays separable from routine pharmacovigilance (v0.19.0)."
+Context: Immunization, MedicationAdministration, SupplyDelivery, AdverseEvent
 * ^experimental = false
 * value[x] only code
 * value[x] from ICRRecordOriginVS (required)
@@ -202,3 +202,39 @@ Context: MeasureReport
 * ^experimental = false
 * value[x] only code
 * value[x] from ICRCoverageSourceVS (required)
+
+// --- v0.19.0 additions (espen-v3 round) ---------------------------------------
+
+Extension: DenominatorType
+Id: denominator-type
+Title: "Denominator Type"
+Description: "Whether the denominator is the TOTAL population or the AT-RISK/eligible subset — programme vs epidemiological coverage in NTD MDA. On a coverage MeasureReport it qualifies the figure; on an ICRTargetPopulation it labels the estimate (espen-v3 / §17.2 B1)."
+Context: MeasureReport, Group
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRDenominatorTypeVS (required)
+
+Extension: CoverageUnit
+Id: coverage-unit
+Title: "Coverage Unit"
+Description: "What the coverage figure counts: people, or implementation units (villages/areas = geographic coverage). Absent ⇒ people (espen-v3 / §17.2 B1)."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRCoverageUnitVS (required)
+
+Extension: DosePoleBand
+Id: dose-pole-band
+Title: "Dose-pole Band"
+Description: "The measured dose-pole height band that determined the tablet count for a PC-NTD treatment — makes the height-band → dose logic machine-readable rather than buried in dosage.text. Bands are drug-specific; coded extensibly (espen-v3 minor-issue)."
+Context: MedicationAdministration, ActivityDefinition
+* ^experimental = false
+* value[x] only CodeableConcept
+
+Extension: OverseesArea
+Id: oversees-area
+Title: "Oversees Area"
+Description: "The supervisory/operational-area Location(s) a CareTeam's supervisor covers — ties the team to operational geography (working doc §5.5, §6.3)."
+Context: CareTeam
+* ^experimental = false
+* value[x] only Reference(ICRLocation)

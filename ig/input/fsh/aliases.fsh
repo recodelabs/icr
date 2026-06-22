@@ -5,6 +5,8 @@ Alias: $ATC = http://www.whocc.no/atc
 Alias: $VaccineCodeVS = http://hl7.org/fhir/ValueSet/vaccine-code
 Alias: $LOINC = http://loinc.org
 Alias: $ConsentScope = http://terminology.hl7.org/CodeSystem/consentscope
+Alias: $MeasureScoring = http://terminology.hl7.org/CodeSystem/measure-scoring
+Alias: $CareTeamCategory = http://loinc.org
 
 // ICR identifier system URIs (provisional — to be confirmed before v1.0)
 Alias: $GERSId = https://fhir.icr.unicef.org/identifiers/overture-gers
@@ -26,3 +28,8 @@ Alias: $GroupKind = https://fhir.icr.unicef.org/CodeSystem/icr-group-kind-cs
 Alias: $TaskOrigin = https://fhir.icr.unicef.org/CodeSystem/icr-task-origin-cs
 Alias: $LocationType = https://fhir.icr.unicef.org/CodeSystem/icr-location-type-cs
 Alias: $GroupCharacteristic = https://fhir.icr.unicef.org/CodeSystem/icr-group-characteristic-cs
+Alias: $CoverageStratifier = https://fhir.icr.unicef.org/CodeSystem/icr-coverage-stratifier-cs
+Alias: $DenominatorType = https://fhir.icr.unicef.org/CodeSystem/icr-denominator-type-cs
+Alias: $CoverageUnit = https://fhir.icr.unicef.org/CodeSystem/icr-coverage-unit-cs
+Alias: $AdverseEventCausality = https://fhir.icr.unicef.org/CodeSystem/icr-adverse-event-causality-cs
+Alias: $TeamRole = https://fhir.icr.unicef.org/CodeSystem/icr-team-role

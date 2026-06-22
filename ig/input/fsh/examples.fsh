@@ -400,6 +400,7 @@ Usage: #example
 * dosage.text = "1 tablet (400 mg), dose-pole band B"
 * extension[recordOrigin].valueCode = #campaign
 * extension[directlyObserved].valueBoolean = true
+* extension[dosePoleBand].valueCodeableConcept.text = "Dose-pole band B (height 110–124 cm → 1 tablet)"
 
 Instance: example-itn-delivery
 InstanceOf: ICRSupplyDelivery
@@ -478,6 +479,11 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "Community-directed MDA: albendazole (STH preventive chemotherapy)"
+// Per-village disease scoping (minor-issue fix): the disease(s) treated in THIS
+// community ride Task.reasonCode (here STH only); a co-endemic village would
+// instantiate additional disease-specific activities/Tasks, so disease varies by
+// village without overloading Campaign.addresses.
+* reasonCode.text = "Soil-transmitted helminthiasis (STH)"
 * focus = Reference(example-community)
 * for = Reference(example-community)
 * location = Reference(example-settlement)
@@ -511,22 +517,141 @@ Usage: #example
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 3200
 * group.measureScore = 91 '%' "%"
-// The drug × sex × age-band cube the ESPEN treatment form collects, carried as
-// MeasureReport stratifiers — the canonical home for a disaggregated aggregate tally.
-* group.stratifier[0].code.text = "Sex"
+// The drug × sex × age-band × disposition cube the ESPEN treatment form collects,
+// carried as MeasureReport stratifiers keyed by the standard ICRCoverageStratifier
+// axes the Measure (icr-mda-treatment-coverage) declares — the canonical, now-
+// conformant home for a disaggregated aggregate tally (v0.19.0).
+* group.stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group.stratifier[0].stratum[0].value.text = "female"
 * group.stratifier[0].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.stratifier[0].stratum[0].population[0].count = 1500
 * group.stratifier[0].stratum[1].value.text = "male"
 * group.stratifier[0].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.stratifier[0].stratum[1].population[0].count = 1400
-* group.stratifier[1].code.text = "Age band"
+* group.stratifier[1].code = $CoverageStratifier#age-band "Age band"
 * group.stratifier[1].stratum[0].value.text = "5–14 years"
 * group.stratifier[1].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.stratifier[1].stratum[0].population[0].count = 1100
 * group.stratifier[1].stratum[1].value.text = "15+ years"
 * group.stratifier[1].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.stratifier[1].stratum[1].population[0].count = 1800
+// Disposition axis (minor-issue fix): the not-treated cube unified into the same
+// report — treated vs the exclusion/missed/refusal dispositions the Task counts.
+* group.stratifier[2].code = $CoverageStratifier#disposition "Disposition"
+* group.stratifier[2].stratum[0].value.text = "treated"
+* group.stratifier[2].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[2].stratum[0].population[0].count = 2900
+* group.stratifier[2].stratum[1].value.text = "not treated — excluded (under-height/pregnant/breastfeeding)"
+* group.stratifier[2].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[2].stratum[1].population[0].count = 180
+* group.stratifier[2].stratum[2].value.text = "not treated — absent"
+* group.stratifier[2].stratum[2].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[2].stratum[2].population[0].count = 95
+* group.stratifier[2].stratum[3].value.text = "not treated — refused"
+* group.stratifier[2].stratum[3].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[2].stratum[3].population[0].count = 25
 * extension[coverageSource].valueCode = #administrative
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[denominatorType].valueCode = #at-risk
+* extension[coverageUnit].valueCode = #people
 * extension[dataLineage].valueCode = #reconciled
+
+// --- v0.19.0: geographic coverage, adverse events, team & supervision ----------
+
+// Geographic (implementation-unit) coverage — the ESPEN supervision-form "villages
+// treated / total" figure, with non-treatment reasons as a disposition stratifier
+// (coverage-unit = implementation-units; §17.2 B1).
+Instance: example-geographic-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Geographic coverage — Kambia MDA (villages treated / total)"
+Usage: #example
+* status = #complete
+* type = #summary
+* measure = "https://fhir.icr.unicef.org/Measure/icr-geographic-coverage"
+* period.start = "2026-02-08"
+* period.end = "2026-02-26"
+* reporter.display = "Kambia District NTD supervisor"
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 188
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 200
+* group.measureScore = 94 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#disposition "Disposition"
+* group.stratifier[0].stratum[0].value.text = "not treated — insecurity"
+* group.stratifier[0].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[0].population[0].count = 7
+* group.stratifier[0].stratum[1].value.text = "not treated — medication shortage"
+* group.stratifier[0].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[1].population[0].count = 5
+* extension[coverageSource].valueCode = #administrative
+* extension[coverageUnit].valueCode = #implementation-units
+* extension[dataLineage].valueCode = #reconciled
+
+// AEFI — the immunization arm (a child with fever after the MCV dose, #22).
+Instance: example-aefi
+InstanceOf: ICRAdverseEvent
+Title: "AEFI — fever following MCV dose"
+Usage: #example
+* actuality = #actual
+* event.text = "Fever within 48h of measles-containing vaccine"
+* subject = Reference(example-child)
+* date = "2026-06-26"
+* seriousness.text = "Non-serious"
+* severity.text = "mild"
+* suspectEntity.instance = Reference(example-mcv-dose)
+* suspectEntity.causality.assessment = $AdverseEventCausality#a-consistent "A — Consistent causal association"
+* extension[recordOrigin].valueCode = #campaign
+
+// MDA pharmacovigilance arm — a drug side-effect after albendazole (#23). Same
+// profile, intervention-neutral: subject is a person, suspect is the MDA event.
+Instance: example-mda-adverse-event
+InstanceOf: ICRAdverseEvent
+Title: "Adverse event — abdominal pain following albendazole"
+Usage: #example
+* actuality = #actual
+* event.text = "Transient abdominal pain following albendazole"
+* subject = Reference(example-child)
+* date = "2026-02-10"
+* seriousness.text = "Non-serious"
+* severity.text = "mild"
+* suspectEntity.instance = Reference(example-albendazole-administration)
+* suspectEntity.causality.assessment = $AdverseEventCausality#c-coincidental "C — Coincidental / inconsistent"
+* extension[recordOrigin].valueCode = #campaign
+
+// The delivery team and its supervisor (working doc §5.5) — the team that owns the
+// mop-up Task and whose supervisor reports Kambia's coverage.
+Instance: example-careteam
+InstanceOf: ICRCareTeam
+Title: "Care team — CDD team 7, Rokupr"
+Usage: #example
+* status = #active
+* name = "CDD team 7, Rokupr"
+* subject = Reference(example-target-population)
+* participant[0].role = $TeamRole#vaccinator "Vaccinator"
+* participant[0].member.display = "Fatmata Sesay (vaccinator)"
+* participant[1].role = $TeamRole#cdd "Community drug distributor (CDD)"
+* participant[1].member.display = "Mariama Bangura (CDD)"
+* participant[2].role = $TeamRole#supervisor "Supervisor"
+* participant[2].member.display = "Ibrahim Conteh (supervisor)"
+* managingOrganization.display = "Kambia District Health Management Team"
+* extension[overseesArea].valueReference = Reference(example-supervisory-area)
+
+// Lightweight supervision-visit record (ESPEN Form 6 CDD-observation) — checklist
+// items as Observation components; a v1 stopgap pending the full §17.3 profile.
+Instance: example-supervision-report
+InstanceOf: ICRSupervisionReport
+Title: "Supervision report — CDD observation, Rokupr"
+Usage: #example
+* status = #final
+* code.text = "MDA CDD supervision visit (observation checklist)"
+* subject = Reference(example-community)
+* effectiveDateTime = "2026-02-10"
+* performer.display = "Ibrahim Conteh (supervisor), CDD team 7"
+* component[0].code.text = "Medicine taken in presence of distributor (DOC)"
+* component[0].valueBoolean = true
+* component[1].code.text = "Height chart used correctly"
+* component[1].valueBoolean = true
+* component[2].code.text = "Ineligible individuals correctly identified"
+* component[2].valueBoolean = true
+* component[3].code.text = "Distributors with sufficient medicines"
+* component[3].valueBoolean = false

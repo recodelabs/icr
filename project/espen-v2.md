@@ -18,6 +18,8 @@ public: true
 ⁠
 
 > [!note] What this document is
+> **Update:** the post-v2 recommendations (§6) were subsequently built in IG v0.19.0 — see **[[espen-v3]]** for the current full form→IG mapping. This doc (v2) is preserved as the snapshot after the v0.18.0 round.
+>
 > A **re-run** of the [[espen]] fit analysis after implementing its §7 recommendations in the IG. Same six **ESPEN NTD-MDA demo forms** (`forms/espen mda/`), same method — map every form/field to the data model and flag matches, tensions, and gaps — but against the IG **as of `ig/` commit `<this round>` / [[ig-info]] v0.18.0**, which committed four of v1's recommendations and reworded three more. The point of v2 is to show **what closed, what's now demonstrated by a concrete example, and what remains open**. Cross-refs: [[espen]] (v1, the original analysis), [[ig-info]] (§n), [[icr-v1]].
 
 * * *

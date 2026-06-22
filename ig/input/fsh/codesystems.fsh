@@ -214,3 +214,58 @@ Description: "The measurement lineage of a coverage figure. Administrative and i
 * #rcm "Rapid convenience monitoring" "Non-probabilistic in-campaign spot checks."
 * #rcm ^designation[0].language = #fr
 * #rcm ^designation[0].value = "Monitorage rapide de convenance"
+
+// --- v0.19.0 additions (espen-v3 round) ---------------------------------------
+
+CodeSystem: ICRCoverageStratifierCS
+Id: icr-coverage-stratifier-cs
+Title: "ICR Coverage Stratifier"
+Description: "The standard disaggregation axes a coverage MeasureReport stratifies by (and a Measure declares). Formalises the v0.18.0 stratified-tally pattern into a named contract (espen-v3 / §17.2 B1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #sex "Sex" "Disaggregation by administrative sex (maps to Patient.gender)."
+* #age-band "Age band" "Disaggregation by the campaign's eligibility age bands (e.g. 5–14, 15+)."
+* #delivery-strategy "Delivery strategy" "Disaggregation by ICRDeliveryStrategy (fixed-post, house-to-house, community-directed…)."
+* #disposition "Disposition" "Disaggregation by treatment disposition (treated vs not-treated reason: absent, refused, excluded)."
+* #geography "Geography" "Disaggregation by the location/admin level the figure covers."
+
+CodeSystem: ICRDenominatorTypeCS
+Id: icr-denominator-type-cs
+Title: "ICR Denominator Type"
+Description: "Whether a coverage figure (or a target-population estimate) is measured against the TOTAL population or the AT-RISK/eligible subset — the difference between programme coverage and epidemiological coverage in NTD MDA (espen-v3 / §17.2 B1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #total-population "Total population" "Denominator is the whole resident population of the area."
+* #at-risk "At-risk / eligible" "Denominator is the eligible/at-risk subset (e.g. the MDA-eligible age band, or the at-risk population for epidemiological coverage)."
+
+CodeSystem: ICRCoverageUnitCS
+Id: icr-coverage-unit-cs
+Title: "ICR Coverage Unit"
+Description: "What is being counted in a coverage figure: people, or implementation units. Implementation-unit coverage is geographic coverage — villages/areas treated ÷ total (ESPEN supervision Form 5; espen-v3 / §17.2 B1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #people "People" "Numerator/denominator count individuals (the usual dose/treatment coverage)."
+* #implementation-units "Implementation units" "Numerator/denominator count areas/units (villages, settlements, operational areas) — geographic coverage."
+
+CodeSystem: ICRAdverseEventCausalityCS
+Id: icr-adverse-event-causality-cs
+Title: "ICR Adverse Event Causality"
+Description: "WHO/CIOMS causality classification of an adverse event following an intervention — intervention-neutral: covers AEFI (immunization) and MDA drug pharmacovigilance alike. Top-level WHO categories; immunization implementations may use WHO IMMZ.AdverseEvent's finer A1–A4 subtypes (espen-v3 / §17.2 C1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #a-consistent "A — Consistent causal association" "Consistent causal association to the intervention (WHO category A; immunization subtypes A1 product, A2 quality defect, A3 administration error, A4 anxiety)."
+* #b-indeterminate "B — Indeterminate" "Indeterminate: conflicting trends or insufficient evidence."
+* #c-coincidental "C — Coincidental / inconsistent" "Inconsistent causal association — coincidental, due to underlying/emerging condition or other exposure."
+* #d-unclassifiable "D — Unclassifiable" "Unclassifiable: insufficient information to assess."
+
+CodeSystem: ICRTeamRoleCS
+Id: icr-team-role
+Title: "ICR Team Role"
+Description: "Role of a member within a campaign CareTeam — the front-line delivery and supervision roles (working doc §5.5). Bound extensible: countries add local roles. Supervisor *level* (national/regional/district/partner/health-facility, ESPEN Forms 5/6) is carried by managingOrganization or the overseen area, not multiplied into roles."
+* ^caseSensitive = true
+* ^experimental = false
+* #vaccinator "Vaccinator" "Administers vaccines at a post or house-to-house."
+* #cdd "Community drug distributor (CDD)" "Community-selected distributor who delivers MDA treatment (CDTI backbone)."
+* #supervisor "Supervisor" "Oversees a team/area and very often files the report; see the oversees-area extension and MeasureReport.reporter."
+* #social-mobilizer "Social mobilizer" "Conducts community sensitisation / demand generation ahead of and during the campaign."
+* #recorder "Recorder" "Captures and reports the data (tally sheets, registers, digital forms)."

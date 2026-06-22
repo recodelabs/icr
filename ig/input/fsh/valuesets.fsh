@@ -101,6 +101,41 @@ Description: "Independently-measured coverage lineages only (survey / LQAS / RCM
 * ICRCoverageSourceCS#lqas
 * ICRCoverageSourceCS#rcm
 
+ValueSet: ICRCoverageStratifierVS
+Id: icr-coverage-stratifier
+Title: "ICR Coverage Stratifier"
+Description: "Standard coverage disaggregation axes. Binding: extensible on the Measure/MeasureReport stratifier code (espen-v3 / §17.2 B1)."
+* ^experimental = false
+* include codes from system ICRCoverageStratifierCS
+
+ValueSet: ICRDenominatorTypeVS
+Id: icr-denominator-type
+Title: "ICR Denominator Type"
+Description: "Total-population vs at-risk/eligible denominator. Binding: required on the denominator-type extension."
+* ^experimental = false
+* include codes from system ICRDenominatorTypeCS
+
+ValueSet: ICRCoverageUnitVS
+Id: icr-coverage-unit
+Title: "ICR Coverage Unit"
+Description: "People vs implementation-units (geographic coverage). Binding: required on the coverage-unit extension."
+* ^experimental = false
+* include codes from system ICRCoverageUnitCS
+
+ValueSet: ICRAdverseEventCausalityVS
+Id: icr-adverse-event-causality
+Title: "ICR Adverse Event Causality"
+Description: "WHO/CIOMS causality categories. Binding: extensible on ICRAdverseEvent causality assessment."
+* ^experimental = false
+* include codes from system ICRAdverseEventCausalityCS
+
+ValueSet: ICRTeamRoleVS
+Id: icr-team-role
+Title: "ICR Team Role"
+Description: "Campaign CareTeam member roles. Binding: extensible on ICRCareTeam.participant.role."
+* ^experimental = false
+* include codes from system ICRTeamRoleCS
+
 ValueSet: ICRMDAMedicationVS
 Id: icr-mda-medication
 Title: "ICR MDA Medication"
