@@ -12,12 +12,11 @@ public: true
 ---
 
 # MDA as a Worked Example — the ESPEN Module on the ICR IG
-<sub>`v0.1.0 · Last modified Jul 2, 2026 at 12:25 AM EDT`</sub>
+`v0.1.0 · Last modified Jul 2, 2026 at 12:25 AM EDT`
 
-{>>New doc: an illustrative walkthrough of the ESPEN MDA module (forms/espen mda/) mapped onto the IG, built from espen.md + espen-v4.md and the shipped IG examples. Written as the basis for the MDA slide deck — §8 sketches a candidate slide sequence. Delete this note once reviewed.<<}{id="c1" by="claude" at="2026-07-02T04:25:30.000Z"}
+⁠
 
-> [!note] What this document is
-> A walkthrough of the **ICR Implementation Guide using one concrete campaign type — NTD mass drug administration (MDA)** — as the example. The source material is the **ESPEN MDA module**: six real ODK data-collection forms (demo, DR Congo–shaped) for a community-directed preventive-chemotherapy round, held in `forms/espen mda/`. For each form we show what it collects and exactly where that data lands in the IG — profile by profile, with diagrams. Every ESPEN data element now has a committed home in the IG; this document illustrates the fit rather than re-arguing it. For the full profile-by-profile reference, see [[icr-ig]]. This document is also the working basis for an illustrative slide deck (§8).
+> [!note] What this document is A walkthrough of the **ICR Implementation Guide using one concrete campaign type — NTD mass drug administration (MDA)** — as the example. The source material is the **ESPEN MDA module**: six real ODK data-collection forms (demo, DR Congo–shaped) for a community-directed preventive-chemotherapy round, held in `forms/espen mda/`. For each form we show what it collects and exactly where that data lands in the IG — profile by profile, with diagrams. Every ESPEN data element now has a committed home in the IG; this document illustrates the fit rather than re-arguing it. For the full profile-by-profile reference, see [[icr-ig]]. This document is also the working basis for an illustrative slide deck (§8).
 
 * * *
 ## 1. The ESPEN MDA module in one page
@@ -25,14 +24,14 @@ public: true
 
 **The module.** ESPEN (WHO-AFRO's Expanded Special Project for Elimination of NTDs) ships a standard set of six ODK XLSForms for an MDA round. Together they cover the round end to end:
 
-| # | Form | What it collects | Collected |
+| #   | Form | What it collects | Collected |
 | --- | --- | --- | --- |
-| 1 | **Location registration** | Admin cascade (state → district → health facility → village), village ID, GPS, population by age band, eligible population | Before the round (microplanning) |
-| 2 | **Medicine receipt** | Which diseases are targeted, which medicines, quantity of each drug received at the village | Round start |
-| 3 | **Treatment reporting** (the core form) | Census method (aggregate vs household-level); treated counts per drug × sex × age band; reasons not treated; campaign day; CDD workforce counts | Daily, during the round |
-| 4 | **Medicine use & case management** | Drug totals distributed; minor/serious side effects; other-NTD case finding (guinea-worm rumours, suspected leishmaniasis/Buruli, LF morbidity) | Round end |
-| 5 | **Supervision — health facility** | Geographic coverage (villages treated / total + reasons); per-drug stock and concordance; training; social mobilisation channels; pharmacovigilance | During the round |
-| 6 | **Supervision — CDD observation** | Direct observation checklist of a CDD at work: supplies, DOC observed, height-chart use, marking, training received | During the round |
+| 1   | **Location registration** | Admin cascade (state → district → health facility → village), village ID, GPS, population by age band, eligible population | Before the round (microplanning) |
+| 2   | **Medicine receipt** | Which diseases are targeted, which medicines, quantity of each drug received at the village | Round start |
+| 3   | **Treatment reporting** (the core form) | Census method (aggregate vs household-level); treated counts per drug × sex × age band; reasons not treated; campaign day; CDD workforce counts | Daily, during the round |
+| 4   | **Medicine use & case management** | Drug totals distributed; minor/serious side effects; other-NTD case finding (guinea-worm rumours, suspected leishmaniasis/Buruli, LF morbidity) | Round end |
+| 5   | **Supervision — health facility** | Geographic coverage (villages treated / total + reasons); per-drug stock and concordance; training; social mobilisation channels; pharmacovigilance | During the round |
+| 6   | **Supervision — CDD observation** | Direct observation checklist of a CDD at work: supplies, DOC observed, height-chart use, marking, training received | During the round |
 
 The vocabulary is the PC-NTD backbone: diseases **LF, oncho, schisto, STH, trachoma**; medicines **ivermectin, albendazole, mebendazole, praziquantel, azithromycin, tetracycline** and their co-administration combinations.
 
@@ -116,9 +115,7 @@ graph LR
 Three routing rules govern the map:
 
 1. **Identity data goes to the identity layer** — places to `ICRLocation`, population estimates to `ICRTargetPopulation`, people (when enumerated) to `ICRPatient` in an `ICRDeliveryUnit`.
-
 2. **Work and results go to the operational layer** — the visit is a Task, drugs received/used are SupplyDelivery, treatments are MedicationAdministrations or a stratified tally, side effects are AdverseEvents.
-
 3. **Anything that is surveillance rather than campaign execution is routed out** — Form 4's case-finding block goes to a surveillance/morbidity store by ingestion rule, not into ICR (§4.4).
 
 * * *
@@ -126,7 +123,7 @@ Three routing rules govern the map:
 ### 4.1 Form 1 — Location registration → `ICRLocation` + `ICRTargetPopulation`
 **What the form collects.** A cascading admin selection (`l_state → l_district → l_health_facility → l_location → l_location_id`), a GPS point (`l_gps`), and the village's population: total (`l_total_pop`), by age band (`1–4`, `5–14`, `15+`), and the computed eligible population (`l_eligible_pop`).
 
-**Where it lands.** Two profiles, cleanly split — the _place_ and the _people counted at that place_:
+**Where it lands.** Two profiles, cleanly split — the *place* and the *people counted at that place*:
 
 | ESPEN field | ICR home |
 | --- | --- |
@@ -154,13 +151,9 @@ graph TD
 **What this illustrates about the IG.**
 
 - The 4-level ESPEN cascade maps directly onto arbitrary `partOf` nesting — the IG's location model needs no fixed level count.
-
 - The village population captured here is a **microcensus denominator with provenance**: `denominator-source = microcensus`, `estimate-date` set, geography linked by reference. When the next round's registration disagrees with this one, both estimates are retained side by side and one carries the planning flag ([[icr-ig]] §5.2).
-
-- The **total vs eligible** pair is exactly the IG's `denominator-type` axis: dividing treatments by 3,480 gives _programme_ coverage; dividing by 3,200 gives _epidemiological_ coverage. ESPEN's form structure forces the distinction the IG codes.
-
+- The **total vs eligible** pair is exactly the IG's `denominator-type` axis: dividing treatments by 3,480 gives *programme* coverage; dividing by 3,200 gives *epidemiological* coverage. ESPEN's form structure forces the distinction the IG codes.
 - ESPEN identifies villages by cascading names plus a numeric ID. The IG's multi-system identity (GERS / P-code / national code) is the **enrichment layer** that gives those villages stable cross-campaign IDs — an ingestion opportunity, not a conflict.
-
 ### 4.2 Form 2 — Medicine receipt → `ICRSupplyDelivery`
 **What the form collects.** The diseases targeted in this village (`p_disease`: LF / oncho / schisto / STH / trachoma — multi-select), the medicines (`p_medicine`, with disease↔medicine consistency constraints), and the quantity of each drug received (`p_total_pzq`, `_alb`, `_ivm`, …).
 
@@ -175,13 +168,11 @@ graph TD
 **What this illustrates about the IG.**
 
 - **One drug code end to end.** The receipt (SupplyDelivery), the administration (MedicationAdministration), and the reconciliation all carry the same ATC code (e.g. albendazole `P02CA03`) — so "how many tablets arrived vs how many treatments happened" is a join, not a spreadsheet exercise.
-
 - **Multi-disease is native.** `p_disease`/`p_medicine` are multi-select because co-administration is the norm (one ivermectin-based CDD round covering LF + oncho ± schisto/STH). The IG carries this as one campaign (`campaign-type = mda`, several `addresses`) with one `ICRCampaignActivity` per drug regimen, and `Task.reasonCode` scoping which disease(s) a given village's work serves.
-
 ### 4.3 Form 3 — Treatment reporting → the heart of the model
 This is the core form, and it contains the single strongest field validation of the IG's design: its **first question**.
 
-**The census-method toggle.** Form 3 opens with `select_one census_method`: **"Household-Level Digitization"** or **"Aggregate Reporting."** That is _literally_ the IG's aggregate-vs-individual rule ([[icr-ig]] §6.3), written into a national data-collection tool before the IG existed. The model and the form agree on the same seam:
+**The census-method toggle.** Form 3 opens with `select_one census_method`: **"Household-Level Digitization"** or **"Aggregate Reporting."** That is *literally* the IG's aggregate-vs-individual rule ([[icr-ig]] §6.3), written into a national data-collection tool before the IG existed. The model and the form agree on the same seam:
 
 ```mermaid
 graph TD
@@ -207,26 +198,62 @@ graph TD
   "resourceType": "MeasureReport",
   "id": "example-mda-treatment-tally",
   "measure": "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage",
-  "group": [{
-    "measureScore": { "value": 0.91 },
-    "population": [
-      { "code": "numerator",   "count": 2900 },
-      { "code": "denominator", "count": 3200 }
-    ],
-    "stratifier": [
-      { "code": "sex",         "stratum": [ "F: 1500", "M: 1400" ] },
-      { "code": "age-band",    "stratum": [ "5–14: 1100", "15+: 1800" ] },
-      { "code": "disposition", "stratum": [ "treated: 2900", "excluded: 180", "absent: 95", "refused: 25" ] }
-    ]
-  }],
+  "group": [
+    {
+      "measureScore": {
+        "value": 0.91
+      },
+      "population": [
+        {
+          "code": "numerator",
+          "count": 2900
+        },
+        {
+          "code": "denominator",
+          "count": 3200
+        }
+      ],
+      "stratifier": [
+        {
+          "code": "sex",
+          "stratum": [
+            "F: 1500",
+            "M: 1400"
+          ]
+        },
+        {
+          "code": "age-band",
+          "stratum": [
+            "5–14: 1100",
+            "15+: 1800"
+          ]
+        },
+        {
+          "code": "disposition",
+          "stratum": [
+            "treated: 2900",
+            "excluded: 180",
+            "absent: 95",
+            "refused: 25"
+          ]
+        }
+      ]
+    }
+  ],
   "extension": [
-    { "url": ".../denominator-type", "valueCode": "at-risk" },
-    { "url": ".../coverage-source",  "valueCode": "administrative" }
+    {
+      "url": ".../denominator-type",
+      "valueCode": "at-risk"
+    },
+    {
+      "url": ".../coverage-source",
+      "valueCode": "administrative"
+    }
   ]
 }
 ```
 
-_(Abbreviated for readability — the shipped `example-mda-treatment-tally` is the full conformant instance.)_
+*(Abbreviated for readability — the shipped* `example-mda-treatment-tally` *is the full conformant instance.)*
 
 **The three reasons-not-treated axes.** ESPEN's "not treated" columns split into three genuinely different situations, and the IG deliberately keeps them apart as three Task extensions:
 
@@ -247,7 +274,6 @@ Merging these would destroy the analytics: an exclusion is a protocol working co
 | `census` group (households, men, women counted on the day) | An in-round `ICRTargetPopulation` refresh (microcensus), or counts on `Task.output` |
 | `p_campaign_day` (Day 1–10) | Event dates (`MedicationAdministration.effective`, `Task.executionPeriod`) — finer-grained than the round number |
 | `cd_who_distributed_*`, `cd_trained`, `cd_recycled` | `ICRCareTeam` participants and the supervision checklist (typed training counts are a noted refinement) |
-
 ### 4.4 Form 4 — Use & case management → reconciliation, safety, and the scope boundary
 **What the form collects.** Total tablets distributed per drug; minor and serious side effects; and a case-finding block: guinea-worm rumours, suspected leishmaniasis, suspected Buruli ulcer, LF lymphoedema/hydrocele.
 
@@ -259,7 +285,7 @@ Merging these would destroy the analytics: an exclusion is a protocol working co
 | `p_minor_side_effect`, `p_serious_side_effect` | `ICRAdverseEvent` — the IG's safety profile is deliberately **intervention-neutral**: the same profile serves vaccine AEFI and MDA drug pharmacovigilance, with `seriousness`, WHO/CIOMS `serious-criteria`, causality A/B/C/D, and `suspectEntity` pointing at the exact administration |
 | Guinea worm / leish / Buruli / LF morbidity | **Not ICR.** Routed to a surveillance/morbidity store by the ingestion pipeline |
 
-**The scope boundary, made operational.** The IG's design stance is _"surveillance — reference, don't model"_: case-based surveillance is the trigger and evaluation context of a campaign, not its execution data. But the real ESPEN form co-bundles surveillance onto the same submission as the treatment tally — the form does not respect the modelling boundary, so **the ingestion transform must**:
+**The scope boundary, made operational.** The IG's design stance is *"surveillance — reference, don't model"*: case-based surveillance is the trigger and evaluation context of a campaign, not its execution data. But the real ESPEN form co-bundles surveillance onto the same submission as the treatment tally — the form does not respect the modelling boundary, so **the ingestion transform must**:
 
 ```mermaid
 graph LR
@@ -273,7 +299,6 @@ graph LR
 ```
 
 This is a general lesson the MDA example teaches: **the model's boundaries live in the pipeline, not the form.** Field forms will always bundle whatever one worker can collect in one visit; the transform decides what is campaign data.
-
 ### 4.5 Form 5 — Supervision (health facility) → coverage, stock, demand, teams
 **What the form collects.** Geographic coverage ("Total number of villages / Number of villages treated / Number of villages not treated" plus reasons: absence of DC, population refusal, **medication shortage, insecurity, difficult access**); per-drug remaining/expired stock and physical-vs-theoretical concordance; distributor training; social mobilisation ("was the population informed?" and channels: **radio, town criers, community leaders, schools, posters**); pharmacovigilance.
 
@@ -289,12 +314,11 @@ This is a general lesson the MDA example teaches: **the model's boundaries live 
 | Social mobilisation | The `social-mobilization` extension on `ICRCampaign` — `populationInformed` + coded `channel`s (`ICRCommunicationChannelCS` carries exactly ESPEN's list) |
 | Pharmacovigilance | `ICRAdverseEvent` (§4.4) |
 
-**What this illustrates about the IG.** Geographic coverage is _the same profile_ as dose coverage with a different declared unit — the IG did not invent a parallel structure for "villages treated," it added one coded axis (`coverage-unit`). And accountability is structural: the supervisor's team is a real resource, `Task.owner` references it, coverage reports **must** name a `reporter`, and the supervisor's zone is a first-class `supervisory-area` Location overlaying the admin tree.
-
+**What this illustrates about the IG.** Geographic coverage is *the same profile* as dose coverage with a different declared unit — the IG did not invent a parallel structure for "villages treated," it added one coded axis (`coverage-unit`). And accountability is structural: the supervisor's team is a real resource, `Task.owner` references it, coverage reports **must** name a `reporter`, and the supervisor's zone is a first-class `supervisory-area` Location overlaying the admin tree.
 ### 4.6 Form 6 — Supervision (CDD observation) → `ICRSupervisionReport`
 **What the form collects.** A direct-observation checklist of a CDD at work: are the MDA supplies present; is consumption directly observed; is the height chart / measuring stick used correctly; are ineligible people identified; are concessions/houses marked; what training did the CDD receive.
 
-**Where it lands.** The whole form is one resource: an **`ICRSupervisionReport`** — a `QuestionnaireResponse` against the shipped `icr-mda-supervision-checklist` `Questionnaire`, whose items are grouped **supplies / CDD observation / stock / social mobilisation** with coded `linkId`s. The subject is the supervised community; the author is the supervisor.
+**Where it lands.** The whole form is one resource: an `ICRSupervisionReport` — a `QuestionnaireResponse` against the shipped `icr-mda-supervision-checklist` `Questionnaire`, whose items are grouped **supplies / CDD observation / stock / social mobilisation** with coded `linkId`s. The subject is the supervised community; the author is the supervisor.
 
 | ESPEN observation | ICR home |
 | --- | --- |
@@ -307,7 +331,7 @@ This is a general lesson the MDA example teaches: **the model's boundaries live 
 
 The scenario's `example-supervision-report`: DOC observed ✓ · height chart ✓ · ineligibles identified ✓ · stock concordant ✗.
 
-**What this illustrates about the IG.** Supervision answers are **structured**, so QA becomes queryable — "what fraction of observed CDDs had concordant stock" is a query, not a document review. And the supervision layer deliberately _corroborates_ the delivery layer: the checklist observes the same practices (DOC, dose pole, marking, exclusions) that the delivery events record, from an independent vantage point.
+**What this illustrates about the IG.** Supervision answers are **structured**, so QA becomes queryable — "what fraction of observed CDDs had concordant stock" is a query, not a document review. And the supervision layer deliberately *corroborates* the delivery layer: the checklist observes the same practices (DOC, dose pole, marking, exclusions) that the delivery events record, from an independent vantage point.
 
 * * *
 ## 5. The campaign spine, MDA-flavoured
@@ -340,7 +364,7 @@ graph TD
     SR -.observes.-> CT
 ```
 
-Reading it top to bottom: the **protocol** defines what a CDTI round _is_, once; the **round** instantiates it with this district's dates and its at-risk denominator; the **team** carries the microplan workload and owns the work; each **community Task** is one village's round, targeting the community Group and carrying the reason tallies; the **events** (supply, administrations, adverse events) hang off it; and the **analytics** (stratified tally, geographic coverage) roll up with a named reporter, corroborated by the supervision record.
+Reading it top to bottom: the **protocol** defines what a CDTI round *is*, once; the **round** instantiates it with this district's dates and its at-risk denominator; the **team** carries the microplan workload and owns the work; each **community Task** is one village's round, targeting the community Group and carrying the reason tallies; the **events** (supply, administrations, adverse events) hang off it; and the **analytics** (stratified tally, geographic coverage) roll up with a named reporter, corroborated by the supervision record.
 
 Two ICR constants the MDA data never shows but always carries: every delivery event is stamped `record-origin = campaign` (the firewall that keeps campaign doses out of routine analytics — the mapper injects it, since an ESPEN form is inherently campaign-context), and each Task carries `task-origin` (ESPEN reports against the pre-loaded village list, so the default is `pre-planned`).
 
@@ -379,7 +403,7 @@ The mapping also runs the other way: ICR elements with no ESPEN counterpart are 
 - **Stable cross-campaign place identity** (GERS / P-codes) — ESPEN villages are names + a local numeric ID; ICR's identity layer is what lets next year's bed-net campaign reuse this year's MDA village register.
 - **The campaign/routine firewall** (`record-origin`) and **the data-stream flag** (`realtime` vs `reconciled`) — constants a form never asks but analytics depend on.
 - **Protocol lineage** (`instantiatesCanonical`) — what makes "all CDTI rounds, any country, comparable" a query.
-- **The never-merged coverage lineages** — ESPEN produces the administrative tally; ICR holds it _alongside_ any later coverage survey without ever blending them.
+- **The never-merged coverage lineages** — ESPEN produces the administrative tally; ICR holds it *alongside* any later coverage survey without ever blending them.
 - **Person-level identity and consent** (`ICRPatient`/`ICRConsent`) — dormant in aggregate mode, ready the moment a programme flips Form 3's toggle to household-level digitization.
 
 * * *
@@ -404,4 +428,4 @@ A suggested skeleton for the illustrative deck this document feeds (one line per
 
 * * *
 
-_This document draws on the ESPEN MDA fit analyses ([[espen]] → [[espen-v4]]) and the IG as committed (see [[icr-ig]] and `ig/input/fsh/`). The ESPEN forms are a demo set; the scenario figures are an illustrative composite._
+*This document draws on the ESPEN MDA fit analyses ([[espen]] → [[espen-v4]]) and the IG as committed (see [[icr-ig]] and* `ig/input/fsh/`*). The ESPEN forms are a demo set; the scenario figures are an illustrative composite.*
