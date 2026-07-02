@@ -5,6 +5,7 @@ tags:
   - icr
   - fhir
   - ig
+public: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
