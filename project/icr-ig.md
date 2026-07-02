@@ -9,12 +9,11 @@ public: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-<sub>`v0.1.0 · Last modified Jul 1, 2026 at 11:53 PM EDT`</sub>
+`v0.1.0 · Last modified Jul 1, 2026 at 11:53 PM EDT`
 
-{>>New doc: consolidates ig-info.md (v0.20.0 — matches the committed IG exactly: 17 profiles / 32 extensions / 20 CS / 23 VS / 4 Measures / 39 examples, verified against ig/input/fsh) and ig-summary.md (structure & tone) into one shareable companion. Internal review threads, version-history tips, and the priority matrices were dropped; proposals and open decisions are condensed into §13. Delete this note once reviewed.<<}{id="c1" by="claude" at="2026-07-02T03:53:45.000Z"}
+⁠
 
-> [!note] What this document is
-> A self-contained technical companion to the draft **ICR (Integrated Campaign Registry) FHIR Implementation Guide**. It is written for readers who know public health campaigns well but are not necessarily FHIR specialists: it explains what a FHIR Implementation Guide is, introduces the ICR IG, walks through its architecture, and then documents every profile (resource), extension, and code system — with worked examples, plain-language property descriptions, key observations, and the design rationale. Where a feature is _proposed but not yet built into the IG_, it is labelled **(proposed)**. Abbreviations are spelled out on first use and collected in the glossary immediately below.
+> [!note] What this document is A self-contained technical companion to the draft **ICR (Integrated Campaign Registry) FHIR Implementation Guide**. It is written for readers who know public health campaigns well but are not necessarily FHIR specialists: it explains what a FHIR Implementation Guide is, introduces the ICR IG, walks through its architecture, and then documents every profile (resource), extension, and code system — with worked examples, plain-language property descriptions, key observations, and the design rationale. Where a feature is *proposed but not yet built into the IG*, it is labelled **(proposed)**. Abbreviations are spelled out on first use and collected in the glossary immediately below.
 
 * * *
 ## Abbreviations & glossary
@@ -119,44 +118,32 @@ This IG uses **FHIR Release 4 (R4, version 4.0.1)** — the most widely deployed
 ### 1.2 What is an Implementation Guide?
 Base FHIR is deliberately generic: `Patient` has to serve a hospital in one country and a vaccination campaign in another, so most fields are optional and loosely typed. An **Implementation Guide (IG)** is how you pin that generality down for one specific use-case. An IG is a published package containing:
 
-- **Profiles** — constrained, specialized versions of base resources (e.g. "a `Location` that _must_ carry an administrative hierarchy and a stable place ID"). A profile says which fields are required, which codes are allowed, and what each field means in context.
-
+- **Profiles** — constrained, specialized versions of base resources (e.g. "a `Location` that *must* carry an administrative hierarchy and a stable place ID"). A profile says which fields are required, which codes are allowed, and what each field means in context.
 - **Extensions** — extra fields the base resource lacks, added in a standard, interoperable way.
-
 - **Terminology** — `CodeSystem`s (lists of codes the IG owns) and `ValueSet`s (the codes allowed in a given field).
-
 - **Examples** — concrete instances that show conformant data.
-
 - **Narrative** — pages that explain the design and how to implement it.
-
 
 An IG turns "FHIR in general" into "FHIR, exactly as this programme needs it" — and makes data from different implementers comparable by construction.
 
 The ICR IG is authored in **FHIR Shorthand (FSH)**, a concise text language for writing profiles, compiled to FHIR JSON by **SUSHI** (the FSH compiler) and rendered to a website by the **IG Publisher**.
 ### 1.3 Introducing the ICR IG
-Health campaigns — measles SIAs, polio rounds, mass drug administration for neglected tropical diseases, bed-net and indoor-spraying campaigns — repeatedly collect the _same_ data (who lives where, how many children are eligible, who was reached, what coverage was achieved) and then archive or lock it in a one-off spreadsheet. The next campaign starts from scratch.
+Health campaigns — measles SIAs, polio rounds, mass drug administration for neglected tropical diseases, bed-net and indoor-spraying campaigns — repeatedly collect the *same* data (who lives where, how many children are eligible, who was reached, what coverage was achieved) and then archive or lock it in a one-off spreadsheet. The next campaign starts from scratch.
 
-The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide that gives campaigns a shared, reusable data model, so each campaign's data _compounds_ instead of being re-collected. Its scope is the half of immunization-and-delivery work that routine-health systems (and WHO's routine-immunization IG) do **not** model:
+The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide that gives campaigns a shared, reusable data model, so each campaign's data *compounds* instead of being re-collected. Its scope is the half of immunization-and-delivery work that routine-health systems (and WHO's routine-immunization IG) do **not** model:
 
 - **Campaign architecture** — a reusable protocol, its executions and rounds, the discrete activities, the operational units of work (Tasks), and the teams that carry them out.
-
 - **Population & geography** — denominators with provenance, the actual household/community groups reached, the registered individuals within them, and a rich location model (administrative hierarchy, operational geography, stable cross-campaign place IDs, GeoJSON boundaries).
-
 - **Delivery events** — the vaccine doses, drug administrations, and commodity deliveries, each tagged campaign-vs-routine so a campaign never contaminates routine analytics, plus the adverse events that follow them.
-
 - **Coverage** — administrative and independently-surveyed coverage as **separate, never-merged lineages** of the same quantity, backed by canonical `Measure` definitions.
-
 
 ICR is intentionally a **complement** to WHO's SMART Immunizations IG, which is routine-only: a campaign dose and a routine dose can sit in the same store, distinguished by a single `record-origin` flag. ICR positions itself as "the campaign SMART-Guidelines IG" (see §13.3).
 
 The IG covers the major campaign delivery models through one common typology used throughout this document:
 
 - **Type A** — fixed or temporary-post sessions (people come to a post).
-
 - **Type B** — house-to-house delivery (workers go door to door).
-
 - **Type C** — community / MDA delivery (a whole community treated, often register-level).
-
 ### 1.4 IG metadata
 The package-level settings that fix the IG's identity (all permanent once published, so several are flagged for UNICEF confirmation before v1.0 — see §13.4):
 
@@ -176,19 +163,19 @@ The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace;
 ### 1.5 What the IG contains
 | Layer | Count | Artifacts |
 | --- | --- | --- |
-| **Profiles — campaign architecture** | 4 | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
-| **Profiles — population & geography** | 4 | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location) |
-| **Profiles — delivery events** | 3 | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
-| **Profiles — coverage** | 2 | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
-| **Profiles — safety & teams** | 3 | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRSupervisionReport (QuestionnaireResponse) |
-| **Profiles — governance** | 1 | ICRConsent (Consent — person-data governance) |
-| **Measures** | 4 | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage` — the canonical definitions the coverage MeasureReports instantiate (§7) |
+| **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
+| **Profiles — population & geography** | 4   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location) |
+| **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
+| **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
+| **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRSupervisionReport (QuestionnaireResponse) |
+| **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
+| **Measures** | 4   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage` — the canonical definitions the coverage MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 1 / 1 | `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 32 | See §10 |
-| **CodeSystems** | 20 | See §9 |
-| **ValueSets** | 23 | One per code system (mostly), plus purpose-built sets (§9) |
-| **Example instances** | 39 | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision (§11) |
-| **Narrative pages** | 2 | `index.md` (home), `background.md` (design rationale & open questions) |
+| **Extensions** | 32  | See §10 |
+| **CodeSystems** | 20  | See §9 |
+| **ValueSets** | 23  | One per code system (mostly), plus purpose-built sets (§9) |
+| **Example instances** | 39  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision (§11) |
+| **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
 File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `conceptmaps.fsh`, `examples.fsh`.
 
@@ -242,91 +229,60 @@ graph TD
 The IG reads most easily as three intersecting layers:
 
 - **The operational layer** — `protocol → campaign → task → delivery events`. This is the chain of work: a reusable template (PlanDefinition), instantiated as a specific campaign/round (CarePlan), broken into units of work (Task), each producing concrete delivery events (doses, drug administrations, deliveries).
-
-- **The identity layer** — `Patient` + `Group` + `Location`. _Who_ a campaign acts on is kept strictly separate from _where_ they live and where work happens. The _who_ is a **Group** — in ICR either a **household** (a Type-B house-to-house unit), a **community** (a Type-C MDA unit), or a **school cohort**, modelled by `ICRDeliveryUnit` and enumerating `ICRPatient` individuals — alongside the denominator cohorts modelled by `ICRTargetPopulation`. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.
-
+- **The identity layer** — `Patient` + `Group` + `Location`. *Who* a campaign acts on is kept strictly separate from *where* they live and where work happens. The *who* is a **Group** — in ICR either a **household** (a Type-B house-to-house unit), a **community** (a Type-C MDA unit), or a **school cohort**, modelled by `ICRDeliveryUnit` and enumerating `ICRPatient` individuals — alongside the denominator cohorts modelled by `ICRTargetPopulation`. Keeping who and where apart means a location's stable identity survives changes in the group living there, and vice versa.
 - **The analytics layer** — `Measure` + `MeasureReport`. The coverage readout sits to the side, computed from the other two, and deliberately keeps administrative and survey coverage as separate records that are never merged.
-
 ### 2.2 The key components
 **Campaign architecture (§4)**
 
-- **ICRCampaignProtocol** _(PlanDefinition)_ — the reusable, versioned **template** for a campaign type. It says what a "measles–rubella SIA" _is_ (products, age bands, activity sequence, coverage goals) once, so every country and round can instantiate the same recipe and stay comparable.
-
-- **ICRCampaign** _(CarePlan)_ — **one specific campaign execution or round.** It is the core resource that represents campaigns. It **starts as a microplan and changes into an execution record** as Tasks complete — the same resource, evolving rather than being replaced. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.
-
-- **ICRCampaignActivity** _(ActivityDefinition)_ — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). Campaigns can contain multiple activities. It carries the clinical/commodity content once; thousands of Tasks instantiate it.
-
-- **ICRCampaignTask** _(Task)_ — **the assignable, trackable unit of work** — one Task per site-session (**Type A** — people come to a fixed or temporary post) or per household/community visit (**Type B** — workers go house to house; **Type C** — a whole community is treated, often register-level, as in MDA). It is where these three delivery models converge into one profile.
-
-- **ICRCareTeam** _(CareTeam)_ — **the delivery team and supervisor model.** Who did the work, who is accountable for a reported number, and (via the workload extension) what area and workload the team was assigned in the microplan. Paired with **ICRSupervisionReport** _(QuestionnaireResponse)_, the structured supervision/QA record.
-
+- **ICRCampaignProtocol** *(PlanDefinition)* — the reusable, versioned **template** for a campaign type. It says what a "measles–rubella SIA" *is* (products, age bands, activity sequence, coverage goals) once, so every country and round can instantiate the same recipe and stay comparable.
+- **ICRCampaign** *(CarePlan)* — **one specific campaign execution or round.** It is the core resource that represents campaigns. It **starts as a microplan and changes into an execution record** as Tasks complete — the same resource, evolving rather than being replaced. National "umbrella" campaigns and their district "rounds" are the same profile, linked by `partOf`.
+- **ICRCampaignActivity** *(ActivityDefinition)* — **a discrete work type** within a campaign ("administer MCV", "distribute ITNs", "spray structures"). Campaigns can contain multiple activities. It carries the clinical/commodity content once; thousands of Tasks instantiate it.
+- **ICRCampaignTask** *(Task)* — **the assignable, trackable unit of work** — one Task per site-session (**Type A** — people come to a fixed or temporary post) or per household/community visit (**Type B** — workers go house to house; **Type C** — a whole community is treated, often register-level, as in MDA). It is where these three delivery models converge into one profile.
+- **ICRCareTeam** *(CareTeam)* — **the delivery team and supervisor model.** Who did the work, who is accountable for a reported number, and (via the workload extension) what area and workload the team was assigned in the microplan. Paired with **ICRSupervisionReport** *(QuestionnaireResponse)*, the structured supervision/QA record.
 
 **Population & geography (§5)**
 
-- **ICRDeliveryUnit** _(Group,_ `actual=true`_)_ — **the actual group of people a Task acts on** — a household, a community, or a school cohort. The _who_.
-
-- **ICRTargetPopulation** _(Group,_ `actual=false`_)_ — **a denominator**: a conceptual cohort with a count, eligibility characteristics, and — critically — source and date provenance. Competing estimates for the same place are kept side by side.
-
-- **ICRLocation** _(Location)_ — **the place model.** The most-customized ICR resource: nested administrative hierarchy, operational geography that sits _beside_ the admin tree, GeoJSON boundaries, and multi-system geospatial identity (GERS, P-codes, national and ISO codes).
-
-- **ICRPatient** _(Patient)_ — **the registered individual**: an enumerated household or community member with a stable cross-campaign identifier, mandatory gender and birth date (they drive eligibility and disaggregation), and a required name. Its governance companion is **ICRConsent** _(Consent)_.
-
+- **ICRDeliveryUnit** *(Group,* `actual=true`*)* — **the actual group of people a Task acts on** — a household, a community, or a school cohort. The *who*.
+- **ICRTargetPopulation** *(Group,* `actual=false`*)* — **a denominator**: a conceptual cohort with a count, eligibility characteristics, and — critically — source and date provenance. Competing estimates for the same place are kept side by side.
+- **ICRLocation** *(Location)* — **the place model.** The most-customized ICR resource: nested administrative hierarchy, operational geography that sits *beside* the admin tree, GeoJSON boundaries, and multi-system geospatial identity (GERS, P-codes, national and ISO codes).
+- **ICRPatient** *(Patient)* — **the registered individual**: an enumerated household or community member with a stable cross-campaign identifier, mandatory gender and birth date (they drive eligibility and disaggregation), and a required name. Its governance companion is **ICRConsent** *(Consent)*.
 
 **Delivery events & safety (§6)**
 
-- **ICRImmunizationEvent** _(Immunization)_ — **a vaccine dose** given in a campaign.
-
-- **ICRMedicationAdministration** _(MedicationAdministration)_ — **a drug administration** (MDA), e.g. albendazole, with the dose-pole and directly-observed-consumption patterns.
-
-- **ICRSupplyDelivery** _(SupplyDelivery)_ — **a commodity delivery** (bed-nets, drug stock), with a stock-accountability extension for wastage and reconciliation.
-
-- **ICRAdverseEvent** _(AdverseEvent)_ — an **intervention-neutral safety event**: it serves AEFI (after a vaccine dose) and MDA pharmacovigilance (after a drug) with one profile.
-
+- **ICRImmunizationEvent** *(Immunization)* — **a vaccine dose** given in a campaign.
+- **ICRMedicationAdministration** *(MedicationAdministration)* — **a drug administration** (MDA), e.g. albendazole, with the dose-pole and directly-observed-consumption patterns.
+- **ICRSupplyDelivery** *(SupplyDelivery)* — **a commodity delivery** (bed-nets, drug stock), with a stock-accountability extension for wastage and reconciliation.
+- **ICRAdverseEvent** *(AdverseEvent)* — an **intervention-neutral safety event**: it serves AEFI (after a vaccine dose) and MDA pharmacovigilance (after a drug) with one profile.
 
 All delivery events (and the adverse event) carry a mandatory `record-origin` flag (campaign vs routine).
 
 **Coverage (§7)**
 
-- **ICRAdministrativeCoverage** _(MeasureReport)_ — coverage computed from the campaign's own tally/delivery data, including the stratified (sex × age band × disposition) treatment cube and implementation-unit ("geographic") coverage.
-
-- **ICRSurveyCoverage** _(MeasureReport)_ — coverage measured independently (cluster survey, LQAS, RCM). Structurally prevented from ever being merged with administrative coverage.
-
+- **ICRAdministrativeCoverage** *(MeasureReport)* — coverage computed from the campaign's own tally/delivery data, including the stratified (sex × age band × disposition) treatment cube and implementation-unit ("geographic") coverage.
+- **ICRSurveyCoverage** *(MeasureReport)* — coverage measured independently (cluster survey, LQAS, RCM). Structurally prevented from ever being merged with administrative coverage.
 - Four canonical **Measure** definitions the reports point at.
-
 ### 2.3 Five cross-cutting principles
 The full statement of the design invariants is in §8; the five to hold in mind while reading:
 
-1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is _the_ discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
-
+1. **Delivery strategy is first-class and coded** — a required binding, mandatory on the protocol (`1..*`) and Task (`1..1`). Strategy is *the* discriminator because it determines which data elements even exist (house-to-house tallies are meaningless at a fixed post).
 2. **Record origin is mandatory on every delivery event** (`1..1`) — it differentiates data captured in a campaign from data captured by routine immunization programmes, so the two are never mixed together when coverage is calculated.
-
-3. **Three views of coverage, kept separate and never blended.** A campaign produces three different counts of "how many people were reached": what was _planned_ (the target population/denominator), what the campaign's _own records_ say it delivered (administrative coverage), and what an _independent survey_ later measured (survey coverage). ICR stores these as three separate records and never merges them — because they routinely disagree in reality. For example, a campaign tally may report 99% coverage while a post-campaign coverage survey reports 76%.
-
-4. **Denominator provenance is recommended on every estimate** — source + date travel with each denominator; competing estimates coexist; one is flagged as _the_ planning denominator.
-
+3. **Three views of coverage, kept separate and never blended.** A campaign produces three different counts of "how many people were reached": what was *planned* (the target population/denominator), what the campaign's *own records* say it delivered (administrative coverage), and what an *independent survey* later measured (survey coverage). ICR stores these as three separate records and never merges them — because they routinely disagree in reality. For example, a campaign tally may report 99% coverage while a post-campaign coverage survey reports 76%.
+4. **Denominator provenance is recommended on every estimate** — source + date travel with each denominator; competing estimates coexist; one is flagged as *the* planning denominator.
 5. **Geospatial identity is multi-system, GERS-preferred** — locations can carry multiple identifiers. Operational geography overlays the admin hierarchy rather than pretending to be it.
-
 ### 2.4 Aliases & identifier systems
 The IG defines aliases (short names) for the external and internal systems it references:
 
 - **External terminologies** — `$CVX` (vaccine codes, `http://hl7.org/fhir/sid/cvx`), `$ATC` (WHO drug codes, `http://www.whocc.no/atc`), `$VaccineCodeVS` (the core FHIR vaccine ValueSet), `$MeasurePopulation` (the HL7 measure-population code system used by coverage examples).
-
-- **ICR geographic-identifier system URIs** _(provisional — to be confirmed before v1.0)_:
-
+- **ICR geographic-identifier system URIs** *(provisional — to be confirmed before v1.0)*:
+  
   - `$GERSId = https://fhir.icr.unicef.org/identifiers/overture-gers` — Overture Maps GERS IDs (the preferred cross-campaign join key).
-
   - `$PCode = https://fhir.icr.unicef.org/identifiers/pcode` — OCHA P-codes.
-
   - `$ISO = urn:iso:std:iso:3166` — ISO 3166-1/-2 country & subdivision codes (admin levels 0–3); WHO-aligned.
-
   - `$NationalAdminCode = https://fhir.icr.unicef.org/identifiers/national-admin-code` — the country/implementer's own admin code, where they don't use a P-code (the per-country base URI is expected to be overridden in implementation).
-
 - **Person-identifier URIs** — `$NationalId` / `$RegistryId`, the sliced systems on `ICRPatient.identifier` (§5.4).
-
 - **ICR code systems** — one alias per CodeSystem (§9).
 
-
-**Why ICR mints geographic-identifier URIs.** GERS IDs and P-codes need _some_ system URI to live under in `Location.identifier`; parking them under the ICR canonical is the pragmatic v0.1 choice. CVX/ATC/GS1 serve as the international product-code backbone, so ICR does not re-invent product codes.
+**Why ICR mints geographic-identifier URIs.** GERS IDs and P-codes need *some* system URI to live under in `Location.identifier`; parking them under the ICR canonical is the pragmatic v0.1 choice. CVX/ATC/GS1 serve as the international product-code backbone, so ICR does not re-invent product codes.
 
 **Two follow-ups.** (1) Whether ICR should mint the GERS/P-code system URIs at all — if Overture or OCHA ever publish official URIs, stored identifiers would need migration (tracked as the Overture engagement, §13.4). (2) **GS1 is named in the narrative but has no alias and no binding** — physical commodities on `ICRSupplyDelivery.suppliedItem.item[x]` use free text pending a GS1 GTIN binding, a known gap (§6.3).
 
@@ -335,30 +291,20 @@ The IG defines aliases (short names) for the external and internal systems it re
 A **profile** is a constrained, specialized version of a base FHIR resource. The base resource (say `Location`) is general-purpose; a profile (say `ICRLocation`) tightens it for one use-case by doing some combination of:
 
 - **Making optional fields required**, or narrowing how many times a field may appear.
-
 - **Restricting which resource types a reference may point at** (e.g. "`partOf` may only reference another `ICRLocation`").
-
 - **Binding a coded field to a specific ValueSet** so only approved codes are used.
-
 - **Fixing a field to a constant value** (e.g. `actual = false` on a denominator group).
-
 - **Adding extensions** — new fields the base resource doesn't have.
 
-
-A profile never invents a new resource type; it _layers rules on top of_ an existing one. That is what keeps profiled data valid plain FHIR: any FHIR system can read an `ICRLocation` as a `Location`, while ICR-aware systems get the extra guarantees.
+A profile never invents a new resource type; it *layers rules on top of* an existing one. That is what keeps profiled data valid plain FHIR: any FHIR system can read an `ICRLocation` as a `Location`, while ICR-aware systems get the extra guarantees.
 
 **Reading the element tables in §4–§7.** Each profile below has a property table styled after the FHIR resource-content tables (e.g. [build.fhir.org/patient.html](https://build.fhir.org/patient.html)). The columns mean:
 
 - **Element** — the field name (dot-notation for nested fields; `extension[name]` for an added field).
-
-- **Flags** — conformance flags. **MS** = _Must Support_: a conformant implementation must be able to populate and process the element. (Other FHIR flags like `?!` _modifier_ don't appear in this IG.)
-
-- **Card.** — _cardinality_, the min..max number of times the element may occur: `1..1` = exactly one (required, single); `0..1` = optional, at most one; `1..*` = at least one (required, repeatable); `0..*` = optional, repeatable.
-
+- **Flags** — conformance flags. **MS** = *Must Support*: a conformant implementation must be able to populate and process the element. (Other FHIR flags like `?!` *modifier* don't appear in this IG.)
+- **Card.** — *cardinality*, the min..max number of times the element may occur: `1..1` = exactly one (required, single); `0..1` = optional, at most one; `1..*` = at least one (required, repeatable); `0..*` = optional, repeatable.
 - **Type / Binding** — the data type or referenced resource, and — for coded fields — the bound ValueSet and its **binding strength**: **required** (must use a code from the set), **extensible** (use one if it fits, otherwise add your own), or a **fixed** value.
-
 - **Description** — what the field carries in ICR.
-
 
 Profiles or elements labelled **(proposed)** are described for completeness but are not yet committed to the IG.
 
@@ -366,7 +312,7 @@ Profiles or elements labelled **(proposed)** are described for completeness but 
 ## 4. Campaign-architecture profiles
 The profiles that model the structure of a campaign: the template (Protocol, §4.1), the execution (Campaign, §4.2), the work types (Activity, §4.3), the units of work (Task, §4.4), the team & supervisor model (CareTeam, §4.5), and the structured supervision record (§4.6).
 ### 4.1 ICRCampaignProtocol — `PlanDefinition`
-**Purpose.** The reusable, version-controlled **template** for a campaign type — what a measles SIA _is_ (products, age bands, activity sequence, coverage goals), instantiated when a new campaign is initiated in a country. A country defines "measles–rubella SIA, 9 months–14 years" once, and every district and round instantiates it, which ensures all data collected using this campaign type is consistent.
+**Purpose.** The reusable, version-controlled **template** for a campaign type — what a measles SIA *is* (products, age bands, activity sequence, coverage goals), instantiated when a new campaign is initiated in a country. A country defines "measles–rubella SIA, 9 months–14 years" once, and every district and round instantiates it, which ensures all data collected using this campaign type is consistent.
 
 **Properties.**
 
@@ -456,30 +402,23 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
 ```
 
 > The `activity-type` extension (`follow-up`) shown here is **proposed** (§13.2), not yet in the IG.
->
+> 
 > **Relevant terminology.**
->
+> 
 > - `type` binds to **ICRCampaignTypeVS** (`vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated`)
->
 > - the strategy extension binds to **ICRDeliveryStrategyVS** (`fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed`).
->
->
+> 
 > Both are required bindings (§9).
 
 **Key observations.**
 
 - **Protocol and execution are separate resources.** The protocol defines a campaign type once; each district or round is a separate execution (§4.2) that links back to it through `instantiatesCanonical` (cardinality `1..1`). Because every execution references the same protocol, "all measles–rubella SIA rounds" is a single query rather than a manual reconciliation. This is what makes campaigns of the same type directly comparable.
-
 - **The protocol carries no geography, dates, or denominator.** Those values are specific to an execution and are held on ICRCampaign (§4.2). The protocol holds only reusable template content: products, delivery strategies, goals, and the activity sequence.
-
 - `type` **is disease-agnostic.** The campaign type (`vaccination-sia`) records the intervention model, not the disease. A measles SIA and a polio SIA are both `vaccination-sia`; they are distinguished by `addresses` (the target Condition) and the vaccine code. Encoding the disease in `type` would duplicate `addresses` and the product code and would enlarge the code list, so disease-specific campaign codes were not added.
-
-- `campaign-type` **and the proposed** `activity-type` **answer two different questions.** `campaign-type` says _what kind of intervention_ this is — for example `vaccination-sia`, `mda`, or `irs`. The proposed `activity-type` would say _why this particular round is being run_ — for example a routine follow-up campaign versus an emergency outbreak-response campaign. They are kept as two separate fields because the same intervention can be run for different reasons: a measles follow-up campaign and a measles outbreak-response campaign are both `vaccination-sia`, but they target different age groups and are reported separately. Keeping the two apart means each can be searched on its own — "all outbreak-response campaigns" or "all measles campaigns" — without one being tangled up in the other. (`activity-type` is proposed, not yet in the IG; see §13.2.)
-
+- `campaign-type` **and the proposed** `activity-type` **answer two different questions.** `campaign-type` says *what kind of intervention* this is — for example `vaccination-sia`, `mda`, or `irs`. The proposed `activity-type` would say *why this particular round is being run* — for example a routine follow-up campaign versus an emergency outbreak-response campaign. They are kept as two separate fields because the same intervention can be run for different reasons: a measles follow-up campaign and a measles outbreak-response campaign are both `vaccination-sia`, but they target different age groups and are reported separately. Keeping the two apart means each can be searched on its own — "all outbreak-response campaigns" or "all measles campaigns" — without one being tangled up in the other. (`activity-type` is proposed, not yet in the IG; see §13.2.)
 - **Age-band eligibility as computable logic (CQL) is deliberately deferred** to a later round; it pairs with the WHO DAK/CQL alignment work (§13.3).
-
 ### 4.2 ICRCampaign — `CarePlan`
-A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the record of the campaign implementation as Tasks complete and coverage accumulates against it — the _same_ resource is used to support each phase of the campaign. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
+A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the record of the campaign implementation as Tasks complete and coverage accumulates against it — the *same* resource is used to support each phase of the campaign. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
 
 **Lifecycle — in plain terms.** One CarePlan, two stages. It starts as the **plan** (a microplan: `intent = plan`, `status = draft`), then becomes the **record of what actually happened** as the work is done — `intent` changes to `order` and `status` moves `draft → active → completed`, with Tasks and coverage accumulating against that same resource.
 
@@ -502,9 +441,9 @@ The campaign umbrella (representing the microplan) stays `intent = plan` — it 
 
 **Who vs where.**
 
-Each CarePlan has exactly **one** `subject` — the _who_, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250").
+Each CarePlan has exactly **one** `subject` — the *who*, an ICRTargetPopulation ("children 9m–14y, Kambia, 48,250").
 
-The _where_ is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round structure, not by overloading one CarePlan.
+The *where* is separate and plural: `targetGeography` is `0..*`. Multiple and nested populations are carried by the umbrella/round structure, not by overloading one CarePlan.
 
 ```mermaid
 graph TD
@@ -525,15 +464,15 @@ graph TD
 | `status` | MS  |     |     | `draft → active → completed`. |
 | `intent` | MS  |     |     | `plan` (microplan) transitioning to `order` (execution) — the lifecycle dial. |
 | `category` | MS  | 1..* | CodeableConcept, **required** → ICRCampaignTypeVS | The campaign type(s), echoing the protocol's `type`. |
-| `subject` | MS  |     | `Reference(ICRTargetPopulation)` only | The single denominator (the _who_) — makes the denominator a first-class participant, not an afterthought. |
+| `subject` | MS  |     | `Reference(ICRTargetPopulation)` only | The single denominator (the *who*) — makes the denominator a first-class participant, not an afterthought. |
 | `period` | MS  | 1..1 | Period | Campaign/round dates. |
 | `careTeam` | MS  |     | `Reference(ICRCareTeam)` | The team(s) running the campaign — see ICRCareTeam (§4.5). |
 | `addresses` | MS  |     | `Reference(Condition)` | The disease/condition targeted (where the specific disease lives, since `type` is disease-agnostic). |
 | `partOf` |     |     | `Reference(ICRCampaign)` only | The umbrella/round pattern — a round is `partOf` its umbrella. |
 | `activity` | MS  |     | `activity.reference` → `Reference(ICRCampaignTask)` only | The round's Tasks. Inline activities (`activity.detail`) are out — the work is always a referenced Task. |
 | `extension[campaignRound]` | MS  | 0..1 | positiveInt | Which round this is. |
-| `extension[targetGeography]` | MS  | 0..* | `Reference(ICRLocation)` | The _where_ — plural, since one campaign may name several geographies. |
-| `extension[planningDenominator]` | MS  | 0..1 | `Reference(ICRTargetPopulation)` | Singles out _which_ estimate is THE denominator coverage is computed against, when several compete. |
+| `extension[targetGeography]` | MS  | 0..* | `Reference(ICRLocation)` | The *where* — plural, since one campaign may name several geographies. |
+| `extension[planningDenominator]` | MS  | 0..1 | `Reference(ICRTargetPopulation)` | Singles out *which* estimate is THE denominator coverage is computed against, when several compete. |
 | `extension[dataLineage]` | MS  | 0..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled (default: absent ⇒ realtime). |
 | `extension[socialMobilization]` | MS  | 0..1 | complex: `populationInformed` (boolean) + `channel` 0..* (CodeableConcept, **extensible** → ICRCommunicationChannelVS) | The demand/mobilization record — was the population informed, and through which channels (radio, town criers, community leaders, …). |
 
@@ -661,7 +600,10 @@ graph TD
     {
       "url": "https://fhir.icr.unicef.org/StructureDefinition/social-mobilization",
       "extension": [
-        { "url": "populationInformed", "valueBoolean": true },
+        {
+          "url": "populationInformed",
+          "valueBoolean": true
+        },
         {
           "url": "channel",
           "valueCodeableConcept": {
@@ -690,31 +632,23 @@ graph TD
 }
 ```
 
-Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §4.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the _who_ — each scope has its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §5.2): different numbers from different sources, _not_ a partition of one total. `partOf` makes the round a child of the umbrella. `activity.reference` lists the round's Tasks (§4.4). The extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (the _where_, `0..*` — here the district Location, §5.3), the `planning-denominator` that singles out _the_ denominator coverage is computed against, and the `social-mobilization` record for the round. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference because the scenario ships no Condition instance; in production it would point at a Condition coded to SNOMED CT / ICD-11, which is where the specific disease lives since campaign `type` is deliberately disease-agnostic.)
+Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §4.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the *who* — each scope has its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §5.2): different numbers from different sources, *not* a partition of one total. `partOf` makes the round a child of the umbrella. `activity.reference` lists the round's Tasks (§4.4). The extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (the *where*, `0..*` — here the district Location, §5.3), the `planning-denominator` that singles out *the* denominator coverage is computed against, and the `social-mobilization` record for the round. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference because the scenario ships no Condition instance; in production it would point at a Condition coded to SNOMED CT / ICD-11, which is where the specific disease lives since campaign `type` is deliberately disease-agnostic.)
 
 **Key observations.**
 
 - **Planned and executed states are the same resource at different lifecycle stages, not two resources.** The microplan and the execution record are one CarePlan at different `intent` values. The planned figure is retained in the `planningDenominator` extension, and the planned-versus-actual audit trail is provided by FHIR resource history and Provenance. ICR does not create a separate planning-snapshot Group.
-
 - **The number of CarePlans is determined by denominators, not administrative boundaries.** Each CarePlan has exactly one `subject` (denominator) but `targetGeography` is `0..*`. Two configurations are valid: (a) one CarePlan covering several geographies, when those areas are planned and reported as a single scope against one shared denominator (`targetGeography` lists all of them, `subject` is the single regional denominator); (b) several round CarePlans under a regional umbrella linked by `partOf`, required whenever each area has its own denominator, period, or coverage rollup. Configuration (b) is the common case. The rule is one CarePlan per denominator/reporting scope, not per administrative area.
-
 - **Nested scopes do not sum to their parent.** A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 WorldPop), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation.
-
 - **The umbrella is itself an ICRCampaign**, so it carries its own national denominator, `category`, and `period`.
-
 - `instantiatesCanonical 1..1` **has a designed relief valve.** If the requirement ever proves too strict for emergency campaigns, the fallback is to relax it to `0..1` with a flag — but the forcing function (every campaign authors a protocol first) is deliberate.
-
 ### 4.3 ICRCampaignActivity — `ActivityDefinition`
 A **CampaignActivity** is a discrete **activity** within a campaign. For example:
 
 - Administer albendazole to children 5–14
-
 - Distribute ITNs to households
-
 - Spray a structure
 
-
-CampaignActivities are instantiated as ICRCampaignTask resources. The Activity defines the intervention — product and dosage — **once**, which is then used to create thousands of identical Tasks under it without repeating clinical content. CampaignActivities are also deliberately **target-agnostic**: they define _what_ to do and at most the _kind_ of eligible target, but never the specific household or community to act on.
+CampaignActivities are instantiated as ICRCampaignTask resources. The Activity defines the intervention — product and dosage — **once**, which is then used to create thousands of identical Tasks under it without repeating clinical content. CampaignActivities are also deliberately **target-agnostic**: they define *what* to do and at most the *kind* of eligible target, but never the specific household or community to act on.
 
 **Properties.**
 
@@ -798,18 +732,13 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 
 **Key observations.**
 
-- **The activity defines the work type; the Task defines the concrete target.** The ActivityDefinition holds the intervention, product, and dosage rule, and at most the _kind_ of eligible target. The specific thing acted on — a particular household, structure, or session — is set on each Task. A "spray" Task targets a structure (Location); a "vaccinate" Task targets a household (Group), with per-person detail recorded in the delivery events.
-
+- **The activity defines the work type; the Task defines the concrete target.** The ActivityDefinition holds the intervention, product, and dosage rule, and at most the *kind* of eligible target. The specific thing acted on — a particular household, structure, or session — is set on each Task. A "spray" Task targets a structure (Location); a "vaccinate" Task targets a household (Group), with per-person detail recorded in the delivery events.
 - `kind` **is fixed to** `#Task`**.** Instantiating an activity produces an ICRCampaignTask, not a ServiceRequest. This fixes how activities are turned into units of work.
-
 - `product[x]` **is Must Support but has no binding.** The delivery-event profiles bind product codes (CVX/ATC); binding the definition side as well, for consistency, is a possible refinement.
-
 - **Delivery-strategy cardinality differs by resource by design** — `0..1` on the activity, `1..*` on the protocol, `1..1` on the Task. The strategy is resolved per Task, so the activity does not need to fix it.
-
 - **Vector-control work (traps, larviciding) is outside the v0.1 programme scope** and has no delivery-event profile; whether entomological surveillance enters ICR's future scope is an open decision (§13.4).
-
 ### 4.4 ICRCampaignTask — `Task`
-The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models **all use one and the same profile**: the _same_ `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
+The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models **all use one and the same profile**: the *same* `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
 **Two reference roles —** `for` **vs** `focus`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for`. `Task.focus` is reserved for **workflow lineage** — the CarePlan, activity, or prior Task this work derives from. This split keeps "what we acted on" and "where this work came from" separate and queryable.
 
@@ -834,7 +763,7 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 | `extension[eligibleAbsent]` |     | 0..1 | unsignedInt | (Type B) eligible people absent. |
 | `extension[missedReason]` |     | 0..* | CodeableConcept, **extensible** → ICRMissedReasonVS | Why eligible people were missed — person-level reasons (absent, sleeping, refusal) and area-level reasons (insecurity, medication shortage, difficult access). |
 | `extension[noncomplianceReason]` |     | 0..* | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS | Why a household/person declined. |
-| `extension[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height/age, pregnant, breastfeeding, acute illness. Deliberately distinct from _missed_ (not reached) and _noncompliance_ (declined). |
+| `extension[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height/age, pregnant, breastfeeding, acute illness. Deliberately distinct from *missed* (not reached) and *noncompliance* (declined). |
 | `extension[fingerMarked]` |     | 0..1 | boolean | (Type B) the in-field "already covered" marker. |
 | `extension[dataLineage]` |     | 0..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled. |
 
@@ -928,28 +857,19 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
 **Key observations.**
 
 - **One Task per visit; person-level detail is held in the delivery events.** A doorstep visit is a single Task, closed when the visit completes. Each person vaccinated is recorded as a separate `Immunization` referenced from `Task.output` and pointing at that person's `Patient`. The Task is the unit of work (one visit); the delivery events are the units of service (the doses given).
-
 - **Person-targeted Tasks are used only for follow-up.** When a specific missed or zero-dose individual must be traced, a new Task is created whose `for` is that person's `Patient`, with `focus` referencing the originating Task that missed them. This is the only intended person-targeted Task. Creating a Task per person for routine delivery would multiply Task volume roughly fivefold without recording anything the Immunization records do not already carry.
-
 - **The count and reason extensions apply mainly to Type B.** Houses visited, eligible present/absent, and finger-marking have no meaning for a fixed-post tally, so they are optional (`0..x`) and populated only for house-to-house work. The reason axes are deliberately three: `missed-reason` (not reached — including area-level causes such as insecurity), `noncompliance-reason` (reached but declined), and `exclusion-reason` (reached and willing but contraindicated).
-
 - `task-origin` **is mandatory because the value is itself a measurement.** A team that finds an unenumerated household creates the delivery unit and its Task in the field (`field-registered`). The count of field-registered Tasks per area measures how incomplete the microplan's enumeration was, which informs the next round's denominators.
-
 - **Delivery events are linked from** `Task.output`**.** R4 `Immunization` has no `basedOn` element, so there is no reverse link from event to Task. The link is therefore directed Task → event (§6).
-
 - **Disaggregation (recommended pattern).** The count extensions are single visit-level totals and must not be multiplied to express age/sex breakdowns. Disaggregate in one of two ways: (a) emit one `Task.output` entry per stratum, each with a coded `type` for the age band/sex; or (b) where person-level data exists, derive the breakdown from the individual Immunization/MedicationAdministration records, which already carry age and sex. The same rule applies to reasons: Task-level `missed-reason`/`noncompliance-reason` aggregate over the whole visit, so per-person reasons require person-level records. For multi-dimensional aggregate tallies (drug × sex × age band), the canonical home is a stratified MeasureReport (§7.3).
-
 
 **Open questions.**
 
 - **Granularity at scale is the IG's #1 open question** — one Task per household across a national campaign is millions of Tasks. The profile keeps both household-level and site-level paths open, and field-registration (lazy Task creation) softens the worst case, but pilots must exercise the household-level path.
-
 - `output.valueReference` is not yet structurally constrained to the three delivery-event profiles (the description says it; the profile doesn't enforce it).
-
 - `task-origin 1..1` means historical imports must assign an origin — acceptable as a forcing function, or add an `unknown` code for back-loaded datasets (§13.4).
-
 ### 4.5 ICRCareTeam — `CareTeam` (the team & supervisor model)
-**Purpose.** The campaign delivery team — the vaccinators / CDDs who do the work and the **supervisor** who oversees them and very often files the report. It answers two operational questions every supervisor asks: _who worked this area_, and _who is accountable for this reported number_. The team is referenced from `ICRCampaign.careTeam` (the campaign roster) and from `Task.owner`/`Task.performer` (the team that worked a given Task), and the supervisor surfaces again as the `MeasureReport.reporter` on rolled-up coverage (§7) and typically owns the **supervisory-area** Location (§5.3). With the workload extension, the CareTeam is also the typed **team–area–workload** unit of the microplan (the ICRCampaign with `intent = plan` being the microplan itself).
+**Purpose.** The campaign delivery team — the vaccinators / CDDs who do the work and the **supervisor** who oversees them and very often files the report. It answers two operational questions every supervisor asks: *who worked this area*, and *who is accountable for this reported number*. The team is referenced from `ICRCampaign.careTeam` (the campaign roster) and from `Task.owner`/`Task.performer` (the team that worked a given Task), and the supervisor surfaces again as the `MeasureReport.reporter` on rolled-up coverage (§7) and typically owns the **supervisory-area** Location (§5.3). With the workload extension, the CareTeam is also the typed **team–area–workload** unit of the microplan (the ICRCampaign with `intent = plan` being the microplan itself).
 
 **Properties.**
 
@@ -1030,11 +950,22 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
       "extension": [
         {
           "url": "targetArea",
-          "valueReference": { "reference": "Location/example-supervisory-area" }
+          "valueReference": {
+            "reference": "Location/example-supervisory-area"
+          }
         },
-        { "url": "targetPopulation", "valueUnsignedInt": 3200 },
-        { "url": "targetHouseholds", "valueUnsignedInt": 640 },
-        { "url": "targetDays", "valueUnsignedInt": 5 }
+        {
+          "url": "targetPopulation",
+          "valueUnsignedInt": 3200
+        },
+        {
+          "url": "targetHouseholds",
+          "valueUnsignedInt": 640
+        },
+        {
+          "url": "targetDays",
+          "valueUnsignedInt": 5
+        }
       ]
     }
   ]
@@ -1046,11 +977,9 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
 **Key observations.**
 
 - **The supervisor role is central.** A supervisor is both a delivery actor and, frequently, the person who reports results. Because `Task.owner` is a real `Reference(ICRCareTeam)`, "who carried out this visit" is a query. With the `oversees-area` extension and `MeasureReport.reporter` required (`1..1`) on both coverage profiles, "who reported this figure, and which area do they cover" is answerable end to end.
-
 - **The CareTeam carries the microplan's workload assignment.** The `workload-target` extension records the team's assigned area and expected population/households/days — the team-level content of a microplan — while the microplan as a whole is the campaign CarePlan at `intent = plan`. A standalone microplan resource remains a candidate for a later round (§13.2).
-
 ### 4.6 ICRSupervisionReport — `QuestionnaireResponse`
-**Purpose.** A **structured supervision-visit / QA record** — the in-campaign checks a supervisor performs at a health facility or while observing a CDD at work (drawn from the ESPEN MDA supervision forms). It is a `QuestionnaireResponse` against the shipped **`icr-mda-supervision-checklist`** `Questionnaire`, so each checklist answer (supplies present, directly-observed consumption observed, height chart used correctly, stock concordance, population informed, channels used, …) links to a defined, coded question rather than free text.
+**Purpose.** A **structured supervision-visit / QA record** — the in-campaign checks a supervisor performs at a health facility or while observing a CDD at work (drawn from the ESPEN MDA supervision forms). It is a `QuestionnaireResponse` against the shipped `icr-mda-supervision-checklist` `Questionnaire`, so each checklist answer (supplies present, directly-observed consumption observed, height chart used correctly, stock concordance, population informed, channels used, …) links to a defined, coded question rather than free text.
 
 **Properties.**
 
@@ -1068,14 +997,13 @@ The shipped Questionnaire groups its items into four sections — **supplies**, 
 **Key observations.**
 
 - **Structured answers make QA analytics possible.** Because every answer is keyed to a coded question, "what fraction of supervised teams had concordant stock" is a query, not a document review. Richer QA analytics and executable checks are a later-round item (§13.2).
-
 - **Supervision, team, stock, and mobilization were designed together.** The supervision checklist, the CareTeam workload, the stock-accountability extension on SupplyDelivery (§6.3), and the social-mobilization extension on the Campaign (§4.2) jointly cover the supervision-form content — one bundle of work, split across the resources where each fact belongs.
 
 * * *
 ## 5. Population & geography profiles
-The profiles that model _who_ a campaign acts on and _where_. The split is deliberate: a denominator (`ICRTargetPopulation`), the actual group reached (`ICRDeliveryUnit`), the registered individual (`ICRPatient`), and the place (`ICRLocation`) are separate first-class resources, with `ICRConsent` as the governance companion.
+The profiles that model *who* a campaign acts on and *where*. The split is deliberate: a denominator (`ICRTargetPopulation`), the actual group reached (`ICRDeliveryUnit`), the registered individual (`ICRPatient`), and the place (`ICRLocation`) are separate first-class resources, with `ICRConsent` as the governance companion.
 ### 5.1 ICRDeliveryUnit — `Group` (household / community / school cohort)
-**Purpose.** The **actual group of people** a campaign Task acts on — a household (Type B house-to-house), a community (Type C MDA), or a school cohort (school-based delivery), distinguished by a required `group-kind` code. The Group is _who_; the Location (via the `group-location` extension) is _where it lives or is based_ — the dwelling for a household, the settlement for a community, the school for a school cohort. (Type A's delivery unit is a site, which is a Location, not a Group.)
+**Purpose.** The **actual group of people** a campaign Task acts on — a household (Type B house-to-house), a community (Type C MDA), or a school cohort (school-based delivery), distinguished by a required `group-kind` code. The Group is *who*; the Location (via the `group-location` extension) is *where it lives or is based* — the dwelling for a household, the settlement for a community, the school for a school cohort. (Type A's delivery unit is a site, which is a Location, not a Group.)
 
 **Properties.**
 
@@ -1151,12 +1079,36 @@ The profiles that model _who_ a campaign acts on and _where_. The split is delib
   },
   "quantity": 6,
   "member": [
-    { "entity": { "reference": "Patient/example-head" } },
-    { "entity": { "reference": "Patient/example-caregiver" } },
-    { "entity": { "reference": "Patient/example-child" } },
-    { "entity": { "reference": "Patient/example-child-2" } },
-    { "entity": { "reference": "Patient/example-child-3" } },
-    { "entity": { "reference": "Patient/example-elder" } }
+    {
+      "entity": {
+        "reference": "Patient/example-head"
+      }
+    },
+    {
+      "entity": {
+        "reference": "Patient/example-caregiver"
+      }
+    },
+    {
+      "entity": {
+        "reference": "Patient/example-child"
+      }
+    },
+    {
+      "entity": {
+        "reference": "Patient/example-child-2"
+      }
+    },
+    {
+      "entity": {
+        "reference": "Patient/example-child-3"
+      }
+    },
+    {
+      "entity": {
+        "reference": "Patient/example-elder"
+      }
+    }
   ],
   "extension": [
     {
@@ -1176,28 +1128,20 @@ Here `quantity` (6) equals the enumerated `member` count because nobody is left 
 **Key observations.**
 
 - **Separating the group (who) from the location (where)** lets the location's identity (its GERS building/place ID) persist when group composition changes, and lets the group persist when it is re-mapped to a new location.
-
 - **One profile serves both scales.** A household and a community are the same modelling pattern at different scales, so ICR uses one profile with a coded `code` (group kind) rather than two near-identical profiles. Setting `code` to `community` and pointing `group-location` at a settlement turns the same structure into a Type-C community delivery unit. The `school-cohort` value shows the list can be extended to other units (for example nomadic groups or camp populations) as countries require.
-
 - **Person registration is a mainline capture mode, not an exception.** In community-and-household campaigns the norm is to enumerate the people in each household: `member` carries those individuals — each an `ICRPatient` (§5.4) — and what each one received is recorded as a person-level delivery event (§6) pointing back at that same person. `quantity` is the fallback for register-level capture (Type-C MDA, or any round that counts without enumerating); the two can coexist.
-
 - **A person need not be tied to a household at all.** Because `member.entity` sits on `ICRDeliveryUnit` regardless of its `code`, a `community`-coded delivery unit can enumerate `ICRPatient`s directly — a person captured at community scale with no household in between (a community-session register, or an MDA round that lists individuals but not dwellings). A person can also be captured with **no Group whatsoever**: `Immunization.patient` / `MedicationAdministration.subject` (§6) point straight at the person, so a standalone person-level event at a community session is fully valid without any delivery-unit roster. The same person is therefore reachable three ways — as a household member, as a community member, or as a bare event subject.
-
-- **Members are individuals, never sub-Groups.** The community↔household relationship stays on the _where_ axis — a household's dwelling is `partOf` the community's settlement Location (§5.3) — not modelled by nesting a household Group inside a community Group.
-
+- **Members are individuals, never sub-Groups.** The community↔household relationship stays on the *where* axis — a household's dwelling is `partOf` the community's settlement Location (§5.3) — not modelled by nesting a household Group inside a community Group.
 - `member.entity` **is restricted to** `Patient` **(profiled as ICRPatient).** FHIR has four person-shaped resources: **Patient** (anyone who may receive a service — despite the name, a healthy child receiving a measles dose or a household member receiving a net is a Patient, and `Immunization.patient` accepts only a Patient); **RelatedPerson** (a caregiver defined relative to a patient); **Practitioner** (workers such as CDDs and vaccinators); and **Person** (an identity-linkage resource — plumbing, not a care-record subject). Every enumerated household member is therefore a Patient. Restricting `member.entity` excludes Practitioner and Device; it does not exclude RelatedPerson, which R4 `Group.member` never permitted in the first place (RelatedPerson membership was added in R5).
-
 - `group-location` **records residence, not the service point.** Where service occurred is recorded on `Task.location` and on the delivery event's own `location`. If a household travels to a village distribution centre, its dwelling here is unchanged and the Task records the centre. The extension is deliberately named `group-location`, not `household-location`: the same extension carries a community's settlement point and a school cohort's school.
-
 
 **Household identity across campaigns.** A household is identified by its **members**, anchored on the head of household (keyed by `Patient.id` or, better, a national ID); **cross-campaign linkage** joins on the **dwelling**, whose `group-location` Location carries a stable GERS building ID that survives household composition changes. `Group.identifier` stays light — identity is reconstructed from head-of-household + dwelling GERS ID.
 
 **Open questions.**
 
-- Whether to _also_ stamp a convenience `Group.identifier` for direct lookup; and how to handle head-of-household churn (death, migration, household splits) — the dwelling GERS ID is the durable join key, the person ID disambiguates which household at that structure.
-
+- Whether to *also* stamp a convenience `Group.identifier` for direct lookup; and how to handle head-of-household churn (death, migration, household splits) — the dwelling GERS ID is the durable join key, the person ID disambiguates which household at that structure.
 ### 5.2 ICRTargetPopulation — `Group`
-**Purpose.** A target-population **denominator**: a conceptual cohort (`actual=false`) with a count, eligibility characteristics, and — critically — **source and date provenance**. The denominator is the dominant error source in campaign analytics, so multiple competing estimates per geography are _retained side by side_, each with its own provenance, and exactly one is flagged as the planning denominator. Coverage is then computed against a declared choice while the disagreement stays visible instead of being silently overwritten.
+**Purpose.** A target-population **denominator**: a conceptual cohort (`actual=false`) with a count, eligibility characteristics, and — critically — **source and date provenance**. The denominator is the dominant error source in campaign analytics, so multiple competing estimates per geography are *retained side by side*, each with its own provenance, and exactly one is flagged as the planning denominator. Coverage is then computed against a declared choice while the disagreement stays visible instead of being silently overwritten.
 
 **Worked example — competing denominators.** Three instances tell the whole story:
 
@@ -1218,10 +1162,10 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 | `quantity` | MS  | 1..1 | unsignedInt | The denominator count. |
 | `characteristic` | MS  |     |     | Age band, sex, eligibility rule, geography; **sliced** (pattern on `code`, open). |
 | `characteristic[geography]` | MS  | 0..1 | `value[x]` → `Reference(ICRLocation)`; `code` fixed `geography`; `exclude` fixed `false` | The **computable** scope link — joins the estimate to the location hierarchy at any level (country → district → ward → settlement → operational area) by reference, not by parsing a name. |
-| `extension[denominatorSource]` | MS  | 0..1 | CodeableConcept, **extensible** → ICRDenominatorSourceVS | _Recommended, not required_ — the population is often unknown up front. |
+| `extension[denominatorSource]` | MS  | 0..1 | CodeableConcept, **extensible** → ICRDenominatorSourceVS | *Recommended, not required* — the population is often unknown up front. |
 | `extension[denominatorType]` | MS  | 0..1 | code, **required** → ICRDenominatorTypeVS (`total-population` \| `at-risk`) | Whether this denominator is the total population or the at-risk/eligible population — the axis that separates programme coverage from epidemiological coverage (§7). |
 | `extension[estimateDate]` | MS  | 0..1 | date | When the estimate was made (denominators decay fast — 1–3 years). |
-| `extension[isPlanningDenominator]` | MS  | 0..1 | boolean | Flags _the_ one coverage is computed against. |
+| `extension[isPlanningDenominator]` | MS  | 0..1 | boolean | Flags *the* one coverage is computed against. |
 | `extension[confidence]` |     | 0..1 | string | Free-text confidence (coded confidence is a later refinement). |
 
 **Example.** `example-target-population` — Kambia's WorldPop planning denominator (the `subject` of the round CarePlan):
@@ -1278,31 +1222,25 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 }
 ```
 
-`actual: false` is what makes this a _conceptual cohort_ — a denominator, not a roster of real people (contrast `example-household`, `actual: true`). The competing `example-target-population-enumerated` (51,800, microcensus, planning flag false) is the identical shape with a different source, date, and flag — which is exactly how the same geography keeps two disagreeing estimates side by side.
+`actual: false` is what makes this a *conceptual cohort* — a denominator, not a roster of real people (contrast `example-household`, `actual: true`). The competing `example-target-population-enumerated` (51,800, microcensus, planning flag false) is the identical shape with a different source, date, and flag — which is exactly how the same geography keeps two disagreeing estimates side by side.
 
 **Relevant terminology.** `denominator-source` binds extensible to **ICRDenominatorSourceVS** (`census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `other`).
 
 **Key observations.**
 
 - **Provenance is recommended but not mandatory ("denominator-first" design).** Source and date are `0..1 MS` rather than required, because the population is frequently unknown when planning begins and a mandatory source/date would block legitimate early or placeholder estimates. Where a real number is recorded, its source and date should be recorded with it.
-
 - **Competing estimates are retained side by side.** Census-projection, WorldPop, and microcensus estimates are kept as sibling Groups, each with its own provenance, rather than overwriting one with the next.
-
 - **Scope is computable at any level.** The geography characteristic references an ICRLocation, so an estimate can be joined to the location hierarchy at country, district, ward, settlement, or operational-area level. Target populations are not household-bound; that is the role of ICRDeliveryUnit.
-
 - **"Exactly one planning denominator" is not enforced by the profile.** Nothing prevents two same-geography Groups from both setting, or neither setting, the planning flag. The actual enforcement point is the single-valued `ICRCampaign.planningDenominator` extension (`0..1`), which is where coverage reads its denominator from.
-
 
 **Open questions.**
 
-- The geography characteristic is `0..1` so estimates _can_ exist without a Location; tightening to `1..1` once pilots confirm every estimate has one is tracked (§13.4).
-
+- The geography characteristic is `0..1` so estimates *can* exist without a Location; tightening to `1..1` once pilots confirm every estimate has one is tracked (§13.4).
 - Proposed for a later round: a **population-estimation-method + source-raster version/date** (so two `worldpop` estimates become distinguishable) and a **population-vulnerability / equity** characteristic (§13.2).
-
 ### 5.3 ICRLocation — `Location`
-**Purpose.** The **place model**, and the most-customized ICR resource: a nested administrative hierarchy (6+ levels), operational geography that is _linkable-but-distinct_ from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes, national codes, and ISO codes as coequal aliases.
+**Purpose.** The **place model**, and the most-customized ICR resource: a nested administrative hierarchy (6+ levels), operational geography that is *linkable-but-distinct* from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes, national codes, and ISO codes as coequal aliases.
 
-**The two hierarchies, side by side.** The `partOf` chain is the **administrative** tree (one parent each). Operational geography sits **beside** it — its own Location, _not_ in the `partOf` chain, linked to the admin unit(s) it covers by `overlays-admin-unit`:
+**The two hierarchies, side by side.** The `partOf` chain is the **administrative** tree (one parent each). Operational geography sits **beside** it — its own Location, *not* in the `partOf` chain, linked to the admin unit(s) it covers by `overlays-admin-unit`:
 
 ```mermaid
 graph TD
@@ -1317,7 +1255,7 @@ graph TD
     Z -. "overlays-admin-unit" .-> D
 ```
 
-Every box on the solid `partOf` layer is an ICRLocation pointing at its single parent (country → district → settlement → dwelling, 6+ levels in practice). "Kambia supervision zone 2" is the operational exception: it hangs off _nothing_ in the admin tree (a supervisory zone can straddle several wards, so it can't have one parent) and instead carries a dashed `overlays-admin-unit` pointer at the district it reports into — which is what makes operational geography linkable-but-distinct.
+Every box on the solid `partOf` layer is an ICRLocation pointing at its single parent (country → district → settlement → dwelling, 6+ levels in practice). "Kambia supervision zone 2" is the operational exception: it hangs off *nothing* in the admin tree (a supervisory zone can straddle several wards, so it can't have one parent) and instead carries a dashed `overlays-admin-unit` pointer at the district it reports into — which is what makes operational geography linkable-but-distinct.
 
 **Properties.**
 
@@ -1329,11 +1267,11 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 | `physicalType` | MS  |     | CodeableConcept | The base-FHIR shape — jurisdiction / site / building / household. |
 | `type` | MS  |     | CodeableConcept, **extensible** → ICRLocationTypeVS | The ICR location type — `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area`. |
 | `position` | MS  |     |     | GPS point (longitude/latitude). |
-| `identifier` | MS  |     | **sliced by** `system` (open): `gers` 0..1 MS, `pcode` 0..1 MS, `national` 0..*, `iso` 0..* | Multi-system identity. **≥1 identifier required when** `type = admin-unit` (invariant `icr-loc-admin-id`). |
+| `identifier` | MS  |     | **sliced by** `system` (open): `gers` 0..1 MS, `pcode` 0..1 MS, `national` 0..*,* `iso` *0..* | Multi-system identity. **≥1 identifier required when** `type = admin-unit` (invariant `icr-loc-admin-id`). |
 | `extension[boundary]` (`location-boundary-geojson`) | MS  | 0..1 | Attachment, `contentType` fixed `application/geo+json` | The GeoJSON geometry (a Polygon/MultiPolygon shape, or a Point). |
 | `extension[deliveryStrategy]` |     | 0..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | For delivery sites (fixed/temporary posts): the strategy this site serves. |
-| `extension[overlaysAdminUnit]` |     | 0..* | `Reference(ICRLocation)` | For operational geography: the admin unit(s) this area overlays. _1..* required when_ `type ∈ {supervisory-area, operational-area}` (invariant `icr-loc-overlays`). |
-| `extension[locationAncestors]` _(proposed)_ |     | 0..* | complex: per-level `adm0…adm3+` code + `Reference(ICRLocation)` | A **server-maintained** denormalized admin breadcrumb of the `partOf` chain, for fast hierarchy filtering without deep recursion. Proposed; not yet in the IG. |
+| `extension[overlaysAdminUnit]` |     | 0..* | `Reference(ICRLocation)` | For operational geography: the admin unit(s) this area overlays. *1..* required when* `type ∈ {supervisory-area, operational-area}` (invariant `icr-loc-overlays`). |
+| `extension[locationAncestors]` *(proposed)* |     | 0..* | complex: per-level `adm0…adm3+` code + `Reference(ICRLocation)` | A **server-maintained** denormalized admin breadcrumb of the `partOf` chain, for fast hierarchy filtering without deep recursion. Proposed; not yet in the IG. |
 
 **Example.** `example-district` — Kambia District, showing multi-system identity, the admin hierarchy, a GPS point, and a GeoJSON boundary:
 
@@ -1399,29 +1337,21 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 
 **Relevant terminology.** `type` binds extensible to **ICRLocationTypeVS** (9 codes incl. `supervisory-area`, `operational-area`). Identifier slices use the geographic-identifier systems from §2.4 (`$GERSId`, `$PCode`, `$NationalAdminCode`, `$ISO`).
 
-**Two geometry carriers.** `position` carries the simple **GPS point** (base FHIR). The `location-boundary-geojson` extension carries the **shape** — a GeoJSON Attachment whose payload is a Polygon/MultiPolygon (here referenced by `url`; it may instead be inline base64). Because GeoJSON itself supports `Point`, the _same_ extension can carry a richer coordinate where wanted.
+**Two geometry carriers.** `position` carries the simple **GPS point** (base FHIR). The `location-boundary-geojson` extension carries the **shape** — a GeoJSON Attachment whose payload is a Polygon/MultiPolygon (here referenced by `url`; it may instead be inline base64). Because GeoJSON itself supports `Point`, the *same* extension can carry a richer coordinate where wanted.
 
 **Key observations.**
 
 - **Open identifier slicing lets multiple code systems coexist.** National location codes can sit alongside GERS, P-codes, and ISO codes without profile changes. The `gers` and `pcode` slices are `0..1`, so a newly created, unmatched location can exist with national codes only and have its GERS ID back-filled later. The enrichment lifecycle is: create the location unmatched, run asynchronous conflation, then backfill the GERS ID with versioning and Provenance.
-
 - **Administrative units must carry an identifier, but not necessarily a P-code.** Many countries key on a national administrative code, so the `national` and `iso` slices are first-class. The `icr-loc-admin-id` invariant requires at least one identifier (from any system) when `type = admin-unit`, so an administrative area cannot exist without a stable code. Sites and dwellings are not constrained this way.
-
 - **Operational geography is modelled separately from administrative geography.** `partOf` can express only one hierarchy. A supervisory or operational area is therefore typed with a location-type code and linked to the administrative units it covers through `overlays-admin-unit`. The `icr-loc-overlays` invariant requires such an area to overlay at least one admin unit, because an area that overlays nothing cannot be rolled up to any reporting unit. This operational-overlay mechanism is considered the IG's strongest design feature.
-
 - **The Overture release version should be recorded alongside a GERS ID.** GERS IDs are stable, but Overture republishes the registry on a release cadence and an ID's attributes can change between releases. A stored ID is only reproducible if the release it was matched against is also recorded.
-
 - **Scope is limited to identity, hierarchy, and geometry.** Contextual metadata that could be attached to a Location is kept out of the IG and linked externally by location ID: accessibility/travel-time (derived and volatile), georegistry match-status (redundant, since presence or absence of a GERS ID already conveys match state), endemicity, and the NTD TAS/impact-survey gate (programme state on its own cadence). The one candidate for inclusion is a `structure`/footprint location-type, which is identity rather than context.
-
 
 **Open questions.**
 
 - **Overture release version has no field yet.** FHIR `Identifier` has no version slot. Awaiting the Overture-side answer (does Overture expose a stable release identifier, and in what form) before modelling it — likely a small `gers-release` extension on the identifier slice.
-
 - `partOf` **strict-typing vs widening.** `partOf` is constrained to `Reference(ICRLocation)`, keeping the whole ancestor chain ICR-conformant and queryable — but you can't hang an ICR site directly under a Location from a pre-existing national MFL/GIS without re-profiling that parent. The relief valve is to widen `partOf` to `Reference(Location)`. Open design decision, paired with the national/ISO admin-code work.
-
 - The proposed `location-ancestors` breadcrumb extension is not yet in the IG.
-
 ### 5.4 ICRPatient — `Patient` (the registered individual)
 **Purpose.** The individual person — enumerated within a delivery unit (household or community), or captured standalone as the subject of a person-level event with no Group at all. The chain is plain FHIR: a household (or community) is an `ICRDeliveryUnit` (Group, §5.1); its `member`s are `ICRPatient`s; each dose or treatment given to a member is an `Immunization`/`MedicationAdministration` whose `patient`/`subject` is that `ICRPatient` (§6). The profile is aligned to WHO's `IMMZ.Patient`, so a registered campaign member is a WHO-conformant immunization subject carrying a stable cross-campaign identity.
 
@@ -1438,7 +1368,7 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 | `telecom` | MS  |     | ContactPoint | Phone where collected. (The WHO profile requires it; ICR relaxes to MS because campaign rosters frequently lack it.) |
 | `address` | MS  |     | Address | Administrative residence text. The **geospatial** home is the household's `group-location` Location (§5.1), not duplicated here. |
 
-The profile matches WHO `IMMZ.Patient` (identifier / name / phone / gender / birthDate / address); ICR's two deliberate moves are **relaxing phone to MS** and **slicing `identifier`** to name the cross-campaign join key explicitly.
+The profile matches WHO `IMMZ.Patient` (identifier / name / phone / gender / birthDate / address); ICR's two deliberate moves are **relaxing phone to MS** and **slicing** `identifier` to name the cross-campaign join key explicitly.
 
 **Example.** `example-child` — the same member the household enumerates (§5.1) and the same person the MCV dose points at (§6.1):
 
@@ -1458,7 +1388,12 @@ The profile matches WHO `IMMZ.Patient` (identifier / name / phone / gender / bir
     }
   ],
   "name": [
-    { "family": "Kamara", "given": ["Aminata"] }
+    {
+      "family": "Kamara",
+      "given": [
+        "Aminata"
+      ]
+    }
   ],
   "gender": "female",
   "birthDate": "2023-04-12"
@@ -1469,14 +1404,10 @@ The **sliced** `identifier` is the cross-round join key (a national ID here; a `
 
 **Key observations.**
 
-- **Identity & deduplication — the person half of record linkage.** A person is rejoined across rounds by **(a)** their own stable identifier (`nationalId` preferred, `registryId` fallback) and **(b)** the household they were enumerated in — and the household, in turn, is rejoined by its dwelling GERS ID (§5.1), anchored on the head of household. So "same child, next round" resolves as _same person identifier_, or failing that _same structure + same head-of-household + plausible age/sex_. ICR does not mint a new person-ID scheme where a national ID exists.
-
-- **Only** `member.entity` **is typed to ICRPatient.** Registration — listing the named individuals in a Group — is where the profile is enforced. The event and Task targets are deliberately left permissive, because a Task acts on a **Group**, not a person: `ICRCampaignTask.for` accepts a delivery-unit Group (the norm) or a site Location, with a `Patient` only for person-targeted follow-up; `ICRMedicationAdministration.subject` accepts a Patient **or** an ICRDeliveryUnit Group (register-level MDA); and `ICRImmunizationEvent.patient` is base Patient (a vaccine dose is intrinsically per-person — group-level vaccine capture is an aggregate count on `Task.output`, §6.3). The person _is_ an ICRPatient by virtue of being a registered member, but the campaign's units of work and group-level events are never forced down to an individual.
-
-- **Caregiver ≠ ICRPatient.** The mother/guardian who answers the door is a `RelatedPerson` _in relation to_ the child, matching WHO `IMMZ.Caregiver` — not an ICRPatient. ICRPatient is reserved for the person who actually receives the intervention.
-
+- **Identity & deduplication — the person half of record linkage.** A person is rejoined across rounds by **(a)** their own stable identifier (`nationalId` preferred, `registryId` fallback) and **(b)** the household they were enumerated in — and the household, in turn, is rejoined by its dwelling GERS ID (§5.1), anchored on the head of household. So "same child, next round" resolves as *same person identifier*, or failing that *same structure + same head-of-household + plausible age/sex*. ICR does not mint a new person-ID scheme where a national ID exists.
+- **Only** `member.entity` **is typed to ICRPatient.** Registration — listing the named individuals in a Group — is where the profile is enforced. The event and Task targets are deliberately left permissive, because a Task acts on a **Group**, not a person: `ICRCampaignTask.for` accepts a delivery-unit Group (the norm) or a site Location, with a `Patient` only for person-targeted follow-up; `ICRMedicationAdministration.subject` accepts a Patient **or** an ICRDeliveryUnit Group (register-level MDA); and `ICRImmunizationEvent.patient` is base Patient (a vaccine dose is intrinsically per-person — group-level vaccine capture is an aggregate count on `Task.output`, §6.3). The person *is* an ICRPatient by virtue of being a registered member, but the campaign's units of work and group-level events are never forced down to an individual.
+- **Caregiver ≠ ICRPatient.** The mother/guardian who answers the door is a `RelatedPerson` *in relation to* the child, matching WHO `IMMZ.Caregiver` — not an ICRPatient. ICRPatient is reserved for the person who actually receives the intervention.
 - **Privacy is load-bearing.** A shared, reusable registry holding named individuals with birth dates is a governance obligation, not just a modelling one. Storing the name maximises cross-round matchability at the cost of being the heaviest personally-identifiable data to share; the trade-off was made deliberately, and cross-border sharing is governed by the `ICRConsent` profile (§5.5). The deeper governance decisions (what minimal data crosses a border, retention, withdrawal) remain open (§13.4).
-
 ### 5.5 ICRConsent — `Consent` (person-data governance)
 **Purpose.** The permission governing collection, storage, and — critically — **cross-border sharing** of a registered individual's campaign data. Because the registry holds named people (§5.4), a privacy/sharing permission travels with the person. This profile is a **v1 starting point**, not the final governance model.
 
@@ -1502,9 +1433,7 @@ The **sliced** `identifier` is the cross-round join key (a national ID here; a `
 The concrete record of what was delivered — a vaccine dose, a drug administration, a commodity delivery — and the safety events that follow. The delivery events share two design constants:
 
 - **A mandatory** `record-origin` **extension (**`1..1 MS`**)** — campaign vs routine, so campaign doses are never mixed into routine coverage analytics.
-
 - **The Task→event link runs through** `Task.output`, because R4 `Immunization` has no `basedOn` element to point back with — the reverse link doesn't exist in the base resource.
-
 ### 6.1 ICRImmunizationEvent — `Immunization`
 **Purpose.** A **vaccine dose** administered in a campaign — the person-level delivery event that closes the chain `protocol → activity → campaign → task → dose → patient`.
 
@@ -1579,21 +1508,16 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 **Key observations.**
 
 - `patient` **is how person-level data is captured without creating extra Tasks.** Each dose references the individual (the same `example-child` who is the household's `member`). The pattern is one Task per visit and one Immunization per person, linked from `Task.output`.
-
 - `lotNumber` **and** `manufacturer` **are Must Support for lot accountability**, which supports tracing doses to a lot in the event of an adverse event following immunization (AEFI, §6.5).
-
 - `protocolApplied` **connects campaign doses to routine series logic.** Its dose-number element is needed both by multi-dose campaigns (such as OCV) and by integration with routine immunization records.
-
 
 **Open questions.**
 
 - WHO alignment: make `ICRImmunizationEvent` compatible-with / derived-from WHO's `IMMZ.Immunization` so a campaign dose is a valid WHO immunization carrying `record-origin`; one divergence to reconcile is WHO's own `IMMZ.Z` vaccine codes vs CVX (bridge via ConceptMap) (§13.3).
-
 ### 6.2 ICRMedicationAdministration — `MedicationAdministration`
 **Purpose.** A **drug administration** in a mass drug administration (MDA) — albendazole, ivermectin, etc. — with the two distinctly-MDA patterns: dose derived from a **dose-pole height band**, and **directly-observed consumption** (the supervised-swallow protocol).
 
-> [!note] What a dose pole is
-> In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
+> [!note] What a dose pole is In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
 
 **Properties.**
 
@@ -1666,16 +1590,12 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 **Key observations.**
 
 - `subject` **may be an** `ICRDeliveryUnit` **Group, not only a Patient.** This supports register-level MDA capture where individuals are not enumerated, and is the drug-side application of the aggregate-versus-individual rule (§6.3).
-
 - **The dose-pole pattern is specific to MDA.** The dose is derived from a height-band Observation referenced through `supportingInformation`, with the band itself recorded on `dose-pole-band` — together they record how the tablet count was determined.
-
 - `directly-observed-consumption` **records the supervision protocol** that distinguishes a drug handed out from a drug observed being swallowed, which affects treatment-coverage validity.
-
 
 **Open questions.**
 
 - Proposed for a later round: a `stockpile-source` axis (ICG / national / Gavi), a `dosing-regimen` axis, and a fuller typed band→dose table for the dose pole (§13.2).
-
 ### 6.3 ICRSupplyDelivery — `SupplyDelivery`
 **Purpose.** A **commodity delivery** — bed-nets handed to a household, or drug stock delivered to a distribution point — with a stock-accountability record for wastage and reconciliation.
 
@@ -1726,37 +1646,30 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 }
 ```
 
-A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600 tablets received at a settlement, `suppliedItem.item` coded **ATC `P02CA03`** — the same code as the matching administration (§6.2), so receipt → administration → reconciliation share one drug code — plus a `stock-accountability` record (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓).
+A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600 tablets received at a settlement, `suppliedItem.item` coded **ATC** `P02CA03` — the same code as the matching administration (§6.2), so receipt → administration → reconciliation share one drug code — plus a `stock-accountability` record (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓).
 
 **Aggregate vs individual records — the rule.** The split is: **individual record when you have a person; aggregate count on** `Task.output` **when you don't;** `MeasureReport` **for derived or stratified coverage** (numerator/denominator/score, with `group.stratifier` for a disaggregated cube), never as a raw scalar tally. Concretely:
 
 - **MDA / drugs** — `ICRMedicationAdministration.subject` already allows an `ICRDeliveryUnit` Group, so a community-register aggregate is a perfectly consistent MedicationAdministration.
-
-- **Vaccines** — R4 `Immunization.patient` is `1..1 Reference(Patient)` and _cannot_ point at a Group, and re-housing a vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention. So a Type-A vaccine **session tally** lives as an aggregate count on `Task.output` (e.g. 412 doses), and individual `Immunization`s are minted only when person-level data exists.
-
+- **Vaccines** — R4 `Immunization.patient` is `1..1 Reference(Patient)` and *cannot* point at a Group, and re-housing a vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention. So a Type-A vaccine **session tally** lives as an aggregate count on `Task.output` (e.g. 412 doses), and individual `Immunization`s are minted only when person-level data exists.
 - **Multi-dimensional tallies** — a disaggregated treatment cube (drug × sex × age band, plus dispositions) is carried as a **stratified MeasureReport** (§7.3), the FHIR-native disaggregation mechanism; the per-visit scalar still rides `Task.output` and references the stratified report.
-
 
 **Key observations.**
 
 - `record-origin` **is the only mandatory delivery-event extension.** The realtime/reconciled `dataLineage` flag is carried on CarePlan, Task, and MeasureReport rather than on the events. If an individual event appears in both the realtime and reconciled streams, it is distinguished through its parent Task.
-
 - `vaccineCode` **binds to the generic FHIR vaccine ValueSet**, not an ICR-curated SIA subset. The binding is extensible, so this is acceptable, but countries will need guidance on which codes to use for MR, bOPV, and nOPV2.
-
 
 **Open questions.**
 
 - **No GS1 binding/alias yet** for physical commodities — the ITN example uses free text. Binding a GS1 GTIN system is a known commodity-profile gap.
-
 ### 6.4 Structure-applied interventions — IRS and the "treat a place" gap
-**The problem.** Indoor Residual Spraying (IRS) — and larviciding, and bed-net hanging — is applied to a **structure**, not a person. It genuinely does **not** fit `ICRMedicationAdministration`: that profile's `subject` is a `Patient` or an ICRDeliveryUnit _Group of people_, and `MedicationAdministration` semantics are "a medication given to a subject who receives it." Spraying a house is not an administration to anyone, so forcing it through that profile would be a category error.
+**The problem.** Indoor Residual Spraying (IRS) — and larviciding, and bed-net hanging — is applied to a **structure**, not a person. It genuinely does **not** fit `ICRMedicationAdministration`: that profile's `subject` is a `Patient` or an ICRDeliveryUnit *Group of people*, and `MedicationAdministration` semantics are "a medication given to a subject who receives it." Spraying a house is not an administration to anyone, so forcing it through that profile would be a category error.
 
-**What the IG does today (interim, no new profile).** The act already has a home: **the Task itself.** `ICRCampaignTask.for` allows `Reference(ICRLocation)`, so an IRS Task's `for` is the **structure Location** being sprayed (`physicalType` building/house), `Task.location` is where it happened, and the spray's product is the activity it instantiates (`example-irs-activity`, Pirimiphos-methyl). Per-house results (sprayed / refused / locked, rooms or surface area, insecticide quantity) sit on `Task.output` as coded aggregate counts. So for v1 an IRS round is fully recordable as **structure-targeted Tasks with no delivery-event resource hanging off them** — the Task _is_ the event. The same shape covers any "treat a place" intervention (larviciding a water body, fogging a block).
+**What the IG does today (interim, no new profile).** The act already has a home: **the Task itself.** `ICRCampaignTask.for` allows `Reference(ICRLocation)`, so an IRS Task's `for` is the **structure Location** being sprayed (`physicalType` building/house), `Task.location` is where it happened, and the spray's product is the activity it instantiates (`example-irs-activity`, Pirimiphos-methyl). Per-house results (sprayed / refused / locked, rooms or surface area, insecticide quantity) sit on `Task.output` as coded aggregate counts. So for v1 an IRS round is fully recordable as **structure-targeted Tasks with no delivery-event resource hanging off them** — the Task *is* the event. The same shape covers any "treat a place" intervention (larviciding a water body, fogging a block).
 
 **Proposed for a later round.** A dedicated `ICRStructureTreatment` **event profile** so IRS/larviciding get a first-class event (parallel to Immunization/MedicationAdministration/SupplyDelivery) rather than living only on `Task.output`. FHIR R4 has no perfectly-shaped base resource — candidates are a profiled `Procedure` (whose `subject` is still `Patient`, so it would need an extension carrying the structure Location — awkward) or a Location-keyed custom/SupplyDelivery-style event (cleaner). Either way it carries the same `record-origin` firewall and references the structure Location. The base resource is a drafting-round decision (§13.4).
-
 ### 6.5 ICRAdverseEvent — `AdverseEvent` (intervention-neutral)
-**Purpose.** The **safety record** — deliberately **intervention-neutral**: one profile serves **AEFI** (an adverse event following a vaccine dose) _and_ **MDA pharmacovigilance** (a side effect following a drug), rather than being AEFI-of-immunization only. MDA field forms count drug side-effects (minor vs serious) just as immunization programmes track AEFI, so one shared shape serves both.
+**Purpose.** The **safety record** — deliberately **intervention-neutral**: one profile serves **AEFI** (an adverse event following a vaccine dose) *and* **MDA pharmacovigilance** (a side effect following a drug), rather than being AEFI-of-immunization only. MDA field forms count drug side-effects (minor vs serious) just as immunization programmes track AEFI, so one shared shape serves both.
 
 **Properties.**
 
@@ -1775,11 +1688,8 @@ A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600
 **Key observations.**
 
 - **One profile, two arms.** The examples show both: `example-aefi` (mild fever after the MCV dose, causality A, non-serious), `example-mda-adverse-event` (abdominal pain after albendazole, causality C), and `example-aefi-serious` (anaphylaxis after MCV — serious, with criteria life-threatening + hospitalization).
-
 - **Traceability runs through** `suspectEntity.instance`**,** which points back at the exact `ICRImmunizationEvent` or `ICRMedicationAdministration` — combined with the dose's `lotNumber`/`manufacturer` (§6.1), "which lot / which drug" is answerable.
-
 - **Aggregate safety counts are representable without contortion,** because R4 `AdverseEvent.subject` natively allows a Group.
-
 - **WHO alignment.** The immunization arm is meant to specialize WHO's `IMMZ.AdverseEvent` rather than reinvent it; a shipped **ConceptMap** (`icr-aefi-causality-to-immz`) maps ICR causality A/B/C/D to the WHO codes (targets provisional pending the published WHO IG). ICR's contribution is the intervention-neutral framing plus the `record-origin` seam (§13.3).
 
 * * *
@@ -1790,10 +1700,8 @@ Both profiles are based on **MeasureReport** (its numerator/denominator `group.p
 
 Beyond the data source, coverage carries two more coded axes:
 
-- `denominator-type` — **total population vs at-risk/eligible population**. Dividing by the total population gives _programme_ coverage; dividing by the at-risk population gives _epidemiological_ coverage. NTD programmes report both, so the axis is explicit rather than implied by context.
-
-- `coverage-unit` — **people vs implementation units**. Most coverage counts people; _geographic_ coverage counts implementation units ("188 of 200 villages treated ≈ 94%"). Same profile, different unit, declared on the report.
-
+- `denominator-type` — **total population vs at-risk/eligible population**. Dividing by the total population gives *programme* coverage; dividing by the at-risk population gives *epidemiological* coverage. NTD programmes report both, so the axis is explicit rather than implied by context.
+- `coverage-unit` — **people vs implementation units**. Most coverage counts people; *geographic* coverage counts implementation units ("188 of 200 villages treated ≈ 94%"). Same profile, different unit, declared on the report.
 ### 7.1 ICRAdministrativeCoverage — `MeasureReport`
 **Purpose.** Coverage computed from the campaign's **own** tally and delivery data (numerator over the planning denominator). Only as good as its denominator, so it carries the denominator's provenance.
 
@@ -1813,9 +1721,8 @@ Beyond the data source, coverage carries two more coded axes:
 | `extension[denominatorType]` | MS  | 0..1 | code, **required** → ICRDenominatorTypeVS | Total-population vs at-risk (programme vs epidemiological coverage). |
 | `extension[coverageUnit]` | MS  | 0..1 | code, **required** → ICRCoverageUnitVS | People vs implementation-units (geographic coverage); absent ⇒ people. |
 | `extension[dataLineage]` | MS  | 1..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled — required here, where the distinction has teeth. |
-
 ### 7.2 ICRSurveyCoverage — `MeasureReport`
-**Purpose.** Coverage **measured independently** of the campaign's own data — a post-campaign cluster survey, LQAS, or RCM. Its denominator _is_ its sample, so it carries `sample-design` instead of a denominator source.
+**Purpose.** Coverage **measured independently** of the campaign's own data — a post-campaign cluster survey, LQAS, or RCM. Its denominator *is* its sample, so it carries `sample-design` instead of a denominator source.
 
 **Properties.**
 
@@ -1826,21 +1733,19 @@ Beyond the data source, coverage carries two more coded axes:
 | `measure` | MS  |     | canonical | The canonical survey `Measure`. |
 | `reporter` | MS  | 1..1 | Reference | **Required** — who reported the survey result. |
 | `period` | MS  | 1..1 | Period | The survey window. |
-| `group` | MS  |     | BackboneElement | Carries `measureScore` (the survey coverage rate); the denominator _is_ the sample, so no numerator/denominator population is required. |
-| `extension[coverageSource]` | MS  | 1..1 | code, **required** → ICRIndependentCoverageSourceVS (`survey` \| `lqas` \| `rcm`) | The independent-measurement method — the value set _excludes_ `administrative`. |
+| `group` | MS  |     | BackboneElement | Carries `measureScore` (the survey coverage rate); the denominator *is* the sample, so no numerator/denominator population is required. |
+| `extension[coverageSource]` | MS  | 1..1 | code, **required** → ICRIndependentCoverageSourceVS (`survey` \| `lqas` \| `rcm`) | The independent-measurement method — the value set *excludes* `administrative`. |
 | `extension[sampleDesign]` | MS  | 0..1 | string | The survey/LQAS/RCM method & sample design (e.g. "WHO 30×10 cluster survey, post-campaign"). |
 | `extension[denominatorType]` | MS  | 0..1 | code, **required** → ICRDenominatorTypeVS | Total-population vs at-risk. |
 | `extension[coverageUnit]` | MS  | 0..1 | code, **required** → ICRCoverageUnitVS | People vs implementation-units. |
 | `extension[dataLineage]` | MS  | 1..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled (incl. preliminary-vs-final survey results). |
 
-**The "never merge" rule, enforced structurally.** The admin profile **fixes** `coverageSource` to the single code `administrative`; the survey profile **re-binds the same extension** to a value set (`ICRIndependentCoverageSourceVS`) that _excludes_ `administrative`. A resource therefore cannot be both — the separation is a structural guarantee, not a convention.
+**The "never merge" rule, enforced structurally.** The admin profile **fixes** `coverageSource` to the single code `administrative`; the survey profile **re-binds the same extension** to a value set (`ICRIndependentCoverageSourceVS`) that *excludes* `administrative`. A resource therefore cannot be both — the separation is a structural guarantee, not a convention.
 
-**What** `dataLineage` **means — a worked example.** The flag marks _which data stream_ a record belongs to, separating the **live in-field feed** from the **corrected close-out figures**:
+**What** `dataLineage` **means — a worked example.** The flag marks *which data stream* a record belongs to, separating the **live in-field feed** from the **corrected close-out figures**:
 
 - On campaign night, Kambia's admin-coverage MeasureReport is published with `realtime` — numerator 47,766 from the day's tally sheets, denominator from the planning estimate, score ~99% — and it feeds the live dashboard.
-
-- Two weeks later, after stock reconciliation and data cleaning (duplicate doses removed, late tallies added), the **final** close-out MeasureReport for the same round carries `reconciled`, and _that_ is the figure exported to the WHO JAP.
-
+- Two weeks later, after stock reconciliation and data cleaning (duplicate doses removed, late tallies added), the **final** close-out MeasureReport for the same round carries `reconciled`, and *that* is the figure exported to the WHO JAP.
 
 Same quantity, two records, distinguished only by this flag — so a "final figures only" query (`dataLineage = reconciled`) cleanly drops the preliminary one. This is why the flag is `1..1` on the coverage profiles (where the stakes are highest), while staying optional with the documented default **absent ⇒ realtime** elsewhere (CarePlan, Task).
 
@@ -1963,57 +1868,41 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
 }
 ```
 
-The same quantity — coverage of the Kambia round — reported **23 points apart** (mirroring Cuamba's 99-vs-76). The admin report shows its numerator/denominator (47,766 / 48,250 = 99% against WorldPop — against the enumerated 51,800 it would read 92%); the survey carries its `sample-design` _instead of_ a denominator (its denominator IS the sample). Both are `reconciled` (final close-out figures).
+The same quantity — coverage of the Kambia round — reported **23 points apart** (mirroring Cuamba's 99-vs-76). The admin report shows its numerator/denominator (47,766 / 48,250 = 99% against WorldPop — against the enumerated 51,800 it would read 92%); the survey carries its `sample-design` *instead of* a denominator (its denominator IS the sample). Both are `reconciled` (final close-out figures).
 
 **Relevant terminology.** `coverage-source` on admin coverage is fixed to `administrative`; on survey coverage it binds required to **ICRIndependentCoverageSourceVS** (`survey`, `lqas`, `rcm`). `dataLineage` binds required to **ICRDataLineageVS** (`realtime`, `reconciled`).
-
 ### 7.3 Stratified and geographic coverage
 Two further shapes of the same administrative-coverage profile show how disaggregation and non-person units are handled:
 
 - **The stratified treatment tally** (`example-mda-treatment-tally`). MDA field forms collect a **multi-dimensional** aggregate — treated counts by drug × sex × age band, plus exclusion dispositions — which a single Group-subject MedicationAdministration cannot hold. The canonical home is an `ICRAdministrativeCoverage` MeasureReport with `group.stratifier`: 2,900 / 3,200 ≈ **91%**, stratified by **sex** (1,500 F / 1,400 M), **age band** (1,100 at 5–14 / 1,800 at 15+), and **disposition** (2,900 treated / 180 excluded / 95 absent / 25 refused) — the full not-treated cube in one report, with `denominator-type = at-risk` and `measure` → `icr-mda-treatment-coverage`. The operational per-visit scalar (the community Task's "2,900 treated") still rides `Task.output` and references this report.
-
 - **Geographic (implementation-unit) coverage** (`example-geographic-coverage`). The `coverage-unit = implementation-units` axis turns the supervision-form "villages treated / total" figure into a first-class coverage report: 188/200 ≈ **94%**, with the non-treatment reasons (insecurity 7, medication shortage 5) as a disposition stratifier and `icr-geographic-coverage` as the Measure. Same profile as dose coverage, different unit.
-
 
 The standard stratifier axes are named in **ICRCoverageStratifierCS** (`sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`) so disaggregation shares one vocabulary across reports.
 
 **Key observations.**
 
 - **RCM, LQAS, and the cluster survey are three distinct methods, all kept separate from** `administrative`**.** RCM (Rapid Convenience Monitoring) is a quick, non-probability in-campaign check at convenient locations (markets, a few houses) for finger-mark or card; it produces a pass/fail result against a trigger, not a coverage rate (for example, "if more than 10% of children checked are unvaccinated, this area needs mop-up"). LQAS (Lot Quality Assurance Sampling) is an accept/reject decision rule. The probability cluster survey is the only one of the three that yields a valid coverage estimate (the 76% figure).
-
 - **Administrative coverage carries its denominator's provenance**, because an administrative-coverage figure is only as reliable as the denominator it was computed against.
-
 - **The Measure definitions align with existing ministry reporting obligations** — WHO JAP, the ICG M&E minimum dataset, the ESPEN treatment-coverage schema, and WHO EPI — so a MeasureReport produced for ICR is also the figure those channels expect.
-
 
 **Open questions.**
 
 - **MeasureReport vs Observation** for coverage is a flagged open question; MeasureReport won for v0.1 because its numerator/denominator structure matches coverage natively.
-
-- No _required_ binding yet forces a given report to carry specific stratifiers (they are Must Support and illustrated, not mandated).
-
+- No *required* binding yet forces a given report to carry specific stratifiers (they are Must Support and illustrated, not mandated).
 - Proposed for the remaining coverage work (§13.2): **structure** `sample-design` into sub-elements (method, clusters, design effect, sample size, weighting, evidence source); author **executable CQL** for the Measures; a multi-dose "fully-immunized" measure with round-to-round linkage; and explicit RCM/LQAS semantics (pass/fail + trigger, not a rate).
 
 * * *
 ## 8. The cross-cutting invariants (in depth)
 These are the design rules that recur across the profiles — the things to hold the IG against. They were introduced in §2.3; here is the fuller statement.
 
-1. **Delivery strategy is first-class and coded.** Required binding; mandatory on Protocol (`1..*`) and Task (`1..1`), optional on Activity and site Locations. It is _the_ discriminator because strategy determines which data elements exist (house-to-house tallies are meaningless at a fixed post).
-
+1. **Delivery strategy is first-class and coded.** Required binding; mandatory on Protocol (`1..*`) and Task (`1..1`), optional on Activity and site Locations. It is *the* discriminator because strategy determines which data elements exist (house-to-house tallies are meaningless at a fixed post).
 2. **Record origin is mandatory on every delivery event** (`1..1`, required binding) — it differentiates campaign-captured data from routine-immunization data, so the two are never mixed in coverage analytics. The same flag rides the adverse-event profile.
-
-3. **Three lineages, never merged** — _planned_ (CarePlan/Group), _delivered_ (Task/events → administrative coverage), _independently measured_ (survey coverage). Enforced by the fixed `#administrative` code on one coverage profile and the exclusion ValueSet on the other.
-
+3. **Three lineages, never merged** — *planned* (CarePlan/Group), *delivered* (Task/events → administrative coverage), *independently measured* (survey coverage). Enforced by the fixed `#administrative` code on one coverage profile and the exclusion ValueSet on the other.
 4. **Denominator provenance is recommended, not required** — source + date are `0..1 MS` on ICRTargetPopulation (the population is often unknown up front), but populated wherever the number is known; competing estimates coexist; one planning flag.
-
 5. **Geospatial identity is multi-system with GERS preferred** — open identifier slicing on Location; the Group+Location delivery-unit pattern keys households and communities to GERS IDs; operational geography overlays the admin hierarchy rather than pretending to be it.
-
 6. **Real-time vs reconciled is one structure, filtered by lineage** — documented default (absent ⇒ realtime) and `1..1` on both coverage profiles, where the distinction has teeth.
-
 7. **Task origin is first-class and coded** — pre-planned vs field-registered, `1..1` required; discovery-mode field registration is a supported workflow, and its counts are a microplan-completeness measurement.
-
-8. **One Task per visit; person detail lives in registration and the delivery events.** Registering the individuals in a household is mainline, and it happens in the _data_ layer — the household Group's `member` list of ICRPatients plus one Immunization/MedicationAdministration per person off `Task.output` — **not** by minting a Task per person. A person-focused Task (`for = Patient`) is reserved solely for chasing a specific missed or zero-dose individual. Per-person _Tasks_ would multiply Task volume roughly fivefold for nothing the registration and delivery events don't already carry — but per-person _records_ are exactly the point.
-
+8. **One Task per visit; person detail lives in registration and the delivery events.** Registering the individuals in a household is mainline, and it happens in the *data* layer — the household Group's `member` list of ICRPatients plus one Immunization/MedicationAdministration per person off `Task.output` — **not** by minting a Task per person. A person-focused Task (`for = Patient`) is reserved solely for chasing a specific missed or zero-dose individual. Per-person *Tasks* would multiply Task volume roughly fivefold for nothing the registration and delivery events don't already carry — but per-person *records* are exactly the point.
 9. **Accountability is queryable.** `Task.owner` is a real reference to an ICRCareTeam and `MeasureReport.reporter` is required, so "who worked this area" and "who reported this figure" are both joins, not string comparisons.
 
 * * *
@@ -2024,54 +1913,46 @@ These are the design rules that recur across the profiles — the things to hold
 
 | CodeSystem | Codes | FR? | Bound on (strength) |
 | --- | --- | --- | --- |
-| **ICRCampaignTypeCS** | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔ | Protocol.type, Campaign.category (**required**) |
-| **ICRDeliveryStrategyCS** | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed` (6) | ✔ | delivery-strategy ext (**required**) |
-| **ICRRecordOriginCS** | `campaign`, `routine` (2) | ✔ | record-origin ext (**required**) |
-| **ICRGroupKindCS** | `household`, `community`, `school-cohort` (3) | ✔ | ICRDeliveryUnit.code (**required**) |
-| **ICRTaskOriginCS** | `pre-planned`, `field-registered` (2) | ✔ | task-origin ext (**required**) |
-| **ICRLocationTypeCS** | `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area` (9) | — | ICRLocation.type (**extensible**) |
-| **ICRGroupCharacteristicCS** | `geography` (1) | — | fixed code on the geography characteristic slice (no VS) |
-| **ICRMissedReasonCS** | `absent`, `sleeping`, `sick`, `refusal`, `inaccessible`, `not-visited`, `medication-shortage`, `insecurity`, `difficult-access`, `not-required`, `other` (11) | — | missed-reason ext (**extensible**) — person-level and area-level reasons in one set |
-| **ICRNoncomplianceReasonCS** | `safety-concern`, `religious-objection`, `no-felt-need`, `campaign-fatigue`, `misinformation`, `other` (6) | — | noncompliance-reason ext (**extensible**) |
-| **ICRExclusionReasonCS** | `under-height-age`, `pregnant`, `breastfeeding`, `acute-illness`, `other` (5) | — | exclusion-reason ext (**extensible**) — _present-but-contraindicated_, the MDA "reasons not treated" tally |
-| **ICRDenominatorSourceCS** | `census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `other` (7) | — | denominator-source ext (**extensible**) |
-| **ICRDataLineageCS** | `realtime`, `reconciled` (2) | ✔ | realtime-vs-reconciled ext (**required**) |
-| **ICRCoverageSourceCS** | `administrative`, `survey`, `lqas`, `rcm` (4) | ✔ | coverage-source ext (**required**) |
-| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography` (5) | — | Measure/MeasureReport stratifier code (**extensible**) |
-| **ICRDenominatorTypeCS** | `total-population`, `at-risk` (2) | — | denominator-type ext (**required**) |
-| **ICRCoverageUnitCS** | `people`, `implementation-units` (2) | — | coverage-unit ext (**required**) |
-| **ICRAdverseEventCausalityCS** | `a-consistent`, `b-indeterminate`, `c-coincidental`, `d-unclassifiable` (4) | — | ICRAdverseEvent causality (**extensible**) — WHO/CIOMS A/B/C/D |
-| **ICRTeamRoleCS** | `vaccinator`, `cdd`, `supervisor`, `social-mobilizer`, `recorder` (5) | — | ICRCareTeam.participant.role (**extensible**) |
-| **ICRCommunicationChannelCS** | `radio`, `town-criers`, `community-leaders`, `schools`, `posters`, `megaphone`, `sms`, `other` (8) | — | social-mobilization channel (**extensible**) |
-| **ICRSeriousCriteriaCS** | `death`, `life-threatening`, `hospitalization`, `disability`, `congenital-anomaly`, `medically-important` (6) | — | serious-criteria ext (**extensible**) — WHO/CIOMS |
+| **ICRCampaignTypeCS** | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔   | Protocol.type, Campaign.category (**required**) |
+| **ICRDeliveryStrategyCS** | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed` (6) | ✔   | delivery-strategy ext (**required**) |
+| **ICRRecordOriginCS** | `campaign`, `routine` (2) | ✔   | record-origin ext (**required**) |
+| **ICRGroupKindCS** | `household`, `community`, `school-cohort` (3) | ✔   | ICRDeliveryUnit.code (**required**) |
+| **ICRTaskOriginCS** | `pre-planned`, `field-registered` (2) | ✔   | task-origin ext (**required**) |
+| **ICRLocationTypeCS** | `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area` (9) | —   | ICRLocation.type (**extensible**) |
+| **ICRGroupCharacteristicCS** | `geography` (1) | —   | fixed code on the geography characteristic slice (no VS) |
+| **ICRMissedReasonCS** | `absent`, `sleeping`, `sick`, `refusal`, `inaccessible`, `not-visited`, `medication-shortage`, `insecurity`, `difficult-access`, `not-required`, `other` (11) | —   | missed-reason ext (**extensible**) — person-level and area-level reasons in one set |
+| **ICRNoncomplianceReasonCS** | `safety-concern`, `religious-objection`, `no-felt-need`, `campaign-fatigue`, `misinformation`, `other` (6) | —   | noncompliance-reason ext (**extensible**) |
+| **ICRExclusionReasonCS** | `under-height-age`, `pregnant`, `breastfeeding`, `acute-illness`, `other` (5) | —   | exclusion-reason ext (**extensible**) — *present-but-contraindicated*, the MDA "reasons not treated" tally |
+| **ICRDenominatorSourceCS** | `census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `other` (7) | —   | denominator-source ext (**extensible**) |
+| **ICRDataLineageCS** | `realtime`, `reconciled` (2) | ✔   | realtime-vs-reconciled ext (**required**) |
+| **ICRCoverageSourceCS** | `administrative`, `survey`, `lqas`, `rcm` (4) | ✔   | coverage-source ext (**required**) |
+| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography` (5) | —   | Measure/MeasureReport stratifier code (**extensible**) |
+| **ICRDenominatorTypeCS** | `total-population`, `at-risk` (2) | —   | denominator-type ext (**required**) |
+| **ICRCoverageUnitCS** | `people`, `implementation-units` (2) | —   | coverage-unit ext (**required**) |
+| **ICRAdverseEventCausalityCS** | `a-consistent`, `b-indeterminate`, `c-coincidental`, `d-unclassifiable` (4) | —   | ICRAdverseEvent causality (**extensible**) — WHO/CIOMS A/B/C/D |
+| **ICRTeamRoleCS** | `vaccinator`, `cdd`, `supervisor`, `social-mobilizer`, `recorder` (5) | —   | ICRCareTeam.participant.role (**extensible**) |
+| **ICRCommunicationChannelCS** | `radio`, `town-criers`, `community-leaders`, `schools`, `posters`, `megaphone`, `sms`, `other` (8) | —   | social-mobilization channel (**extensible**) |
+| **ICRSeriousCriteriaCS** | `death`, `life-threatening`, `hospitalization`, `disability`, `congenital-anomaly`, `medically-important` (6) | —   | serious-criteria ext (**extensible**) — WHO/CIOMS |
 
 **ValueSets.** One whole-system ValueSet per CodeSystem (except ICRGroupCharacteristicCS, whose single code is fixed directly in the characteristic slice), plus the purpose-built sets:
 
-- **ICRIndependentCoverageSourceVS** — `survey`, `lqas`, `rcm` only (_excludes_ `administrative`); the binding on ICRSurveyCoverage. This little VS is what makes "never merge the lineages" structurally enforceable.
-
+- **ICRIndependentCoverageSourceVS** — `survey`, `lqas`, `rcm` only (*excludes* `administrative`); the binding on ICRSurveyCoverage. This little VS is what makes "never merge the lineages" structurally enforceable.
 - **ICRMDAMedicationVS** — all of ATC (extensible binding on MDA medication), with the typical PC-NTD codes listed (albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01, azithromycin J01FA10, DEC P02CB02); subtree restriction deferred until country formularies are reviewed.
-
 - **ICRSuppliedItemVS** — also all of ATC; the extensible binding on `ICRSupplyDelivery.suppliedItem.item`, so a drug receipt carries the same ATC code as its administration. GS1 GTIN / text remain valid for physical commodities.
-
 - **ICRAdverseEventSeriousnessVS** — reuses the HL7 `adverse-event-seriousness` CodeSystem (`serious` / `non-serious`); no new CodeSystem was minted because a standard one already exists.
-
 - **ICRExclusionReasonVS / ICRCommunicationChannelVS / ICRSeriousCriteriaVS** — whole-system sets over their CodeSystems, listed above with their bindings.
-
 
 **The binding-strength pattern is deliberate.** **Structural discriminators** (delivery strategy, record origin, lineage, coverage source, denominator type, coverage unit) are `required` — analytics must be able to branch on them. **Field-reality vocabularies** (missed/noncompliance/exclusion reasons, denominator sources, location types, team roles, channels) are `extensible` — countries add local codes, mapped back via ConceptMap. The data type tracks this too: pure discriminators use a bare `code`; concepts countries extend use `CodeableConcept` (so text and local codings survive).
 
 **Domain notes.** `sleeping` is the polio doorstep convention; `community-directed` is CDTI, the NTD-MDA delivery backbone; campaign types are grouped **by delivery model, not disease**; `integrated` exists because co-delivered campaigns are the norm (component activities carry their own types).
 
-**Campaign-type is disease-agnostic — worked example.** Two campaigns with the _same_ `campaign-type`: a **Measles–Rubella SIA** (`vaccination-sia`; `addresses` → "Measles and rubella"; product → CVX 05) and a **Polio SIA** (the _same_ `vaccination-sia`; `addresses` → "Poliomyelitis"; product → bOPV CVX). You tell them apart by `addresses` + vaccine code, not by `campaign-type`. Disease-specific codes (`measles-sia`, `polio-sia`, `ocv`, …) were rejected as duplicating `addresses`/product and exploding the code list.
+**Campaign-type is disease-agnostic — worked example.** Two campaigns with the *same* `campaign-type`: a **Measles–Rubella SIA** (`vaccination-sia`; `addresses` → "Measles and rubella"; product → CVX 05) and a **Polio SIA** (the *same* `vaccination-sia`; `addresses` → "Poliomyelitis"; product → bOPV CVX). You tell them apart by `addresses` + vaccine code, not by `campaign-type`. Disease-specific codes (`measles-sia`, `polio-sia`, `ocv`, …) were rejected as duplicating `addresses`/product and exploding the code list.
 
 **Open questions.**
 
-- The required-bound `code`-typed extensions have **no** `other` **escape** — confirm the closed sets (campaign/routine; realtime/reconciled; the four coverage sources) really are exhaustive (e.g. is _post-campaign administrative correction_ a third lineage? is _desk review_ a coverage source?).
-
+- The required-bound `code`-typed extensions have **no** `other` **escape** — confirm the closed sets (campaign/routine; realtime/reconciled; the four coverage sources) really are exhaustive (e.g. is *post-campaign administrative correction* a third lineage? is *desk review* a coverage source?).
 - The disease-agnostic typing needs partner acceptance — the **polio programme** treats "polio campaigns" as a first-class thing, so confirm they are comfortable querying `campaign-type = vaccination-sia AND addresses = polio`.
-
 - The **FR designations** need review by a francophone public-health reviewer (especially "Monitorage rapide de convenance" for RCM), plus a stated localization policy (which languages, where).
-
 - Proposed additions (§13.2): an `activity-type` CodeSystem, reconciling `missed-reason`/`noncompliance-reason` with the WHO RCM field lists, and further location-type/denominator-source codes.
 
 * * *
@@ -2101,7 +1982,7 @@ FHIR has no native campaign semantics, so 32 extensions carry them on the profil
 | EligibleAbsent (`eligible-absent`) | unsignedInt |
 | MissedReason (`missed-reason`) | CodeableConcept, **extensible** → ICRMissedReasonVS — not reached (person-level and area-level reasons) |
 | NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS — reached but declined |
-| ExclusionReason (`exclusion-reason`) | CodeableConcept, **extensible** → ICRExclusionReasonVS — _present but contraindicated_ (under height/age, pregnant, breastfeeding, acute illness); 0..* |
+| ExclusionReason (`exclusion-reason`) | CodeableConcept, **extensible** → ICRExclusionReasonVS — *present but contraindicated* (under height/age, pregnant, breastfeeding, acute illness); 0..* |
 | FingerMarked (`finger-marked`) | boolean — the in-field "already covered" flag |
 
 **Population & denominator provenance**
@@ -2120,8 +2001,8 @@ FHIR has no native campaign semantics, so 32 extensions carry them on the profil
 | Extension (id) | Context | Type / binding |
 | --- | --- | --- |
 | LocationBoundaryGeoJson (`location-boundary-geojson`) | Location | Attachment, `contentType` fixed `application/geo+json` — R4 mirror of the R5 standard boundary extension |
-| OverlaysAdminUnit (`overlays-admin-unit`) | Location | Reference(ICRLocation) — links operational geography to the admin unit(s) it overlays; _1..* required on supervisory/operational-area types_ (invariant `icr-loc-overlays`) |
-| LocationAncestors (`location-ancestors`) _(proposed, not yet in the IG)_ | Location | complex: per-level `adm0…adm3+` code + Reference(ICRLocation); server-maintained breadcrumb of the `partOf` chain |
+| OverlaysAdminUnit (`overlays-admin-unit`) | Location | Reference(ICRLocation) — links operational geography to the admin unit(s) it overlays; *1..* required on supervisory/operational-area types* (invariant `icr-loc-overlays`) |
+| LocationAncestors (`location-ancestors`) *(proposed, not yet in the IG)* | Location | complex: per-level `adm0…adm3+` code + Reference(ICRLocation); server-maintained breadcrumb of the `partOf` chain |
 | RecordOrigin (`record-origin`) | Immunization, MedicationAdministration, SupplyDelivery, AdverseEvent | code, **required** → ICRRecordOriginVS |
 | DirectlyObservedConsumption (`directly-observed-consumption`) | MedicationAdministration | boolean |
 | DosePoleBand (`dose-pole-band`) | MedicationAdministration, ActivityDefinition | CodeableConcept — the measured height band that set the tablet count |
@@ -2134,11 +2015,8 @@ FHIR has no native campaign semantics, so 32 extensions carry them on the profil
 **Design notes.**
 
 - The binding-strength pattern mirrors §9: structural discriminators are `required` and typed `code`; field vocabularies are `extensible` and typed `CodeableConcept`.
-
 - `LocationBoundaryGeoJson` mirrors the R5 standard boundary extension on R4; an eventual move to R5 (or the cross-version extension) migrates stored attachments trivially, but the extension **URL** changes — kept on the v1.0 checklist.
-
 - A **structured** `sample-design` (method, clusters, design effect, sample size, weighting, evidence source as sub-elements) would replace today's free-text string; it is deferred and coupled to the executable-Measure work, since both are "make coverage computable" (§13.2).
-
 - The `eligible-present`/`eligible-absent` naming (rather than `children-…`) is accurate for MDA/ITN campaigns where the target is not children, but `children-…` is more familiar to EPI staff — partner input is requested before v1 locks the extension ids (§13.4).
 
 * * *
@@ -2167,7 +2045,7 @@ graph LR
 
 **The 39 example instances.**
 
-_Locations, people & groups_
+*Locations, people & groups*
 
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
@@ -2188,7 +2066,7 @@ _Locations, people & groups_
 | 15  | `example-target-population-enumerated` | ICRTargetPopulation | 51,800 children 9m–14y, Kambia; microcensus/enumeration, 2026-03-02, isPlanningDenominator **false** — the competing estimate |
 | 16  | `example-target-population-national` | ICRTargetPopulation | 2,150,000 children 9m–14y, national; census projection, 2025-11-30; geography → country |
 
-_Campaign architecture & teams_
+*Campaign architecture & teams*
 
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
@@ -2204,7 +2082,7 @@ _Campaign architecture & teams_
 | 26  | `example-mopup-task` | ICRCampaignTask | **Type B**: completed; for → household, location → dwelling; strategy house-to-house; taskOrigin `field-registered`; eligiblePresent 2 / absent 1; missedReason `absent`; fingerMarked true; owner → #24; output → #28 |
 | 27  | `example-mda-community-task` | ICRCampaignTask | **Type C community-directed**: for → community (#12), location → settlement; strategy `community-directed`; exclusionReasons (under-height-age, pregnant, breastfeeding), missedReason absent, noncomplianceReason no-felt-need; owner → #24; output: scalar tally 2,900 treated + → #35 |
 
-_Delivery events & safety_
+*Delivery events & safety*
 
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
@@ -2216,7 +2094,7 @@ _Delivery events & safety_
 | 33  | `example-mda-adverse-event` | ICRAdverseEvent | **MDA arm** (same profile): abdominal pain after albendazole (#29); causality C (coincidental) |
 | 34  | `example-aefi-serious` | ICRAdverseEvent | **Serious AEFI**: anaphylaxis after MCV; seriousness serious; serious-criteria life-threatening + hospitalization; causality A |
 
-_Coverage & supervision_
+*Coverage & supervision*
 
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
@@ -2226,7 +2104,7 @@ _Coverage & supervision_
 | 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**; coverageSource survey; sampleDesign "WHO 30×10 cluster survey…"; dataLineage reconciled — the same quantity as #37, **23 points apart** |
 | 39  | `example-supervision-report` | ICRSupervisionReport | QuestionnaireResponse against the supervision checklist: DOC observed ✓, height chart ✓, ineligibles identified ✓, stock concordant ✗; subject → community; author → supervisor |
 
-_Definitional artifacts (alongside the examples)_
+*Definitional artifacts (alongside the examples)*
 
 | Instance | Kind | Content |
 | --- | --- | --- |
@@ -2239,9 +2117,7 @@ _Definitional artifacts (alongside the examples)_
 **Scenario notes for a future pass.**
 
 - The Type-C thread is partly wired: the community task, drug supply, and stratified tally interlink, but a **CDTI protocol/CarePlan** is still missing, and the per-person albendazole administration (#29) is not yet tied to the community Task's output.
-
 - GERS values are placeholder-format (`…-example`) — real GERS ID syntax should be confirmed before pilots so examples validate against the eventual identifier pattern.
-
 - The Measure canonicals resolve only once the IG is published; the IG Publisher may warn until then.
 
 * * *
@@ -2249,28 +2125,21 @@ _Definitional artifacts (alongside the examples)_
 The IG ships two narrative pages, deliberately explicit about the model's maturity:
 
 - `index.md` — the pitch (campaigns re-collect the same data; ICR makes collection compound), the one-paragraph architecture, status (v0.1, to be revised against real datasets and FHIR community review), and the deferred-items list.
-
 - `background.md` — the Type A/B/C campaign-typology table; the twelve numbered design decisions (with rejected alternatives noted for the keystone CarePlan choice); the "campaign work vs routine encounters" boundary (`record-origin` as the discriminator); "operational vs administrative geography" (the location-type + `overlays-admin-unit` mechanism); the "location identity lifecycle: GERS enrichment" flow (create unmatched → asynchronous conflation → backfill with versioning and Provenance); the per-person follow-up exception; the open design questions taken to the FHIR community; and the WHO SMART Guidelines relationship.
-
 
 The open questions are printed in the IG itself rather than kept in working documents — a deliberate transparency choice for community review.
 
 * * *
 ## 13. Roadmap & open items
-This section consolidates what the IG knows it does _not_ yet do. Four parts: gaps the IG itself acknowledges, proposed additions validated by a field-evidence review, the WHO SMART Guidelines alignment plan, and the open decisions awaiting a project or partner call. **Everything here is forward-looking — none of it is committed to the current IG.**
+This section consolidates what the IG knows it does *not* yet do. Four parts: gaps the IG itself acknowledges, proposed additions validated by a field-evidence review, the WHO SMART Guidelines alignment plan, and the open decisions awaiting a project or partner call. **Everything here is forward-looking — none of it is committed to the current IG.**
 ### 13.1 Known gaps (acknowledged, deferred by design)
 Stated in the IG's own narrative — absent by design, not oversight:
 
 - **SQL-on-FHIR** `ViewDefinition`**s** (so the analytics layer is as portable as the data model).
-
 - `ConceptMap` **scaffolds** for country/local code localization (the mechanism the extensible bindings rely on).
-
 - **Executable CQL** for the four shipped Measure definitions (their criteria are placeholders today).
-
 - **Data conformance testing** against real campaign datasets; **FHIR community review** (chat.fhir.org, working-group calls, Connectathons).
-
 - No `CapabilityStatement`, search-parameter, or Bulk-Data/cohort-export guidance yet (the access-pattern open question).
-
 ### 13.2 Proposed additions (validated by field evidence)
 A synthesis of eight global-health source analyses (WHO SIA, RED microplanning, and measles guides; the WHO cluster-survey manual; GTFCC OCV; NTD-MDA; WHO EYE/yellow-fever; geo-enabled microplanning) was compared against the IG. The convergence is the signal: **no source contradicts the IG's core design**, and the same gaps recur across very different campaign types. Several of the highest-priority findings have since been built (the intervention-neutral adverse event, the coverage denominator-type/unit axes, the stratified tally, stock accountability, the supervision bundle, exclusion reasons, the dose-pole band); what follows is what remains proposed.
 
@@ -2279,58 +2148,40 @@ A synthesis of eight global-health source analyses (WHO SIA, RED microplanning, 
 **Priority proposals:**
 
 - **Programme-semantics quartet** — four small coded axes every campaign type treats as first-class: `activity-type`/`sia-type` (routine / preventive-mass / catch-up / follow-up / mop-up / reactive — orthogonal to `campaign-type`, §4.1); `coverage-target` (store the programme-defined threshold — ≥95% SIA, ≥65% LF epidemiological, EYE 50/60/80% — not just achieved coverage); `stockpile-source` (ICG / national / Gavi, with allocation and request-to-delivery interval); `dosing-regimen` (single-dose-lifelong / multi-dose / fractional — needed to define "fully immunized").
-
 - **Remaining coverage work** — structure `sample-design` into sub-elements (method, PSU/EA, cluster count, design effect, sample size, weighting, evidence source, crude-vs-valid, confidence interval); author executable CQL; a multi-dose "fully-immunized" Measure with round1↔round2 linkage for OCV/multi-round campaigns; and explicit RCM/LQAS semantics (pass/fail + trigger thresholds, not a coverage rate).
-
 - **Reason-code reconciliation** — extend `missed-reason`/`noncompliance-reason` with the WHO RCM field lists (`unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`, …) and split out non-missed dispositions (`already-vaccinated`, `plan-to-go-later`).
-
 - **Further candidates** (convergent, more design work): campaign-trigger and campaign-cost axes; a campaign-phase/readiness lifecycle with a readiness MeasureReport; defaulter/dropout/zero-dose disposition with a dropout Measure and a hand-off to routine immunization; the `ICRStructureTreatment` event for structure-applied interventions (§6.4); a standalone microplan resource (beyond the CareTeam-carried workload); a population-vulnerability/equity taxonomy; an `outreach` delivery strategy; a population-estimation-method + source-raster version/date on denominators; a `structure`/footprint location type; and a cold-chain/logistics/stock-readiness axis beyond SupplyDelivery.
 
-
-**Scope decision — reference, don't model.** Surveillance and outbreak response (case-based surveillance, lab confirmation, susceptibility modelling) are the _trigger and evaluation context_ for a campaign, not its execution data. ICR holds only a thin reference (the signal that justified the campaign, the case-age distribution that set the target age) and links out to a VPD-surveillance IG. The same rule applies to Location context (accessibility/travel-time, endemicity, TAS status — linked externally by location ID, §5.3). One practical consequence: where field forms co-bundle surveillance or morbidity data onto the same submission as a treatment tally, the ingestion pipeline must route that data to a surveillance/morbidity store rather than force it into ICR campaign resources — the boundary lives in the transform, not the form.
+**Scope decision — reference, don't model.** Surveillance and outbreak response (case-based surveillance, lab confirmation, susceptibility modelling) are the *trigger and evaluation context* for a campaign, not its execution data. ICR holds only a thin reference (the signal that justified the campaign, the case-age distribution that set the target age) and links out to a VPD-surveillance IG. The same rule applies to Location context (accessibility/travel-time, endemicity, TAS status — linked externally by location ID, §5.3). One practical consequence: where field forms co-bundle surveillance or morbidity data onto the same submission as a treatment tally, the ingestion pipeline must route that data to a surveillance/morbidity store rather than force it into ICR campaign resources — the boundary lives in the transform, not the form.
 ### 13.3 WHO SMART Immunizations alignment
-**The headline — ICR is the _campaign_ complement to WHO's _routine_ IG.** The WHO SMART Immunizations IG is routine-immunization only: it has no Campaign/CarePlan concept, no denominator or coverage-survey model, and no operational-geography model. The two IGs are therefore complementary rather than competing, joined by the `record-origin` flag: a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` can coexist in one store, told apart by that flag. The framing: **ICR is "the campaign SMART-Guidelines IG."** Alignment means adopting WHO's structure where possible and reusing WHO artifacts at the seams.
+**The headline — ICR is the *campaign* complement to WHO's *routine* IG.** The WHO SMART Immunizations IG is routine-immunization only: it has no Campaign/CarePlan concept, no denominator or coverage-survey model, and no operational-geography model. The two IGs are therefore complementary rather than competing, joined by the `record-origin` flag: a campaign `ICRImmunizationEvent` and a routine `IMMZ.Immunization` can coexist in one store, told apart by that flag. The framing: **ICR is "the campaign SMART-Guidelines IG."** Alignment means adopting WHO's structure where possible and reusing WHO artifacts at the seams.
 
 **Proposed alignment work (all forward-looking):**
 
 - **Adopt the WHO SMART-Guidelines IG skeleton** (the biggest structural gap). ICR ships only two narrative pages; the proposal is to restructure into WHO's standard layers — L1 Home (Summary / Changes / Dependencies / References / Country adaptation), L2 Business Requirements (campaign personas, business processes, a Data Dictionary, indicators), Data Models & Exchange (System Actors, Transactions, Codings, Measures), Deployment (Security, Testing, Test Data, Reference Implementations, Downloads), and Indices (Artifact Index, a Mappings page) — filling campaign content and leaving titled stubs where pending, as WHO does. ICR's business processes slot in as the campaign extension of WHO's routine processes (`IMMZ.A–I`), so ICR should reference WHO's numbering rather than coin an unrelated scheme.
-
 - **Reuse WHO artifacts at the touch-points.** Make `ICRImmunizationEvent` derived-from / compatible-with `IMMZ.Immunization` (a campaign dose becomes a valid WHO immunization plus `record-origin`); `ICRPatient` is already aligned to `IMMZ.Patient` (§5.4); the adverse-event profile is meant to specialize `IMMZ.AdverseEvent` for its immunization arm, with the shipped causality ConceptMap as the first bridge (§6.5). ICR's campaign layer (Campaign / Task / TargetPopulation / coverage / Location) is its distinctive contribution to offer back.
-
 - **Terminology & indicators.** Keep ICR's CVX/ATC/GS1 backbone but add ConceptMaps ICR ↔ `IMMZ.*` (WHO uses its own `IMMZ.Z` vaccine codes rather than CVX). WHO defines 45 FHIR Measures (`IMMZIND01–45`); derive ICR's Measures from the IMMZ ones where they overlap (coverage, dropout, wastage, AEFI), then add the campaign-only ones WHO lacks — admin-vs-survey coverage, RCM/LQAS, the at-risk/epidemiological denominator, geographic coverage. ICR's denominator-with-provenance and admin-vs-survey split are richer than WHO's ("denominator set by Member States").
-
 - **Declare a formal** `dependsOn smart.who.int.base` (and `smart.who.int.immunizations` where artifacts are reused) once alignment hardens. Keep ICR's own canonical and id conventions, but mirror WHO's data-dictionary discipline (every coded element gets a stable id and a paired ValueSet) so a Mappings page can line elements up 1:1.
-
 
 **Naming-collision caution:** WHO uses `PlanDefinition` for decision-support schedules; ICR uses it for the campaign protocol. Same resource, opposite role — the distinction is documented so a WHO-familiar consumer isn't surprised.
 
-_Caveats:_ the WHO IG is a v0.2.0 draft and skeleton-heavy (many pages are titled stubs); ICR aligns to the skeleton and conventions, not assumed content. One WHO narrative claim (an IPS Patient dependency) is not borne out by its artifacts — `IMMZ.Patient` derives from base R4 Patient. Artifact ids and bindings should be re-verified against the live WHO IG before alignment FSH is authored.
+*Caveats:* the WHO IG is a v0.2.0 draft and skeleton-heavy (many pages are titled stubs); ICR aligns to the skeleton and conventions, not assumed content. One WHO narrative claim (an IPS Patient dependency) is not borne out by its artifacts — `IMMZ.Patient` derives from base R4 Patient. Artifact ids and bindings should be re-verified against the live WHO IG before alignment FSH is authored.
 ### 13.4 Open decisions (consolidated)
 The decisions that still need a project, UNICEF, or partner call, distilled from the per-section open questions above:
 
 1. **Canonical URL ownership, package id, and dependency declaration** confirmed with UNICEF — that UNICEF controls `fhir.icr.unicef.org`, that `unicef.fhir.icr` fits its naming convention, and when the formal `dependsOn smart.who.int.base` is declared. (Publisher attribution is decided — UNICEF.)
-
 2. **GERS/P-code identifier system URIs** — whether ICR should mint them (engage Overture Maps), plus a concrete slot for the **Overture release version**, and whether to widen `Location.partOf` to `Reference(Location)` so ICR can coexist with existing national MFL/GIS registries.
-
 3. **Aggregate-vs-individual representation for Type-A tally campaigns** — document the `Task.output` (aggregate) / individual-event / MeasureReport (derived and stratified only) split as the official pattern.
-
 4. **Closed code sets** — are the required-bound sets (campaign/routine; realtime/reconciled; the four coverage sources) exhaustive? Add an `unknown` `task-origin` for historical imports? Confirm disease-agnostic campaign typing with the polio programme.
-
 5. **FR translations** reviewed by a francophone public-health reviewer, plus a stated localization policy.
-
 6. **Geography characteristic** `0..1 → 1..1` on ICRTargetPopulation once pilots confirm every estimate carries a Location.
-
 7. **Vector control / entomological surveillance** — in ICR's future scope or not.
-
 8. `eligible-` **vs** `children-` **count-extension naming** — partner input on which reads better before v1 locks the extension ids (`eligible-` is accurate for MDA/ITN where the target isn't children; `children-` is more familiar to EPI staff).
-
 9. **Structure-applied-intervention event base** (the proposed `ICRStructureTreatment`, §6.4) — profiled `Procedure` with a structure-Location extension vs a Location-keyed custom event.
-
 10. **Person-data governance** — the decisions behind `ICRConsent` (§5.5): what minimal data crosses a border, retention periods, and withdrawal.
-
 
 **Held for FHIR community review** (flagged in the IG itself): Task granularity at scale; deep `partOf` performance; MeasureReport vs Observation for coverage; GeoJSON on R4; the record-linkage pattern; Bulk Data access patterns.
 
 * * *
 
-_This document is a companion to the ICR FHIR IG, describing the design as committed to the IG source (`ig/input/fsh/`). Profiles, cardinalities, and bindings were checked against the FSH; items labelled **(proposed)** are not yet committed. Where this document and the IG source disagree, the IG source is authoritative — please report the discrepancy._
+*This document is a companion to the ICR FHIR IG, describing the design as committed to the IG source (*`ig/input/fsh/`*). Profiles, cardinalities, and bindings were checked against the FSH; items labelled* ***(proposed)*** *are not yet committed. Where this document and the IG source disagree, the IG source is authoritative — please report the discrepancy.*
