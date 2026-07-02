@@ -18,7 +18,7 @@ comments: true
 
 * * *
 ## Abbreviations & glossary
-Quick reference for every abbreviation used in this document, grouped by area. Names in `code font` (e.g. `ICRCampaign`) are FHIR artifacts defined in the IG, not abbreviations. asddsfds
+Quick reference for every abbreviation used in this document, grouped by area. Names in `code font` (e.g. `ICRCampaign`) are FHIR artifacts defined in the IG, not abbreviations.
 
 **Campaign types & public-health programmes**
 
