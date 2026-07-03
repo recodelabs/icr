@@ -113,4 +113,6 @@ Description: "The assignable, trackable operational unit of work — one Task pe
     NoncomplianceReason named noncomplianceReason 0..* and
     ExclusionReason named exclusionReason 0..* and
     FingerMarked named fingerMarked 0..1 and
-    RealtimeVsReconciled named dataLineage 0..1
+    RealtimeVsReconciled named dataLineage 0..1 and
+    RevisitOutcome named revisitOutcome 0..1
+* extension[revisitOutcome] ^short = "On a person-targeted follow-up Task: outcome of the revisit — already-vaccinated | vaccinated-on-revisit | still-missing (v0.21.0)"

@@ -56,6 +56,9 @@ Description: "How a campaign activity reaches its target population. A first-cla
 * #community-directed "Community-directed distribution" "Community-selected drug distributors (CDDs) treat their own communities — the NTD MDA backbone (CDTI)."
 * #community-directed ^designation[0].language = #fr
 * #community-directed ^designation[0].value = "Distribution communautaire (TIDC)"
+* #outreach "Outreach / special-strategy site" "Vaccination at outside-household special-strategy sites (water points, transit/bus stations, border-crossing points, food-distribution points) — the polio SIA 'outside household / special strategy' (OHH/SS) mode, broader than a single temporary post (forms-v1 / jul3-form-analysis §Aggregate #6)."
+* #outreach ^designation[0].language = #fr
+* #outreach ^designation[0].value = "Stratégie avancée / site spécial"
 
 CodeSystem: ICRRecordOriginCS
 Id: icr-record-origin-cs
@@ -135,6 +138,7 @@ Description: "Why an eligible person or household was not reached during a campa
 * #refusal "Refusal" "Caregiver or individual refused — capture the noncompliance reason separately."
 * #inaccessible "Inaccessible" "Dwelling or settlement could not be reached (security, terrain, weather)."
 * #not-visited "Not visited" "Household never reached by a team during the round."
+* #not-revisited "House not revisited" "Household was flagged for a revisit (e.g. child absent on first pass) but the revisit did not happen before the round closed — distinct from never-visited. Polio house-to-house monitoring reason (forms-v1 / jul3-form-analysis §Aggregate #4)."
 // Area-level non-treatment reasons (ESPEN supervision Form 5): why a whole
 // settlement/operational area went untreated — distinct from a person being
 // missed at a visit. Added v0.18.0 (espen.md rec 7 / §17.2 C3).
@@ -154,7 +158,8 @@ Description: "Why a household or caregiver declined the intervention — drives 
 * #religious-objection "Religious or cultural objection" "Belief-based objection."
 * #no-felt-need "No felt need" "Does not consider the intervention necessary (e.g. child already vaccinated, not at risk)."
 * #campaign-fatigue "Campaign fatigue" "Too many rounds; declines further participation."
-* #misinformation "Misinformation / rumor" "Declines based on circulating misinformation."
+* #misinformation "Misinformation / rumor" "Declines based on circulating misinformation (including disease-specific rumours — e.g. 'Africa is polio-free', vaccine-specific concerns; localise via ConceptMap)."
+* #not-decision-maker "Not the decision-maker" "The person present could not consent; the household decision-maker was absent. Recurring polio SIA refusal reason (forms-v1 / jul3-form-analysis §Aggregate #4)."
 * #other "Other" "Other reason — record detail in text."
 
 CodeSystem: ICRExclusionReasonCS
@@ -228,6 +233,7 @@ Description: "The standard disaggregation axes a coverage MeasureReport stratifi
 * #delivery-strategy "Delivery strategy" "Disaggregation by ICRDeliveryStrategy (fixed-post, house-to-house, community-directed…)."
 * #disposition "Disposition" "Disaggregation by treatment disposition (treated vs not-treated reason: absent, refused, excluded)."
 * #geography "Geography" "Disaggregation by the location/admin level the figure covers."
+* #dose-history "Dose history / zero-dose status" "Disaggregation by prior-dose status (ICRDoseHistoryCS: zero-dose | previously-received | no-recall) — the polio SIA tally's never-received / previously-received / no-recall split, and the zero-dose vs not-zero-dose axis (forms-v1 / jul3-form-analysis §Aggregate #1)."
 
 CodeSystem: ICRDenominatorTypeCS
 Id: icr-denominator-type-cs
@@ -285,6 +291,16 @@ Description: "Social-mobilization / demand-generation channels used to inform th
 * #posters "Posters" "Printed posters / banners."
 * #megaphone "Megaphone / public address" "Mobile public-address announcements."
 * #sms "SMS / mobile" "SMS or mobile-message campaigns."
+* #health-worker "Health worker" "Information conveyed by a health worker."
+* #religious-leader "Religious leader" "Mobilization through religious leaders (distinct from community leaders)."
+* #social-mobilizer "Social mobilizer / CBV" "Community-based volunteer / social mobilizer outreach."
+* #volunteer-chw "Volunteer community health worker" "Volunteer CHW household visits/announcements."
+* #mobile-pa "Mobile van / public-address" "Mobile van or vehicle-mounted public-address announcements."
+* #social-media "Mobile messaging / social media" "Social-media or mobile-messaging channels (WhatsApp, Facebook…)."
+* #tv "Television" "Television spots/announcements."
+* #newspaper "Newspaper" "Print newspaper."
+* #iec-materials "IEC materials" "Printed information-education-communication materials."
+* #neighbour "Neighbour / word of mouth" "Informed by a neighbour or word of mouth."
 * #other "Other" "Other channel — record detail in text."
 
 CodeSystem: ICRSeriousCriteriaCS
@@ -299,3 +315,46 @@ Description: "WHO/CIOMS criteria that make an adverse event SERIOUS — the reas
 * #disability "Persistent / significant disability" "Resulted in persistent or significant disability/incapacity."
 * #congenital-anomaly "Congenital anomaly / birth defect" "Resulted in a congenital anomaly/birth defect."
 * #medically-important "Other medically important event" "A medically important condition not otherwise listed (clinical judgement)."
+
+// --- v0.21.0 additions (forms-v1 round: UNICEF polio SIA form analysis) ---------
+// Driven by jul3-form-analysis.md (Kenya nOPV2 + Ghana mOPV2 monitoring/tally/
+// stock/supervision forms). Each addition promotes a §13.2-proposed item the forms
+// field-validated, or a trivially-additive extensible code the forms surfaced.
+
+CodeSystem: ICRDoseHistoryCS
+Id: icr-dose-history-cs
+Title: "ICR Dose History / Zero-dose Status"
+Description: "A person's prior-dose status for the campaign antigen, at the time of a campaign contact — the polio SIA tally's core split (never received / previously received / no recall) and the zero-dose vs not-zero-dose axis. Carried per event by the prior-dose-status extension and aggregated as the dose-history coverage stratifier; feeds zero-dose reach and the proposed dropout/fully-immunized measures (forms-v1 / jul3-form-analysis §Aggregate #1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #zero-dose "Zero-dose" "Never received the antigen before this contact (the polio 'never received nOPV2 / >2 weeks old & never received OPV' cell). The zero-dose population."
+* #previously-received "Previously received" "Had received the antigen before this contact (the 'previously received' / 'not zero-dose' cell)."
+* #no-recall "No recall / no information" "Prior-dose status unknown — caregiver cannot recall and no record is available."
+
+CodeSystem: ICRRevisitOutcomeCS
+Id: icr-revisit-outcome-cs
+Title: "ICR Revisit Outcome"
+Description: "The outcome of a follow-up visit to a household/person previously missed — the 'outcome of the revisit' block of the missed-children recording forms. Carried on the follow-up Task via the revisit-outcome extension (forms-v1 / jul3-form-analysis §Aggregate #4)."
+* ^caseSensitive = true
+* ^experimental = false
+* #already-vaccinated "Already vaccinated" "On revisit the person was found already vaccinated (e.g. reached elsewhere / in routine)."
+* #vaccinated-on-revisit "Vaccinated on revisit" "The person was vaccinated during the revisit."
+* #still-missing "Still missing" "The person was still not reached on revisit."
+
+CodeSystem: ICRSettlementTypeCS
+Id: icr-settlement-type-cs
+Title: "ICR Settlement / Special-population Type"
+Description: "The settlement or special-population classification of a place — the recurring 'type of settlement' axis on the polio SIA monitoring/tally forms (urban / rural / slum / refugee-IDP / nomad-pastoralist / security-compromised / hard-to-reach / cross-border / immigrant). A vulnerability/equity attribute of a Location, carried by the settlement-type extension; drives hard-to-reach-area (HTRA) targeting and equity disaggregation (forms-v1 / jul3-form-analysis §Aggregate #5). Bound extensible — countries add local codes."
+* ^caseSensitive = true
+* ^experimental = false
+* #ordinary "Ordinary / general population" "Standard resident population, no special classification."
+* #urban "Urban" "Urban settlement."
+* #rural "Rural" "Rural settlement."
+* #urban-slum "Urban slum / informal settlement" "Dense informal urban settlement."
+* #refugee-idp "Refugee / IDP" "Refugee or internally-displaced-person population/camp."
+* #nomad-pastoralist "Nomadic / pastoralist" "Mobile nomadic or pastoralist population."
+* #security-compromised "Security-compromised" "Area with insecurity / access constraints."
+* #hard-to-reach "Hard-to-reach" "Area hard to reach for terrain, distance or seasonal reasons (HTRA)."
+* #cross-border "Cross-border" "Cross-border / border-crossing population."
+* #immigrant "Immigrant" "Immigrant population."
+* #other "Other" "Other settlement/special-population type — record detail in text."

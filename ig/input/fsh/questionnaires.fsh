@@ -63,3 +63,90 @@ Usage: #definition
 * item[3].item[0].linkId = "mob.informed"
 * item[3].item[0].text = "Population informed before the campaign"
 * item[3].item[0].type = #boolean
+
+// --- v0.21.0 (forms-v1): pre-campaign readiness checklist ----------------------
+// The pre-campaign / campaign-phase readiness instrument (UNICEF "Preparedness
+// Validation" form), structurally the readiness sibling of the supervision
+// checklist above but scoped to the pre-execution phase. Grouped: microplan,
+// cold chain & logistics, social mobilization, trainings. Answered as a
+// QuestionnaireResponse; rolled up by the icr-campaign-readiness Measure. (Whether
+// to mint a dedicated ICRReadinessReport profile vs reuse the QuestionnaireResponse
+// pattern is an open design decision — see jul3-form-analysis §Aggregate #2.)
+
+Instance: icr-campaign-readiness-checklist
+InstanceOf: Questionnaire
+Title: "ICR Campaign Readiness Checklist"
+Usage: #definition
+* url = "https://fhir.icr.unicef.org/Questionnaire/icr-campaign-readiness-checklist"
+* status = #active
+* experimental = false
+* name = "ICRCampaignReadinessChecklist"
+* description = "Structured pre-campaign readiness/preparedness validation at operational level (UNICEF Preparedness Validation form), grouped: microplan, cold chain & logistics, social mobilization, trainings. Representative items, not the full instrument; countries extend (forms-v1)."
+* subjectType = #Location
+// --- Microplan ---
+* item[0].linkId = "microplan"
+* item[0].text = "Microplan"
+* item[0].type = #group
+* item[0].item[0].linkId = "microplan.available"
+* item[0].item[0].text = "Microplan document available"
+* item[0].item[0].type = #boolean
+* item[0].item[1].linkId = "microplan.htra"
+* item[0].item[1].text = "Hard-to-reach areas / special populations addressed with strategies"
+* item[0].item[1].type = #boolean
+* item[0].item[2].linkId = "microplan.maps"
+* item[0].item[2].text = "Appropriate sketch maps present"
+* item[0].item[2].type = #boolean
+* item[0].item[3].linkId = "microplan.budget"
+* item[0].item[3].text = "Budget / cost included"
+* item[0].item[3].type = #boolean
+* item[0].item[4].linkId = "microplan.tally-on-time"
+* item[0].item[4].text = "Tally sheets arrived on time"
+* item[0].item[4].type = #boolean
+* item[0].item[5].linkId = "microplan.funds-on-time"
+* item[0].item[5].text = "Funds arrived on time"
+* item[0].item[5].type = #boolean
+// --- Cold chain & logistics ---
+* item[1].linkId = "cold-chain"
+* item[1].text = "Cold chain & logistics"
+* item[1].type = #group
+* item[1].item[0].linkId = "cc.temperature"
+* item[1].item[0].text = "Refrigerator temperature maintained +2 to +8 C"
+* item[1].item[0].type = #boolean
+* item[1].item[1].linkId = "cc.vvm-discard"
+* item[1].item[1].text = "Any vials at VVM discard point (stage 3 or 4)"
+* item[1].item[1].type = #boolean
+* item[1].item[2].linkId = "cc.supplies-on-time"
+* item[1].item[2].text = "Supplies arrived on time"
+* item[1].item[2].type = #boolean
+* item[1].item[3].linkId = "cc.vaccine-adequate"
+* item[1].item[3].text = "Adequate vaccine & droppers"
+* item[1].item[3].type = #boolean
+* item[1].item[4].linkId = "cc.transport"
+* item[1].item[4].text = "Adequate transport arrangements"
+* item[1].item[4].type = #boolean
+// --- Social mobilization ---
+* item[2].linkId = "social-mobilization"
+* item[2].text = "Social mobilization"
+* item[2].type = #group
+* item[2].item[0].linkId = "sm.committee"
+* item[2].item[0].text = "Functional social-mobilization committee"
+* item[2].item[0].type = #boolean
+* item[2].item[1].linkId = "sm.announcements"
+* item[2].item[1].text = "Campaign announcements started"
+* item[2].item[1].type = #boolean
+* item[2].item[2].linkId = "sm.stakeholders"
+* item[2].item[2].text = "Key stakeholders informed"
+* item[2].item[2].type = #boolean
+// --- Trainings ---
+* item[3].linkId = "trainings"
+* item[3].text = "Trainings"
+* item[3].type = #group
+* item[3].item[0].linkId = "tr.teams-trained"
+* item[3].item[0].text = "Supervisors and teams trained"
+* item[3].item[0].type = #boolean
+* item[3].item[1].linkId = "tr.small-groups"
+* item[3].item[1].text = "Trainings conducted in small groups (<= 30)"
+* item[3].item[1].type = #boolean
+* item[3].item[2].linkId = "tr.agenda-complete"
+* item[3].item[2].text = "Agenda covers rationale, cold chain/VVM, marking, recording, IEC, AFP"
+* item[3].item[2].type = #boolean

@@ -157,6 +157,29 @@ Description: "WHO/CIOMS serious-event criteria. Binding: extensible on the serio
 * ^experimental = false
 * include codes from system ICRSeriousCriteriaCS
 
+// --- v0.21.0 additions (forms-v1 round) ---------------------------------------
+
+ValueSet: ICRDoseHistoryVS
+Id: icr-dose-history
+Title: "ICR Dose History / Zero-dose Status"
+Description: "Prior-dose status (zero-dose / previously-received / no-recall). Binding: required on the prior-dose-status extension; also the value space of the dose-history coverage stratifier (forms-v1)."
+* ^experimental = false
+* include codes from system ICRDoseHistoryCS
+
+ValueSet: ICRRevisitOutcomeVS
+Id: icr-revisit-outcome
+Title: "ICR Revisit Outcome"
+Description: "Outcome of a follow-up revisit (already-vaccinated / vaccinated-on-revisit / still-missing). Binding: extensible on the revisit-outcome extension (forms-v1)."
+* ^experimental = false
+* include codes from system ICRRevisitOutcomeCS
+
+ValueSet: ICRSettlementTypeVS
+Id: icr-settlement-type
+Title: "ICR Settlement / Special-population Type"
+Description: "Settlement / special-population classification of a Location. Binding: extensible on the settlement-type extension — countries add local codes (forms-v1)."
+* ^experimental = false
+* include codes from system ICRSettlementTypeCS
+
 ValueSet: ICRMDAMedicationVS
 Id: icr-mda-medication
 Title: "ICR MDA Medication"

@@ -48,6 +48,7 @@ Usage: #example
 * position.latitude = 9.0144
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-place-example"
+* extension[settlementType].valueCodeableConcept = $SettlementType#rural "Rural"
 
 Instance: example-dwelling
 InstanceOf: ICRLocation
@@ -392,6 +393,7 @@ Usage: #example
 * performer.actor.display = "Mop-up team 4, Rokupr"
 * protocolApplied.doseNumberPositiveInt = 1
 * extension[recordOrigin].valueCode = #campaign
+* extension[priorDoseStatus].valueCode = #zero-dose
 
 Instance: example-albendazole-administration
 InstanceOf: ICRMedicationAdministration
@@ -695,3 +697,62 @@ Usage: #example
 * item[1].item[0].linkId = "stock.concordant"
 * item[1].item[0].text = "Physical stock matches theoretical stock"
 * item[1].item[0].answer.valueBoolean = false
+
+// --- v0.21.0 (forms-v1) examples ----------------------------------------------
+
+// Person-targeted follow-up Task: the child absent at the mop-up visit
+// (example-mopup-task) is traced on revisit and found already vaccinated. Task.focus
+// is the Patient being followed up (the profile's person-targeted follow-up case),
+// Task.partOf links the originating Task, and the revisit-outcome extension records
+// the result (jul3-form-analysis §Aggregate #4).
+Instance: example-followup-task
+InstanceOf: ICRCampaignTask
+Title: "Follow-up revisit — missed child, Rokupr block 4"
+Usage: #example
+* status = #completed
+* intent = #order
+* code.text = "Revisit missed child from mop-up visit"
+* focus = Reference(example-child)
+* partOf = Reference(example-mopup-task)
+* owner = Reference(example-careteam)
+* location = Reference(example-dwelling)
+* executionPeriod.start = "2026-06-25T10:00:00Z"
+* executionPeriod.end = "2026-06-25T10:10:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[taskOrigin].valueCode = #pre-planned
+* extension[revisitOutcome].valueCodeableConcept = $RevisitOutcome#already-vaccinated "Already vaccinated"
+
+// Pre-campaign readiness validation of the Kambia round at ward/operational level
+// (UNICEF Preparedness Validation form) as a QuestionnaireResponse against the
+// readiness checklist — subject is the operational Location; rolls up via the
+// icr-campaign-readiness Measure (jul3-form-analysis §Aggregate #2).
+Instance: example-readiness-report
+InstanceOf: QuestionnaireResponse
+Title: "Readiness validation — Kambia supervision zone 2"
+Usage: #example
+* questionnaire = "https://fhir.icr.unicef.org/Questionnaire/icr-campaign-readiness-checklist"
+* status = #completed
+* subject = Reference(example-supervisory-area)
+* authored = "2026-06-12"
+* author.display = "Ibrahim Conteh (national supervisor)"
+* item[0].linkId = "microplan"
+* item[0].text = "Microplan"
+* item[0].item[0].linkId = "microplan.available"
+* item[0].item[0].text = "Microplan document available"
+* item[0].item[0].answer.valueBoolean = true
+* item[0].item[1].linkId = "microplan.htra"
+* item[0].item[1].text = "Hard-to-reach areas / special populations addressed with strategies"
+* item[0].item[1].answer.valueBoolean = true
+* item[1].linkId = "cold-chain"
+* item[1].text = "Cold chain & logistics"
+* item[1].item[0].linkId = "cc.temperature"
+* item[1].item[0].text = "Refrigerator temperature maintained +2 to +8 C"
+* item[1].item[0].answer.valueBoolean = true
+* item[1].item[1].linkId = "cc.supplies-on-time"
+* item[1].item[1].text = "Supplies arrived on time"
+* item[1].item[1].answer.valueBoolean = false
+* item[2].linkId = "trainings"
+* item[2].text = "Trainings"
+* item[2].item[0].linkId = "tr.teams-trained"
+* item[2].item[0].text = "Supervisors and teams trained"
+* item[2].item[0].answer.valueBoolean = true

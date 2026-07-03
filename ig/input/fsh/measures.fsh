@@ -111,3 +111,53 @@ Usage: #definition
 * group.stratifier[1].code = $CoverageStratifier#geography "Geography"
 * group.stratifier[1].criteria.language = #text/cql
 * group.stratifier[1].criteria.expression = "Admin level of the reporting unit"
+
+// --- v0.21.0 additions (forms-v1 round) ---------------------------------------
+
+Instance: icr-zero-dose-coverage
+InstanceOf: Measure
+Title: "ICR Zero-dose Coverage Measure"
+Usage: #definition
+* url = "https://fhir.icr.unicef.org/Measure/icr-zero-dose-coverage"
+* status = #active
+* experimental = false
+* name = "ICRZeroDoseCoverage"
+* title = "ICR Zero-dose Coverage"
+* description = "Zero-dose children reached in the round ÷ children reached, disaggregated by prior-dose status (dose-history). Turns the polio SIA tally's never/previously/no-recall split into a first-class measure of how many zero-dose children a campaign reaches — the equity signal behind zero-dose reduction. Placeholder CQL pending executable logic (forms-v1 / jul3-form-analysis §Aggregate #1)."
+* scoring = $MeasureScoring#proportion "Proportion"
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].criteria.language = #text/cql
+* group.population[0].criteria.expression = "Zero-dose children reached (prior-dose-status = zero-dose)"
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].criteria.language = #text/cql
+* group.population[1].criteria.expression = "Children reached in the round"
+* group.stratifier[0].code = $CoverageStratifier#dose-history "Dose history"
+* group.stratifier[0].criteria.language = #text/cql
+* group.stratifier[0].criteria.expression = "prior-dose-status (zero-dose | previously-received | no-recall)"
+* group.stratifier[1].code = $CoverageStratifier#sex "Sex"
+* group.stratifier[1].criteria.language = #text/cql
+* group.stratifier[1].criteria.expression = "Patient.gender"
+* group.stratifier[2].code = $CoverageStratifier#age-band "Age band"
+* group.stratifier[2].criteria.language = #text/cql
+* group.stratifier[2].criteria.expression = "Eligibility age band (0-11m, 12-59m, 5-9y)"
+
+Instance: icr-campaign-readiness
+InstanceOf: Measure
+Title: "ICR Campaign Readiness Measure"
+Usage: #definition
+* url = "https://fhir.icr.unicef.org/Measure/icr-campaign-readiness"
+* status = #active
+* experimental = false
+* name = "ICRCampaignReadiness"
+* title = "ICR Campaign Readiness"
+* description = "Pre-campaign readiness: operational units (wards/facilities) validated ready ÷ total targeted, from the readiness checklist (coverage-unit = implementation-units). Turns the UNICEF Preparedness Validation form into a roll-up readiness measure, stratified by readiness domain (microplan | cold-chain | social-mobilization | trainings). Placeholder CQL pending executable logic (forms-v1 / jul3-form-analysis §Aggregate #2)."
+* scoring = $MeasureScoring#proportion "Proportion"
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].criteria.language = #text/cql
+* group.population[0].criteria.expression = "Operational units validated ready (readiness checklist passed)"
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].criteria.language = #text/cql
+* group.population[1].criteria.expression = "Operational units targeted for readiness validation"
+* group.stratifier[0].code = $CoverageStratifier#geography "Geography"
+* group.stratifier[0].criteria.language = #text/cql
+* group.stratifier[0].criteria.expression = "Admin level of the reporting unit"

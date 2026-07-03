@@ -37,3 +37,6 @@ Alias: $AdverseEventCausality = https://fhir.icr.unicef.org/CodeSystem/icr-adver
 Alias: $TeamRole = https://fhir.icr.unicef.org/CodeSystem/icr-team-role
 Alias: $CommunicationChannel = https://fhir.icr.unicef.org/CodeSystem/icr-communication-channel-cs
 Alias: $SeriousCriteria = https://fhir.icr.unicef.org/CodeSystem/icr-serious-criteria-cs
+Alias: $DoseHistory = https://fhir.icr.unicef.org/CodeSystem/icr-dose-history-cs
+Alias: $RevisitOutcome = https://fhir.icr.unicef.org/CodeSystem/icr-revisit-outcome-cs
+Alias: $SettlementType = https://fhir.icr.unicef.org/CodeSystem/icr-settlement-type-cs

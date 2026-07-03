@@ -1,6 +1,6 @@
 ---
-version: 0.1.0
-last_modified: 2026-07-02T03:53:45.000Z
+version: 0.2.0
+last_modified: 2026-07-03T17:23:46.000Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-`v0.1.0 · Last modified Jul 1, 2026 at 11:53 PM EDT`
+`v0.2.0 · Last modified Jul 3, 2026 at 1:23 PM EDT`
 
 ⁠
 
@@ -170,12 +170,12 @@ The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace;
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
 | **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRSupervisionReport (QuestionnaireResponse) |
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
-| **Measures** | 4   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage` — the canonical definitions the coverage MeasureReports instantiate (§7) |
-| **Questionnaire / ConceptMap** | 1 / 1 | `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 32  | See §10 |
-| **CodeSystems** | 20  | See §9 |
-| **ValueSets** | 23  | One per code system (mostly), plus purpose-built sets (§9) |
-| **Example instances** | 39  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision (§11) |
+| **Measures** | 6   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, and (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness` — the canonical definitions the coverage/readiness MeasureReports instantiate (§7) |
+| **Questionnaire / ConceptMap** | 2 / 1 | `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
+| **Extensions** | 35  | See §10 |
+| **CodeSystems** | 23  | See §9 |
+| **ValueSets** | 26  | One per code system (mostly), plus purpose-built sets (§9) |
+| **Example instances** | 41  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, plus (forms-v1) a person-targeted follow-up revisit and a readiness validation (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
 File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `conceptmaps.fsh`, `examples.fsh`.
@@ -766,6 +766,7 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 | `extension[noncomplianceReason]` |     | 0..* | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS | Why a household/person declined. |
 | `extension[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height/age, pregnant, breastfeeding, acute illness. Deliberately distinct from *missed* (not reached) and *noncompliance* (declined). |
 | `extension[fingerMarked]` |     | 0..1 | boolean | (Type B) the in-field "already covered" marker. |
+| `extension[revisitOutcome]` *(forms-v1)* |     | 0..1 | CodeableConcept, **extensible** → ICRRevisitOutcomeVS | On a **person-targeted follow-up** Task (`focus` = the missed Patient, `partOf` = the originating Task): the outcome of the revisit — `already-vaccinated` \| `vaccinated-on-revisit` \| `still-missing`. |
 | `extension[dataLineage]` |     | 0..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled. |
 
 **Example.** `example-mopup-task` — the Type-B house-to-house visit, the richer Task shape, which chains to a delivery event:
@@ -999,6 +1000,15 @@ The shipped Questionnaire groups its items into four sections — **supplies**, 
 
 - **Structured answers make QA analytics possible.** Because every answer is keyed to a coded question, "what fraction of supervised teams had concordant stock" is a query, not a document review. Richer QA analytics and executable checks are a later-round item (§13.2).
 - **Supervision, team, stock, and mobilization were designed together.** The supervision checklist, the CareTeam workload, the stock-accountability extension on SupplyDelivery (§6.3), and the social-mobilization extension on the Campaign (§4.2) jointly cover the supervision-form content — one bundle of work, split across the resources where each fact belongs.
+### 4.7 Campaign readiness — `icr-campaign-readiness-checklist` (Questionnaire) *(forms-v1)*
+**Purpose.** The **pre-campaign readiness / preparedness** instrument — the checks a monitor runs at ward/operational level *before* the round starts (drawn from the UNICEF "Preparedness Validation" form). It is the readiness sibling of the supervision checklist (§4.6): a `Questionnaire` (`icr-campaign-readiness-checklist`) answered as a `QuestionnaireResponse`, whose items are grouped into four coded sections — **microplan** (document available, HTRA strategies, sketch maps, budget, tally sheets & funds on time), **cold chain & logistics** (fridge temperature, VVM discard, supply timeliness, adequate vaccine/droppers, transport), **social mobilization** (functional committee, announcements started, stakeholders informed), and **trainings** (teams trained, small groups, agenda coverage). The `example-readiness-report` records a validation of Kambia supervision zone 2.
+
+**Roll-up.** The `icr-campaign-readiness` **Measure** turns the checklist into implementation-unit readiness — operational units validated ready ÷ total targeted (`coverage-unit = implementation-units`) — so "% of wards validated ready" is a query, mirroring geographic coverage (§7.3).
+
+**Key observations.**
+
+- **Readiness closes the one campaign-lifecycle phase the IG had no home for.** ICR modelled planning (the microplan CarePlan), execution (Tasks, delivery events), and evaluation (coverage) — but not the pre-execution *readiness* gate. This checklist fills it, promoting the §13.2 "campaign-phase/readiness lifecycle" proposal to a built artifact.
+- **Open design decision.** Whether a readiness `QuestionnaireResponse` warrants a dedicated `ICRReadinessReport` profile (parallel to `ICRSupervisionReport`) or simply reuses the base QuestionnaireResponse pattern is still open — the lifecycle stage differs (pre-campaign vs in-campaign), which argues for a distinct profile, but the structure is identical.
 
 * * *
 ## 5. Population & geography profiles
@@ -1272,6 +1282,7 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 | `extension[boundary]` (`location-boundary-geojson`) | MS  | 0..1 | Attachment, `contentType` fixed `application/geo+json` | The GeoJSON geometry (a Polygon/MultiPolygon shape, or a Point). |
 | `extension[deliveryStrategy]` |     | 0..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | For delivery sites (fixed/temporary posts): the strategy this site serves. |
 | `extension[overlaysAdminUnit]` |     | 0..* | `Reference(ICRLocation)` | For operational geography: the admin unit(s) this area overlays. *1..* required when* `type ∈ {supervisory-area, operational-area}` (invariant `icr-loc-overlays`). |
+| `extension[settlementType]` *(forms-v1)* | MS  | 0..1 | CodeableConcept, **extensible** → ICRSettlementTypeVS | The settlement / special-population classification (`urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`…) — the recurring "type of settlement" axis on campaign monitoring forms; a vulnerability/equity attribute driving HTRA targeting. |
 | `extension[locationAncestors]` *(proposed)* |     | 0..* | complex: per-level `adm0…adm3+` code + `Reference(ICRLocation)` | A **server-maintained** denormalized admin breadcrumb of the `partOf` chain, for fast hierarchy filtering without deep recursion. Proposed; not yet in the IG. |
 
 **Example.** `example-district` — Kambia District, showing multi-system identity, the admin hierarchy, a GPS point, and a GeoJSON boundary:
@@ -1452,6 +1463,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 | `vaccineCode` | MS  |     | CodeableConcept, **extensible** → core FHIR vaccine VS (CVX) | The vaccine; local codes map back via ConceptMap. |
 | `protocolApplied` | MS  |     |     | Dose number / series — supports multi-dose campaigns (OCV) and routine integration. |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS (`campaign` \| `routine`) | Differentiates campaign-captured doses from routine-immunization doses, keeping them separate in coverage analytics. |
+| `extension[priorDoseStatus]` *(forms-v1)* | MS  | 0..1 | code, **required** → ICRDoseHistoryVS (`zero-dose` \| `previously-received` \| `no-recall`) | The person's prior-dose status for this antigen at the contact — the polio tally's never/previously/no-recall split. Distinct from `protocolApplied.doseNumber` (this series' dose count); aggregates to the `dose-history` coverage stratifier and the zero-dose Measure (§7.3). |
 
 **Example.** `example-mcv-dose` — the dose the mop-up Task's `output` points at:
 
@@ -1531,6 +1543,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 | `dosage` | MS  |     |     | Tablet count — usually derived from a dose-pole height-band Observation. |
 | `supportingInformation` | MS  |     |     | e.g. the dose-pole Observation the dosage was derived from. |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | Differentiates campaign data from routine-programme data. |
+| `extension[priorDoseStatus]` *(forms-v1)* | MS  | 0..1 | code, **required** → ICRDoseHistoryVS | Prior-dose status of the treatment at this contact (`zero-dose` \| `previously-received` \| `no-recall`) — the drug-side counterpart of the immunization axis. |
 | `extension[directlyObserved]` | MS  | 0..1 | boolean | The MDA DOC protocol — distinguishes "handed out" from "actually swallowed". |
 | `extension[dosePoleBand]` | MS  | 0..1 | CodeableConcept | The measured height band that set the tablet count — makes the height→dose decision machine-readable. |
 
@@ -1878,7 +1891,9 @@ Two further shapes of the same administrative-coverage profile show how disaggre
 - **The stratified treatment tally** (`example-mda-treatment-tally`). MDA field forms collect a **multi-dimensional** aggregate — treated counts by drug × sex × age band, plus exclusion dispositions — which a single Group-subject MedicationAdministration cannot hold. The canonical home is an `ICRAdministrativeCoverage` MeasureReport with `group.stratifier`: 2,900 / 3,200 ≈ **91%**, stratified by **sex** (1,500 F / 1,400 M), **age band** (1,100 at 5–14 / 1,800 at 15+), and **disposition** (2,900 treated / 180 excluded / 95 absent / 25 refused) — the full not-treated cube in one report, with `denominator-type = at-risk` and `measure` → `icr-mda-treatment-coverage`. The operational per-visit scalar (the community Task's "2,900 treated") still rides `Task.output` and references this report.
 - **Geographic (implementation-unit) coverage** (`example-geographic-coverage`). The `coverage-unit = implementation-units` axis turns the supervision-form "villages treated / total" figure into a first-class coverage report: 188/200 ≈ **94%**, with the non-treatment reasons (insecurity 7, medication shortage 5) as a disposition stratifier and `icr-geographic-coverage` as the Measure. Same profile as dose coverage, different unit.
 
-The standard stratifier axes are named in **ICRCoverageStratifierCS** (`sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`) so disaggregation shares one vocabulary across reports.
+The standard stratifier axes are named in **ICRCoverageStratifierCS** (`sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, and — forms-v1 — `dose-history`) so disaggregation shares one vocabulary across reports.
+
+**Two forms-v1 Measures** extend the coverage family: **`icr-zero-dose-coverage`** — zero-dose children reached ÷ children reached, stratified by `dose-history` (the polio tally's never/previously/no-recall split, feeding zero-dose-reduction analytics); and **`icr-campaign-readiness`** — operational units validated ready ÷ total targeted (`coverage-unit = implementation-units`), the roll-up of the readiness checklist (§4.7). Both carry placeholder CQL like the other four.
 
 **Key observations.**
 
@@ -1910,30 +1925,33 @@ These are the design rules that recur across the profiles — the things to hold
 ## 9. Terminology (CodeSystems & ValueSets)
 **The pattern.** ICR defines code systems **only for genuinely new campaign semantics it owns**; everything that already has a standard system reuses it — vaccines → CVX, drugs → ATC, commodities → GS1, geography → ISO 3166. Local/national codes join via ConceptMap (deferred). This is standard IG practice: WHO's own SMART Immunizations IG does the same with its `IMMZ.*` codes. None of ICR's code systems duplicates a standard system. All are `caseSensitive` and non-experimental.
 
-**The 20 CodeSystems.**
+**The 23 CodeSystems** (the forms-v1 round, §13.2, added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, `ICRSettlementTypeCS` and extended four existing systems — marked below).
 
 | CodeSystem | Codes | FR? | Bound on (strength) |
 | --- | --- | --- | --- |
 | **ICRCampaignTypeCS** | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔   | Protocol.type, Campaign.category (**required**) |
-| **ICRDeliveryStrategyCS** | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed` (6) | ✔   | delivery-strategy ext (**required**) |
+| **ICRDeliveryStrategyCS** | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed`, `outreach` (7) | ✔   | delivery-strategy ext (**required**) — `outreach` added forms-v1 for outside-household/special-strategy sites |
 | **ICRRecordOriginCS** | `campaign`, `routine` (2) | ✔   | record-origin ext (**required**) |
 | **ICRGroupKindCS** | `household`, `community`, `school-cohort` (3) | ✔   | ICRDeliveryUnit.code (**required**) |
 | **ICRTaskOriginCS** | `pre-planned`, `field-registered` (2) | ✔   | task-origin ext (**required**) |
 | **ICRLocationTypeCS** | `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area` (9) | —   | ICRLocation.type (**extensible**) |
 | **ICRGroupCharacteristicCS** | `geography` (1) | —   | fixed code on the geography characteristic slice (no VS) |
-| **ICRMissedReasonCS** | `absent`, `sleeping`, `sick`, `refusal`, `inaccessible`, `not-visited`, `medication-shortage`, `insecurity`, `difficult-access`, `not-required`, `other` (11) | —   | missed-reason ext (**extensible**) — person-level and area-level reasons in one set |
-| **ICRNoncomplianceReasonCS** | `safety-concern`, `religious-objection`, `no-felt-need`, `campaign-fatigue`, `misinformation`, `other` (6) | —   | noncompliance-reason ext (**extensible**) |
+| **ICRMissedReasonCS** | `absent`, `sleeping`, `sick`, `refusal`, `inaccessible`, `not-visited`, `not-revisited`, `medication-shortage`, `insecurity`, `difficult-access`, `not-required`, `other` (12) | —   | missed-reason ext (**extensible**) — person-level and area-level reasons in one set; `not-revisited` added forms-v1 |
+| **ICRNoncomplianceReasonCS** | `safety-concern`, `religious-objection`, `no-felt-need`, `campaign-fatigue`, `misinformation`, `not-decision-maker`, `other` (7) | —   | noncompliance-reason ext (**extensible**) — `not-decision-maker` added forms-v1 |
 | **ICRExclusionReasonCS** | `under-height-age`, `pregnant`, `breastfeeding`, `acute-illness`, `other` (5) | —   | exclusion-reason ext (**extensible**) — *present-but-contraindicated*, the MDA "reasons not treated" tally |
 | **ICRDenominatorSourceCS** | `census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `other` (7) | —   | denominator-source ext (**extensible**) |
 | **ICRDataLineageCS** | `realtime`, `reconciled` (2) | ✔   | realtime-vs-reconciled ext (**required**) |
 | **ICRCoverageSourceCS** | `administrative`, `survey`, `lqas`, `rcm` (4) | ✔   | coverage-source ext (**required**) |
-| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography` (5) | —   | Measure/MeasureReport stratifier code (**extensible**) |
+| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history` (6) | —   | Measure/MeasureReport stratifier code (**extensible**) — `dose-history` added forms-v1 (zero-dose axis) |
 | **ICRDenominatorTypeCS** | `total-population`, `at-risk` (2) | —   | denominator-type ext (**required**) |
 | **ICRCoverageUnitCS** | `people`, `implementation-units` (2) | —   | coverage-unit ext (**required**) |
 | **ICRAdverseEventCausalityCS** | `a-consistent`, `b-indeterminate`, `c-coincidental`, `d-unclassifiable` (4) | —   | ICRAdverseEvent causality (**extensible**) — WHO/CIOMS A/B/C/D |
 | **ICRTeamRoleCS** | `vaccinator`, `cdd`, `supervisor`, `social-mobilizer`, `recorder` (5) | —   | ICRCareTeam.participant.role (**extensible**) |
-| **ICRCommunicationChannelCS** | `radio`, `town-criers`, `community-leaders`, `schools`, `posters`, `megaphone`, `sms`, `other` (8) | —   | social-mobilization channel (**extensible**) |
+| **ICRCommunicationChannelCS** | `radio`, `town-criers`, `community-leaders`, `schools`, `posters`, `megaphone`, `sms`, `health-worker`, `religious-leader`, `social-mobilizer`, `volunteer-chw`, `mobile-pa`, `social-media`, `tv`, `newspaper`, `iec-materials`, `neighbour`, `other` (18) | —   | social-mobilization channel (**extensible**) — 10 channels added forms-v1 from the RCM awareness-source lists |
 | **ICRSeriousCriteriaCS** | `death`, `life-threatening`, `hospitalization`, `disability`, `congenital-anomaly`, `medically-important` (6) | —   | serious-criteria ext (**extensible**) — WHO/CIOMS |
+| **ICRDoseHistoryCS** *(forms-v1)* | `zero-dose`, `previously-received`, `no-recall` (3) | —   | prior-dose-status ext (**required**); value space of the `dose-history` stratifier — the polio SIA never/previously/no-recall split |
+| **ICRRevisitOutcomeCS** *(forms-v1)* | `already-vaccinated`, `vaccinated-on-revisit`, `still-missing` (3) | —   | revisit-outcome ext (**extensible**) — outcome of a follow-up revisit |
+| **ICRSettlementTypeCS** *(forms-v1)* | `ordinary`, `urban`, `rural`, `urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`, `immigrant`, `other` (11) | —   | settlement-type ext (**extensible**) — vulnerability/special-population axis for HTRA targeting |
 
 **ValueSets.** One whole-system ValueSet per CodeSystem (except ICRGroupCharacteristicCS, whose single code is fixed directly in the characteristic slice), plus the purpose-built sets:
 
@@ -1958,7 +1976,7 @@ These are the design rules that recur across the profiles — the things to hold
 
 * * *
 ## 10. Extensions
-FHIR has no native campaign semantics, so 32 extensions carry them on the profiled core resources. They group into four families.
+FHIR has no native campaign semantics, so 35 extensions carry them on the profiled core resources. They group into four families. (The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`.)
 
 **Campaign mechanics**
 
@@ -1985,6 +2003,7 @@ FHIR has no native campaign semantics, so 32 extensions carry them on the profil
 | NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS — reached but declined |
 | ExclusionReason (`exclusion-reason`) | CodeableConcept, **extensible** → ICRExclusionReasonVS — *present but contraindicated* (under height/age, pregnant, breastfeeding, acute illness); 0..* |
 | FingerMarked (`finger-marked`) | boolean — the in-field "already covered" flag |
+| RevisitOutcome (`revisit-outcome`) *(forms-v1)* | CodeableConcept, **extensible** → ICRRevisitOutcomeVS — outcome of a person-targeted follow-up revisit (already-vaccinated / vaccinated-on-revisit / still-missing) |
 
 **Population & denominator provenance**
 
@@ -2005,6 +2024,8 @@ FHIR has no native campaign semantics, so 32 extensions carry them on the profil
 | OverlaysAdminUnit (`overlays-admin-unit`) | Location | Reference(ICRLocation) — links operational geography to the admin unit(s) it overlays; *1..* required on supervisory/operational-area types* (invariant `icr-loc-overlays`) |
 | LocationAncestors (`location-ancestors`) *(proposed, not yet in the IG)* | Location | complex: per-level `adm0…adm3+` code + Reference(ICRLocation); server-maintained breadcrumb of the `partOf` chain |
 | RecordOrigin (`record-origin`) | Immunization, MedicationAdministration, SupplyDelivery, AdverseEvent | code, **required** → ICRRecordOriginVS |
+| PriorDoseStatus (`prior-dose-status`) *(forms-v1)* | Immunization, MedicationAdministration | code, **required** → ICRDoseHistoryVS — the zero-dose / previously-received / no-recall status of the antigen at this contact; aggregates to the `dose-history` coverage stratifier |
+| SettlementType (`settlement-type`) *(forms-v1)* | Location | CodeableConcept, **extensible** → ICRSettlementTypeVS — settlement / special-population classification (urban-slum, refugee-IDP, nomad-pastoralist, hard-to-reach…) for HTRA targeting & equity disaggregation |
 | DirectlyObservedConsumption (`directly-observed-consumption`) | MedicationAdministration | boolean |
 | DosePoleBand (`dose-pole-band`) | MedicationAdministration, ActivityDefinition | CodeableConcept — the measured height band that set the tablet count |
 | StockAccountability (`stock-accountability`) | SupplyDelivery | complex: received/used/remaining/notUsable/returned (Quantity) + concordant (boolean) + vvmStage (integer) — wastage & stock reconciliation |
@@ -2044,7 +2065,7 @@ graph LR
     D -- patient --> C
 ```
 
-**The 39 example instances.**
+**The 41 example instances** (forms-v1 added `example-followup-task` and `example-readiness-report`, and enriched `example-settlement` with a `settlement-type` and `example-mcv-dose` with a `prior-dose-status`).
 
 *Locations, people & groups*
 
@@ -2104,13 +2125,15 @@ graph LR
 | 37  | `example-admin-coverage` | ICRAdministrativeCoverage | numerator 47,766 / denominator 48,250, **measureScore 99%**; denominatorSource WorldPop; dataLineage reconciled |
 | 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**; coverageSource survey; sampleDesign "WHO 30×10 cluster survey…"; dataLineage reconciled — the same quantity as #37, **23 points apart** |
 | 39  | `example-supervision-report` | ICRSupervisionReport | QuestionnaireResponse against the supervision checklist: DOC observed ✓, height chart ✓, ineligibles identified ✓, stock concordant ✗; subject → community; author → supervisor |
+| 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `focus` → the missed child, `partOf` → the mop-up Task, `revisit-outcome` → already-vaccinated |
+| 41  | `example-readiness-report` *(forms-v1)* | QuestionnaireResponse | Pre-campaign readiness validation of Kambia supervision zone 2 against the readiness checklist: microplan ✓, HTRA ✓, supplies-on-time ✗, teams trained ✓ |
 
 *Definitional artifacts (alongside the examples)*
 
 | Instance | Kind | Content |
 | --- | --- | --- |
-| `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage` | Measure | The canonical Measures the coverage reports instantiate — numerator/denominator + standard stratifier axes; placeholder CQL pending executable logic |
-| `icr-mda-supervision-checklist` | Questionnaire | The structured supervision checklist — groups: supplies / CDD observation / stock / social mobilization (coded linkIds) |
+| `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, `icr-zero-dose-coverage` *(forms-v1)*, `icr-campaign-readiness` *(forms-v1)* | Measure | The canonical Measures the coverage/readiness reports instantiate — numerator/denominator + standard stratifier axes; placeholder CQL pending executable logic |
+| `icr-mda-supervision-checklist`, `icr-campaign-readiness-checklist` *(forms-v1)* | Questionnaire | The structured supervision checklist (supplies / CDD observation / stock / social mobilization) and the pre-campaign readiness checklist (microplan / cold-chain / social-mobilization / trainings), coded linkIds |
 | `icr-aefi-causality-to-immz` | ConceptMap | ICR causality A/B/C/D → WHO `IMMZ.AdverseEvent` (provisional targets) |
 
 **What the scenario demonstrates.** The full Location chain with GERS at every level (country → dwelling) plus a delivery site; operational geography overlaying (not inside) the admin hierarchy; the generalized delivery-unit pattern at both scales (household and community), at both registration depths (count-only and fully enumerated); competing denominators for the same geography (WorldPop vs enumeration, 7% apart, one planning flag) alongside the cross-level contrast (district WorldPop vs national census projection); the activity gallery across campaign types; protocol→activity→campaign wiring; the umbrella/round `partOf` lifecycle (`plan` umbrella, `order` round); all three Task shapes (Type A site session, Type B house-to-house, Type C community-directed) and both task origins; a Type-B trail end-to-end down to the dose and its AEFI; the MDA thread from drug receipt through community task to the stratified tally; and the never-merge rule made visible by a 99-vs-76 coverage pair on the same round.
@@ -2144,14 +2167,24 @@ Stated in the IG's own narrative — absent by design, not oversight:
 ### 13.2 Proposed additions (validated by field evidence)
 A synthesis of eight global-health source analyses (WHO SIA, RED microplanning, and measles guides; the WHO cluster-survey manual; GTFCC OCV; NTD-MDA; WHO EYE/yellow-fever; geo-enabled microplanning) was compared against the IG. The convergence is the signal: **no source contradicts the IG's core design**, and the same gaps recur across very different campaign types. Several of the highest-priority findings have since been built (the intervention-neutral adverse event, the coverage denominator-type/unit axes, the stratified tally, stock accountability, the supervision bundle, exclusion reasons, the dose-pole band); what follows is what remains proposed.
 
+**forms-v1 (built, v0.21.0 IG round).** A second field-evidence pass — ten UNICEF polio-SIA instruments (Kenya nOPV2 + Ghana mOPV2 tally / monitoring / stock / supervision / readiness forms; see `project/jul3-form-analysis.md`) — drove a further build round that promoted several items below from *proposed* to *committed*:
+- **Zero-dose / prior-dose status** — `ICRDoseHistoryCS` (`zero-dose` / `previously-received` / `no-recall`), a `prior-dose-status` extension on Immunization/MedicationAdministration, a `dose-history` coverage stratifier, and an `icr-zero-dose-coverage` Measure. (The polio tally's never/previously/no-recall split.)
+- **Campaign-readiness lifecycle** — an `icr-campaign-readiness-checklist` Questionnaire (microplan / cold-chain / social-mobilization / trainings, §4.7) and an `icr-campaign-readiness` roll-up Measure (implementation-unit readiness). *Open: whether the readiness QuestionnaireResponse warrants a dedicated `ICRReadinessReport` profile or reuses the supervision pattern.*
+- **Reason-code reconciliation (partial)** — `missed-reason` gained `not-revisited`; `noncompliance-reason` gained `not-decision-maker`; a `revisit-outcome` extension + `ICRRevisitOutcomeCS` (`already-vaccinated` / `vaccinated-on-revisit` / `still-missing`) capture the missed-children revisit disposition.
+- **Vulnerability / special-population taxonomy** — a `settlement-type` extension on Location + `ICRSettlementTypeCS` (urban-slum / refugee-IDP / nomad-pastoralist / security-compromised / hard-to-reach / cross-border …).
+- **`outreach` delivery strategy** — for outside-household special-strategy sites (water points, transit/bus, border crossings).
+- **Communication-channel expansion** — ten channels added to `ICRCommunicationChannelCS` from the RCM awareness-source lists (health-worker, religious-leader, social-mobilizer, social-media, TV, newspaper, IEC materials, mobile-PA, volunteer-CHW, neighbour).
+
+Still proposed after forms-v1: the structured `sample-design` sub-elements and explicit RCM/LQAS pass-fail semantics; a canonical wastage Measure + doses-per-vial; a cold-chain/logistics axis beyond the readiness checklist and SupplyDelivery; the in-process-vs-end-process monitoring-timing axis; and the disease-agnostic-typing sign-off with the polio programme (kept as-is per reviewer confirmation — disease stays in `addresses` + product code, no data-model change).
+
 **Validated — not up for redesign.** Plan→order lifecycle; one-Task-per-visit with per-person delivery events; the `record-origin` firewall; denominator-with-provenance; the three never-merged coverage lineages; realtime-vs-reconciled; coded delivery strategy; GERS-preferred multi-system identity; the MDA model (ATC, Group subjects, directly-observed consumption); integrated multi-intervention campaigns on a shared denominator. **Operational geography overlaying the admin hierarchy is the standout, validated by every GIS and operational source.**
 
 **Priority proposals:**
 
 - **Programme-semantics quartet** — four small coded axes every campaign type treats as first-class: `activity-type`/`sia-type` (routine / preventive-mass / catch-up / follow-up / mop-up / reactive — orthogonal to `campaign-type`, §4.1); `coverage-target` (store the programme-defined threshold — ≥95% SIA, ≥65% LF epidemiological, EYE 50/60/80% — not just achieved coverage); `stockpile-source` (ICG / national / Gavi, with allocation and request-to-delivery interval); `dosing-regimen` (single-dose-lifelong / multi-dose / fractional — needed to define "fully immunized").
 - **Remaining coverage work** — structure `sample-design` into sub-elements (method, PSU/EA, cluster count, design effect, sample size, weighting, evidence source, crude-vs-valid, confidence interval); author executable CQL; a multi-dose "fully-immunized" Measure with round1↔round2 linkage for OCV/multi-round campaigns; and explicit RCM/LQAS semantics (pass/fail + trigger thresholds, not a coverage rate).
-- **Reason-code reconciliation** — extend `missed-reason`/`noncompliance-reason` with the WHO RCM field lists (`unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`, …) and split out non-missed dispositions (`already-vaccinated`, `plan-to-go-later`).
-- **Further candidates** (convergent, more design work): campaign-trigger and campaign-cost axes; a campaign-phase/readiness lifecycle with a readiness MeasureReport; defaulter/dropout/zero-dose disposition with a dropout Measure and a hand-off to routine immunization; the `ICRStructureTreatment` event for structure-applied interventions (§6.4); a standalone microplan resource (beyond the CareTeam-carried workload); a population-vulnerability/equity taxonomy; an `outreach` delivery strategy; a population-estimation-method + source-raster version/date on denominators; a `structure`/footprint location type; and a cold-chain/logistics/stock-readiness axis beyond SupplyDelivery.
+- **Reason-code reconciliation** *(partly built — forms-v1)* — extend `missed-reason`/`noncompliance-reason` with the WHO RCM field lists (`unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`, …) and split out non-missed dispositions (`already-vaccinated`, `plan-to-go-later`). forms-v1 added `not-revisited`, `not-decision-maker`, and the `revisit-outcome` disposition; the fuller WHO RCM list and remaining non-missed dispositions stay open.
+- **Further candidates** (convergent, more design work): campaign-trigger and campaign-cost axes; ~~a campaign-phase/readiness lifecycle with a readiness MeasureReport~~ *(built — forms-v1, §4.7)*; ~~defaulter/dropout/zero-dose disposition~~ *(zero-dose built — forms-v1; the dropout Measure and routine hand-off stay open)*; the `ICRStructureTreatment` event for structure-applied interventions (§6.4); a standalone microplan resource (beyond the CareTeam-carried workload); ~~a population-vulnerability/equity taxonomy~~ *(built — forms-v1 `settlement-type`)*; ~~an `outreach` delivery strategy~~ *(built — forms-v1)*; a population-estimation-method + source-raster version/date on denominators; a `structure`/footprint location type; and a cold-chain/logistics/stock-readiness axis beyond SupplyDelivery.
 
 **Scope decision — reference, don't model.** Surveillance and outbreak response (case-based surveillance, lab confirmation, susceptibility modelling) are the *trigger and evaluation context* for a campaign, not its execution data. ICR holds only a thin reference (the signal that justified the campaign, the case-age distribution that set the target age) and links out to a VPD-surveillance IG. The same rule applies to Location context (accessibility/travel-time, endemicity, TAS status — linked externally by location ID, §5.3). One practical consequence: where field forms co-bundle surveillance or morbidity data onto the same submission as a treatment tally, the ingestion pipeline must route that data to a surveillance/morbidity store rather than force it into ICR campaign resources — the boundary lives in the transform, not the form.
 ### 13.3 WHO SMART Immunizations alignment

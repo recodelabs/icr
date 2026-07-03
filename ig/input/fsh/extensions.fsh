@@ -313,3 +313,32 @@ Context: AdverseEvent
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRSeriousCriteriaVS (extensible)
+
+// --- v0.21.0 additions (forms-v1 round) ---------------------------------------
+
+Extension: PriorDoseStatus
+Id: prior-dose-status
+Title: "Prior-dose Status (Zero-dose)"
+Description: "The person's prior-dose status for this antigen at the time of the campaign contact: zero-dose (never received before), previously-received, or no-recall. The per-event carrier of the polio SIA tally's never/previously/no-recall split; aggregates to the dose-history coverage stratifier and feeds zero-dose reach / dropout measures. Distinct from Immunization.protocolApplied.doseNumber, which counts this series' doses, not prior status of the antigen (forms-v1 / jul3-form-analysis §Aggregate #1)."
+Context: Immunization, MedicationAdministration
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRDoseHistoryVS (required)
+
+Extension: RevisitOutcome
+Id: revisit-outcome
+Title: "Revisit Outcome"
+Description: "Outcome of a follow-up revisit to a previously-missed household/person (already-vaccinated | vaccinated-on-revisit | still-missing) — the 'outcome of the revisit' of the missed-children recording forms. Set on the person-targeted follow-up Task (Task.for = Patient, Task.focus = the originating Task that missed them) (forms-v1 / jul3-form-analysis §Aggregate #4)."
+Context: Task
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRRevisitOutcomeVS (extensible)
+
+Extension: SettlementType
+Id: settlement-type
+Title: "Settlement / Special-population Type"
+Description: "The settlement or special-population classification of a place (urban / rural / slum / refugee-IDP / nomad-pastoralist / security-compromised / hard-to-reach / cross-border / immigrant) — the recurring 'type of settlement' axis on the polio SIA monitoring/tally forms. A vulnerability/equity attribute of a Location that drives hard-to-reach-area targeting and equity disaggregation (forms-v1 / jul3-form-analysis §Aggregate #5)."
+Context: Location
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRSettlementTypeVS (extensible)

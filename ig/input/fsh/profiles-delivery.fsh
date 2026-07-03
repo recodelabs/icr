@@ -21,7 +21,10 @@ Description: "A vaccination delivery event: CVX-coded, with lot accountability a
 * performer MS
 * protocolApplied MS
 * protocolApplied ^short = "Dose number / series — supports multi-dose campaigns (OCV) and routine integration"
-* extension contains RecordOrigin named recordOrigin 1..1 MS
+* extension contains
+    RecordOrigin named recordOrigin 1..1 MS and
+    PriorDoseStatus named priorDoseStatus 0..1 MS
+* extension[priorDoseStatus] ^short = "Prior-dose (zero-dose) status of the antigen at this contact — zero-dose | previously-received | no-recall (v0.21.0)"
 
 Profile: ICRMedicationAdministration
 Parent: MedicationAdministration
@@ -44,8 +47,10 @@ Description: "An MDA treatment event: ATC-coded preventive chemotherapy with dir
 * extension contains
     RecordOrigin named recordOrigin 1..1 MS and
     DirectlyObservedConsumption named directlyObserved 0..1 MS and
-    DosePoleBand named dosePoleBand 0..1 MS
+    DosePoleBand named dosePoleBand 0..1 MS and
+    PriorDoseStatus named priorDoseStatus 0..1 MS
 * extension[dosePoleBand] ^short = "The measured dose-pole height band that set the tablet count (machine-readable height-band → dose, v0.19.0)"
+* extension[priorDoseStatus] ^short = "Prior-dose (zero-dose) status at this contact — zero-dose | previously-received | no-recall (v0.21.0)"
 
 Profile: ICRSupplyDelivery
 Parent: SupplyDelivery
