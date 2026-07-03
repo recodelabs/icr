@@ -1,6 +1,7 @@
 # SUSHI / IG Publisher build artifacts — regenerate with `sushi build` / `./_genonce.sh`
 fsh-generated/
 output/
+output-fresh/
 input-cache/
 temp/
 template/
