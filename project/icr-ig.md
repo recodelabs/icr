@@ -131,7 +131,7 @@ The ICR IG is authored in **FHIR Shorthand (FSH)**, a concise text language for 
 ### 1.3 Introducing the ICR IG
 Health campaigns — measles SIAs, polio rounds, mass drug administration for neglected tropical diseases, bed-net and indoor-spraying campaigns — repeatedly collect the *same* data (who lives where, how many children are eligible, who was reached, what coverage was achieved) and then archive or lock it in a one-off spreadsheet. The next campaign starts from scratch.
 
-The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide that gives campaigns a shared, reusable data model, so each campaign's data *compounds* instead of being re-collected. Its scope is the half of immunization-and-delivery work that routine-health systems (and WHO's routine-immunization IG) do **not** model:
+The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide that gives campaigns a shared, reusable data model, so each campaign's data *compounds* instead of being re-collected. Its scope is the half of immunization-and-delivery work that routine-health systems (and WHO's routine-immunization IG) do **not** model: sddfgsdf
 
 - **Campaign architecture** — a reusable protocol, its executions and rounds, the discrete activities, the operational units of work (Tasks), and the teams that carry them out.
 - **Population & geography** — denominators with provenance, the actual household/community groups reached, the registered individuals within them, and a rich location model (administrative hierarchy, operational geography, stable cross-campaign place IDs, GeoJSON boundaries).
