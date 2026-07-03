@@ -125,7 +125,7 @@ Base FHIR is deliberately generic: `Patient` has to serve a hospital in one coun
 - **Examples** — concrete instances that show conformant data.
 - **Narrative** — pages that explain the design and how to implement it.
 
-{==An IG turns "FHIR in general" into "FHIR, exactly as this programme needs it" — and makes data from different implementers comparable by construction.==}{>>Good stuff here<<}{id="27f0dff7-7de0-4c21-9200-f4a26fb9bc99" by="Ben" at="2026-07-03T15:39:33.544Z" guest="true"}
+An IG turns "FHIR in general" into "FHIR, exactly as this programme needs it" — and makes data from different implementers comparable by construction.
 
 The ICR IG is authored in **FHIR Shorthand (FSH)**, a concise text language for writing profiles, compiled to FHIR JSON by **SUSHI** (the FSH compiler) and rendered to a website by the **IG Publisher**.
 ### 1.3 Introducing the ICR IG
