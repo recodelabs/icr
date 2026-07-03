@@ -1,0 +1,105 @@
+name: Publish IG to Cloudflare Pages
+
+# Builds the FHIR IG (sushi → HL7 IG Publisher), re-renders it with ig-fresh
+# (https://github.com/recodelabs/ig-fresh), and deploys to Cloudflare Pages
+# (https://icr-ig.pages.dev).
+#
+# Deploy requires two repo secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN  — API token with "Cloudflare Pages: Edit" permission
+#   CLOUDFLARE_ACCOUNT_ID — af8ac7eb1f7ec617e14702e69ce0d4c7
+# Until they exist, the workflow still builds the site and uploads it as a
+# run artifact; the deploy step is skipped.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ig/**"
+      - ".github/workflows/publish-ig.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-ig
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Checkout icr
+        uses: actions/checkout@v4
+
+      - name: Checkout ig-fresh
+        uses: actions/checkout@v4
+        with:
+          repository: recodelabs/ig-fresh
+          path: .ig-fresh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install Jekyll and SUSHI
+        run: |
+          gem install jekyll --no-document
+          npm install -g fsh-sushi
+
+      - name: Cache FHIR packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.fhir
+          key: fhir-packages-${{ hashFiles('ig/sushi-config.yaml') }}
+          restore-keys: fhir-packages-
+
+      - name: Cache IG Publisher jar
+        id: cache-publisher
+        uses: actions/cache@v4
+        with:
+          path: ig/input-cache/publisher.jar
+          key: ig-publisher-${{ github.run_number }}
+          restore-keys: ig-publisher-
+
+      - name: Download IG Publisher
+        if: steps.cache-publisher.outputs.cache-hit != 'true'
+        run: cd ig && ./_updatePublisher.sh
+
+      - name: Build IG (sushi + IG Publisher)
+        run: cd ig && ./_genonce.sh
+
+      - name: Build ig-fresh
+        run: cd .ig-fresh && npm ci && npm run build
+
+      - name: Render fresh site
+        run: node .ig-fresh/dist/cli.js build -i ig/output -o _site
+
+      - name: Check internal links
+        run: node .ig-fresh/scripts/check-links.mjs _site --only-fresh
+
+      - name: Upload site as run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: icr-ig-site
+          path: _site
+          retention-days: 7
+
+      - name: Deploy to Cloudflare Pages
+        if: env.CF_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name=icr-ig --branch=main
