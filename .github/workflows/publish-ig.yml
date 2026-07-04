@@ -1,8 +1,8 @@
 name: Publish IG to Cloudflare Pages
 
-# Builds the FHIR IG (sushi → HL7 IG Publisher), re-renders it with ig-fresh
-# (https://github.com/recodelabs/ig-fresh), and deploys to Cloudflare Pages
-# (https://icr-ig.pages.dev).
+# Builds the FHIR IG (sushi → HL7 IG Publisher), re-renders it with IG Topcoat
+# (https://github.com/recodelabs/ig-topcoat, consumed by pinned version @v1),
+# and deploys to Cloudflare Pages (https://icr-ig.pages.dev).
 #
 # Deploy requires two repo secrets (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN  — API token with "Cloudflare Pages: Edit" permission
@@ -33,12 +33,6 @@ jobs:
     steps:
       - name: Checkout icr
         uses: actions/checkout@v4
-
-      - name: Checkout ig-fresh
-        uses: actions/checkout@v4
-        with:
-          repository: recodelabs/ig-fresh
-          path: .ig-fresh
 
       - uses: actions/setup-node@v4
         with:
@@ -80,14 +74,11 @@ jobs:
       - name: Build IG (sushi + IG Publisher)
         run: cd ig && ./_genonce.sh
 
-      - name: Build ig-fresh
-        run: cd .ig-fresh && npm ci && npm run build
-
-      - name: Render fresh site
-        run: node .ig-fresh/dist/cli.js build -i ig/output -o _site
-
-      - name: Check internal links
-        run: node .ig-fresh/scripts/check-links.mjs _site --only-fresh
+      - name: Render modern site with IG Topcoat
+        uses: recodelabs/ig-topcoat@v1
+        with:
+          input: ig/output
+          output: _site
 
       - name: Upload site as run artifact
         uses: actions/upload-artifact@v4
