@@ -26,15 +26,18 @@ sushi build .              # FSH → FHIR JSON in fsh-generated/ (do not edit th
 ./_updatePublisher.sh      # once, downloads publisher.jar
 ./_genonce.sh              # builds output/index.html
 
-# Redesigned site (modern theme, ⌘K + full-text search) via ig-fresh
-# (https://github.com/onaio/ig-fresh, expected at ~/github/ig-fresh):
-./_genfresh.sh             # builds output/ then output-fresh/index.html
+# Redesigned site (modern theme, ⌘K + full-text search) via IG Topcoat
+# (https://github.com/recodelabs/ig-topcoat, expected at ~/github/ig-topcoat):
+./_gentopcoat.sh           # builds output/ then output-topcoat/index.html
 ```
 
-`output-fresh/` is the same IG re-rendered by **ig-fresh**: identical page filenames and
+`output-topcoat/` is the same IG re-rendered by **IG Topcoat**: identical page filenames and
 canonical URLs, publisher validation/QA untouched, but with a modern shell — command
 palette (⌘K), Pagefind full-text search, interactive element trees, filterable
-terminology tables, dark mode. Serve it over HTTP for search: `cd output-fresh && npx serve`.
+terminology tables, dark mode. Serve it over HTTP for search: `cd output-topcoat && npx serve`.
+
+The live site publishes to https://icr-ig.pages.dev via `.github/workflows/publish-ig.yml`,
+which renders with `recodelabs/ig-topcoat@v1`.
 
 ## Status / roadmap
 
