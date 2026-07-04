@@ -25,7 +25,16 @@ sushi build .              # FSH → FHIR JSON in fsh-generated/ (do not edit th
 # Full IG website (needs Java 17+ and Jekyll):
 ./_updatePublisher.sh      # once, downloads publisher.jar
 ./_genonce.sh              # builds output/index.html
+
+# Redesigned site (modern theme, ⌘K + full-text search) via ig-fresh
+# (https://github.com/onaio/ig-fresh, expected at ~/github/ig-fresh):
+./_genfresh.sh             # builds output/ then output-fresh/index.html
 ```
+
+`output-fresh/` is the same IG re-rendered by **ig-fresh**: identical page filenames and
+canonical URLs, publisher validation/QA untouched, but with a modern shell — command
+palette (⌘K), Pagefind full-text search, interactive element trees, filterable
+terminology tables, dark mode. Serve it over HTTP for search: `cd output-fresh && npx serve`.
 
 ## Status / roadmap
 
