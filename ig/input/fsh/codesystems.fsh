@@ -121,10 +121,11 @@ Description: "Campaign-relevant location types, including operational geography 
 CodeSystem: ICRGroupCharacteristicCS
 Id: icr-group-characteristic-cs
 Title: "ICR Group Characteristic"
-Description: "Characteristic codes for ICR Group profiles — currently the geographic-scope characteristic that links a target-population estimate to its Location, making estimates computably joinable to the location hierarchy (working doc §7.6)."
+Description: "Characteristic codes for ICR Group profiles — the geographic-scope characteristic that links a target-population estimate to its Location, making estimates computably joinable to the location hierarchy (working doc §7.6), plus the age-band characteristic used to scope age-specific denominator Groups (espen-forms)."
 * ^caseSensitive = true
 * ^experimental = false
 * #geography "Geographic scope" "The Location (admin unit, settlement, or operational area) this target-population estimate is scoped to."
+* #age-band "Age band" "The age band (e.g. 1-4, 5-14, 15+ years) this target-population estimate is scoped to."
 
 CodeSystem: ICRMissedReasonCS
 Id: icr-missed-reason-cs
