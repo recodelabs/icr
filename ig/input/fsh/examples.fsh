@@ -430,7 +430,7 @@ Title: "Administrative coverage — Kambia MR SIA, June 2026 round"
 Usage: #example
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-admin-coverage"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-admin-coverage"
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
 * reporter.display = "Kambia District Health Management Team"
@@ -449,7 +449,7 @@ Title: "Post-campaign survey coverage — Kambia MR SIA, June 2026 round"
 Usage: #example
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-survey-coverage"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-survey-coverage"
 * period.start = "2026-07-06"
 * period.end = "2026-07-12"
 * reporter.display = "Independent post-campaign coverage survey team"
@@ -520,7 +520,7 @@ Title: "MDA treatment coverage — Rokupr albendazole round (sex × age stratifi
 Usage: #example
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
 * period.start = "2026-02-08"
 * period.end = "2026-02-12"
 * reporter.display = "Rokupr health-area CDD supervisor"
@@ -579,7 +579,7 @@ Title: "Geographic coverage — Kambia MDA (villages treated / total)"
 Usage: #example
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-geographic-coverage"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-geographic-coverage"
 * period.start = "2026-02-08"
 * period.end = "2026-02-26"
 * reporter.display = "Kambia District NTD supervisor"
@@ -676,7 +676,7 @@ Instance: example-supervision-report
 InstanceOf: ICRSupervisionReport
 Title: "Supervision report — CDD observation, Rokupr"
 Usage: #example
-* questionnaire = "https://fhir.icr.unicef.org/Questionnaire/icr-mda-supervision-checklist"
+* questionnaire = "https://icr.healthcampaigns.org/Questionnaire/icr-mda-supervision-checklist"
 * status = #completed
 * subject = Reference(example-community)
 * authored = "2026-02-10"
@@ -730,7 +730,7 @@ Instance: example-readiness-report
 InstanceOf: QuestionnaireResponse
 Title: "Readiness validation — Kambia supervision zone 2"
 Usage: #example
-* questionnaire = "https://fhir.icr.unicef.org/Questionnaire/icr-campaign-readiness-checklist"
+* questionnaire = "https://icr.healthcampaigns.org/Questionnaire/icr-campaign-readiness-checklist"
 * status = #completed
 * subject = Reference(example-supervisory-area)
 * authored = "2026-06-12"

@@ -18,7 +18,7 @@ Instance: espen-mda-location-registration
 InstanceOf: Questionnaire
 Title: "ESPEN MDA — 1. Location Registration Form"
 Usage: #example
-* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-location-registration"
+* url = "https://icr.healthcampaigns.org/Questionnaire/espen-mda-location-registration"
 * meta.tag = $ProjectTag#espen "ESPEN"
 * name = "EspenMDALocationRegistration"
 * status = #active
@@ -130,7 +130,7 @@ Instance: EspenLocTemplate
 InstanceOf: Location
 Usage: #inline
 * id = "loc-template"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRLocation"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRLocation"
 * status = #active
 * name.extension[+].url = $SDCTemplateExtractValue
 * name.extension[=].valueString = "%resource.repeat(item).where(linkId='l_location').answer.value.first()"
@@ -139,7 +139,7 @@ Usage: #inline
 * position.latitude.extension[=].valueString = "%resource.repeat(item).where(linkId='l_gps_lat').answer.value.first()"
 * position.longitude.extension[+].url = $SDCTemplateExtractValue
 * position.longitude.extension[=].valueString = "%resource.repeat(item).where(linkId='l_gps_lng').answer.value.first()"
-* identifier[0].system = "https://fhir.icr.unicef.org/identifier/espen-location-id"
+* identifier[0].system = "https://icr.healthcampaigns.org/identifier/espen-location-id"
 * identifier[0].value.extension[+].url = $SDCTemplateExtractValue
 * identifier[0].value.extension[=].valueString = "%resource.repeat(item).where(linkId='l_location_id').answer.value.first()"
 
@@ -147,13 +147,13 @@ Instance: EspenPopTotalTemplate
 InstanceOf: Group
 Usage: #inline
 * id = "pop-total-template"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation"
 * type = #person
 * actual = false
 * name = "Total population (village census, ESPEN Form 1)"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/denominator-source"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/denominator-source"
 * extension[0].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/estimate-date"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/estimate-date"
 * extension[1].valueDate = "2026-01-01"
 * extension[1].valueDate.extension[+].url = $SDCTemplateExtractValue
 * extension[1].valueDate.extension[=].valueString = "%resource.authored.toString().substring(0,10)"
@@ -169,13 +169,13 @@ Instance: EspenPopEligibleTemplate
 InstanceOf: Group
 Usage: #inline
 * id = "pop-eligible-template"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation"
 * type = #person
 * actual = false
 * name = "Eligible population (village census, ESPEN Form 1)"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/denominator-source"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/denominator-source"
 * extension[0].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/estimate-date"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/estimate-date"
 * extension[1].valueDate = "2026-01-01"
 * extension[1].valueDate.extension[+].url = $SDCTemplateExtractValue
 * extension[1].valueDate.extension[=].valueString = "%resource.authored.toString().substring(0,10)"
@@ -191,13 +191,13 @@ Instance: EspenPop14Template
 InstanceOf: Group
 Usage: #inline
 * id = "pop-1-4-template"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation"
 * type = #person
 * actual = false
 * name = "Population aged 1-4 (village census, ESPEN Form 1)"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/denominator-source"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/denominator-source"
 * extension[0].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/estimate-date"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/estimate-date"
 * extension[1].valueDate = "2026-01-01"
 * extension[1].valueDate.extension[+].url = $SDCTemplateExtractValue
 * extension[1].valueDate.extension[=].valueString = "%resource.authored.toString().substring(0,10)"
@@ -216,13 +216,13 @@ Instance: EspenPop514Template
 InstanceOf: Group
 Usage: #inline
 * id = "pop-5-14-template"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation"
 * type = #person
 * actual = false
 * name = "Population aged 5-14 (village census, ESPEN Form 1)"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/denominator-source"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/denominator-source"
 * extension[0].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/estimate-date"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/estimate-date"
 * extension[1].valueDate = "2026-01-01"
 * extension[1].valueDate.extension[+].url = $SDCTemplateExtractValue
 * extension[1].valueDate.extension[=].valueString = "%resource.authored.toString().substring(0,10)"
@@ -241,13 +241,13 @@ Instance: EspenPop15PlusTemplate
 InstanceOf: Group
 Usage: #inline
 * id = "pop-15-plus-template"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation"
 * type = #person
 * actual = false
 * name = "Population aged 15+ (village census, ESPEN Form 1)"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/denominator-source"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/denominator-source"
 * extension[0].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/estimate-date"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/estimate-date"
 * extension[1].valueDate = "2026-01-01"
 * extension[1].valueDate.extension[+].url = $SDCTemplateExtractValue
 * extension[1].valueDate.extension[=].valueString = "%resource.authored.toString().substring(0,10)"
@@ -270,7 +270,7 @@ Instance: espen-mda-drug-receipt
 InstanceOf: Questionnaire
 Title: "ESPEN MDA — 2. Medicine Receipt Form"
 Usage: #example
-* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-drug-receipt"
+* url = "https://icr.healthcampaigns.org/Questionnaire/espen-mda-drug-receipt"
 * meta.tag = $ProjectTag#espen "ESPEN"
 * name = "EspenMDADrugReceipt"
 * status = #active
@@ -434,9 +434,9 @@ Instance: EspenSDReceiptPzq
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-pzq"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#P02BA01 "praziquantel"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
@@ -451,9 +451,9 @@ Instance: EspenSDReceiptAlb
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-alb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
@@ -468,9 +468,9 @@ Instance: EspenSDReceiptMeb
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-meb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#P02CA01 "mebendazole"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
@@ -485,9 +485,9 @@ Instance: EspenSDReceiptIvm
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-ivm"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#P02CF01 "ivermectin"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
@@ -502,9 +502,9 @@ Instance: EspenSDReceiptDec
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-dec"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#P02CB02 "diethylcarbamazine"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
@@ -519,9 +519,9 @@ Instance: EspenSDReceiptAzmSusp
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-azm-susp"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
 * suppliedItem.itemCodeableConcept.text = "azithromycin (suspension)"
@@ -537,9 +537,9 @@ Instance: EspenSDReceiptAzmTab
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-azm-tab"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
 * suppliedItem.itemCodeableConcept.text = "azithromycin (tablets)"
@@ -555,9 +555,9 @@ Instance: EspenSDReceiptTetra
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-tetra"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
 * suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline"
 * suppliedItem.itemCodeableConcept.text = "tetracycline (eye ointment)"
@@ -579,7 +579,7 @@ Instance: espen-mda-treatment
 InstanceOf: Questionnaire
 Title: "ESPEN MDA — 3. Medicine Treatment Form (tally)"
 Usage: #example
-* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-treatment"
+* url = "https://icr.healthcampaigns.org/Questionnaire/espen-mda-treatment"
 * meta.tag = $ProjectTag#espen "ESPEN"
 * name = "EspenMDATreatment"
 * status = #active
@@ -1230,13 +1230,13 @@ Instance: EspenMRDec
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-dec"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1321,13 +1321,13 @@ Instance: EspenMRAlb
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-alb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1411,13 +1411,13 @@ Instance: EspenMRMeb
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-meb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1501,13 +1501,13 @@ Instance: EspenMRIvm
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-ivm"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1591,13 +1591,13 @@ Instance: EspenMRPzq
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-pzq"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1681,13 +1681,13 @@ Instance: EspenMRAzmSusp
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-azm-susp"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1757,13 +1757,13 @@ Instance: EspenMRAzmTb
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-azm-tb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1847,13 +1847,13 @@ Instance: EspenMRTetra
 InstanceOf: MeasureReport
 Usage: #inline
 * id = "mr-tetra"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
 * status = #complete
 * type = #summary
-* measure = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/coverage-source"
+* measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/coverage-source"
 * extension[0].valueCode = #administrative
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled"
 * extension[1].valueCode = #realtime
 * period.start = "2026-01-01"
 * period.start.extension[+].url = $SDCTemplateExtractValue
@@ -1939,7 +1939,7 @@ Instance: espen-mda-case-management
 InstanceOf: Questionnaire
 Title: "ESPEN MDA — 4. Medicine Use & Case Management Form"
 Usage: #example
-* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-case-management"
+* url = "https://icr.healthcampaigns.org/Questionnaire/espen-mda-case-management"
 * meta.tag = $ProjectTag#espen "ESPEN"
 * name = "EspenMDACaseManagement"
 * status = #active
@@ -2134,11 +2134,11 @@ Instance: EspenSDUsedPzq
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-pzq"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tbl}
@@ -2156,11 +2156,11 @@ Instance: EspenSDUsedAlb
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-alb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tbl}
@@ -2178,11 +2178,11 @@ Instance: EspenSDUsedMeb
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-meb"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tbl}
@@ -2200,11 +2200,11 @@ Instance: EspenSDUsedIvm
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-ivm"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tbl}
@@ -2222,11 +2222,11 @@ Instance: EspenSDUsedDec
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-dec"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tbl}
@@ -2244,11 +2244,11 @@ Instance: EspenSDUsedAzmSusp
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-azm-susp"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #L
@@ -2267,11 +2267,11 @@ Instance: EspenSDUsedAzmTab
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-azm-tab"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tbl}
@@ -2290,11 +2290,11 @@ Instance: EspenSDUsedTetra
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-used-tetra"
-* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
 * status = #completed
-* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
 * extension[1].extension[0].url = "used"
 * extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
 * extension[1].extension[0].valueQuantity.code = #{tube}
@@ -2318,7 +2318,7 @@ Instance: espen-mda-supervision-hf
 InstanceOf: Questionnaire
 Title: "ESPEN MDA — 5. Supervision: Health Facility"
 Usage: #example
-* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-supervision-hf"
+* url = "https://icr.healthcampaigns.org/Questionnaire/espen-mda-supervision-hf"
 * meta.tag = $ProjectTag#espen "ESPEN"
 * name = "EspenMDASupervisionHF"
 * status = #active
@@ -2600,7 +2600,7 @@ Instance: espen-mda-supervision-cdd
 InstanceOf: Questionnaire
 Title: "ESPEN MDA — 6. Supervision: CDD Observation"
 Usage: #example
-* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-supervision-cdd"
+* url = "https://icr.healthcampaigns.org/Questionnaire/espen-mda-supervision-cdd"
 * meta.tag = $ProjectTag#espen "ESPEN"
 * name = "EspenMDASupervisionCDD"
 * status = #active

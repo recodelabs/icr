@@ -1,6 +1,6 @@
 ---
-version: 0.22.0
-last_modified: 2026-07-05T15:17:38Z
+version: 0.23.0
+last_modified: 2026-07-05T18:25:14Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-<sub>`v0.22.0 · Last modified Jul 5, 2026 at 11:17 AM EDT`</sub>
+<sub>`v0.23.0 · Last modified Jul 5, 2026 at 2:25 PM EDT`</sub>
 
 ⁠
 
@@ -151,16 +151,16 @@ The package-level settings that fix the IG's identity (all permanent once publis
 | Field | Value | Notes |
 | --- | --- | --- |
 | `id` | `unicef.fhir.icr` | NPM-style package id (`<org>.fhir.<scope>` convention) |
-| `canonical` | `https://fhir.icr.unicef.org` | Base URL of every profile/extension/CodeSystem/ValueSet; also hosts the provisional identifier-system URIs |
+| `canonical` | `https://icr.healthcampaigns.org` | Base URL of every profile/extension/CodeSystem/ValueSet; also hosts the provisional identifier-system URIs |
 | `name` / `title` | `ICR` / "Integrated Campaign Registry (ICR) Implementation Guide" |     |
 | `status` / `version` | `draft` / `0.1.0` |     |
 | `fhirVersion` | `4.0.1` | FHIR **R4** |
 | `license` | `Apache-2.0` |     |
 | `jurisdiction` | UN M49 `001` "World" | Global IG, not country-specific |
-| `publisher` | **UNICEF** (publisher of record); the ICR project (delivered by Ona + Crosscut) credited via `contact` |     |
+| `publisher` | **UNICEF** |     |
 | `menu` | Home, Background, Artifacts |     |
 
-The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace; the same base hosts the provisional geographic-identifier system URIs (§2.4). The toolchain (FSH / SUSHI / IG Publisher) deliberately matches WHO SMART Guidelines practice; a formal `dependsOn smart.who.int.base` dependency is proposed once alignment hardens (§13.3). The IG's one real package dependency to date is **`hl7.fhir.uv.sdc` 4.0.0** (HL7 Structured Data Capture), added in the espen-forms round to carry the SDC template-based-extraction extensions the ESPEN MDA instruments use (§4.8).
+The canonical `https://icr.healthcampaigns.org` is the project-controlled domain that actually hosts the published IG — canonicals resolve to the artifacts they name; the same base hosts the provisional geographic-identifier system URIs (§2.4). The toolchain (FSH / SUSHI / IG Publisher) deliberately matches WHO SMART Guidelines practice; a formal `dependsOn smart.who.int.base` dependency is proposed once alignment hardens (§13.3). The IG's one real package dependency to date is **`hl7.fhir.uv.sdc` 4.0.0** (HL7 Structured Data Capture), added in the espen-forms round to carry the SDC template-based-extraction extensions the ESPEN MDA instruments use (§4.8).
 ### 1.5 What the IG contains
 | Layer | Count | Artifacts |
 | --- | --- | --- |
@@ -276,10 +276,10 @@ The IG defines aliases (short names) for the external and internal systems it re
 - **External terminologies** — `$CVX` (vaccine codes, `http://hl7.org/fhir/sid/cvx`), `$ATC` (WHO drug codes, `http://www.whocc.no/atc`), `$VaccineCodeVS` (the core FHIR vaccine ValueSet), `$MeasurePopulation` (the HL7 measure-population code system used by coverage examples).
 - **ICR geographic-identifier system URIs** *(provisional — to be confirmed before v1.0)*:
   
-  - `$GERSId = https://fhir.icr.unicef.org/identifiers/overture-gers` — Overture Maps GERS IDs (the preferred cross-campaign join key).
-  - `$PCode = https://fhir.icr.unicef.org/identifiers/pcode` — OCHA P-codes.
+  - `$GERSId = https://icr.healthcampaigns.org/identifiers/overture-gers` — Overture Maps GERS IDs (the preferred cross-campaign join key).
+  - `$PCode = https://icr.healthcampaigns.org/identifiers/pcode` — OCHA P-codes.
   - `$ISO = urn:iso:std:iso:3166` — ISO 3166-1/-2 country & subdivision codes (admin levels 0–3); WHO-aligned.
-  - `$NationalAdminCode = https://fhir.icr.unicef.org/identifiers/national-admin-code` — the country/implementer's own admin code, where they don't use a P-code (the per-country base URI is expected to be overridden in implementation).
+  - `$NationalAdminCode = https://icr.healthcampaigns.org/identifiers/national-admin-code` — the country/implementer's own admin code, where they don't use a P-code (the per-country base URI is expected to be overridden in implementation).
 - **Person-identifier URIs** — `$NationalId` / `$RegistryId`, the sliced systems on `ICRPatient.identifier` (§5.4).
 - **ICR code systems** — one alias per CodeSystem (§9).
 
@@ -337,7 +337,7 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
   "id": "example-mr-sia-protocol",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignProtocol"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignProtocol"
     ]
   },
   "status": "active",
@@ -346,40 +346,40 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
   "type": {
     "coding": [
       {
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+        "system": "https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type",
         "code": "vaccination-sia"
       }
     ]
   },
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy",
             "code": "fixed-post"
           }
         ]
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy",
             "code": "house-to-house"
           }
         ]
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/activity-type",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/activity-type",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-activity-type",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-activity-type",
             "code": "follow-up"
           }
         ]
@@ -396,7 +396,7 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
   "action": [
     {
       "title": "Administer MCV, 9 months–14 years",
-      "definitionCanonical": "https://fhir.icr.unicef.org/ActivityDefinition/example-mcv-activity"
+      "definitionCanonical": "https://icr.healthcampaigns.org/ActivityDefinition/example-mcv-activity"
     }
   ]
 }
@@ -485,11 +485,11 @@ graph TD
   "id": "example-mr-sia-national",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRCampaign"
     ]
   },
   "instantiatesCanonical": [
-    "https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"
+    "https://icr.healthcampaigns.org/PlanDefinition/example-mr-sia-protocol"
   ],
   "status": "active",
   "intent": "plan",
@@ -497,7 +497,7 @@ graph TD
     {
       "coding": [
         {
-          "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+          "system": "https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type",
           "code": "vaccination-sia"
         }
       ]
@@ -517,7 +517,7 @@ graph TD
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/planning-denominator",
       "valueReference": {
         "reference": "Group/example-target-population-national"
       }
@@ -534,11 +534,11 @@ graph TD
   "id": "example-mr-sia-2026",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaign"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRCampaign"
     ]
   },
   "instantiatesCanonical": [
-    "https://fhir.icr.unicef.org/PlanDefinition/example-mr-sia-protocol"
+    "https://icr.healthcampaigns.org/PlanDefinition/example-mr-sia-protocol"
   ],
   "status": "completed",
   "intent": "order",
@@ -546,7 +546,7 @@ graph TD
     {
       "coding": [
         {
-          "system": "https://fhir.icr.unicef.org/CodeSystem/icr-campaign-type",
+          "system": "https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type",
           "code": "vaccination-sia"
         }
       ]
@@ -583,23 +583,23 @@ graph TD
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/campaign-round",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/campaign-round",
       "valuePositiveInt": 1
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/target-geography",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/target-geography",
       "valueReference": {
         "reference": "Location/example-district"
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/planning-denominator",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/planning-denominator",
       "valueReference": {
         "reference": "Group/example-target-population"
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/social-mobilization",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/social-mobilization",
       "extension": [
         {
           "url": "populationInformed",
@@ -610,7 +610,7 @@ graph TD
           "valueCodeableConcept": {
             "coding": [
               {
-                "system": "https://fhir.icr.unicef.org/CodeSystem/icr-communication-channel",
+                "system": "https://icr.healthcampaigns.org/CodeSystem/icr-communication-channel",
                 "code": "radio"
               }
             ]
@@ -621,7 +621,7 @@ graph TD
           "valueCodeableConcept": {
             "coding": [
               {
-                "system": "https://fhir.icr.unicef.org/CodeSystem/icr-communication-channel",
+                "system": "https://icr.healthcampaigns.org/CodeSystem/icr-communication-channel",
                 "code": "community-leaders"
               }
             ]
@@ -670,7 +670,7 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
   "id": "example-mcv-activity",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignActivity"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignActivity"
     ]
   },
   "status": "active",
@@ -708,11 +708,11 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy",
             "code": "fixed-post"
           }
         ]
@@ -777,7 +777,7 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
   "id": "example-mopup-task",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCampaignTask"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask"
     ]
   },
   "status": "completed",
@@ -813,41 +813,41 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/delivery-strategy",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-delivery-strategy",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy",
             "code": "house-to-house"
           }
         ]
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/task-origin",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/task-origin",
       "valueCode": "field-registered"
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-present",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/eligible-present",
       "valueUnsignedInt": 2
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/eligible-absent",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/eligible-absent",
       "valueUnsignedInt": 1
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/missed-reason",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/missed-reason",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-missed-reason",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-missed-reason",
             "code": "absent"
           }
         ]
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/finger-marked",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/finger-marked",
       "valueBoolean": true
     }
   ]
@@ -895,7 +895,7 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
   "id": "example-careteam",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRCareTeam"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRCareTeam"
     ]
   },
   "status": "active",
@@ -909,7 +909,7 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
         {
           "coding": [
             {
-              "system": "https://fhir.icr.unicef.org/CodeSystem/icr-team-role",
+              "system": "https://icr.healthcampaigns.org/CodeSystem/icr-team-role",
               "code": "vaccinator"
             }
           ]
@@ -924,7 +924,7 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
         {
           "coding": [
             {
-              "system": "https://fhir.icr.unicef.org/CodeSystem/icr-team-role",
+              "system": "https://icr.healthcampaigns.org/CodeSystem/icr-team-role",
               "code": "supervisor"
             }
           ]
@@ -942,13 +942,13 @@ Reading the links out: `for` points at the **household delivery-unit Group** (§
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/oversees-area",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/oversees-area",
       "valueReference": {
         "reference": "Location/example-supervisory-area"
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/workload-target",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/workload-target",
       "extension": [
         {
           "url": "targetArea",
@@ -1051,7 +1051,7 @@ The profiles that model *who* a campaign acts on and *where*. The split is delib
   "id": "example-household",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRDeliveryUnit"
     ]
   },
   "type": "person",
@@ -1059,7 +1059,7 @@ The profiles that model *who* a campaign acts on and *where*. The split is delib
   "code": {
     "coding": [
       {
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind",
+        "system": "https://icr.healthcampaigns.org/CodeSystem/icr-group-kind",
         "code": "household"
       }
     ]
@@ -1074,7 +1074,7 @@ The profiles that model *who* a campaign acts on and *where*. The split is delib
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/group-location",
       "valueReference": {
         "reference": "Location/example-dwelling"
       }
@@ -1091,7 +1091,7 @@ The profiles that model *who* a campaign acts on and *where*. The split is delib
   "id": "example-household-enumerated",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRDeliveryUnit"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRDeliveryUnit"
     ]
   },
   "type": "person",
@@ -1099,7 +1099,7 @@ The profiles that model *who* a campaign acts on and *where*. The split is delib
   "code": {
     "coding": [
       {
-        "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-kind",
+        "system": "https://icr.healthcampaigns.org/CodeSystem/icr-group-kind",
         "code": "household"
       }
     ]
@@ -1139,7 +1139,7 @@ The profiles that model *who* a campaign acts on and *where*. The split is delib
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/group-location",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/group-location",
       "valueReference": {
         "reference": "Location/example-dwelling"
       }
@@ -1203,7 +1203,7 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
   "id": "example-target-population",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRTargetPopulation"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation"
     ]
   },
   "type": "person",
@@ -1214,7 +1214,7 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
       "code": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-group-characteristic",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic",
             "code": "geography"
           }
         ]
@@ -1227,22 +1227,22 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/denominator-source",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source",
             "code": "worldpop"
           }
         ]
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/estimate-date",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/estimate-date",
       "valueDate": "2026-01-15"
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/is-planning-denominator",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/is-planning-denominator",
       "valueBoolean": true
     }
   ]
@@ -1309,7 +1309,7 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
   "id": "example-district",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRLocation"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRLocation"
     ]
   },
   "status": "active",
@@ -1327,7 +1327,7 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
     {
       "coding": [
         {
-          "system": "https://fhir.icr.unicef.org/CodeSystem/icr-location-type",
+          "system": "https://icr.healthcampaigns.org/CodeSystem/icr-location-type",
           "code": "admin-unit"
         }
       ]
@@ -1338,11 +1338,11 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
   },
   "identifier": [
     {
-      "system": "https://fhir.icr.unicef.org/identifiers/pcode",
+      "system": "https://icr.healthcampaigns.org/identifiers/pcode",
       "value": "SL0201"
     },
     {
-      "system": "https://fhir.icr.unicef.org/identifiers/overture-gers",
+      "system": "https://icr.healthcampaigns.org/identifiers/overture-gers",
       "value": "overture-division-kambia-example"
     }
   ],
@@ -1352,11 +1352,11 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
   },
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/location-boundary-geojson",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/location-boundary-geojson",
       "valueAttachment": {
         "contentType": "application/geo+json",
         "title": "Kambia District boundary (GeoJSON Polygon)",
-        "url": "https://fhir.icr.unicef.org/geo/kambia-district.geojson"
+        "url": "https://icr.healthcampaigns.org/geo/kambia-district.geojson"
       }
     }
   ]
@@ -1406,12 +1406,12 @@ The profile matches WHO `IMMZ.Patient` (identifier / name / phone / gender / bir
   "id": "example-child",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRPatient"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRPatient"
     ]
   },
   "identifier": [
     {
-      "system": "https://fhir.icr.unicef.org/identifiers/national-id",
+      "system": "https://icr.healthcampaigns.org/identifiers/national-id",
       "value": "SL-2023-04-0099812"
     }
   ],
@@ -1489,7 +1489,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
   "id": "example-mcv-dose",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRImmunizationEvent"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRImmunizationEvent"
     ]
   },
   "status": "completed",
@@ -1527,7 +1527,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/record-origin",
       "valueCode": "campaign"
     }
   ]
@@ -1571,7 +1571,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
   "id": "example-albendazole-administration",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRMedicationAdministration"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
     ]
   },
   "status": "completed",
@@ -1604,11 +1604,11 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/record-origin",
       "valueCode": "campaign"
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/directly-observed-consumption",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/directly-observed-consumption",
       "valueBoolean": true
     }
   ]
@@ -1649,7 +1649,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
   "id": "example-itn-delivery",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
     ]
   },
   "status": "completed",
@@ -1669,7 +1669,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
   },
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/record-origin",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/record-origin",
       "valueCode": "campaign"
     }
   ]
@@ -1787,12 +1787,12 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
   "id": "example-admin-coverage",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRAdministrativeCoverage"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
     ]
   },
   "status": "complete",
   "type": "summary",
-  "measure": "https://fhir.icr.unicef.org/Measure/icr-admin-coverage",
+  "measure": "https://icr.healthcampaigns.org/Measure/icr-admin-coverage",
   "reporter": {
     "reference": "Location/example-district"
   },
@@ -1833,22 +1833,22 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/coverage-source",
       "valueCode": "administrative"
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/denominator-source",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/denominator-source",
       "valueCodeableConcept": {
         "coding": [
           {
-            "system": "https://fhir.icr.unicef.org/CodeSystem/icr-denominator-source",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source",
             "code": "worldpop"
           }
         ]
       }
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled",
       "valueCode": "reconciled"
     }
   ]
@@ -1861,12 +1861,12 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
   "id": "example-survey-coverage",
   "meta": {
     "profile": [
-      "https://fhir.icr.unicef.org/StructureDefinition/ICRSurveyCoverage"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRSurveyCoverage"
     ]
   },
   "status": "complete",
   "type": "summary",
-  "measure": "https://fhir.icr.unicef.org/Measure/icr-survey-coverage",
+  "measure": "https://icr.healthcampaigns.org/Measure/icr-survey-coverage",
   "reporter": {
     "reference": "Location/example-district"
   },
@@ -1883,15 +1883,15 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
   ],
   "extension": [
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/coverage-source",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/coverage-source",
       "valueCode": "survey"
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/sample-design",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/sample-design",
       "valueString": "WHO 30×10 cluster survey, post-campaign"
     },
     {
-      "url": "https://fhir.icr.unicef.org/StructureDefinition/realtime-vs-reconciled",
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled",
       "valueCode": "reconciled"
     }
   ]
@@ -2228,7 +2228,7 @@ Still proposed after forms-v1: the structured `sample-design` sub-elements and e
 ### 13.4 Open decisions (consolidated)
 The decisions that still need a project, UNICEF, or partner call, distilled from the per-section open questions above:
 
-1. **Canonical URL ownership, package id, and dependency declaration** confirmed with UNICEF — that UNICEF controls `fhir.icr.unicef.org`, that `unicef.fhir.icr` fits its naming convention, and when the formal `dependsOn smart.who.int.base` is declared. (Publisher attribution is decided — UNICEF.)
+1. **Canonical URL ownership, package id, and dependency declaration** confirmed with UNICEF — that UNICEF controls `icr.healthcampaigns.org`, that `unicef.fhir.icr` fits its naming convention, and when the formal `dependsOn smart.who.int.base` is declared. (Publisher attribution is decided — UNICEF.)
 2. **GERS/P-code identifier system URIs** — whether ICR should mint them (engage Overture Maps), plus a concrete slot for the **Overture release version**, and whether to widen `Location.partOf` to `Reference(Location)` so ICR can coexist with existing national MFL/GIS registries.
 3. **Aggregate-vs-individual representation for Type-A tally campaigns** — document the `Task.output` (aggregate) / individual-event / MeasureReport (derived and stratified only) split as the official pattern.
 4. **Closed code sets** — are the required-bound sets (campaign/routine; realtime/reconciled; the four coverage sources) exhaustive? Add an `unknown` `task-origin` for historical imports? Confirm disease-agnostic campaign typing with the polio programme.

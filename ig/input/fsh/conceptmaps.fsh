@@ -9,12 +9,12 @@ Instance: icr-aefi-causality-to-immz
 InstanceOf: ConceptMap
 Title: "ICR ↔ WHO IMMZ AEFI Causality"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/ConceptMap/icr-aefi-causality-to-immz"
+* url = "https://icr.healthcampaigns.org/ConceptMap/icr-aefi-causality-to-immz"
 * status = #draft
 * experimental = false
 * name = "ICRAEFICausalityToIMMZ"
 * description = "Maps ICRAdverseEventCausalityCS (WHO/CIOMS A/B/C/D) to the WHO SMART Immunizations AEFI causality categories. Provisional — target codes to be confirmed against the published IMMZ IG (§18.3)."
-* sourceCanonical = "https://fhir.icr.unicef.org/ValueSet/icr-adverse-event-causality"
+* sourceCanonical = "https://icr.healthcampaigns.org/ValueSet/icr-adverse-event-causality"
 * targetCanonical = "http://smart.who.int/immunizations/ValueSet/IMMZ-aefi-causality"
 * group.source = $AdverseEventCausality
 * group.target = $IMMZAdverseEventCausality

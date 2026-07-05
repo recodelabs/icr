@@ -2,7 +2,7 @@
 # Built per https://build.fhir.org/ig/FHIR/ig-guidance/ using the FSH/SUSHI/IG-Publisher
 # toolchain (the same toolchain WHO SMART Guidelines use — see working doc §11).
 id: unicef.fhir.icr
-canonical: https://fhir.icr.unicef.org
+canonical: https://icr.healthcampaigns.org
 name: ICR
 title: "Integrated Campaign Registry (ICR) Implementation Guide"
 description: >-
@@ -24,8 +24,8 @@ jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
 dependencies:
   hl7.fhir.uv.sdc: 4.0.0
 publisher:
-  name: UNICEF Integrated Campaign Registry project (Ona + Crosscut)
-  url: https://ona.io
+  name: UNICEF
+  url: https://www.unicef.org
 menu:
   Home: index.html
   Background: background.html
