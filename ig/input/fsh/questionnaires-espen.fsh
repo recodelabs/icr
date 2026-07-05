@@ -1894,3 +1894,379 @@ Usage: #inline
 * group[0].stratifier[2].stratum[5].population[0].count = 0
 * group[0].stratifier[2].stratum[5].population[0].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].stratifier[2].stratum[5].population[0].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='tetra_refusal').answer.exists(), %resource.repeat(item).where(linkId='tetra_refusal').answer.value.first(), 0)"
+
+// --- Form 4: MDA Medicine Use & Case Management -------------------------------
+// Extraction: one ICRSupplyDelivery(used) per answered distributed-drug total
+// (item-level templateExtract on each `*_dist` item inside the med_distr group);
+// side-effect and other-NTD counts remain QR-only — person-level ICRAdverseEvent
+// records cannot be minted from aggregate counts (espen-forms).
+
+Instance: espen-mda-case-management
+InstanceOf: Questionnaire
+Title: "ESPEN MDA — 4. Medicine Use & Case Management Form"
+Usage: #example
+* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-case-management"
+* name = "EspenMDACaseManagement"
+* status = #active
+* experimental = false
+* description = "ESPEN MDA demo Form 4 (medicine use and case management): per-drug distributed totals, side-effect counts, other-NTD case counts. Template-based extraction: one ICRSupplyDelivery per answered distributed total, carrying the count as stock-accountability 'used'. Side-effect and other-NTD counts remain on the QuestionnaireResponse: person-level ICRAdverseEvent records cannot be minted from aggregate counts (espen-forms)."
+* subjectType = #Location
+// registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
+// resolve against the Location hierarchy / CareTeam registry at capture time
+* item[+].linkId = "p_state"
+* item[=].text = "Select State / Region / Province"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "p_district"
+* item[=].text = "Select District / LGA / County"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "p_health_facility"
+* item[=].text = "Enter the Health facility / Sub district"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "p_disease"
+* item[=].text = "Disease covered by the TDM"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerValueSet = Canonical(ICRNTDDiseaseVS)
+* item[+].linkId = "p_medicine"
+* item[=].text = "Select the medcine package"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerValueSet = Canonical(ICRMDAMedicinePackageVS)
+// combination-validity constraint enforced at the capture layer; not carried over
+* item[+].linkId = "med_distr"
+* item[=].text = "Medicines Distributed"
+* item[=].type = #group
+* item[=].item[+].linkId = "p_total_pzq_dist"
+* item[=].item[=].text = "Total Praziquantel distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-alb
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-meb
+* item[=].item[=].enableBehavior = #any
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-pzq"
+* item[=].item[+].linkId = "p_total_alb_dist"
+* item[=].item[=].text = "Total Albendazole distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#alb
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb-dec
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-alb
+* item[=].item[=].enableBehavior = #any
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-alb"
+* item[=].item[+].linkId = "p_total_meb_dist"
+* item[=].item[=].text = "Total Mebendazole distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#meb
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-meb
+* item[=].item[=].enableBehavior = #any
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-meb"
+* item[=].item[+].linkId = "p_total_ivm_dist"
+* item[=].item[=].text = "Total Ivermectin distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb-dec
+* item[=].item[=].enableBehavior = #any
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-ivm"
+* item[=].item[+].linkId = "p_total_dec_dist"
+* item[=].item[=].text = "Total Diethylcarbamazine distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb-dec
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-dec"
+* item[=].item[+].linkId = "p_total_az_sus_dist"
+* item[=].item[=].text = "Total Azithromycin suspension (in l) distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#azm-susp
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-azm-susp"
+* item[=].item[+].linkId = "p_total_az_tab_dist"
+* item[=].item[=].text = "Total Azithromycin tablets distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#azm-tab
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-azm-tab"
+* item[=].item[+].linkId = "p_total_tetra_dist"
+* item[=].item[=].text = "Total Tetracycline distributed"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[=].enableWhen[+].question = "p_medicine"
+* item[=].item[=].enableWhen[=].operator = #=
+* item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#tetra
+* item[=].item[=].extension[+].url = $SDCTemplateExtract
+* item[=].item[=].extension[=].extension[+].url = "template"
+* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-tetra"
+* item[=].item[+].linkId = "p_minor_side_effect"
+* item[=].item[=].text = "Number of cases of minor side effects"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "p_serious_side_effect"
+* item[=].item[=].text = "Number of cases of serious side effects"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[+].linkId = "other_ntd_rep"
+* item[=].text = "Cases of other NTDs identified"
+* item[=].type = #group
+* item[=].item[+].linkId = "p_guinea_worm_rumor"
+* item[=].item[=].text = "Number of Guinea Worm rumors"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "p_leish_suspect"
+* item[=].item[=].text = "Number of suspected cases of Leishmaniasis"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "p_buruli_ulcer_suspect"
+* item[=].item[=].text = "Number of suspected cases of Buruli ulcer"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "p_Lymphoedema_LF"
+* item[=].item[=].text = "Number of cases with LF lymphoedema"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "P_hydrocele_LF"
+* item[=].item[=].text = "Number of cases with LF Hydrocele"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[+].linkId = "p_add_note"
+* item[=].text = "Additional Note"
+* item[=].type = #text
+// dropped: p_start / p_end (device timestamps)
+* contained[+] = EspenSDUsedPzq
+* contained[+] = EspenSDUsedAlb
+* contained[+] = EspenSDUsedMeb
+* contained[+] = EspenSDUsedIvm
+* contained[+] = EspenSDUsedDec
+* contained[+] = EspenSDUsedAzmSusp
+* contained[+] = EspenSDUsedAzmTab
+* contained[+] = EspenSDUsedTetra
+
+// -- extraction templates for Form 4 --
+
+Instance: EspenSDUsedPzq
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-pzq"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tbl}
+* extension[1].extension[0].valueQuantity.unit = "tablets"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_pzq_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#P02BA01 "praziquantel"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tbl}
+* suppliedItem.quantity.unit = "tablets"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_pzq_dist').answer.value.first()"
+
+Instance: EspenSDUsedAlb
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-alb"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tbl}
+* extension[1].extension[0].valueQuantity.unit = "tablets"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_alb_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tbl}
+* suppliedItem.quantity.unit = "tablets"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_alb_dist').answer.value.first()"
+
+Instance: EspenSDUsedMeb
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-meb"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tbl}
+* extension[1].extension[0].valueQuantity.unit = "tablets"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_meb_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#P02CA01 "mebendazole"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tbl}
+* suppliedItem.quantity.unit = "tablets"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_meb_dist').answer.value.first()"
+
+Instance: EspenSDUsedIvm
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-ivm"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tbl}
+* extension[1].extension[0].valueQuantity.unit = "tablets"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_ivm_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#P02CF01 "ivermectin"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tbl}
+* suppliedItem.quantity.unit = "tablets"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_ivm_dist').answer.value.first()"
+
+Instance: EspenSDUsedDec
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-dec"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tbl}
+* extension[1].extension[0].valueQuantity.unit = "tablets"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_dec_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#P02CB02 "diethylcarbamazine"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tbl}
+* suppliedItem.quantity.unit = "tablets"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_dec_dist').answer.value.first()"
+
+Instance: EspenSDUsedAzmSusp
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-azm-susp"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #L
+* extension[1].extension[0].valueQuantity.unit = "liters"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_sus_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin (suspension)"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #L
+* suppliedItem.quantity.unit = "liters"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_sus_dist').answer.value.first()"
+
+Instance: EspenSDUsedAzmTab
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-azm-tab"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tbl}
+* extension[1].extension[0].valueQuantity.unit = "tablets"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_tab_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin (tablets)"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tbl}
+* suppliedItem.quantity.unit = "tablets"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_tab_dist').answer.value.first()"
+
+Instance: EspenSDUsedTetra
+InstanceOf: SupplyDelivery
+Usage: #inline
+* id = "sd-used-tetra"
+* meta.profile = "https://fhir.icr.unicef.org/StructureDefinition/ICRSupplyDelivery"
+* status = #completed
+* extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* extension[1].url = "https://fhir.icr.unicef.org/StructureDefinition/stock-accountability"
+* extension[1].extension[0].url = "used"
+* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
+* extension[1].extension[0].valueQuantity.code = #{tube}
+* extension[1].extension[0].valueQuantity.unit = "tubes"
+* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
+* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_tetra_dist').answer.value.first()"
+* suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline (eye ointment)"
+* suppliedItem.quantity.system = "http://unitsofmeasure.org"
+* suppliedItem.quantity.code = #{tube}
+* suppliedItem.quantity.unit = "tubes"
+* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
+* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_tetra_dist').answer.value.first()"
