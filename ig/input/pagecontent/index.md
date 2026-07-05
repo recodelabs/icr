@@ -41,8 +41,7 @@ survey coverage are **separate, never-merged lineages**
 
 #### Status
 
-This is the **v0.1 draft** produced in Phase 1 of the ICR project (UNICEF; Ona prime,
-Crosscut partner). It encodes the design rationale of the ICR working design document
+This is the **v0.1 draft** produced in Phase 1 of the UNICEF ICR project. It encodes the design rationale of the ICR working design document
 (*ICR FHIR Implementation Guide — Campaign Data Model & Structure*); see
 [Background](background.html) for the design decisions and open questions. It will be
 revised against real campaign datasets (data conformance testing) and FHIR community

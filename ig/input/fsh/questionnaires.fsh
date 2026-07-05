@@ -7,7 +7,7 @@ Instance: icr-mda-supervision-checklist
 InstanceOf: Questionnaire
 Title: "ICR MDA Supervision Checklist"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Questionnaire/icr-mda-supervision-checklist"
+* url = "https://icr.healthcampaigns.org/Questionnaire/icr-mda-supervision-checklist"
 * status = #active
 * experimental = false
 * name = "ICRMDASupervisionChecklist"
@@ -77,7 +77,7 @@ Instance: icr-campaign-readiness-checklist
 InstanceOf: Questionnaire
 Title: "ICR Campaign Readiness Checklist"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Questionnaire/icr-campaign-readiness-checklist"
+* url = "https://icr.healthcampaigns.org/Questionnaire/icr-campaign-readiness-checklist"
 * status = #active
 * experimental = false
 * name = "ICRCampaignReadinessChecklist"

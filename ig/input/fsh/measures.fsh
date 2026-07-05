@@ -11,7 +11,7 @@ Instance: icr-admin-coverage
 InstanceOf: Measure
 Title: "ICR Administrative Coverage Measure"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Measure/icr-admin-coverage"
+* url = "https://icr.healthcampaigns.org/Measure/icr-admin-coverage"
 * status = #active
 * experimental = false
 * name = "ICRAdminCoverage"
@@ -41,7 +41,7 @@ Instance: icr-survey-coverage
 InstanceOf: Measure
 Title: "ICR Survey Coverage Measure"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Measure/icr-survey-coverage"
+* url = "https://icr.healthcampaigns.org/Measure/icr-survey-coverage"
 * status = #active
 * experimental = false
 * name = "ICRSurveyCoverage"
@@ -65,7 +65,7 @@ Instance: icr-mda-treatment-coverage
 InstanceOf: Measure
 Title: "ICR MDA Treatment Coverage Measure"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Measure/icr-mda-treatment-coverage"
+* url = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
 * status = #active
 * experimental = false
 * name = "ICRMDATreatmentCoverage"
@@ -92,7 +92,7 @@ Instance: icr-geographic-coverage
 InstanceOf: Measure
 Title: "ICR Geographic Coverage Measure"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Measure/icr-geographic-coverage"
+* url = "https://icr.healthcampaigns.org/Measure/icr-geographic-coverage"
 * status = #active
 * experimental = false
 * name = "ICRGeographicCoverage"
@@ -118,7 +118,7 @@ Instance: icr-zero-dose-coverage
 InstanceOf: Measure
 Title: "ICR Zero-dose Coverage Measure"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Measure/icr-zero-dose-coverage"
+* url = "https://icr.healthcampaigns.org/Measure/icr-zero-dose-coverage"
 * status = #active
 * experimental = false
 * name = "ICRZeroDoseCoverage"
@@ -145,7 +145,7 @@ Instance: icr-campaign-readiness
 InstanceOf: Measure
 Title: "ICR Campaign Readiness Measure"
 Usage: #definition
-* url = "https://fhir.icr.unicef.org/Measure/icr-campaign-readiness"
+* url = "https://icr.healthcampaigns.org/Measure/icr-campaign-readiness"
 * status = #active
 * experimental = false
 * name = "ICRCampaignReadiness"
