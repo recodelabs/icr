@@ -1,6 +1,6 @@
 ---
-version: 0.2.0
-last_modified: 2026-07-03T17:23:46.000Z
+version: 0.22.0
+last_modified: 2026-07-05T15:17:38Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-`v0.2.0 · Last modified Jul 3, 2026 at 1:23 PM EDT`
+<sub>`v0.22.0 · Last modified Jul 5, 2026 at 11:17 AM EDT`</sub>
 
 ⁠
 
@@ -160,7 +160,7 @@ The package-level settings that fix the IG's identity (all permanent once publis
 | `publisher` | **UNICEF** (publisher of record); the ICR project (delivered by Ona + Crosscut) credited via `contact` |     |
 | `menu` | Home, Background, Artifacts |     |
 
-The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace; the same base hosts the provisional geographic-identifier system URIs (§2.4). The toolchain (FSH / SUSHI / IG Publisher) deliberately matches WHO SMART Guidelines practice; a formal `dependsOn smart.who.int.base` dependency is proposed once alignment hardens (§13.3).
+The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace; the same base hosts the provisional geographic-identifier system URIs (§2.4). The toolchain (FSH / SUSHI / IG Publisher) deliberately matches WHO SMART Guidelines practice; a formal `dependsOn smart.who.int.base` dependency is proposed once alignment hardens (§13.3). The IG's one real package dependency to date is **`hl7.fhir.uv.sdc` 4.0.0** (HL7 Structured Data Capture), added in the espen-forms round to carry the SDC template-based-extraction extensions the ESPEN MDA instruments use (§4.8).
 ### 1.5 What the IG contains
 | Layer | Count | Artifacts |
 | --- | --- | --- |
@@ -171,14 +171,14 @@ The canonical `https://fhir.icr.unicef.org` stakes out a UNICEF-owned namespace;
 | **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRSupervisionReport (QuestionnaireResponse) |
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
 | **Measures** | 6   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, and (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness` — the canonical definitions the coverage/readiness MeasureReports instantiate (§7) |
-| **Questionnaire / ConceptMap** | 2 / 1 | `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
+| **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
 | **Extensions** | 35  | See §10 |
-| **CodeSystems** | 23  | See §9 |
-| **ValueSets** | 26  | One per code system (mostly), plus purpose-built sets (§9) |
+| **CodeSystems** | 25  | See §9 |
+| **ValueSets** | 28  | One per code system (mostly), plus purpose-built sets (§9) |
 | **Example instances** | 41  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, plus (forms-v1) a person-targeted follow-up revisit and a readiness validation (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
-File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `conceptmaps.fsh`, `examples.fsh`.
+File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `examples.fsh`.
 
 **Build:** `sushi build .` compiles FSH → JSON; `./_genonce.sh` renders the IG website (needs Java 17+). The current commit compiles clean (0 errors / 0 warnings).
 
@@ -1009,6 +1009,22 @@ The shipped Questionnaire groups its items into four sections — **supplies**, 
 
 - **Readiness closes the one campaign-lifecycle phase the IG had no home for.** ICR modelled planning (the microplan CarePlan), execution (Tasks, delivery events), and evaluation (coverage) — but not the pre-execution *readiness* gate. This checklist fills it, promoting the §13.2 "campaign-phase/readiness lifecycle" proposal to a built artifact.
 - **Open design decision.** Whether a readiness `QuestionnaireResponse` warrants a dedicated `ICRReadinessReport` profile (parallel to `ICRSupervisionReport`) or simply reuses the base QuestionnaireResponse pattern is still open — the lifecycle stage differs (pre-campaign vs in-campaign), which argues for a distinct profile, but the structure is identical.
+### 4.8 The ESPEN MDA instrument set *(espen-forms)*
+**Purpose.** A complete, source-faithful FHIR conversion of the six **ESPEN MDA demo XLSForms** (WHO-AFRO's Expanded Special Project for Elimination of NTDs), shipped as **example `Questionnaire` instances** (`Usage: #example`) that demonstrate the "countries extend the IG" story end-to-end — from a filled form to ICR-profiled resources. They **coexist with, and do not replace,** the two canonical condensed instruments (the `icr-mda-supervision-checklist`, §4.6, and the `icr-campaign-readiness-checklist`, §4.7), which stay the IG's normative checklists. Where the canonical instruments are deliberately trimmed, the six ESPEN conversions preserve every item, group, and skip-logic condition (`relevant` → `enableWhen`) of their XLSForm source — `linkId`s are the XLSForm names verbatim, `calculate`s become hidden SDC `calculatedExpression`s, and registry cascades (state/district/facility/village) become string items resolved against the Location hierarchy at capture time.
+
+The six instruments (in `ig/input/fsh/questionnaires-espen.fsh`): **`espen-mda-location-registration`** (admin cascade + village population by age band + GPS), **`espen-mda-drug-receipt`** (per-medicine received totals), **`espen-mda-treatment`** (the core per-drug treatment tally), **`espen-mda-case-management`** (distributed totals, side-effects, other-NTD case counts), and the supervision pair **`espen-mda-supervision-hf`** and **`espen-mda-supervision-cdd`** (the full ESPEN Form 5 / Form 6 supervision checklists).
+
+**Template-based extraction (SDC).** The set introduces the IG's first real package dependency — **`hl7.fhir.uv.sdc` 4.0.0** — and uses SDC **template-based extraction** (`sdc-questionnaire-templateExtract` / `templateExtractValue` / `templateExtractContext`, with `extractAllocateId` for minted ids) so a filled `QuestionnaireResponse` extracts into the proper ICR-profiled resources. The mapping follows the aggregate-versus-individual rule (§6.3): *individual record when you have a person; aggregate when you don't; MeasureReport for stratified coverage.*
+
+| Form | Extracts to | Notes |
+| --- | --- | --- |
+| 1 location | `ICRLocation` + 5 `ICRTargetPopulation` Groups | population totals (total / eligible / 1–4 / 5–14 / 15+); each Group's geography characteristic references the co-extracted Location via allocate-id |
+| 2 receipt | `ICRSupplyDelivery` per drug (8 templates) | item-level, ATC-coded — only answered drug totals extract |
+| 3 treatment | `ICRAdministrativeCoverage` MeasureReport (8, per drug) | `measure = icr-mda-treatment-coverage`; sex × age-band × disposition stratifiers — the same cube as `example-mda-treatment-tally` (§7.3) |
+| 4 case mgmt | `ICRSupplyDelivery` per drug (8, distributed) | distributed counts as stock-accountability *used*; side-effect / other-NTD counts stay on the QR |
+| 5 & 6 supervision | **None — by design** | the QuestionnaireResponse *is* the record (`ICRSupervisionReport`, §4.6) |
+
+**The no-extraction rule for the supervision pair is a design decision, not a gap.** Per §4.6 a supervision `QuestionnaireResponse` is itself the record of a visit; there is no downstream resource to mint, so Forms 5 and 6 carry no templates. Likewise Form 4's person-level side-effects cannot be minted as `ICRAdverseEvent`s from aggregate counts, so those counts remain on the response. **New terminology:** `ICRNTDDiseaseCS` (the disease-scope axis) and `ICRMDAMedicinePackageCS` (the medicine-package axis), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists bind to the existing `ICRMissedReasonCS` and `ICRCommunicationChannelCS` vocabularies. Full design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
 
 * * *
 ## 5. Population & geography profiles
@@ -1925,7 +1941,7 @@ These are the design rules that recur across the profiles — the things to hold
 ## 9. Terminology (CodeSystems & ValueSets)
 **The pattern.** ICR defines code systems **only for genuinely new campaign semantics it owns**; everything that already has a standard system reuses it — vaccines → CVX, drugs → ATC, commodities → GS1, geography → ISO 3166. Local/national codes join via ConceptMap (deferred). This is standard IG practice: WHO's own SMART Immunizations IG does the same with its `IMMZ.*` codes. None of ICR's code systems duplicates a standard system. All are `caseSensitive` and non-experimental.
 
-**The 23 CodeSystems** (the forms-v1 round, §13.2, added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, `ICRSettlementTypeCS` and extended four existing systems — marked below).
+**The 25 CodeSystems** (the forms-v1 round, §13.2, added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, `ICRSettlementTypeCS`; the espen-forms round, §4.8, added `ICRNTDDiseaseCS` and `ICRMDAMedicinePackageCS`; several existing systems were extended — marked below).
 
 | CodeSystem | Codes | FR? | Bound on (strength) |
 | --- | --- | --- | --- |
@@ -1935,7 +1951,7 @@ These are the design rules that recur across the profiles — the things to hold
 | **ICRGroupKindCS** | `household`, `community`, `school-cohort` (3) | ✔   | ICRDeliveryUnit.code (**required**) |
 | **ICRTaskOriginCS** | `pre-planned`, `field-registered` (2) | ✔   | task-origin ext (**required**) |
 | **ICRLocationTypeCS** | `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area` (9) | —   | ICRLocation.type (**extensible**) |
-| **ICRGroupCharacteristicCS** | `geography` (1) | —   | fixed code on the geography characteristic slice (no VS) |
+| **ICRGroupCharacteristicCS** | `geography`, `age-band` (2) | —   | fixed codes on the Group characteristic slices (no VS) — `age-band` added espen-forms to scope age-specific denominator Groups |
 | **ICRMissedReasonCS** | `absent`, `sleeping`, `sick`, `refusal`, `inaccessible`, `not-visited`, `not-revisited`, `medication-shortage`, `insecurity`, `difficult-access`, `not-required`, `other` (12) | —   | missed-reason ext (**extensible**) — person-level and area-level reasons in one set; `not-revisited` added forms-v1 |
 | **ICRNoncomplianceReasonCS** | `safety-concern`, `religious-objection`, `no-felt-need`, `campaign-fatigue`, `misinformation`, `not-decision-maker`, `other` (7) | —   | noncompliance-reason ext (**extensible**) — `not-decision-maker` added forms-v1 |
 | **ICRExclusionReasonCS** | `under-height-age`, `pregnant`, `breastfeeding`, `acute-illness`, `other` (5) | —   | exclusion-reason ext (**extensible**) — *present-but-contraindicated*, the MDA "reasons not treated" tally |
@@ -1952,6 +1968,8 @@ These are the design rules that recur across the profiles — the things to hold
 | **ICRDoseHistoryCS** *(forms-v1)* | `zero-dose`, `previously-received`, `no-recall` (3) | —   | prior-dose-status ext (**required**); value space of the `dose-history` stratifier — the polio SIA never/previously/no-recall split |
 | **ICRRevisitOutcomeCS** *(forms-v1)* | `already-vaccinated`, `vaccinated-on-revisit`, `still-missing` (3) | —   | revisit-outcome ext (**extensible**) — outcome of a follow-up revisit |
 | **ICRSettlementTypeCS** *(forms-v1)* | `ordinary`, `urban`, `rural`, `urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`, `immigrant`, `other` (11) | —   | settlement-type ext (**extensible**) — vulnerability/special-population axis for HTRA targeting |
+| **ICRNTDDiseaseCS** *(espen-forms)* | `lf`, `oncho`, `schisto`, `sth`, `trachoma` (5) | —   | ESPEN MDA disease-scope axis (bound in the espen-forms instruments, §4.8) — the PC-NTDs an MDA campaign addresses |
+| **ICRMDAMedicinePackageCS** *(espen-forms)* | `ivm`, `ivm-alb`, `ivm-alb-dec`, `alb`, `meb`, `pzq`, `pzq-alb`, `pzq-meb`, `azm-tab`, `azm-susp`, `tetra` (11) | —   | ESPEN MDA medicine-package axis (§4.8) — single drugs and standard co-administration combinations |
 
 **ValueSets.** One whole-system ValueSet per CodeSystem (except ICRGroupCharacteristicCS, whose single code is fixed directly in the characteristic slice), plus the purpose-built sets:
 
@@ -2174,6 +2192,13 @@ A synthesis of eight global-health source analyses (WHO SIA, RED microplanning, 
 - **Vulnerability / special-population taxonomy** — a `settlement-type` extension on Location + `ICRSettlementTypeCS` (urban-slum / refugee-IDP / nomad-pastoralist / security-compromised / hard-to-reach / cross-border …).
 - **`outreach` delivery strategy** — for outside-household special-strategy sites (water points, transit/bus, border crossings).
 - **Communication-channel expansion** — ten channels added to `ICRCommunicationChannelCS` from the RCM awareness-source lists (health-worker, religious-leader, social-mobilizer, social-media, TV, newspaper, IEC materials, mobile-PA, volunteer-CHW, neighbour).
+
+**espen-forms (built, v0.22.0 IG round).** A third field-evidence pass converted the six **ESPEN MDA demo XLSForms** (`forms/espen mda/`) into complete, source-faithful FHIR `Questionnaire` example instruments (`espen-mda-*`, §4.8), coexisting with — not replacing — the canonical condensed checklists:
+- **Six example instruments** in `ig/input/fsh/questionnaires-espen.fsh` — location registration, drug receipt, treatment tally, case management, and the HF + CDD supervision pair — `linkId`s verbatim from the XLSForms, `relevant` → `enableWhen`, `calculate` → hidden SDC `calculatedExpression`.
+- **SDC template-based extraction** — the IG's first real dependency (`hl7.fhir.uv.sdc` 4.0.0); `templateExtract` mints `ICRLocation` + `ICRTargetPopulation` Groups (Form 1), per-drug `ICRSupplyDelivery` (Forms 2 & 4), and per-drug `ICRAdministrativeCoverage` MeasureReports on `icr-mda-treatment-coverage` (Form 3).
+- **No extraction for the supervision pair, by design** — per §4.6 the `QuestionnaireResponse` *is* the `ICRSupervisionReport`; Form 4's aggregate side-effect counts likewise stay on the response (no person-level `ICRAdverseEvent` from aggregates).
+- **New terminology** — `ICRNTDDiseaseCS` (disease scope) and `ICRMDAMedicinePackageCS` (medicine package), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists reuse `ICRMissedReasonCS` / `ICRCommunicationChannelCS`.
+- **Demonstrates the "countries extend the IG" story** end-to-end — a filled national form to ICR-profiled resources. Design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
 
 Still proposed after forms-v1: the structured `sample-design` sub-elements and explicit RCM/LQAS pass-fail semantics; a canonical wastage Measure + doses-per-vial; a cold-chain/logistics axis beyond the readiness checklist and SupplyDelivery; the in-process-vs-end-process monitoring-timing axis; and the disease-agnostic-typing sign-off with the polio programme (kept as-is per reviewer confirmation — disease stays in `addresses` + product code, no data-model change).
 
