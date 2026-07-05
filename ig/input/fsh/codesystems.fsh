@@ -403,3 +403,6 @@ Description: "Project/programme provenance tags applied as meta.tag on example i
 * ^caseSensitive = true
 * ^experimental = false
 * #espen "ESPEN" "The ESPEN MDA demo instrument set and its scenario examples."
+* #mr-sia "MR SIA (Sierra Leone)" "The worked Sierra Leone measles-rubella SIA scenario (working doc §11): protocol, umbrella + round campaigns, site-session/mop-up/follow-up tasks, dose, AEFIs, and the admin-vs-survey coverage pair."
+* #mda "MDA (Rokupr)" "The community-directed albendazole MDA thread: drug supply, community task, register entry, stratified treatment tally, geographic coverage, and supervision."
+* #gallery "Gallery" "Standalone activity-gallery pieces demonstrating other campaign types (ITN distribution, IRS)."

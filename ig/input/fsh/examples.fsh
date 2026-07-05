@@ -13,6 +13,8 @@ Instance: example-country
 InstanceOf: ICRLocation
 Title: "Example Country"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * name = "Sierra Leone"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
@@ -26,6 +28,8 @@ Instance: example-district
 InstanceOf: ICRLocation
 Title: "Example District"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * name = "Kambia District"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
@@ -40,6 +44,8 @@ Instance: example-settlement
 InstanceOf: ICRLocation
 Title: "Example Settlement"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * name = "Rokupr"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#area "Area"
@@ -54,6 +60,7 @@ Instance: example-dwelling
 InstanceOf: ICRLocation
 Title: "Example Dwelling"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * name = "Dwelling — Rokupr block 4, house 12"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#ho "House"
@@ -67,6 +74,7 @@ Instance: example-fixed-post
 InstanceOf: ICRLocation
 Title: "Example Fixed Post — Rokupr CHC"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * name = "Rokupr Community Health Centre — fixed vaccination post"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#si "Site"
@@ -85,6 +93,8 @@ Instance: example-supervisory-area
 InstanceOf: ICRLocation
 Title: "Example Supervisory Area"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * name = "Kambia supervision zone 2 (Rokupr axis)"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#area "Area"
@@ -97,6 +107,7 @@ Instance: example-child
 InstanceOf: ICRPatient
 Title: "Example Child"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * identifier[nationalId].system = $NationalId
 * identifier[nationalId].value = "SL-2023-04-0099812"
 * name.given = "Aminata"
@@ -108,6 +119,7 @@ Instance: example-household
 InstanceOf: ICRDeliveryUnit
 Title: "Example Household"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * type = #person
 * actual = true
 * code = $GroupKind#household "Household"
@@ -123,6 +135,7 @@ Instance: example-head
 InstanceOf: ICRPatient
 Title: "Example Head of Household"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * identifier[nationalId].system = $NationalId
 * identifier[nationalId].value = "SL-1989-11-0042317"
 * name.given = "Mohamed"
@@ -134,6 +147,7 @@ Instance: example-sibling
 InstanceOf: ICRPatient
 Title: "Example Sibling"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * identifier[nationalId].system = $NationalId
 * identifier[nationalId].value = "SL-2019-08-0071554"
 * name.given = "Fatmata"
@@ -145,6 +159,7 @@ Instance: example-household-enumerated
 InstanceOf: ICRDeliveryUnit
 Title: "Example Household — fully enumerated"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * type = #person
 * actual = true
 * code = $GroupKind#household "Household"
@@ -161,6 +176,7 @@ Instance: example-consent
 InstanceOf: ICRConsent
 Title: "Example Consent — registry data sharing"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #active
 * scope = $ConsentScope#patient-privacy "Privacy Consent"
 * category = $LOINC#59284-0 "Consent Document"
@@ -178,6 +194,7 @@ Instance: example-community
 InstanceOf: ICRDeliveryUnit
 Title: "Example Community — Rokupr"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * type = #person
 * actual = true
 * code = $GroupKind#community "Community"
@@ -189,6 +206,7 @@ Instance: example-target-population
 InstanceOf: ICRTargetPopulation
 Title: "Example Target Population — children 9m–14y, Kambia District"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * type = #person
 * actual = false
 * name = "Children 9 months–14 years, Kambia District (MR SIA 2026 planning denominator)"
@@ -209,6 +227,7 @@ Instance: example-target-population-enumerated
 InstanceOf: ICRTargetPopulation
 Title: "Example Target Population — children 9m–14y, Kambia District (enumeration estimate)"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * type = #person
 * actual = false
 * name = "Children 9 months–14 years, Kambia District (house-to-house enumeration, competing estimate)"
@@ -224,6 +243,7 @@ Instance: example-target-population-national
 InstanceOf: ICRTargetPopulation
 Title: "Example Target Population — children 9m–14y, Sierra Leone (national)"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * type = #person
 * actual = false
 * name = "Children 9 months–14 years, Sierra Leone (MR SIA 2026 national planning denominator)"
@@ -241,6 +261,7 @@ Instance: example-mcv-activity
 InstanceOf: ICRCampaignActivity
 Title: "Administer MCV — campaign activity definition"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #active
 * kind = #Task
 * title = "Administer measles-containing vaccine, 9 months–14 years"
@@ -257,6 +278,7 @@ Instance: example-albendazole-activity
 InstanceOf: ICRCampaignActivity
 Title: "Administer albendazole — MDA activity definition"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #active
 * kind = #Task
 * title = "Administer albendazole to school-age children 5–14 years (STH preventive chemotherapy)"
@@ -268,6 +290,7 @@ Instance: example-itn-activity
 InstanceOf: ICRCampaignActivity
 Title: "Distribute ITNs — activity definition"
 Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
 * status = #active
 * kind = #Task
 * title = "Distribute long-lasting insecticidal nets, 1 net per 2 household members"
@@ -278,6 +301,7 @@ Instance: example-irs-activity
 InstanceOf: ICRCampaignActivity
 Title: "Spray structure — IRS activity definition"
 Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
 * status = #active
 * kind = #Task
 * title = "Spray interior walls of eligible structures (indoor residual spraying)"
@@ -288,6 +312,7 @@ Instance: example-mr-sia-protocol
 InstanceOf: ICRCampaignProtocol
 Title: "Measles–Rubella SIA Protocol"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #active
 * version = "1.0.0"
 * title = "Measles–rubella SIA, 9 months–14 years"
@@ -305,6 +330,7 @@ Instance: example-mr-sia-national
 InstanceOf: ICRCampaign
 Title: "Sierra Leone MR SIA 2026 — national umbrella campaign"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * instantiatesCanonical = Canonical(example-mr-sia-protocol)
 * status = #active
 * intent = #plan
@@ -319,6 +345,7 @@ Instance: example-mr-sia-2026
 InstanceOf: ICRCampaign
 Title: "Kambia MR SIA — June 2026 round"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * instantiatesCanonical = Canonical(example-mr-sia-protocol)
 * status = #active
 * intent = #order
@@ -341,6 +368,7 @@ Instance: example-site-session-task
 InstanceOf: ICRCampaignTask
 Title: "Site session — Rokupr CHC fixed post, campaign day 3"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #completed
 * intent = #order
 * code.text = "Fixed-post vaccination session"
@@ -359,6 +387,7 @@ Instance: example-mopup-task
 InstanceOf: ICRCampaignTask
 Title: "Mop-up household visit — Rokupr block 4, house 12"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #completed
 * intent = #order
 * code.text = "House-to-house mop-up: vaccinate children missed at fixed posts"
@@ -383,6 +412,7 @@ Instance: example-mcv-dose
 InstanceOf: ICRImmunizationEvent
 Title: "MCV dose — campaign record"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #completed
 * vaccineCode = $CVX#05 "measles virus vaccine"
 * patient = Reference(example-child)
@@ -399,6 +429,7 @@ Instance: example-albendazole-administration
 InstanceOf: ICRMedicationAdministration
 Title: "Albendazole administration — MDA register entry"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #completed
 * medicationCodeableConcept = $ATC#P02CA03 "albendazole"
 * subject = Reference(example-child)
@@ -412,6 +443,7 @@ Instance: example-itn-delivery
 InstanceOf: ICRSupplyDelivery
 Title: "ITN delivery to household"
 Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
 * status = #completed
 * suppliedItem.quantity = 3 '{Net}' "nets"
 * suppliedItem.itemCodeableConcept.text = "Long-lasting insecticidal net (LLIN)"
@@ -428,6 +460,7 @@ Instance: example-admin-coverage
 InstanceOf: ICRAdministrativeCoverage
 Title: "Administrative coverage — Kambia MR SIA, June 2026 round"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #complete
 * type = #summary
 * measure = "https://icr.healthcampaigns.org/Measure/icr-admin-coverage"
@@ -447,6 +480,7 @@ Instance: example-survey-coverage
 InstanceOf: ICRSurveyCoverage
 Title: "Post-campaign survey coverage — Kambia MR SIA, June 2026 round"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #complete
 * type = #summary
 * measure = "https://icr.healthcampaigns.org/Measure/icr-survey-coverage"
@@ -472,6 +506,7 @@ Instance: example-albendazole-supply
 InstanceOf: ICRSupplyDelivery
 Title: "Albendazole receipt — Rokupr community (ATC-coded drug supply)"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #completed
 * suppliedItem.quantity = 3600 '{tbl}' "tablets"
 * suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
@@ -487,6 +522,7 @@ Instance: example-mda-community-task
 InstanceOf: ICRCampaignTask
 Title: "Community-directed MDA — Rokupr, albendazole round"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #completed
 * intent = #order
 * code.text = "Community-directed MDA: albendazole (STH preventive chemotherapy)"
@@ -518,6 +554,7 @@ Instance: example-mda-treatment-tally
 InstanceOf: ICRAdministrativeCoverage
 Title: "MDA treatment coverage — Rokupr albendazole round (sex × age stratified)"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #complete
 * type = #summary
 * measure = "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage"
@@ -577,6 +614,7 @@ Instance: example-geographic-coverage
 InstanceOf: ICRAdministrativeCoverage
 Title: "Geographic coverage — Kambia MDA (villages treated / total)"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #complete
 * type = #summary
 * measure = "https://icr.healthcampaigns.org/Measure/icr-geographic-coverage"
@@ -604,6 +642,7 @@ Instance: example-aefi
 InstanceOf: ICRAdverseEvent
 Title: "AEFI — fever following MCV dose"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * actuality = #actual
 * event.text = "Fever within 48h of measles-containing vaccine"
 * subject = Reference(example-child)
@@ -620,6 +659,7 @@ Instance: example-mda-adverse-event
 InstanceOf: ICRAdverseEvent
 Title: "Adverse event — abdominal pain following albendazole"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * actuality = #actual
 * event.text = "Transient abdominal pain following albendazole"
 * subject = Reference(example-child)
@@ -635,6 +675,7 @@ Instance: example-aefi-serious
 InstanceOf: ICRAdverseEvent
 Title: "AEFI — anaphylaxis following MCV dose (serious)"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * actuality = #actual
 * event.text = "Anaphylaxis shortly after measles-containing vaccine"
 * subject = Reference(example-child)
@@ -653,6 +694,7 @@ Instance: example-careteam
 InstanceOf: ICRCareTeam
 Title: "Care team — CDD team 7, Rokupr"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * status = #active
 * name = "CDD team 7, Rokupr"
 * subject = Reference(example-target-population)
@@ -676,6 +718,7 @@ Instance: example-supervision-report
 InstanceOf: ICRSupervisionReport
 Title: "Supervision report — CDD observation, Rokupr"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * questionnaire = "https://icr.healthcampaigns.org/Questionnaire/icr-mda-supervision-checklist"
 * status = #completed
 * subject = Reference(example-community)
@@ -709,6 +752,7 @@ Instance: example-followup-task
 InstanceOf: ICRCampaignTask
 Title: "Follow-up revisit — missed child, Rokupr block 4"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * status = #completed
 * intent = #order
 * code.text = "Revisit missed child from mop-up visit"
@@ -730,6 +774,7 @@ Instance: example-readiness-report
 InstanceOf: QuestionnaireResponse
 Title: "Readiness validation — Kambia supervision zone 2"
 Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * questionnaire = "https://icr.healthcampaigns.org/Questionnaire/icr-campaign-readiness-checklist"
 * status = #completed
 * subject = Reference(example-supervisory-area)

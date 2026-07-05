@@ -1,6 +1,6 @@
 ---
-version: 0.23.0
-last_modified: 2026-07-05T18:25:14Z
+version: 0.24.0
+last_modified: 2026-07-05T20:22:00Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-<sub>`v0.23.0 · Last modified Jul 5, 2026 at 2:25 PM EDT`</sub>
+<sub>`v0.24.0 · Last modified Jul 5, 2026 at 4:22 PM EDT`</sub>
 
 ⁠
 
@@ -2062,6 +2062,8 @@ FHIR has no native campaign semantics, so 35 extensions carry them on the profil
 * * *
 ## 11. The worked scenario
 The IG ships one coherent story: a **Sierra Leone measles–rubella SIA, 2026** — a national umbrella campaign with the **Kambia District June round** as a `partOf` child — exercising fixed-post (Type A) and house-to-house mop-up (Type B) tasks and the divergent admin-vs-survey coverage pair, plus a **community-directed MDA scenario** (Type C: drug supply, community task, stratified treatment tally), an ITN delivery, adverse events in both arms, and the team & supervision records. The figures (48,250; 99% vs 76%) are an **illustrative composite** constructed to exercise the profiles, with the 99-vs-76 divergence modelled on the documented Cuamba, Mozambique case; they are not a transcription of a specific published SIA.
+
+**Finding your way around the gallery *(example-tags round)*.** Every example instance carries a scenario/provenance `meta.tag` from **ICRProjectTagCS** — `mr-sia` (the SIA worked scenario), `mda` (the Rokupr community-directed albendazole thread), `gallery` (standalone other-campaign-type pieces: ITN, IRS), and `espen` (the six ESPEN MDA instruments, §4.8) — with shared geography (country → settlement, the supervisory area) tagged into both scenarios. The published IG site's example gallery filters on these tags.
 
 **The end-to-end chain.** The vaccine thread is a single traceable line from template to person:
 
