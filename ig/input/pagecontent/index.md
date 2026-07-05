@@ -39,6 +39,24 @@ survey coverage are **separate, never-merged lineages**
 ([ICRAdministrativeCoverage](StructureDefinition-ICRAdministrativeCoverage.html),
 [ICRSurveyCoverage](StructureDefinition-ICRSurveyCoverage.html)).
 
+#### The model at a glance
+
+```mermaid
+graph TD
+  PD["ICRCampaignProtocol (PlanDefinition)"] -->|reusable protocol| CP["ICRCampaign (CarePlan)"]
+  CP -->|operational unit| TASK["ICRCampaignTask (Task)"]
+  TASK -->|Task.output| IMM["ICRImmunizationEvent"]
+  TASK -->|Task.output| MA["ICRMedicationAdministration"]
+  TASK -->|Task.output| SD["ICRSupplyDelivery"]
+  TASK -->|acts on| DU["ICRDeliveryUnit (Group: household or community)"]
+  DU -->|located at| LOC["ICRLocation (GERS join key)"]
+  TP["ICRTargetPopulation (denominator)"] -.->|denominator| CP
+  CP --> AC["ICRAdministrativeCoverage"]
+  CP --> SC["ICRSurveyCoverage"]
+```
+
+<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, whose Tasks carry the operational work and hang delivery events off `Task.output`; denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
+
 #### Status
 
 This is the **v0.1 draft** produced in Phase 1 of the UNICEF ICR project. It encodes the design rationale of the ICR working design document
