@@ -2270,3 +2270,489 @@ Usage: #inline
 * suppliedItem.quantity.unit = "tubes"
 * suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
 * suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_tetra_dist').answer.value.first()"
+
+// --- Form 5: MDA Supervision — Health Facility --------------------------------
+// No extraction templates, by design: this is a supervision report, not a stock
+// or coverage event — the QuestionnaireResponse itself is the record
+// (ICRSupervisionReport, working doc §4.6).
+
+Instance: espen-mda-supervision-hf
+InstanceOf: Questionnaire
+Title: "ESPEN MDA — 5. Supervision: Health Facility"
+Usage: #example
+* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-supervision-hf"
+* name = "EspenMDASupervisionHF"
+* status = #active
+* experimental = false
+* description = "ESPEN MDA demo Form 5 (supervision at health facility): geographic coverage of villages treated, per-drug stock triplets (remaining/expired/concordance), distributor training, social mobilization, supervision area, pharmacovigilance, and free-text challenges/solutions/recommendations. No extraction templates: per ICRSupervisionReport (working doc §4.6) the QuestionnaireResponse itself is the supervision record."
+* subjectType = #Location
+// registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
+// resolve against the Location hierarchy / CareTeam registry at capture time
+* item[+].linkId = "s_recorder_id"
+* item[=].text = "Select the recorder ID"
+* item[=].type = #string
+* item[+].linkId = "s_state"
+* item[=].text = "Select region"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_district"
+* item[=].text = "Select district"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_health_facility"
+* item[=].text = "Health facility"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_location"
+* item[=].text = "Village"
+* item[=].type = #string
+* item[=].required = true
+// stable domain list (National/Regional/District/Partner/Health facility), not a
+// registry cascade — inline choice options
+* item[+].linkId = "s_supervisor_Level"
+* item[=].text = "Supervisor level"
+* item[=].type = #choice
+* item[=].required = true
+* item[=].answerOption[+].valueString = "National"
+* item[=].answerOption[+].valueString = "Regional"
+* item[=].answerOption[+].valueString = "District"
+* item[=].answerOption[+].valueString = "Partner"
+* item[=].answerOption[+].valueString = "Health facility"
+* item[+].linkId = "s_date_start"
+* item[=].text = "Campaign start date"
+* item[=].type = #date
+* item[=].required = true
+* item[+].linkId = "s_date_end"
+* item[=].text = "Campaign end date"
+* item[=].type = #date
+* item[=].required = true
+* item[+].linkId = "s_disease"
+* item[=].text = "Disease covered by the MDA"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerValueSet = Canonical(ICRNTDDiseaseVS)
+* item[+].linkId = "s_medicine"
+* item[=].text = "Select the medicine package"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerValueSet = Canonical(ICRMDAMedicinePackageVS)
+// combination-validity constraint enforced at the capture layer; not carried over
+* item[+].linkId = "location"
+* item[=].text = "Geographic coverage"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_nb_villages_total"
+* item[=].item[=].text = "Total number of villages"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_nb_villages_treated"
+* item[=].item[=].text = "Number of villages treated"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_nb_villages_non_treated"
+* item[=].item[=].text = "Number of villages not treated"
+* item[=].item[=].type = #integer
+* item[=].item[+].linkId = "s_reason_non_treatment"
+* item[=].item[=].text = "Reasons for non-treatment"
+* item[=].item[=].type = #choice
+* item[=].item[=].repeats = true
+* item[=].item[=].enableWhen[+].question = "s_nb_villages_non_treated"
+* item[=].item[=].enableWhen[=].operator = #>
+* item[=].item[=].enableWhen[=].answerInteger = 0
+* item[=].item[=].answerOption[+].valueCoding = ICRMissedReasonCS#not-visited "Absence of DC"
+* item[=].item[=].answerOption[+].valueCoding = ICRMissedReasonCS#refusal "Population refusal"
+* item[=].item[=].answerOption[+].valueCoding = ICRMissedReasonCS#medication-shortage "Medication shortage"
+* item[=].item[=].answerOption[+].valueCoding = ICRMissedReasonCS#insecurity "Insecurity"
+* item[=].item[=].answerOption[+].valueCoding = ICRMissedReasonCS#difficult-access "Difficult access"
+* item[=].item[=].answerOption[+].valueCoding = ICRMissedReasonCS#not-required "Not required"
+// per-drug stock triplets: the source form has no `relevant` on these groups
+// (unlike Forms 2-4's medicine-gated blocks) — converted without enableWhen, faithful
+* item[+].linkId = "logistic_ivm"
+* item[=].text = "Ivermectine Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_ivm"
+* item[=].item[=].text = "Is there any Ivermectine remaining stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_ivm"
+* item[=].item[=].text = "Are there any expired Ivermectine medications?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_ivm"
+* item[=].item[=].text = "Does the physical stock of Ivermectine match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_alb"
+* item[=].text = "Albendazole Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_alb"
+* item[=].item[=].text = "Is there any Albendazole remaining stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_alb"
+* item[=].item[=].text = "Are there any expired Albendazole medications?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_alb"
+* item[=].item[=].text = "Does the physical stock of Albendazole match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_meb"
+* item[=].text = "Mebendazole Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_meb"
+* item[=].item[=].text = "Is there any Mebendazole remaining stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_meb"
+* item[=].item[=].text = "Are there any expired Mebendazole medications?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_meb"
+* item[=].item[=].text = "Does the physical stock of Mebendazole match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_dec"
+* item[=].text = "Diethylcarbamazine Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_dec"
+* item[=].item[=].text = "Is there any Diethylcarbamazine remaining stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_dec"
+* item[=].item[=].text = "Are there any expired Diethylcarbamazine medications?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_dec"
+* item[=].item[=].text = "Does the physical stock of Diethylcarbamazine match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_pzq"
+* item[=].text = "Praziquantel Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_pzq"
+* item[=].item[=].text = "Is there any Praziquantel remaining stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_pzq"
+* item[=].item[=].text = "Are there any Praziquantel expired medications?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_pzq"
+* item[=].item[=].text = "Does the physical stock of Praziquantel match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_az_sus"
+* item[=].text = "Azytromicine Suspension Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_az_sus"
+* item[=].item[=].text = "Is there any remaining stock of Azytromicine Suspension?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_az_sus"
+* item[=].item[=].text = "Are there any expired Azytromicine suspension?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_az_sus"
+* item[=].item[=].text = "Does the physical stock of Azytromicine suspension match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_az_tab"
+* item[=].text = "Azytromicine tablet Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_az_tab"
+* item[=].item[=].text = "Is there any remaining stock of Azytromicine tablet?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_az_tab"
+* item[=].item[=].text = "Are there any expired medications of Azytromicine tablet?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_az_tab"
+* item[=].item[=].text = "Does the physical stock of Azytromicine tablet match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "logistic_tetra"
+* item[=].text = "Medication Management"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_stock_remain_tetra"
+* item[=].item[=].text = "Is there any remaining stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_expired_tetra"
+* item[=].item[=].text = "Are there any expired medications?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_stock_concordance_tetra"
+* item[=].item[=].text = "Does the physical stock match the theoretical stock?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "s_training"
+* item[=].text = "Distributor training"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_dc_trained_h"
+* item[=].item[=].text = "Number of male distributors trained"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_dc_trained_f"
+* item[=].item[=].text = "Number of female distributors trained"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_manual_used"
+* item[=].item[=].text = "Distributor manual used?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "s_mobilisation"
+* item[=].text = "Social Mobilisation"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_population_informed"
+* item[=].item[=].text = "Was the population informed before the campaign?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_chanel_utilises"
+* item[=].item[=].text = "Communication channels used"
+* item[=].item[=].type = #choice
+* item[=].item[=].repeats = true
+* item[=].item[=].required = true
+* item[=].item[=].answerOption[+].valueCoding = ICRCommunicationChannelCS#radio "Radio"
+* item[=].item[=].answerOption[+].valueCoding = ICRCommunicationChannelCS#town-criers "Town criers"
+* item[=].item[=].answerOption[+].valueCoding = ICRCommunicationChannelCS#community-leaders "Community leaders"
+* item[=].item[=].answerOption[+].valueCoding = ICRCommunicationChannelCS#schools "Schools"
+* item[=].item[=].answerOption[+].valueCoding = ICRCommunicationChannelCS#posters "Posters"
+* item[+].linkId = "s_supervision"
+* item[=].text = "Area of supervision"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_dc_supervised"
+* item[=].item[=].text = "Number of distributors supervised"
+* item[=].item[=].type = #integer
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_villages_supervised"
+* item[=].item[=].text = "Number of villages supervised"
+* item[=].item[=].type = #integer
+* item[+].linkId = "s_pharmacovigilance"
+* item[=].text = "Pharmacovigilance"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_side_effect"
+* item[=].item[=].text = "Were any adverse effects reported?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_sever_side_effect"
+* item[=].item[=].text = "Were any serious adverse effects reported?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "s_difficultes"
+* item[=].text = "Challenges encountered"
+* item[=].type = #text
+* item[+].linkId = "s_solutions"
+* item[=].text = "Proposed solutions"
+* item[=].type = #text
+* item[+].linkId = "s_recommandations"
+* item[=].text = "Supervisor recommendations"
+* item[=].type = #text
+// dropped: start / end (device timestamps)
+
+// --- Form 6: MDA Supervision — CDD Observation --------------------------------
+// No extraction templates, by design: this is a supervision report, not a stock
+// or coverage event — the QuestionnaireResponse itself is the record
+// (ICRSupervisionReport, working doc §4.6).
+
+Instance: espen-mda-supervision-cdd
+InstanceOf: Questionnaire
+Title: "ESPEN MDA — 6. Supervision: CDD Observation"
+Usage: #example
+* url = "https://fhir.icr.unicef.org/Questionnaire/espen-mda-supervision-cdd"
+* name = "EspenMDASupervisionCDD"
+* status = #active
+* experimental = false
+* description = "ESPEN MDA demo Form 6 (CDD observation supervision): direct observation of a community drug distributor's technique and attitude during treatment, MDA-supplies availability, CDD training coverage, and free-text challenges/solutions/recommendations. No extraction templates: per ICRSupervisionReport (working doc §4.6) the QuestionnaireResponse itself is the supervision record."
+* subjectType = #Location
+// stable domain list (National/Regional/Partner/District/Health Facility), not a
+// registry cascade — inline choice options
+* item[+].linkId = "s_supervisor"
+* item[=].text = "Supervisor Team"
+* item[=].type = #choice
+* item[=].answerOption[+].valueString = "National"
+* item[=].answerOption[+].valueString = "Regional"
+* item[=].answerOption[+].valueString = "Partner"
+* item[=].answerOption[+].valueString = "District"
+* item[=].answerOption[+].valueString = "Health Facility"
+// registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
+// resolve against the Location hierarchy / CareTeam registry at capture time
+* item[+].linkId = "s_state"
+* item[=].text = "Select region"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_district"
+* item[=].text = "Select district"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_health_facility"
+* item[=].text = "Health facility"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_location"
+* item[=].text = "Village"
+* item[=].type = #string
+* item[=].required = true
+* item[+].linkId = "s_date_start"
+* item[=].text = "Campaign start date"
+* item[=].type = #date
+* item[=].required = true
+* item[+].linkId = "s_date_end"
+* item[=].text = "Campaign end date"
+* item[=].type = #date
+* item[=].required = true
+* item[+].linkId = "s_disease"
+* item[=].text = "Disease covered by the MDA"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerValueSet = Canonical(ICRNTDDiseaseVS)
+* item[+].linkId = "s_medicine"
+* item[=].text = "Select the medicine package"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerValueSet = Canonical(ICRMDAMedicinePackageVS)
+// combination-validity constraint enforced at the capture layer; not carried over
+* item[+].linkId = "s_medicine_sufficient"
+* item[=].text = "Do the distributors have the medications in sufficient quantities?"
+* item[=].type = #boolean
+* item[=].required = true
+* item[+].linkId = "s_total_dist_trained_male"
+* item[=].text = "Total Distributor Male Trained for the campagne"
+* item[=].type = #integer
+* item[=].required = true
+* item[+].linkId = "s_total_dist_trained_female"
+* item[=].text = "Total Distributor Female Trained for the campagne"
+* item[=].type = #integer
+* item[+].linkId = "s_total_dist"
+* item[=].text = "Total Distributor Trained"
+* item[=].type = #integer
+* item[=].readOnly = true
+* item[=].extension[+].url = $QHidden
+* item[=].extension[=].valueBoolean = true
+* item[=].extension[+].url = $SDCCalculatedExpression
+* item[=].extension[=].valueExpression.language = #text/fhirpath
+* item[=].extension[=].valueExpression.expression = "iif(%resource.repeat(item).where(linkId='s_total_dist_trained_male').answer.exists(), %resource.repeat(item).where(linkId='s_total_dist_trained_male').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='s_total_dist_trained_female').answer.exists(), %resource.repeat(item).where(linkId='s_total_dist_trained_female').answer.value.first(), 0)"
+* item[+].linkId = "MDA_supplies"
+* item[=].text = "Avaialability of MDA supplies"
+* item[=].type = #group
+* item[=].item[+].linkId = "s_hieght_chart"
+* item[=].item[=].text = "Height chart"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_register"
+* item[=].item[=].text = "Register"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_records_checklist"
+* item[=].item[=].text = "Records/checklist"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_med_bag"
+* item[=].item[=].text = "The CDD uses a medication bag"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "attitude_CDD"
+* item[=].text = "Observe the actions, attitudes, and skills of the community health worker during the treatment of a family"
+* item[=].type = #group
+* item[=].item[+].linkId = "attitude_CDD-hint"
+* item[=].item[=].text = "wearing a vest, wearing a mask, using hand sanitizer, standard greetings - introduction -, administering medication, data collection"
+* item[=].item[=].type = #display
+* item[=].item[+].linkId = "s_wear_vest"
+* item[=].item[=].text = "Is the community health worker/healthcare worker team identifiable by a vest?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_usual_greetings"
+* item[=].item[=].text = "The CDD proceeds with the usual greetings"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_introduced_patient"
+* item[=].item[=].text = "The CDD  introduces the patient by specifying the reason for their visit and the treatment being administered."
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_used_height_chart_correctly"
+* item[=].item[=].text = "The CDD  uses the height chart correctly."
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_gave_write_dosage"
+* item[=].item[=].text = "The CDD  administers the medication correctly according to the height chart reading."
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_medicine_took_in_front_of_dc"
+* item[=].item[=].text = "The medicine is taken in the presence of the DC"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_filled_form"
+* item[=].item[=].text = "Does the CDD complete the data collection forms (checklist and register) correctly?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_investigated_cases"
+* item[=].item[=].text = "Does the CDD investigate and report cases of FL, Buruli ulcer, leishmaniasis and rumours of VG?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_identified_ineligible"
+* item[=].item[=].text = "Are ineligible individuals identified?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[=].item[+].linkId = "s_follow_side_effect_procedure"
+* item[=].item[=].text = "Is the procedure to follow in the event of side events known?"
+* item[=].item[=].type = #boolean
+* item[=].item[=].required = true
+* item[+].linkId = "s_date_training"
+* item[=].text = "Date of training session"
+* item[=].type = #date
+* item[=].required = true
+* item[+].linkId = "s_traning_duration"
+* item[=].text = "Duration of training session (in days)"
+* item[=].type = #integer
+* item[=].required = true
+* item[=].item[+].linkId = "s_traning_duration-hint"
+* item[=].item[=].text = "In days"
+* item[=].item[=].type = #display
+* item[+].linkId = "s_training_topic"
+* item[=].text = "What topics were covered during the training?"
+* item[=].type = #choice
+* item[=].repeats = true
+* item[=].required = true
+* item[=].answerOption[+].valueString = "Using the measuring stick"
+* item[=].answerOption[+].valueString = "Completing the checklists"
+* item[=].answerOption[+].valueString = "Supervised taking"
+* item[=].answerOption[+].valueString = "Marking concessions"
+* item[=].answerOption[+].valueString = "Monitoring refusals"
+* item[=].answerOption[+].valueString = "Revisit"
+* item[=].answerOption[+].valueString = "Practical exercise"
+* item[=].answerOption[+].valueString = "Interpersonal communication"
+* item[=].answerOption[+].valueString = "Other"
+* item[+].linkId = "s_took_med_in_training"
+* item[=].text = "Did you take the medication during the training?"
+* item[=].type = #boolean
+* item[=].required = true
+* item[+].linkId = "s_complete_form"
+* item[=].text = "Does the CDD complete the data collection forms (checklist and register) correctly?"
+* item[=].type = #boolean
+* item[=].required = true
+* item[+].linkId = "s_case_mngt"
+* item[=].text = "Does the CDD investigate and report cases of FL, Buruli ulcer, leishmaniasis and rumours of VG?"
+* item[=].type = #boolean
+* item[=].required = true
+* item[+].linkId = "s_has_inegidible"
+* item[=].text = "Are ineligible individuals identified?"
+* item[=].type = #boolean
+* item[=].required = true
+* item[+].linkId = "s_follow_side_effect"
+* item[=].text = "Is the procedure to follow in the event of adverse events known?"
+* item[=].type = #boolean
+* item[=].required = true
+* item[+].linkId = "s_difficultes"
+* item[=].text = "Challenges encountered"
+* item[=].type = #text
+* item[+].linkId = "s_solutions"
+* item[=].text = "Proposed solutions"
+* item[=].type = #text
+* item[+].linkId = "s_recommandations"
+* item[=].text = "Supervisor recommendations"
+* item[=].type = #text
+// dropped: start / end (device timestamps)
