@@ -49,3 +49,5 @@ Alias: $SDCExtractAllocateId = http://hl7.org/fhir/uv/sdc/StructureDefinition/sd
 Alias: $SDCCalculatedExpression = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression
 Alias: $SDCLaunchContext = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext
 Alias: $QHidden = http://hl7.org/fhir/StructureDefinition/questionnaire-hidden
+Alias: $NTDDisease = https://fhir.icr.unicef.org/CodeSystem/icr-ntd-disease-cs
+Alias: $MedicinePackage = https://fhir.icr.unicef.org/CodeSystem/icr-mda-medicine-package-cs

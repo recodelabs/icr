@@ -358,3 +358,35 @@ Description: "The settlement or special-population classification of a place —
 * #cross-border "Cross-border" "Cross-border / border-crossing population."
 * #immigrant "Immigrant" "Immigrant population."
 * #other "Other" "Other settlement/special-population type — record detail in text."
+
+// --- espen-forms: NTD-MDA vocabulary from the ESPEN demo instruments -----------
+
+CodeSystem: ICRNTDDiseaseCS
+Id: icr-ntd-disease-cs
+Title: "ICR NTD Disease"
+Description: "The preventive-chemotherapy NTDs an MDA campaign addresses — the disease-scope axis of the ESPEN MDA instruments (espen-forms)."
+* ^caseSensitive = true
+* ^experimental = false
+* #lf "Lymphatic filariasis (LF)"
+* #oncho "Onchocerciasis"
+* #schisto "Schistosomiasis"
+* #sth "Soil-transmitted helminthiasis (STH)"
+* #trachoma "Trachoma"
+
+CodeSystem: ICRMDAMedicinePackageCS
+Id: icr-mda-medicine-package-cs
+Title: "ICR MDA Medicine Package"
+Description: "The medicine package distributed in an MDA round — single drugs and the standard co-administration combinations (ESPEN medicine list, espen-forms)."
+* ^caseSensitive = true
+* ^experimental = false
+* #ivm "IVM (ivermectin)"
+* #ivm-alb "IVM + ALB"
+* #ivm-alb-dec "IVM + ALB + DEC"
+* #alb "ALB (albendazole)"
+* #meb "MEB (mebendazole)"
+* #pzq "PZQ (praziquantel)"
+* #pzq-alb "PZQ + ALB"
+* #pzq-meb "PZQ + MEB"
+* #azm-tab "AZM tablets (azithromycin)"
+* #azm-susp "AZM suspension (azithromycin)"
+* #tetra "TETRA (tetracycline eye ointment)"
