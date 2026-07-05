@@ -395,3 +395,11 @@ Description: "The medicine package distributed in an MDA round — single drugs 
 * #azm-tab "AZM tablets (azithromycin)"
 * #azm-susp "AZM suspension (azithromycin)"
 * #tetra "TETRA (tetracycline eye ointment)"
+
+CodeSystem: ICRProjectTagCS
+Id: icr-project-tag-cs
+Title: "ICR Project Tag"
+Description: "Project/programme provenance tags applied as meta.tag on example instances, so the example gallery can be filtered by the source project or instrument set (espen-forms)."
+* ^caseSensitive = true
+* ^experimental = false
+* #espen "ESPEN" "The ESPEN MDA demo instrument set and its scenario examples."
