@@ -51,3 +51,4 @@ Alias: $SDCLaunchContext = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-qu
 Alias: $QHidden = http://hl7.org/fhir/StructureDefinition/questionnaire-hidden
 Alias: $NTDDisease = https://fhir.icr.unicef.org/CodeSystem/icr-ntd-disease-cs
 Alias: $MedicinePackage = https://fhir.icr.unicef.org/CodeSystem/icr-mda-medicine-package-cs
+Alias: $ProjectTag = https://fhir.icr.unicef.org/CodeSystem/icr-project-tag-cs
