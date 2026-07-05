@@ -21,6 +21,8 @@ copyrightYear: 2026+
 releaseLabel: ci-build
 license: Apache-2.0
 jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
+dependencies:
+  hl7.fhir.uv.sdc: 4.0.0
 publisher:
   name: UNICEF Integrated Campaign Registry project (Ona + Crosscut)
   url: https://ona.io

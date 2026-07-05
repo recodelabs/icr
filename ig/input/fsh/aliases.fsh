@@ -40,3 +40,12 @@ Alias: $SeriousCriteria = https://fhir.icr.unicef.org/CodeSystem/icr-serious-cri
 Alias: $DoseHistory = https://fhir.icr.unicef.org/CodeSystem/icr-dose-history-cs
 Alias: $RevisitOutcome = https://fhir.icr.unicef.org/CodeSystem/icr-revisit-outcome-cs
 Alias: $SettlementType = https://fhir.icr.unicef.org/CodeSystem/icr-settlement-type-cs
+
+// --- SDC (Structured Data Capture 4.0.0) — template-based extraction (espen-forms) ---
+Alias: $SDCTemplateExtract = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract
+Alias: $SDCTemplateExtractContext = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractContext
+Alias: $SDCTemplateExtractValue = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue
+Alias: $SDCExtractAllocateId = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId
+Alias: $SDCCalculatedExpression = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression
+Alias: $SDCLaunchContext = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext
+Alias: $QHidden = http://hl7.org/fhir/StructureDefinition/questionnaire-hidden
