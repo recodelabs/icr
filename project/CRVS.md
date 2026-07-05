@@ -1,6 +1,6 @@
 ---
-version: 0.1.0
-last_modified: 2026-07-05T18:30:00Z
+version: 0.1.1
+last_modified: 2026-07-05T19:20:00Z
 tags:
   - icr
   - fhir
@@ -11,7 +11,7 @@ public: false
 ---
 
 # ICR ↔ CRVS Integration — Findings & Proposal (OpenCRVS)
-<sub>`v0.1.0 · Draft findings · Jul 5, 2026`</sub>
+<sub>`v0.1.1 · Draft findings · Jul 5, 2026`</sub>
 
 > [!note] What this document is
 > Research findings and an integration proposal for linking the **ICR FHIR IG** ([[icr-ig]]) to a country's **CRVS** (Civil Registration and Vital Statistics) system, using **OpenCRVS** as the reference CRVS implementation. It covers the CRVS data model and approach, the OpenCRVS interoperability surface, ranked integration use cases, a concrete architecture, and the specific IG extensions the integration would need — all labelled **(proposed)**. Nothing here is committed to the IG.
@@ -98,6 +98,9 @@ The flagship OpenCRVS integration is national ID, and its shape is instructive b
 - **e-Signet / QR identity verification** inside declaration forms, with a Partner-Specific User Token (PSUT) stored instead of the raw UIN — a good privacy pattern for ICR to note: *reference an identity without storing the identifier*.
 
 The generalisation OpenCRVS itself draws: civil registration events drive identity lifecycle events in downstream systems, under configurable per-country business rules. ICR is another such downstream (and upstream) system.
+
+> [!note] MOSIP itself — separate deep-dive
+> The MOSIP platform (identifier family UIN/VID/PSUT, ID Authentication/eKYC, e-Signet, Inji verifiable credentials, the Claim 169 offline signed QR) and the direct ICR ↔ MOSIP integration options are covered in **[[MOSIP]]** — including the CRVS↔MOSIP↔ICR triangle and why, for under-5s, CRVS linkage *is* the MOSIP linkage.
 
 ### 3.6 Search, locations, statistics
 
@@ -272,7 +275,7 @@ The IG already flags person-data governance as its heaviest open decision (§13.
 ## 8. Open questions
 
 1. **Campaign-worker-as-notifier legal status** — is a CDD/vaccinator an authorised birth notifier in pilot countries? (Determines whether UC1 runs in pilot 1 or waits for UC3-only.)
-2. **BRN storage form** — raw BRN vs pseudonymous token (PSUT-style) in the shared registry (§6.1). UNICEF/country call.
+2. **BRN storage form** — raw BRN vs pseudonymous token (PSUT-style, see [[MOSIP]] §3.2/§7) in the shared registry (§6.1). UNICEF/country call — same decision forum as the UIN-storage question in [[MOSIP]] §8.
 3. **Referral modelling** — `crvs-referral` extension (§6.3) vs a first-class referral pattern if campaigns accrue more referral types (nutrition, protection, routine-EPI catch-up). Watch whether the routine hand-off work (§13.2 dropout/defaulter item) lands first.
 4. **Matching without shared identifiers** — the UC4 write-back matches on our stored eventId; but CRVS-initiated flows (UC5 death triggers) must match on biographics + place. Reuse the IG's record-linkage pattern (household GERS + head-of-household + age/sex) or keep CRVS matching entirely in OpenFn? Leaning the latter (keep the IG declarative, matching is pipeline logic).
 5. **`registered-no-certificate`** — worth the extra code, or collapse into `registered`? (Field-test the question wording first.)
@@ -285,6 +288,7 @@ The IG already flags person-data governance as its heaviest open decision (§13.
 ## 9. Sources
 
 - ICR IG companion doc: [[icr-ig]] (v0.22.0, this repo) — esp. §5.1/§5.4 (enumeration & ICRPatient identity), §5.5 (Consent), §7 (coverage), §13 (roadmap).
+- MOSIP deep-dive & ICR↔MOSIP proposal: [[MOSIP]] (this repo).
 - OpenCRVS documentation (v2.0 unless noted):
   - [Interoperability overview](https://documentation.opencrvs.org/functional/markdown/interoperability) · [APIs](https://documentation.opencrvs.org/functional/markdown/interoperability/apis) · [Action triggers](https://documentation.opencrvs.org/functional/markdown/interoperability/action-triggers)
   - [Integration architecture](https://documentation.opencrvs.org/technical/architecture/integration-architecture) (country-config golden rule, interception, webhook retry semantics)
