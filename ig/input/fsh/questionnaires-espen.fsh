@@ -159,7 +159,7 @@ Usage: #inline
 * quantity = 0
 * quantity.extension[+].url = $SDCTemplateExtractValue
 * quantity.extension[=].valueString = "%resource.repeat(item).where(linkId='l_total_pop').answer.value.first()"
-* characteristic[0].code = $GroupCharacteristic#geography "Geography"
+* characteristic[0].code = $GroupCharacteristic#geography "Geographic scope"
 * characteristic[0].valueReference.reference.extension[+].url = $SDCTemplateExtractValue
 * characteristic[0].valueReference.reference.extension[=].valueString = "%newLocationId"
 * characteristic[0].exclude = false
@@ -181,7 +181,7 @@ Usage: #inline
 * quantity = 0
 * quantity.extension[+].url = $SDCTemplateExtractValue
 * quantity.extension[=].valueString = "%resource.repeat(item).where(linkId='l_eligible_pop').answer.value.first()"
-* characteristic[0].code = $GroupCharacteristic#geography "Geography"
+* characteristic[0].code = $GroupCharacteristic#geography "Geographic scope"
 * characteristic[0].valueReference.reference.extension[+].url = $SDCTemplateExtractValue
 * characteristic[0].valueReference.reference.extension[=].valueString = "%newLocationId"
 * characteristic[0].exclude = false
@@ -203,7 +203,7 @@ Usage: #inline
 * quantity = 0
 * quantity.extension[+].url = $SDCTemplateExtractValue
 * quantity.extension[=].valueString = "%resource.repeat(item).where(linkId='I_total_popn_1_4').answer.value.first()"
-* characteristic[0].code = $GroupCharacteristic#geography "Geography"
+* characteristic[0].code = $GroupCharacteristic#geography "Geographic scope"
 * characteristic[0].valueReference.reference.extension[+].url = $SDCTemplateExtractValue
 * characteristic[0].valueReference.reference.extension[=].valueString = "%newLocationId"
 * characteristic[0].exclude = false
@@ -228,7 +228,7 @@ Usage: #inline
 * quantity = 0
 * quantity.extension[+].url = $SDCTemplateExtractValue
 * quantity.extension[=].valueString = "%resource.repeat(item).where(linkId='I_total_popn_5_14').answer.value.first()"
-* characteristic[0].code = $GroupCharacteristic#geography "Geography"
+* characteristic[0].code = $GroupCharacteristic#geography "Geographic scope"
 * characteristic[0].valueReference.reference.extension[+].url = $SDCTemplateExtractValue
 * characteristic[0].valueReference.reference.extension[=].valueString = "%newLocationId"
 * characteristic[0].exclude = false
@@ -253,7 +253,7 @@ Usage: #inline
 * quantity = 0
 * quantity.extension[+].url = $SDCTemplateExtractValue
 * quantity.extension[=].valueString = "%resource.repeat(item).where(linkId='I_total_popn_15_More').answer.value.first()"
-* characteristic[0].code = $GroupCharacteristic#geography "Geography"
+* characteristic[0].code = $GroupCharacteristic#geography "Geographic scope"
 * characteristic[0].valueReference.reference.extension[+].url = $SDCTemplateExtractValue
 * characteristic[0].valueReference.reference.extension[=].valueString = "%newLocationId"
 * characteristic[0].exclude = false
@@ -521,7 +521,8 @@ Usage: #inline
 * status = #completed
 * extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin (suspension)"
+* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
+* suppliedItem.itemCodeableConcept.text = "azithromycin (suspension)"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
 * suppliedItem.quantity.code = #L
 * suppliedItem.quantity.unit = "liters"
@@ -538,7 +539,8 @@ Usage: #inline
 * status = #completed
 * extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin (tablets)"
+* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
+* suppliedItem.itemCodeableConcept.text = "azithromycin (tablets)"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
 * suppliedItem.quantity.code = #{tbl}
 * suppliedItem.quantity.unit = "tablets"
@@ -555,7 +557,8 @@ Usage: #inline
 * status = #completed
 * extension[0].url = "https://fhir.icr.unicef.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
-* suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline (eye ointment)"
+* suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline"
+* suppliedItem.itemCodeableConcept.text = "tetracycline (eye ointment)"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
 * suppliedItem.quantity.code = #{tube}
 * suppliedItem.quantity.unit = "tubes"
@@ -1250,6 +1253,10 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+// measureScore: unitless percentage — proportion-scored Measures must not carry units (validator businessrule)
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='dec_5_14_female_treated').answer.exists(), %resource.repeat(item).where(linkId='dec_5_14_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='dec_5_14_male_treated').answer.exists(), %resource.repeat(item).where(linkId='dec_5_14_male_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='dec_15_female_treated').answer.exists(), %resource.repeat(item).where(linkId='dec_15_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='dec_15_male_treated').answer.exists(), %resource.repeat(item).where(linkId='dec_15_male_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1337,6 +1344,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='alb_5_14_female_treated').answer.exists(), %resource.repeat(item).where(linkId='alb_5_14_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='alb_5_14_male_treated').answer.exists(), %resource.repeat(item).where(linkId='alb_5_14_male_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='alb_15_female_treated').answer.exists(), %resource.repeat(item).where(linkId='alb_15_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='alb_15_male_treated').answer.exists(), %resource.repeat(item).where(linkId='alb_15_male_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1424,6 +1434,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='meb_5_14_female_treated').answer.exists(), %resource.repeat(item).where(linkId='meb_5_14_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='meb_5_14_male_treated').answer.exists(), %resource.repeat(item).where(linkId='meb_5_14_male_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='meb_15_female_treated').answer.exists(), %resource.repeat(item).where(linkId='meb_15_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='meb_15_male_treated').answer.exists(), %resource.repeat(item).where(linkId='meb_15_male_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1511,6 +1524,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='ivm_5_14_female_treated').answer.exists(), %resource.repeat(item).where(linkId='ivm_5_14_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='ivm_5_14_male_treated').answer.exists(), %resource.repeat(item).where(linkId='ivm_5_14_male_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='ivm_15_female_treated').answer.exists(), %resource.repeat(item).where(linkId='ivm_15_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='ivm_15_male_treated').answer.exists(), %resource.repeat(item).where(linkId='ivm_15_male_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1598,6 +1614,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='pzq_5_14_female_treated').answer.exists(), %resource.repeat(item).where(linkId='pzq_5_14_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='pzq_5_14_male_treated').answer.exists(), %resource.repeat(item).where(linkId='pzq_5_14_male_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='pzq_15_female_treated').answer.exists(), %resource.repeat(item).where(linkId='pzq_15_female_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='pzq_15_male_treated').answer.exists(), %resource.repeat(item).where(linkId='pzq_15_male_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1676,7 +1695,8 @@ Usage: #inline
 * reporter.display = "recorder"
 * reporter.display.extension[+].url = $SDCTemplateExtractValue
 * reporter.display.extension[=].valueString = "%resource.repeat(item).where(linkId='p_recorder_id').answer.value.first()"
-* group[0].code = $ATC#J01FA10 "azithromycin (suspension)"
+* group[0].code = $ATC#J01FA10 "azithromycin"
+* group[0].code.text = "azithromycin (suspension)"
 * group[0].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group[0].population[0].count = 0
 * group[0].population[0].count.extension[+].url = $SDCTemplateExtractValue
@@ -1685,6 +1705,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='azm_susp_less7_boy_treated').answer.exists(), %resource.repeat(item).where(linkId='azm_susp_less7_boy_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='azm_susp_less7_girl_treated').answer.exists(), %resource.repeat(item).where(linkId='azm_susp_less7_girl_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1748,7 +1771,8 @@ Usage: #inline
 * reporter.display = "recorder"
 * reporter.display.extension[+].url = $SDCTemplateExtractValue
 * reporter.display.extension[=].valueString = "%resource.repeat(item).where(linkId='p_recorder_id').answer.value.first()"
-* group[0].code = $ATC#J01FA10 "azithromycin (tablets)"
+* group[0].code = $ATC#J01FA10 "azithromycin"
+* group[0].code.text = "azithromycin (tablets)"
 * group[0].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group[0].population[0].count = 0
 * group[0].population[0].count.extension[+].url = $SDCTemplateExtractValue
@@ -1757,6 +1781,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='azm_tb_more7_boy_treated').answer.exists(), %resource.repeat(item).where(linkId='azm_tb_more7_boy_treated').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='azm_tb_more7_girl_treated').answer.exists(), %resource.repeat(item).where(linkId='azm_tb_more7_girl_treated').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -1834,7 +1861,8 @@ Usage: #inline
 * reporter.display = "recorder"
 * reporter.display.extension[+].url = $SDCTemplateExtractValue
 * reporter.display.extension[=].valueString = "%resource.repeat(item).where(linkId='p_recorder_id').answer.value.first()"
-* group[0].code = $ATC#S01AA09 "tetracycline (eye ointment)"
+* group[0].code = $ATC#S01AA09 "tetracycline"
+* group[0].code.text = "tetracycline (eye ointment)"
 * group[0].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group[0].population[0].count = 0
 * group[0].population[0].count.extension[+].url = $SDCTemplateExtractValue
@@ -1843,6 +1871,9 @@ Usage: #inline
 * group[0].population[1].count = 0
 * group[0].population[1].count.extension[+].url = $SDCTemplateExtractValue
 * group[0].population[1].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* group[0].measureScore.value = 0
+* group[0].measureScore.value.extension[+].url = $SDCTemplateExtractValue
+* group[0].measureScore.value.extension[=].valueString = "iif((iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)) > 0, (iif(%resource.repeat(item).where(linkId='tetra_baby_boy').answer.exists(), %resource.repeat(item).where(linkId='tetra_baby_boy').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='tetra_baby_girl').answer.exists(), %resource.repeat(item).where(linkId='tetra_baby_girl').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='tetra_pregnant_women').answer.exists(), %resource.repeat(item).where(linkId='tetra_pregnant_women').answer.value.first(), 0)) * 100 / (iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)), 0)"
 // sex stratifier
 * group[0].stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group[0].stratifier[0].stratum[0].value.text = "female"
@@ -2220,7 +2251,8 @@ Usage: #inline
 * extension[1].extension[0].valueQuantity.unit = "liters"
 * extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
 * extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_sus_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin (suspension)"
+* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
+* suppliedItem.itemCodeableConcept.text = "azithromycin (suspension)"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
 * suppliedItem.quantity.code = #L
 * suppliedItem.quantity.unit = "liters"
@@ -2242,7 +2274,8 @@ Usage: #inline
 * extension[1].extension[0].valueQuantity.unit = "tablets"
 * extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
 * extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_tab_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin (tablets)"
+* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
+* suppliedItem.itemCodeableConcept.text = "azithromycin (tablets)"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
 * suppliedItem.quantity.code = #{tbl}
 * suppliedItem.quantity.unit = "tablets"
@@ -2264,7 +2297,8 @@ Usage: #inline
 * extension[1].extension[0].valueQuantity.unit = "tubes"
 * extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
 * extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_tetra_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline (eye ointment)"
+* suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline"
+* suppliedItem.itemCodeableConcept.text = "tetracycline (eye ointment)"
 * suppliedItem.quantity.system = "http://unitsofmeasure.org"
 * suppliedItem.quantity.code = #{tube}
 * suppliedItem.quantity.unit = "tubes"

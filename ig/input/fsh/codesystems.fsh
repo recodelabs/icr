@@ -137,8 +137,12 @@ Description: "Why an eligible person or household was not reached during a campa
 * #sleeping "Sleeping" "Child asleep and not woken (polio doorstep convention)."
 * #sick "Sick" "Deferred due to illness or contraindication at time of visit."
 * #refusal "Refusal" "Caregiver or individual refused — capture the noncompliance reason separately."
+* #refusal ^designation[0].language = #en-US
+* #refusal ^designation[0].value = "Population refusal"
 * #inaccessible "Inaccessible" "Dwelling or settlement could not be reached (security, terrain, weather)."
 * #not-visited "Not visited" "Household never reached by a team during the round."
+* #not-visited ^designation[0].language = #en-US
+* #not-visited ^designation[0].value = "Absence of DC"
 * #not-revisited "House not revisited" "Household was flagged for a revisit (e.g. child absent on first pass) but the revisit did not happen before the round closed — distinct from never-visited. Polio house-to-house monitoring reason (forms-v1 / jul3-form-analysis §Aggregate #4)."
 // Area-level non-treatment reasons (ESPEN supervision Form 5): why a whole
 // settlement/operational area went untreated — distinct from a person being
