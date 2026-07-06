@@ -1,0 +1,61 @@
+name: Publish docs to Cloudflare Pages
+
+# Builds the Docusaurus "ICR Implementation Guide" (website/) and deploys it to
+# Cloudflare Pages project icr-docs (https://docs.healthcampaigns.org).
+#
+# Deploy requires two repo secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN  — API token with "Cloudflare Pages: Edit" permission
+#   CLOUDFLARE_ACCOUNT_ID — af8ac7eb1f7ec617e14702e69ce0d4c7
+# Until they exist, the workflow still builds the site and uploads it as a
+# run artifact; the deploy step is skipped.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/publish-docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-docs
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Checkout icr
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        run: cd website && npm ci
+
+      - name: Build site
+        run: cd website && npm run build
+
+      - name: Upload site as run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: icr-docs-site
+          path: website/build
+          retention-days: 7
+
+      - name: Deploy to Cloudflare Pages
+        if: env.CF_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy website/build --project-name=icr-docs --branch=main
