@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'ICR Implementation Guide',
+  title: 'Integrated Campaign Registry',
   tagline: "How to implement UNICEF's Integrated Campaign Registry and its reference tools",
   favicon: 'img/favicon.ico',
 
@@ -42,7 +42,7 @@ const config: Config = {
 
   themeConfig: {
     navbar: {
-      title: 'ICR Implementation Guide',
+      title: 'Integrated Campaign Registry',
       items: [
         {type: 'docSidebar', sidebarId: 'tutorialSidebar', position: 'left', label: 'Docs'},
         {href: 'https://icr.healthcampaigns.org', label: 'FHIR IG', position: 'right'},
