@@ -164,7 +164,7 @@ The canonical `https://icr.healthcampaigns.org` is the project-controlled domain
 ### 1.5 What the IG contains
 | Layer | Count | Artifacts |
 | --- | --- | --- |
-| **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
+| **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICR{==CampaignActivity==}{>>I take it this would also include supporting activities such as “Delivered drugs to district staging location.” Though the interventions listed next to `code` don’t seem to include this kind of activity.<<}{id="8ff34948-dc52-4ba7-a692-85926299b05a" by="James McKinnon" at="2026-07-07T17:00:49.353Z" guest="true"} (ActivityDefinition), ICRCampaignTask (Task) |
 | **Profiles — population & geography** | 4   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location) |
 | **Profiles — delivery events** | 3   | {==ICRImmunizationEvent==}{>>How are refusals tracked under this system? Would we just record a `ICRImmunizationEvent` and make sure there is a field that indicates it was a refusal rather than a treatment?<<}{id="07c6a0a6-f0f4-4c38-9772-cf19dea514ee" by="James McKinnon" at="2026-07-07T16:55:18.047Z" guest="true"} (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
