@@ -4,7 +4,7 @@ sidebar_position: 1
 title: Introduction
 ---
 
-# ICR Implementation Guide
+# Integrated Campaign Registry
 
 This is the implementation guide for UNICEF's **Integrated Campaign Registry (ICR)** — a
 practical, tool-by-tool walkthrough for standing up the ICR reference solution and
