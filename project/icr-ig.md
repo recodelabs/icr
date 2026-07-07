@@ -166,7 +166,7 @@ The canonical `https://icr.healthcampaigns.org` is the project-controlled domain
 | --- | --- | --- |
 | **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
 | **Profiles — population & geography** | 4   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location) |
-| **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
+| **Profiles — delivery events** | 3   | {==ICRImmunizationEvent==}{>>How are refusals tracked under this system? Would we just record a `ICRImmunizationEvent` and make sure there is a field that indicates it was a refusal rather than a treatment?<<}{id="07c6a0a6-f0f4-4c38-9772-cf19dea514ee" by="James McKinnon" at="2026-07-07T16:55:18.047Z" guest="true"} (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
 | **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRSupervisionReport (QuestionnaireResponse) |
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
