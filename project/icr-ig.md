@@ -142,7 +142,7 @@ ICR is intentionally a **complement** to WHO's SMART Immunizations IG, which is 
 
 The IG covers the major campaign delivery models through one common typology used throughout this document:
 
-- **Type A** — fixed or temporary-post sessions (people come to a post).
+- {==**Type A**==}{>>NTD campaigns are sometimes based out of schools under the logic that students can be treated during a regular school day. I believe this would count as Type A, but worth confirming there isn't any special nuance behind them worth considering.<<}{id="666db11c-808b-41b3-8c1f-f0b09d7c9653" by="James McKinnon" at="2026-07-07T16:50:16.460Z" guest="true"} — fixed or temporary-post sessions (people come to a post).
 - **Type B** — house-to-house delivery (workers go door to door).
 - **Type C** — community / MDA delivery (a whole community treated, often register-level).
 ### 1.4 IG metadata
