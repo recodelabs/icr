@@ -1,3 +1,7 @@
 # Never commit credentials or the adaptor repo
 .env
 repo/
+
+# GCP service account key
+*.json
+icr-openfn-sa.json
