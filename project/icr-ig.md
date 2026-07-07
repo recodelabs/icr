@@ -474,7 +474,7 @@ graph TD
 | {==`extension[campaignRound==}{>>I’m not certain I fully understand “round” here. Are these specific rounds conducted under one campaign? Or is this the number of campaigns that have followed a particular model? I think I’ve heard the term used loosely in both contexts, but I think people are just speaking colloquially and are not referring to a formal definition of “round”.<<}{id="77a8bb3d-6f68-4aad-b505-d7aa9fb94794" by="James McKinnon" at="2026-07-07T16:57:57.667Z" guest="true"}]` | MS  | 0..1 | positiveInt | Which round this is. |
 | `extension[targetGeography]` | MS  | 0..* | `Reference(ICRLocation)` | The *where* — plural, since one campaign may name several geographies. |
 | `extension[planningDenominator]` | MS  | 0..1 | `Reference(ICRTargetPopulation)` | Singles out *which* estimate is THE denominator coverage is computed against, when several compete. |
-| `extension[dataLineage]` | MS  | 0..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled (default: absent ⇒ realtime). |
+| `extension[dataLineage]` | MS  | 0..1 | code, **required** → ICRDataLineageVS | {==Realtime vs reconciled==}{>>I have a colloquial understanding of what real-time vs reconciled means but technically it’s not clear to me.<<}{id="864d58a6-4afc-4968-ac20-c38cd485789a" by="James McKinnon" at="2026-07-07T16:58:20.814Z" guest="true"} (default: absent ⇒ realtime). |
 | `extension[socialMobilization]` | MS  | 0..1 | complex: `populationInformed` (boolean) + `channel` 0..* (CodeableConcept, **extensible** → ICRCommunicationChannelVS) | The demand/mobilization record — was the population informed, and through which channels (radio, town criers, community leaders, …). |
 
 **Example — national umbrella (the microplan shell):**
