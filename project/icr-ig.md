@@ -729,7 +729,7 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 | `example-mcv-activity` | Vaccinate (Type A/B) | CVX `05` measles virus vaccine | 0.5 mL subcutaneous, single dose |
 | `example-albendazole-activity` | Treat (Type C MDA) | ATC `P02CA03` albendazole | 400 mg single dose; tablet count by **dose-pole height band** |
 | `example-itn-activity` | Distribute (Type B→A) | LLIN (free-text pending GS1) | 1 net per 2 household members |
-| `example-irs-activity` | Spray (Type B) | Pirimiphos-methyl 300CS | interior walls of eligible structures |
+| `example-irs-activity` | Spray (Type B) | Pirimiphos-methyl 300CS | {==interior walls of eligible structures==}{>>The provided text is an example of how you would ideally define the “dosage” for IRS, but realistically it’s more commonly expressed as a certain number of units per eligible structure.<<}{id="194ddc94-68c3-48b9-af85-5371afaeb8f4" by="James McKinnon" at="2026-07-07T17:01:14.295Z" guest="true"} |
 
 **Key observations.**
 
