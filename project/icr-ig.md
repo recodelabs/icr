@@ -471,7 +471,7 @@ graph TD
 | `addresses` | MS  |     | `Reference(Condition)` | The disease/condition targeted (where the specific disease lives, since `type` is disease-agnostic). |
 | `partOf` |     |     | `Reference(ICRCampaign)` only | The umbrella/round pattern — a round is `partOf` its umbrella. |
 | `activity` | MS  |     | `activity.reference` → `Reference(ICRCampaignTask)` only | The round's Tasks. Inline activities (`activity.detail`) are out — the work is always a referenced Task. |
-| `extension[campaignRound]` | MS  | 0..1 | positiveInt | Which round this is. |
+| {==`extension[campaignRound==}{>>I’m not certain I fully understand “round” here. Are these specific rounds conducted under one campaign? Or is this the number of campaigns that have followed a particular model? I think I’ve heard the term used loosely in both contexts, but I think people are just speaking colloquially and are not referring to a formal definition of “round”.<<}{id="77a8bb3d-6f68-4aad-b505-d7aa9fb94794" by="James McKinnon" at="2026-07-07T16:57:57.667Z" guest="true"}]` | MS  | 0..1 | positiveInt | Which round this is. |
 | `extension[targetGeography]` | MS  | 0..* | `Reference(ICRLocation)` | The *where* — plural, since one campaign may name several geographies. |
 | `extension[planningDenominator]` | MS  | 0..1 | `Reference(ICRTargetPopulation)` | Singles out *which* estimate is THE denominator coverage is computed against, when several compete. |
 | `extension[dataLineage]` | MS  | 0..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled (default: absent ⇒ realtime). |
