@@ -244,7 +244,7 @@ The IG reads most easily as three intersecting layers:
 **Population & geography (§5)**
 
 - **ICRDeliveryUnit** *(Group,* `actual=true`*)* — **the actual group of people a Task acts on** — a household, a community, or a school cohort. The *who*.
-- **ICRTargetPopulation** *(Group,* `actual=false`*)* — **a denominator**: a conceptual cohort with a count, eligibility characteristics, and — critically — source and date provenance. Competing estimates for the same place are kept side by side.
+- **ICRTargetPopulation** *(Group,* `actual=false`*)* — **a denominator**: a conceptual cohort with a count, eligibility characteristics, and — critically — source and date provenance. {==Competing estimates for the same place are kept side by side.==}{>>Does this allow us to track Total Population in the same place? If we end up with a dataset with several values for `ICRTargetPopulation` with their provenance, it would be greatly enriched if it included each source’s estimate of the total population as well.<<}{id="465e2f54-1e88-4b13-afbf-72eb26dd1cce" by="James McKinnon" at="2026-07-07T16:54:42.329Z" guest="true"}
 - **ICRLocation** *(Location)* — **the place model.** The most-customized ICR resource: nested administrative hierarchy, operational geography that sits *beside* the admin tree, GeoJSON boundaries, and multi-system geospatial identity (GERS, P-codes, national and ISO codes).
 - **ICRPatient** *(Patient)* — **the registered individual**: an enumerated household or community member with a stable cross-campaign identifier, mandatory gender and birth date (they drive eligibility and disaggregation), and a required name. Its governance companion is **ICRConsent** *(Consent)*.
 
