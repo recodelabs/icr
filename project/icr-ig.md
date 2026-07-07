@@ -423,7 +423,7 @@ A **specific campaign execution.** It begins life as a microplan (`intent = plan
 
 **Lifecycle — in plain terms.** One CarePlan, two stages. It starts as the **plan** (a microplan: `intent = plan`, `status = draft`), then becomes the **record of what actually happened** as the work is done — `intent` changes to `order` and `status` moves `draft → active → completed`, with Tasks and coverage accumulating against that same resource.
 
-```mermaid
+{==```mermaid
 graph LR
     PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/>versioned recipe"]
     U["Umbrella ICRCampaign<br/>intent: plan · status: active<br/>subject: national denominator"]
@@ -436,7 +436,7 @@ graph LR
     R1 -- "partOf" --> U
     R2 -- "partOf" --> U
     R1 -- "activity.reference" --> T
-```
+```==}{>>Should there be an arrow drawing Port Loko to `ICRCampaignTasks`? This may have been a deliberate choice since that district’s status is still `active`, but I thought I would call out that these tasks would still be generated and might be shared before the campaign is complete. Crosscut’s app receives data related to these types of tasks during campaigns as part of our ODK/CommCare integrations.<<}{id="6c21da0c-fa1e-4b1c-8b68-f572edb130c8" by="James McKinnon" at="2026-07-07T16:56:14.713Z" guest="true"}
 
 The campaign umbrella (representing the microplan) stays `intent = plan` — it is the planning shell holding the national denominator and binding the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query.
 
