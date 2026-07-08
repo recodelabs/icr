@@ -1,15 +1,15 @@
 ---
-version: 0.2.0
-last_modified: 2026-07-08T00:18:00Z
+version: 0.3.0
+last_modified: 2026-07-08T00:31:00Z
 tags:
   - icr
   - preso
 ---
 
 # ICR — Integrated Campaign Registry (slide bullets)
-<sub>`v0.2.0 · Last modified Jul 7, 2026 at 8:18 PM EDT`</sub>
+<sub>`v0.3.0 · Last modified Jul 7, 2026 at 8:31 PM EDT`</sub>
 
-Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
+Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0). Worked examples use the ESPEN MDA thread — a community-directed NTD mass drug administration in Rokupr, Kambia District, Sierra Leone, captured on the six ESPEN MDA field forms.
 
 ---
 
@@ -19,6 +19,8 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - That data is archived or locked in one-off spreadsheets at the end of each round; the next campaign starts from scratch.
 - The Integrated Campaign Registry (ICR) gives campaigns a shared, reusable data model so each campaign's data compounds instead of being re-collected.
 - A UNICEF standards framework and open-source reference implementation, built on HL7 FHIR R4.
+
+**ESPEN MDA example.** An LF (lymphatic filariasis) MDA re-registers every village, re-estimates every population, and re-trains every community drug distributor, every round — even where last year's register, denominators, and team assignments already exist. ICR makes each of those a durable, reusable record.
 
 ---
 
@@ -30,25 +32,59 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - Covers all major delivery models through one typology: Type A (fixed or temporary posts — people come to the post), Type B (house-to-house — workers go door to door), Type C (community-directed — a whole community treated, as in MDA).
 - Current contents: 17 profiles, 35 extensions, 25 code systems, 28 value sets, 6 canonical Measures, 8 questionnaires, and 41 worked example instances.
 
+**ESPEN MDA example.** Community-directed treatment with ivermectin (CDTI) is the canonical Type C model: a community drug distributor treats an entire eligible community against a village register, under WHO-AFRO's ESPEN programme.
+
 ---
 
 ## 3. The data model at a glance
 
 - FHIR has no native Campaign resource. ICR builds the campaign layer on CarePlan and surrounds it with profiles for population, geography, delivery events, teams, and coverage.
 - Three intersecting layers:
-  - **Operational layer** — protocol → campaign → task → delivery events: the chain of work from reusable template to individual dose.
+  - **Operational layer** — protocol → campaign → task → delivery events: the chain of work from reusable template to individual treatment.
   - **Identity layer** — Patient, Group, Location: who a campaign acts on, kept strictly separate from where they live and where work happens.
   - **Analytics layer** — Measure and MeasureReport: the coverage readout, computed from the other two layers.
 - Every profile is valid plain FHIR: any FHIR system can read an ICR resource as its base type; ICR-aware systems get the additional guarantees.
+
+```mermaid
+graph TD
+    PD["ICRCampaignProtocol<br/>LF MDA protocol"]
+    AD["ICRCampaignActivity<br/>administer ivermectin + albendazole"]
+    CP["ICRCampaign<br/>district MDA round"]
+    T["ICRCampaignTask<br/>treat Rokupr community"]
+    HH["ICRDeliveryUnit<br/>Rokupr community, 3,480"]
+    PT["ICRPatient<br/>registered individual"]
+    L["ICRLocation<br/>village → district → country"]
+    MED["ICRMedicationAdministration<br/>albendazole, dose-pole band B"]
+    SUP["ICRSupplyDelivery<br/>3,600 tablets received"]
+    AC["ICRAdministrativeCoverage<br/>treatment tally 91%"]
+    SC["ICRSurveyCoverage<br/>independent survey"]
+    CT["ICRCareTeam<br/>CDD team + supervisor"]
+
+    PD -- action --> AD
+    CP -- instantiates --> PD
+    CP -- activity --> T
+    CT -- owner --> T
+    T -- for --> HH
+    T -- location --> L
+    T -- output --> MED
+    T -- output --> SUP
+    HH -- member --> PT
+    HH -- location --> L
+    T -- tally --> AC
+    AC -. never merged .- SC
+```
 
 ---
 
 ## 4. Campaign Protocol — the reusable template
 
-- Built on PlanDefinition: the versioned, reusable definition of a campaign type — what a measles–rubella SIA *is* (products, age bands, activity sequence, coverage goals), defined once.
-- Every execution instantiates the same protocol, so "all MR SIA rounds, anywhere" is a single query rather than a manual reconciliation. This is what makes campaigns of the same type directly comparable.
+- Built on PlanDefinition: the versioned, reusable definition of a campaign type — what the campaign *is* (products, age bands, activity sequence, coverage goals), defined once.
+- Every execution instantiates the same protocol, so "all rounds of this campaign type, anywhere" is a single query rather than a manual reconciliation. This is what makes campaigns of the same type directly comparable.
 - Carries no geography, dates, or denominator — those belong to the execution. The protocol holds only reusable template content.
-- Campaign type is disease-agnostic: a measles SIA and a polio SIA are both `vaccination-sia`, distinguished by the target condition and the vaccine code. Delivery strategies are mandatory and repeatable, because hybrid strategies (posts plus door-to-door mop-up) are the norm.
+- Campaign type is disease-agnostic and grouped by delivery model: an LF MDA and a schistosomiasis MDA are both type `mda`, distinguished by the target condition and the drug code.
+- Delivery strategies are mandatory and repeatable, because hybrid strategies are the norm.
+
+**ESPEN MDA example.** A national LF MDA protocol: type `mda`, delivery strategy `community-directed`, medicine package ivermectin + albendazole, eligibility "everyone at or above dose-pole band A, excluding pregnant women and the acutely ill", goal ≥65% epidemiological coverage. Every district round, every year, instantiates this one protocol.
 
 ---
 
@@ -60,25 +96,59 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - Each campaign has exactly one subject — its denominator (the *who*) — while target geography (the *where*) is separate and plural. The rule is one CarePlan per denominator/reporting scope, not per administrative area.
 - Also carries the round number, the designated planning denominator, and the social-mobilization record (was the population informed, and through which channels).
 
+```mermaid
+graph LR
+    PD["LF MDA protocol<br/>(PlanDefinition)"]
+    U["National MDA umbrella<br/>intent: plan"]
+    R1["Kambia District round<br/>intent: order · completed"]
+    R2["Port Loko District round<br/>intent: order · active"]
+    T["Community Tasks<br/>→ treatments, tallies"]
+    U -- instantiates --> PD
+    R1 -- instantiates --> PD
+    R2 -- instantiates --> PD
+    R1 -- partOf --> U
+    R2 -- partOf --> U
+    R1 -- activity --> T
+```
+
+**ESPEN MDA example.** The national LF MDA is the umbrella (`intent = plan`, national denominator); the Kambia District round is a child campaign (`intent = order`) with its own district denominator, its own dates, and the community treatment tasks accumulating against it. Social mobilization records that the community was informed through town criers and community leaders.
+
 ---
 
 ## 6. Campaign Activity and Task — the units of work
 
-- **Activity** (ActivityDefinition) defines a discrete work type once — administer MCV, distribute ITNs, spray structures — with the product and dosage. Thousands of tasks instantiate it without repeating clinical content.
+- **Activity** (ActivityDefinition) defines a discrete work type once — administer a drug, distribute nets, spray structures — with the product and dosage. Thousands of tasks instantiate it without repeating clinical content.
 - **Task** is the assignable, trackable operational unit of work: one task per site session (Type A) or per household/community visit (Type B/C). All three delivery models use the same profile, distinguished by the mandatory coded delivery strategy.
-- One task per visit; person-level detail lives in the delivery events. Each person vaccinated is a separate Immunization referenced from the task's output. Person-targeted tasks exist only for follow-up of specific missed or zero-dose individuals.
+- One task per visit; person-level detail lives in the delivery events. Person-targeted tasks exist only for follow-up of specific missed individuals.
 - Tasks are either pre-planned from the microplan or field-registered on discovery. The count of field-registered tasks per area measures how incomplete the microplan's enumeration was — an input to the next round's denominators.
-- House-to-house tasks carry the field tallies: houses visited, eligible present/absent, finger-marking, and three distinct reason axes — missed (not reached), noncompliance (reached but declined), and exclusion (present but contraindicated).
+- Tasks carry the field tallies and three distinct reason axes: missed (not reached), noncompliance (reached but declined), and exclusion (present but contraindicated).
+
+```mermaid
+graph LR
+    AD["Activity<br/>administer albendazole 5–14y<br/>ATC P02CA03, dose-pole banded"]
+    T["Community Task<br/>for: Rokupr community<br/>strategy: community-directed"]
+    O1["Output: 2,900 treated<br/>(scalar tally)"]
+    O2["Output: MedicationAdministration<br/>(per-person, where enumerated)"]
+    MR["Stratified MeasureReport<br/>sex × age × disposition"]
+    AD -- instantiated as --> T
+    T --> O1
+    T --> O2
+    O1 -- references --> MR
+```
+
+**ESPEN MDA example.** One activity — "administer albendazole, 5–14 years, tablet count by dose-pole band" — is instantiated as one community-directed task per village. The Rokupr task records 2,900 treated as its output tally, with exclusion reasons (under height/age, pregnant, breastfeeding), missed reason (absent), and noncompliance reason (no felt need) on the same task.
 
 ---
 
 ## 7. Care Team — accountability and supervision
 
-- Built on CareTeam: the delivery team — vaccinators or community drug distributors plus their supervisor — with coded roles and a managing organization.
+- Built on CareTeam: the delivery team — community drug distributors (CDDs) or vaccinators plus their supervisor — with coded roles and a managing organization.
 - Task ownership is a real reference to a team, not a display string, so "who worked this area" is a query. Coverage reports require a reporter, so "who reported this figure" is equally queryable.
 - The team carries the microplan's workload assignment: its target area plus expected population, households, and days.
 - The supervisor is tied to operational geography through the supervisory areas the team oversees.
-- Supervision itself is structured: a supervision visit is a QuestionnaireResponse against a coded checklist (supplies, worker observation, stock concordance, social mobilization), so QA questions like "what fraction of supervised teams had concordant stock" are queries, not document reviews. A parallel pre-campaign readiness checklist rolls up to a readiness Measure ("% of wards validated ready").
+- Supervision is structured: a supervision visit is a QuestionnaireResponse against a coded checklist, so QA questions are queries, not document reviews. A parallel pre-campaign readiness checklist rolls up to a readiness Measure.
+
+**ESPEN MDA example.** "CDD team 7, Rokupr" — a CDD and a supervisor, managed by the district health management team, assigned 3,200 people over 5 days. ESPEN's two supervision forms are modelled directly: the health-facility supervision form and the CDD-observation form each become a coded QuestionnaireResponse — directly-observed consumption observed ✓, height chart used correctly ✓, ineligibles identified ✓, stock concordant ✗ — so "what fraction of supervised CDDs had concordant stock" is a query.
 
 ---
 
@@ -90,14 +160,18 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - Cross-round identity resolves as: same person identifier, or failing that, same dwelling (via its stable place ID) plus same head of household plus plausible age and sex.
 - Person-data governance travels with the person: a Consent profile records permission for collection, storage, and cross-border sharing.
 
+**ESPEN MDA example.** A CDTI village register lists each community member by name, age, and sex. Registered as ICR Patients, those individuals persist between rounds: next year's MDA starts from this year's register, and a person's treatment history ("received ivermectin in rounds 1–3, missed round 4") becomes queryable — the input TAS-readiness assessments need.
+
 ---
 
 ## 9. Delivery Unit — the group a task acts on
 
 - Built on Group (`actual = true`): the real group of people a task targets — a household (Type B), a community (Type C), or a school cohort — one profile serving all scales, distinguished by a required group-kind code.
-- Members are enumerated individuals, each an ICR Patient. Enumeration is the mainline capture mode for household campaigns; a quantity-only head count is the fallback for register-level capture, and the two can coexist.
+- Members are enumerated individuals, each an ICR Patient. Enumeration is the mainline capture mode; a quantity-only head count is the fallback for register-level capture, and the two can coexist.
 - The group (who) is deliberately separated from its location (where): the household's dwelling, the community's settlement, the cohort's school. Each keeps a stable identity when the other changes.
 - Household identity across campaigns is reconstructed from the head of household plus the dwelling's stable place ID, which survives changes in household composition.
+
+**ESPEN MDA example.** "Rokupr community" is one delivery unit: kind `community`, quantity 3,480, located at the Rokupr settlement. Where the register enumerates individuals, they are members of the same group; where it only counts, the quantity stands alone. A school-based deworming arm uses the identical structure with kind `school-cohort` located at the school.
 
 ---
 
@@ -105,9 +179,10 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 
 - Built on Group (`actual = false`): a conceptual cohort with a count, eligibility characteristics, and — critically — source and date provenance.
 - The denominator is the dominant error source in campaign analytics. Competing estimates for the same geography are retained side by side, each with its own provenance, and exactly one is flagged as the planning denominator.
-- The consequence is concrete: 47,766 children reached is 99% coverage against a WorldPop estimate but 92% against the field enumeration — the denominator chosen changes the answer.
 - Each estimate is scoped to a location by reference, so it joins the location hierarchy computably at any level — country, district, ward, settlement, or operational area.
-- Denominators also declare their type: total population versus at-risk population — the axis that separates programme coverage from epidemiological coverage.
+- Denominators declare their type: total population versus at-risk population — the axis that separates programme coverage from epidemiological coverage. NTD programmes report both.
+
+**ESPEN MDA example.** ESPEN Form 1 (location registration) captures a village's population by age band. On submission it extracts to five target-population groups for the same village — total, eligible, 1–4 years, 5–14 years, 15+ — each carrying its source and date. When last year's register (3,480) and this year's projection (3,200) disagree, both are retained; the planning flag declares which one treatment coverage is computed against.
 
 ---
 
@@ -118,16 +193,42 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - Operational geography — supervision zones, catchment areas — sits beside the administrative tree, not inside it: a supervisory zone can straddle several wards, so it links to the admin units it overlays rather than claiming a single parent. This overlay mechanism is the IG's strongest validated design feature.
 - Locations can be created unmatched and have their GERS ID back-filled later through asynchronous conflation, with versioning and provenance.
 
+```mermaid
+graph TD
+    C["Sierra Leone<br/>admin-unit"]
+    D["Kambia District<br/>admin-unit"]
+    F["Rokupr CHC<br/>facility"]
+    S["Rokupr village<br/>settlement · GPS point"]
+    Z["Supervision zone 2<br/>supervisory-area"]
+    D -- partOf --> C
+    F -- partOf --> D
+    S -- partOf --> D
+    Z -. overlays-admin-unit .-> D
+```
+
+**ESPEN MDA example.** ESPEN Form 1's registration cascade — state → district → health facility → village, plus a GPS point — maps directly onto the location hierarchy, and its submission extracts a new village Location placed under its district. The CDD supervisor's zone is the operational overlay: it straddles several villages, so it links to the district it reports into rather than sitting in the administrative tree.
+
 ---
 
 ## 12. Delivery events — what was actually delivered
 
 - Three event profiles record the work product, all carrying the mandatory campaign-vs-routine record-origin flag:
-  - **Immunization event** — a vaccine dose given to a person, with lot number and manufacturer for AEFI traceability and dose-number support for multi-dose campaigns.
-  - **Medication administration** — an MDA drug administration, with the two distinctly-MDA patterns: dose derived from a dose-pole height band, and directly-observed consumption (handed out versus actually swallowed). Its subject may be a person or a whole delivery-unit group, supporting register-level capture.
-  - **Supply delivery** — a commodity delivery (bed-nets to a household, drug stock to a distribution point), with a stock-accountability record: received / used / remaining / not usable / returned, plus a concordance check.
+  - **Immunization event** — a vaccine dose given to a person, with lot number and manufacturer for AEFI traceability.
+  - **Medication administration** — an MDA drug administration, with the two distinctly-MDA patterns: dose derived from a dose-pole height band, and directly-observed consumption. Its subject may be a person or a whole delivery-unit group, supporting register-level capture.
+  - **Supply delivery** — a commodity delivery, with a stock-accountability record: received / used / remaining / not usable / returned, plus a concordance check.
 - The aggregate-versus-individual rule: individual record when you have a person; aggregate count on the task's output when you don't; stratified MeasureReport for derived or disaggregated coverage.
 - Drug receipt, administration, and reconciliation share one ATC drug code, so the stock chain is joinable end to end.
+
+```mermaid
+graph LR
+    R["Form 2 — drug receipt<br/>SupplyDelivery<br/>3,600 tablets ATC P02CA03"]
+    A["Treatment<br/>MedicationAdministration<br/>albendazole 400 mg<br/>dose-pole band B · DOC ✓"]
+    S["Form 4 — reconciliation<br/>stock-accountability<br/>used 3,080 · remaining 500<br/>not usable 20 · concordant ✓"]
+    R --> A
+    A --> S
+```
+
+**ESPEN MDA example.** Form 2 records 3,600 albendazole tablets received at Rokupr as a supply delivery. Each treatment is a medication administration: albendazole 400 mg, tablet count set by dose-pole band B, directly-observed consumption confirmed. Form 4 closes the loop with the stock-accountability record — received 3,600, used 3,080, remaining 500, not usable 20, concordant — all three sharing the same ATC code.
 
 ---
 
@@ -138,6 +239,8 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - Traceability runs from the event back to the exact suspected dose or treatment, and through it to the lot and manufacturer.
 - Carries the same campaign-vs-routine record-origin flag as the delivery events, and maps to WHO's adverse-event artifacts via a shipped ConceptMap.
 
+**ESPEN MDA example.** A person reports abdominal pain after their albendazole dose. The adverse event references that exact medication administration, is graded non-serious, and is assessed causality C (coincidental). ESPEN Form 4's aggregate side-effect counts stay on the form response by design — person-level adverse events are minted only when there is a person.
+
 ---
 
 ## 14. Coverage — how MeasureReports work
@@ -147,20 +250,36 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
   - **Administrative coverage** — computed from the campaign's own tally and delivery data. Carries its denominator's provenance, because the figure is only as reliable as the denominator it was computed against.
   - **Survey coverage** — measured independently by cluster survey, LQAS, or RCM. Carries its sample design instead of a denominator; its denominator is the sample.
 - The never-merge rule is enforced structurally, not by convention: the administrative profile fixes its source code to `administrative`, while the survey profile binds the same field to a value set that excludes `administrative`. A resource cannot be both.
-- The motivating evidence: a documented campaign reporting ~99% administrative coverage against a ~76% post-campaign survey for the same round. ICR keeps both figures visible and queryable instead of silently reconciling them.
-- Every coverage report declares its data lineage — realtime (the live in-field feed on the dashboard) versus reconciled (the corrected close-out figures exported to official reporting) — so a "final figures only" query cleanly drops preliminary numbers.
+- Every coverage report declares its data lineage — realtime (the live in-field feed) versus reconciled (the corrected close-out figures exported to official reporting) — so a "final figures only" query cleanly drops preliminary numbers.
 - Every report requires a reporter, so accountability for each published figure is a query.
+
+```mermaid
+graph TD
+    P["Planned<br/>TargetPopulation<br/>eligible: 3,200"]
+    T["Campaign's own records<br/>Task tallies + treatments"]
+    AC["ICRAdministrativeCoverage<br/>2,900 / 3,200 ≈ 91%<br/>source: administrative"]
+    SV["Independent measurement<br/>coverage survey / LQAS / RCM"]
+    SC["ICRSurveyCoverage<br/>source: survey<br/>sample design attached"]
+    P --> AC
+    T --> AC
+    SV --> SC
+    AC -. never merged .- SC
+```
+
+**ESPEN MDA example.** Rokupr's treatment coverage is 2,900 treated over 3,200 eligible ≈ 91% — an administrative figure computed from the CDD register, carrying its denominator's source. An independent coverage survey of the same round is a separate report that can never be blended with it. The programme's ≥65% epidemiological threshold is evaluated against the at-risk denominator.
 
 ---
 
 ## 15. Coverage — stratification, geography, and the Measure library
 
 - Six canonical Measure definitions ship with the IG: administrative coverage, survey coverage, MDA treatment coverage, geographic coverage, zero-dose coverage, and campaign readiness.
-- Disaggregation uses MeasureReport stratifiers over one shared vocabulary: sex, age band, delivery strategy, disposition, geography, and dose history. A full MDA treatment cube — treated counts by sex × age band × disposition, including exclusions, absences, and refusals — is one stratified report.
-- A coverage-unit axis distinguishes people from implementation units: geographic coverage counts villages treated over villages targeted (188 of 200 ≈ 94%) with non-treatment reasons as a stratifier — the same profile as dose coverage, different unit.
-- A denominator-type axis distinguishes programme coverage (over total population) from epidemiological coverage (over the at-risk population); NTD programmes report both.
-- Zero-dose coverage stratifies by dose history (never / previously received / no recall), feeding zero-dose-reduction analytics.
+- Disaggregation uses MeasureReport stratifiers over one shared vocabulary: sex, age band, delivery strategy, disposition, geography, and dose history.
+- A coverage-unit axis distinguishes people from implementation units; a denominator-type axis distinguishes programme coverage (total population) from epidemiological coverage (at-risk population).
 - The Measure definitions align with existing ministry reporting obligations — WHO JAP, the ICG M&E minimum dataset, the ESPEN treatment-coverage schema — so a report produced for ICR is also the figure those channels expect.
+
+**ESPEN MDA example — the treatment cube.** ESPEN Form 3's per-drug tally extracts to one stratified MeasureReport on the MDA treatment-coverage Measure: 2,900 / 3,200 ≈ 91%, stratified by sex (1,500 female / 1,400 male), age band (1,100 at 5–14 / 1,800 at 15+), and disposition (2,900 treated / 180 excluded / 95 absent / 25 refused) — the full "reasons not treated" cube in a single report.
+
+**ESPEN MDA example — geographic coverage.** The supervision form's "villages treated / villages targeted" becomes first-class coverage: 188 of 200 villages ≈ 94%, coverage unit `implementation-units`, with non-treatment reasons (insecurity 7, drug shortage 5) as a disposition stratifier.
 
 ---
 
@@ -172,7 +291,8 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - Binding strength is a deliberate two-tier pattern:
   - **Structural discriminators** (delivery strategy, record origin, data lineage, coverage source, denominator type, coverage unit) are required bindings — analytics must be able to branch on them.
   - **Field-reality vocabularies** (missed reasons, refusal reasons, location types, team roles, communication channels) are extensible — countries add local codes and map back via ConceptMap.
-- Key code systems carry French designations, with broader localization policy under review.
+
+**ESPEN MDA example.** The ESPEN conversion added two code systems taken directly from the forms: the NTD disease axis (`lf`, `oncho`, `schisto`, `sth`, `trachoma`) and the medicine-package axis (`ivm`, `ivm-alb`, `pzq`, `azm-tab`, and the other standard co-administration packages). MDA drugs bind to WHO ATC — albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01 — so no drug codes were invented.
 
 ---
 
@@ -183,6 +303,8 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
   - **Task field data** — houses visited, eligible present/absent, missed/noncompliance/exclusion reasons, finger-marking, revisit outcomes.
   - **Denominator provenance** — source, type, estimate date, planning flag, confidence.
   - **Geospatial, delivery, and safety** — GeoJSON boundaries, operational-geography overlays, record origin, prior-dose status, settlement type, directly-observed consumption, dose-pole band, stock accountability, seriousness criteria.
+
+**ESPEN MDA example.** The MDA-specific extensions in one visit: the dose-pole band records the height band that set the tablet count; directly-observed consumption distinguishes a drug handed out from a drug swallowed; the exclusion reason records "present but contraindicated" (under height, pregnant, breastfeeding); and stock accountability reconciles the CDD's tablets at close-out.
 
 ---
 
@@ -195,14 +317,35 @@ Slide-ready bullet sets distilled from [[icr-ig]] (v0.24.0).
 - **Geospatial identity is multi-system, GERS-preferred**, and operational geography overlays the administrative hierarchy rather than pretending to be part of it.
 - **Accountability is queryable.** Task ownership and report authorship are real references, not strings.
 
+**ESPEN MDA example.** Every principle is visible in one MDA round: the register's treatments are flagged `campaign` so routine deworming stays separate; the 91% administrative figure and the independent survey are separate records; `community-directed` strategy determines that register tallies (not house-visit counts) apply; the village keeps two population estimates with sources; and the tally's reporter is the CDD team's supervisor.
+
 ---
 
-## 19. Grounded in field evidence
+## 19. Grounded in field evidence — the ESPEN forms end to end
 
-- The IG ships a complete worked scenario — a Sierra Leone measles–rubella SIA with a national umbrella and district round, plus a community-directed MDA thread — with 41 example instances exercising every profile end to end, from protocol down to a single child's dose and its AEFI.
+- The IG ships a complete worked scenario — a Sierra Leone measles–rubella SIA plus the community-directed MDA thread used throughout this deck — with 41 example instances exercising every profile end to end.
 - Validated against eight global-health source analyses (WHO SIA, RED microplanning, and measles guidance; the WHO cluster-survey manual; GTFCC OCV; NTD-MDA; WHO EYE; geo-enabled microplanning): no source contradicts the core design.
-- Iteratively hardened against real field instruments: ten UNICEF polio-SIA forms drove zero-dose tracking, readiness checklists, and revisit outcomes; the six ESPEN MDA forms were converted to FHIR Questionnaires with automatic extraction to ICR resources.
-- The ESPEN conversion demonstrates the "countries extend the IG" story end to end: a filled national form becomes ICR-profiled data.
+- Iteratively hardened against real field instruments: ten UNICEF polio-SIA forms drove zero-dose tracking, readiness checklists, and revisit outcomes; the six ESPEN MDA forms were converted to complete, source-faithful FHIR Questionnaires.
+- Each filled ESPEN form extracts automatically into ICR-profiled resources (SDC template-based extraction) — demonstrating the "countries extend the IG" story end to end: a national form in the field becomes standard registry data.
+
+```mermaid
+graph LR
+    F1["Form 1<br/>location registration"]
+    F2["Form 2<br/>drug receipt"]
+    F3["Form 3<br/>treatment tally"]
+    F4["Form 4<br/>case management"]
+    F56["Forms 5 & 6<br/>supervision HF / CDD"]
+    L["ICRLocation +<br/>5 TargetPopulation groups"]
+    SD1["ICRSupplyDelivery<br/>per drug, ATC-coded"]
+    MR["ICRAdministrativeCoverage<br/>per drug, stratified"]
+    SD2["ICRSupplyDelivery<br/>distributed / reconciled"]
+    QR["QuestionnaireResponse<br/>is itself the record"]
+    F1 --> L
+    F2 --> SD1
+    F3 --> MR
+    F4 --> SD2
+    F56 --> QR
+```
 
 ---
 
