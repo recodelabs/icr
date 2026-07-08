@@ -570,10 +570,12 @@ Usage: #inline
 // form; deployments bind it via launchContext against the Location hierarchy
 
 // --- Form 3: MDA Medicine Treatment (tally) -----------------------------------
-// Extraction: one ICRAdministrativeCoverage MeasureReport per answered drug block
-// (item-level templateExtract on each drug's `<blk>_by_sex` group), stratified by
-// sex, age-band, and disposition — the same cube as example-mda-treatment-tally
-// (espen-forms).
+// Extraction: one ICRDeliveryUnit community Group (root templateExtract, allocate-id),
+// one Group-subject ICRMedicationAdministration per answered drug block (the treatment
+// event — espen-remap), and one ICRAdministrativeCoverage MeasureReport per answered
+// drug block (item-level templateExtract on each drug's `<blk>_by_sex` group),
+// stratified by sex, age-band, and disposition — the same cube as
+// example-mda-treatment-tally (espen-forms).
 
 Instance: espen-mda-treatment
 InstanceOf: Questionnaire
@@ -584,8 +586,17 @@ Usage: #example
 * name = "EspenMDATreatment"
 * status = #active
 * experimental = false
-* description = "ESPEN MDA demo Form 3 (the treatment tally): village census plus per-drug treated counts by sex and age band with reasons-not-treated. Template-based extraction: one ICRAdministrativeCoverage MeasureReport per answered drug block — measure icr-mda-treatment-coverage, stratified by sex, age-band, and disposition, the same cube as example-mda-treatment-tally (espen-forms)."
+* description = "ESPEN MDA demo Form 3 (the treatment tally): village census plus per-drug treated counts by sex and age band with reasons-not-treated. Template-based extraction: one ICRDeliveryUnit community Group for the village, one Group-subject ICRMedicationAdministration per answered drug block (the treatment event — tablets into people are treatment, not a supply transfer), and one ICRAdministrativeCoverage MeasureReport per answered drug block — measure icr-mda-treatment-coverage, stratified by sex, age-band, and disposition, the same cube as example-mda-treatment-tally (espen-forms, remapped espen-remap)."
 * subjectType = #Location
+// allocate the extracted community Group's id so the per-drug
+// MedicationAdministration templates can reference it as their subject
+* extension[+].url = $SDCExtractAllocateId
+* extension[=].valueString = "newCommunityId"
+* extension[+].url = $SDCTemplateExtract
+* extension[=].extension[+].url = "template"
+* extension[=].extension[=].valueReference.reference = "#community-template"
+* extension[=].extension[+].url = "fullUrl"
+* extension[=].extension[=].valueString = "%newCommunityId"
 // registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
 // resolve against the Location hierarchy / CareTeam registry at capture time
 * item[+].linkId = "p_recorder_id"
@@ -667,6 +678,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-dec"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-dec"
 * item[=].item[+].linkId = "dec_5_14_female_treated"
 * item[=].item[=].text = "5-14 years old treated Female"
 * item[=].item[=].type = #integer
@@ -748,6 +762,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-alb"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-alb"
 * item[=].item[+].linkId = "alb_5_14_female_treated"
 * item[=].item[=].text = "5-14 years old treated Female"
 * item[=].item[=].type = #integer
@@ -833,6 +850,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-meb"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-meb"
 * item[=].item[+].linkId = "meb_5_14_female_treated"
 * item[=].item[=].text = "5-14 years old treated Female"
 * item[=].item[=].type = #integer
@@ -915,6 +935,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-ivm"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-ivm"
 * item[=].item[+].linkId = "ivm_5_14_female_treated"
 * item[=].item[=].text = "5-14 years old treated Female"
 * item[=].item[=].type = #integer
@@ -997,6 +1020,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-pzq"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-pzq"
 * item[=].item[+].linkId = "pzq_5_14_female_treated"
 * item[=].item[=].text = "5-14 years old treated Female"
 * item[=].item[=].type = #integer
@@ -1072,6 +1098,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-azm-susp"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-azm-susp"
 * item[=].item[+].linkId = "azm_susp_less7_boy_treated"
 * item[=].item[=].text = "Boys from 6 months to less than 7 years treated"
 * item[=].item[=].type = #integer
@@ -1109,6 +1138,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-azm-tb"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-azm-tb"
 * item[=].item[+].linkId = "azm_tb_more7_boy_treated"
 * item[=].item[=].text = "Boys more than 7 years treated"
 * item[=].item[=].type = #integer
@@ -1154,6 +1186,9 @@ Usage: #example
 * item[=].extension[+].url = $SDCTemplateExtract
 * item[=].extension[=].extension[+].url = "template"
 * item[=].extension[=].extension[=].valueReference.reference = "#mr-tetra"
+* item[=].extension[+].url = $SDCTemplateExtract
+* item[=].extension[=].extension[+].url = "template"
+* item[=].extension[=].extension[=].valueReference.reference = "#ma-tetra"
 * item[=].item[+].linkId = "tetra_baby_boy"
 * item[=].item[=].text = "Baby boy less than six month"
 * item[=].item[=].type = #integer
@@ -1223,8 +1258,166 @@ Usage: #example
 * contained[+] = EspenMRAzmSusp
 * contained[+] = EspenMRAzmTb
 * contained[+] = EspenMRTetra
+* contained[+] = EspenCommunityTemplate
+* contained[+] = EspenMADec
+* contained[+] = EspenMAAlb
+* contained[+] = EspenMAMeb
+* contained[+] = EspenMAIvm
+* contained[+] = EspenMAPzq
+* contained[+] = EspenMAAzmSusp
+* contained[+] = EspenMAAzmTb
+* contained[+] = EspenMATetra
 
 // -- extraction templates for Form 3 --
+
+// The community delivery unit (espen-remap): the register-level Group the treatment
+// events act on. group-location is a logical (identifier) reference — the village
+// Location is registered by Form 1, not re-extracted here.
+Instance: EspenCommunityTemplate
+InstanceOf: Group
+Usage: #inline
+* id = "community-template"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRDeliveryUnit"
+* type = #person
+* actual = true
+* code = $GroupKind#community "Community"
+* name.extension[+].url = $SDCTemplateExtractValue
+* name.extension[=].valueString = "%resource.repeat(item).where(linkId='p_location').answer.value.first() & ' community'"
+* identifier[0].system = "https://icr.healthcampaigns.org/identifier/espen-community"
+* identifier[0].value.extension[+].url = $SDCTemplateExtractValue
+* identifier[0].value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_location_id').answer.value.first()"
+* quantity = 0
+* quantity.extension[+].url = $SDCTemplateExtractValue
+* quantity.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='census_men').answer.exists(), %resource.repeat(item).where(linkId='census_men').answer.value.first(), 0) + iif(%resource.repeat(item).where(linkId='census_women').answer.exists(), %resource.repeat(item).where(linkId='census_women').answer.value.first(), 0)"
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/group-location"
+* extension[0].valueReference.identifier.system = "https://icr.healthcampaigns.org/identifier/espen-location-id"
+* extension[0].valueReference.identifier.value.extension[+].url = $SDCTemplateExtractValue
+* extension[0].valueReference.identifier.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_location_id').answer.value.first()"
+
+// Group-subject treatment events (espen-remap): tablets into people are treatment,
+// not a supply transfer. One per answered drug block. The stratified MeasureReport
+// carries the counts; these carry the event — and give ICRAdverseEvent.suspectEntity
+// something to reference for MDA pharmacovigilance.
+
+Instance: EspenMADec
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-dec"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#P02CB02 "diethylcarbamazine"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMAAlb
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-alb"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#P02CA03 "albendazole"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMAMeb
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-meb"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#P02CA01 "mebendazole"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMAIvm
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-ivm"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#P02CF01 "ivermectin"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMAPzq
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-pzq"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#P02BA01 "praziquantel"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMAAzmSusp
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-azm-susp"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#J01FA10 "azithromycin"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMAAzmTb
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-azm-tb"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#J01FA10 "azithromycin"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
+
+Instance: EspenMATetra
+InstanceOf: MedicationAdministration
+Usage: #inline
+* id = "ma-tetra"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+* status = #completed
+* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
+* extension[0].valueCode = #campaign
+* medicationCodeableConcept = $ATC#S01AA09 "tetracycline"
+* subject.reference.extension[+].url = $SDCTemplateExtractValue
+* subject.reference.extension[=].valueString = "%newCommunityId"
+* effectiveDateTime = "2026-01-01"
+* effectiveDateTime.extension[+].url = $SDCTemplateExtractValue
+* effectiveDateTime.extension[=].valueString = "%resource.authored"
 
 Instance: EspenMRDec
 InstanceOf: MeasureReport
@@ -1930,10 +2123,12 @@ Usage: #inline
 * group[0].stratifier[2].stratum[5].population[0].count.extension[=].valueString = "iif(%resource.repeat(item).where(linkId='tetra_refusal').answer.exists(), %resource.repeat(item).where(linkId='tetra_refusal').answer.value.first(), 0)"
 
 // --- Form 4: MDA Medicine Use & Case Management -------------------------------
-// Extraction: one ICRSupplyDelivery(used) per answered distributed-drug total
-// (item-level templateExtract on each `*_dist` item inside the med_distr group);
-// side-effect and other-NTD counts remain QR-only — person-level ICRAdverseEvent
-// records cannot be minted from aggregate counts (espen-forms).
+// No extraction (espen-remap): distributed totals are not custody transfers, so no
+// SupplyDelivery is minted — the treatment events are Form 3's Group-subject
+// MedicationAdministrations, and the distributed counts fold into the Form 2
+// receipt's stock-accountability in the transform layer (a cross-form merge
+// extraction cannot express). Side-effect and other-NTD counts remain QR-only —
+// person-level ICRAdverseEvent records cannot be minted from aggregate counts.
 
 Instance: espen-mda-case-management
 InstanceOf: Questionnaire
@@ -1944,7 +2139,7 @@ Usage: #example
 * name = "EspenMDACaseManagement"
 * status = #active
 * experimental = false
-* description = "ESPEN MDA demo Form 4 (medicine use and case management): per-drug distributed totals, side-effect counts, other-NTD case counts. Template-based extraction: one ICRSupplyDelivery per answered distributed total, carrying the count as stock-accountability 'used'. Side-effect and other-NTD counts remain on the QuestionnaireResponse: person-level ICRAdverseEvent records cannot be minted from aggregate counts (espen-forms)."
+* description = "ESPEN MDA demo Form 4 (medicine use and case management): per-drug distributed totals, side-effect counts, other-NTD case counts. No template-based extraction (espen-remap): a distributed total is not a custody transfer, so it does not mint a SupplyDelivery — the treatment events are Form 3's Group-subject ICRMedicationAdministrations, and the distributed counts are folded into the stock-accountability extension on the Form 2 receipt ICRSupplyDelivery by the ingestion pipeline (a cross-form merge extraction cannot express). Side-effect and other-NTD counts remain on the QuestionnaireResponse: person-level ICRAdverseEvent records cannot be minted from aggregate counts."
 * subjectType = #Location
 // registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
 // resolve against the Location hierarchy / CareTeam registry at capture time
@@ -1990,9 +2185,6 @@ Usage: #example
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-meb
 * item[=].item[=].enableBehavior = #any
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-pzq"
 * item[=].item[+].linkId = "p_total_alb_dist"
 * item[=].item[=].text = "Total Albendazole distributed"
 * item[=].item[=].type = #integer
@@ -2010,9 +2202,6 @@ Usage: #example
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-alb
 * item[=].item[=].enableBehavior = #any
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-alb"
 * item[=].item[+].linkId = "p_total_meb_dist"
 * item[=].item[=].text = "Total Mebendazole distributed"
 * item[=].item[=].type = #integer
@@ -2024,9 +2213,6 @@ Usage: #example
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#pzq-meb
 * item[=].item[=].enableBehavior = #any
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-meb"
 * item[=].item[+].linkId = "p_total_ivm_dist"
 * item[=].item[=].text = "Total Ivermectin distributed"
 * item[=].item[=].type = #integer
@@ -2041,9 +2227,6 @@ Usage: #example
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb-dec
 * item[=].item[=].enableBehavior = #any
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-ivm"
 * item[=].item[+].linkId = "p_total_dec_dist"
 * item[=].item[=].text = "Total Diethylcarbamazine distributed"
 * item[=].item[=].type = #integer
@@ -2051,9 +2234,6 @@ Usage: #example
 * item[=].item[=].enableWhen[+].question = "p_medicine"
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#ivm-alb-dec
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-dec"
 * item[=].item[+].linkId = "p_total_az_sus_dist"
 * item[=].item[=].text = "Total Azithromycin suspension (in l) distributed"
 * item[=].item[=].type = #integer
@@ -2061,9 +2241,6 @@ Usage: #example
 * item[=].item[=].enableWhen[+].question = "p_medicine"
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#azm-susp
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-azm-susp"
 * item[=].item[+].linkId = "p_total_az_tab_dist"
 * item[=].item[=].text = "Total Azithromycin tablets distributed"
 * item[=].item[=].type = #integer
@@ -2071,9 +2248,6 @@ Usage: #example
 * item[=].item[=].enableWhen[+].question = "p_medicine"
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#azm-tab
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-azm-tab"
 * item[=].item[+].linkId = "p_total_tetra_dist"
 * item[=].item[=].text = "Total Tetracycline distributed"
 * item[=].item[=].type = #integer
@@ -2081,9 +2255,6 @@ Usage: #example
 * item[=].item[=].enableWhen[+].question = "p_medicine"
 * item[=].item[=].enableWhen[=].operator = #=
 * item[=].item[=].enableWhen[=].answerCoding = ICRMDAMedicinePackageCS#tetra
-* item[=].item[=].extension[+].url = $SDCTemplateExtract
-* item[=].item[=].extension[=].extension[+].url = "template"
-* item[=].item[=].extension[=].extension[=].valueReference.reference = "#sd-used-tetra"
 * item[=].item[+].linkId = "p_minor_side_effect"
 * item[=].item[=].text = "Number of cases of minor side effects"
 * item[=].item[=].type = #integer
@@ -2119,195 +2290,6 @@ Usage: #example
 * item[=].text = "Additional Note"
 * item[=].type = #text
 // dropped: p_start / p_end (device timestamps)
-* contained[+] = EspenSDUsedPzq
-* contained[+] = EspenSDUsedAlb
-* contained[+] = EspenSDUsedMeb
-* contained[+] = EspenSDUsedIvm
-* contained[+] = EspenSDUsedDec
-* contained[+] = EspenSDUsedAzmSusp
-* contained[+] = EspenSDUsedAzmTab
-* contained[+] = EspenSDUsedTetra
-
-// -- extraction templates for Form 4 --
-
-Instance: EspenSDUsedPzq
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-pzq"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tbl}
-* extension[1].extension[0].valueQuantity.unit = "tablets"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_pzq_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#P02BA01 "praziquantel"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tbl}
-* suppliedItem.quantity.unit = "tablets"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_pzq_dist').answer.value.first()"
-
-Instance: EspenSDUsedAlb
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-alb"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tbl}
-* extension[1].extension[0].valueQuantity.unit = "tablets"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_alb_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tbl}
-* suppliedItem.quantity.unit = "tablets"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_alb_dist').answer.value.first()"
-
-Instance: EspenSDUsedMeb
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-meb"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tbl}
-* extension[1].extension[0].valueQuantity.unit = "tablets"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_meb_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#P02CA01 "mebendazole"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tbl}
-* suppliedItem.quantity.unit = "tablets"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_meb_dist').answer.value.first()"
-
-Instance: EspenSDUsedIvm
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-ivm"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tbl}
-* extension[1].extension[0].valueQuantity.unit = "tablets"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_ivm_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#P02CF01 "ivermectin"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tbl}
-* suppliedItem.quantity.unit = "tablets"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_ivm_dist').answer.value.first()"
-
-Instance: EspenSDUsedDec
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-dec"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tbl}
-* extension[1].extension[0].valueQuantity.unit = "tablets"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_dec_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#P02CB02 "diethylcarbamazine"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tbl}
-* suppliedItem.quantity.unit = "tablets"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_dec_dist').answer.value.first()"
-
-Instance: EspenSDUsedAzmSusp
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-azm-susp"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #L
-* extension[1].extension[0].valueQuantity.unit = "liters"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_sus_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
-* suppliedItem.itemCodeableConcept.text = "azithromycin (suspension)"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #L
-* suppliedItem.quantity.unit = "liters"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_sus_dist').answer.value.first()"
-
-Instance: EspenSDUsedAzmTab
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-azm-tab"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tbl}
-* extension[1].extension[0].valueQuantity.unit = "tablets"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_tab_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#J01FA10 "azithromycin"
-* suppliedItem.itemCodeableConcept.text = "azithromycin (tablets)"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tbl}
-* suppliedItem.quantity.unit = "tablets"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_az_tab_dist').answer.value.first()"
-
-Instance: EspenSDUsedTetra
-InstanceOf: SupplyDelivery
-Usage: #inline
-* id = "sd-used-tetra"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
-* status = #completed
-* extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
-* extension[0].valueCode = #campaign
-* extension[1].url = "https://icr.healthcampaigns.org/StructureDefinition/stock-accountability"
-* extension[1].extension[0].url = "used"
-* extension[1].extension[0].valueQuantity.system = "http://unitsofmeasure.org"
-* extension[1].extension[0].valueQuantity.code = #{tube}
-* extension[1].extension[0].valueQuantity.unit = "tubes"
-* extension[1].extension[0].valueQuantity.value.extension[+].url = $SDCTemplateExtractValue
-* extension[1].extension[0].valueQuantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_tetra_dist').answer.value.first()"
-* suppliedItem.itemCodeableConcept = $ATC#S01AA09 "tetracycline"
-* suppliedItem.itemCodeableConcept.text = "tetracycline (eye ointment)"
-* suppliedItem.quantity.system = "http://unitsofmeasure.org"
-* suppliedItem.quantity.code = #{tube}
-* suppliedItem.quantity.unit = "tubes"
-* suppliedItem.quantity.value.extension[+].url = $SDCTemplateExtractValue
-* suppliedItem.quantity.value.extension[=].valueString = "%resource.repeat(item).where(linkId='p_total_tetra_dist').answer.value.first()"
 
 // --- Form 5: MDA Supervision — Health Facility --------------------------------
 // No extraction templates, by design: this is a supervision report, not a stock

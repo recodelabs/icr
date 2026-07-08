@@ -60,13 +60,16 @@ report when you don't):
 |---|---|---|
 | **1. Location registration** | `fromLocationForm` | `ICRLocation` cascade (admin hierarchy → village, GPS position, `partOf`) + `ICRTargetPopulation` Groups (total, MDA-eligible, 1–4 / 5–14 / 15+ age bands) |
 | **2. Drug receipt** | `fromDrugReceiptForm` | `ICRSupplyDelivery` per drug **received** at the health facility |
-| **3. Treatment tally** | `fromTreatmentForm` | `ICRAdministrativeCoverage` (MeasureReport) per drug — numerator/denominator + `sex` × `age-band` × `disposition` stratifiers |
-| **4. Case management** | `fromCaseMgmtForm` | `ICRSupplyDelivery` per drug **distributed** + a `QuestionnaireResponse` for the aggregate side-effect / other-NTD counts (which can't become person-level resources) |
+| **3. Treatment tally** | `fromTreatmentForm` | The campaign anchor (`ICRCampaignProtocol` per state × year → `ICRCampaign` village round → one completed `ICRCampaignTask` per submission), an `ICRDeliveryUnit` community Group, one Group-subject `ICRMedicationAdministration` per treated drug (the treatment event), and an `ICRAdministrativeCoverage` (MeasureReport) per drug — numerator/denominator + `sex` × `age-band` × `disposition` stratifiers |
+| **4. Case management** | `fromCaseMgmtForm` + `reconcileStockUsed` | A `QuestionnaireResponse` only — a distributed total is not a custody transfer, so it mints no SupplyDelivery. The `reconcileStockUsed` operation folds the per-drug totals into the Form 2 receipt's stock-accountability extension (`received` / `used` / `remaining`). Side-effect / other-NTD counts stay on the QR (they can't become person-level resources) |
 | **5 & 6. Supervision (HF / CDD)** | `fromSupervisionForm` | `QuestionnaireResponse` — per the IG, the supervision record *is* the QuestionnaireResponse |
 
 **Proven end-to-end:** 57 synthetic ESPEN submissions across all six forms →
 **132 FHIR resources** (21 Location, 60 Group, 12 SupplyDelivery, 33 MeasureReport,
-6 QuestionnaireResponse) in a Google Healthcare store, fully idempotent.
+6 QuestionnaireResponse) in a Google Healthcare store, fully idempotent. The v0.3.0
+`espen-remap` release changes the Form 3/4 mapping as described above — tablet counts
+are supply chain, people counts are treatment — and adds the campaign layer
+(PlanDefinition / CarePlan / Task), so a re-run additionally mints those resources.
 
 ## Next
 
