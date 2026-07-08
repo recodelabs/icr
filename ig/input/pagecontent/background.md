@@ -24,7 +24,16 @@ activity/task**, not of the campaign.
 1. **CarePlan is the keystone** — campaigns are population-scale care plans
    (alternatives considered and rejected: custom resource, Encounter, RequestGroup).
 2. **PlanDefinition = reusable protocol; CarePlan = execution** — rounds are sibling
-   CarePlans under an umbrella via `partOf`.
+   CarePlans under an umbrella via `partOf`. The CarePlan sits at the **reporting
+   scope** — the highest level that carries the campaign's global target (typically
+   the district round), with that scope's denominator as `subject`. Operational
+   sub-units (wards, villages, communities) hang under it through the Location
+   hierarchy and their own geography-scoped denominator estimates — they do **not**
+   each get a CarePlan, so a district with hundreds of communities is still one
+   campaign resource. Child CarePlans are reserved for genuine sub-rounds with
+   their own period or reporting obligation. A person is never a CarePlan subject:
+   individuals appear only in the delivery events (`Immunization.patient`,
+   `MedicationAdministration.subject`).
 3. **Task is the operational unit** — one per site-session (A) or household (B);
    delivery events hang off `Task.output`. Person-level detail lives in the
    delivery events, not in extra Tasks: a polio team's household visit is ONE
