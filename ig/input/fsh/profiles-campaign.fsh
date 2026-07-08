@@ -28,7 +28,7 @@ Profile: ICRCampaign
 Parent: CarePlan
 Id: ICRCampaign
 Title: "ICR Campaign"
-Description: "A specific campaign execution — the keystone resource. Begins life as a microplan (intent=plan) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via partOf (working doc §7.2, §6.3)."
+Description: "A specific campaign execution — the keystone resource. Begins life as a microplan (intent=plan) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via partOf (working doc §7.2, §6.3). Granularity: one ICRCampaign per REPORTING SCOPE — the highest level that carries the campaign's global target (typically the district round), with that scope's denominator as subject. Operational sub-units (wards, villages, communities) sit under it through the Location hierarchy and their own geography-scoped ICRTargetPopulation estimates; they do not each get a CarePlan. Child CarePlans (partOf) are reserved for genuine sub-rounds with their own period or reporting obligation, not for every level of geographic disaggregation."
 * ^experimental = false
 * instantiatesCanonical 1..1 MS
 * instantiatesCanonical only Canonical(ICRCampaignProtocol)
