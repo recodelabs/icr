@@ -1,6 +1,6 @@
 ---
-version: 0.25.0
-last_modified: 2026-07-08T02:24:00Z
+version: 0.26.0
+last_modified: 2026-07-08T03:42:00Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-<sub>`v0.25.0 · Last modified Jul 7, 2026 at 10:24 PM EDT`</sub>
+<sub>`v0.26.0 · Last modified Jul 7, 2026 at 11:42 PM EDT`</sub>
 
 ⁠
 
@@ -1026,7 +1026,7 @@ The six instruments (in `ig/input/fsh/questionnaires-espen.fsh`): **`espen-mda-l
 
 **The no-extraction rule for the supervision pair is a design decision, not a gap.** Per §4.6 a supervision `QuestionnaireResponse` is itself the record of a visit; there is no downstream resource to mint, so Forms 5 and 6 carry no templates. Likewise Form 4's person-level side-effects cannot be minted as `ICRAdverseEvent`s from aggregate counts, so those counts remain on the response.
 
-**The espen-remap adjustment (2026-07-07).** The original round extracted Form 4's per-drug distributed totals as standalone "distributed" `ICRSupplyDelivery` resources. That misstated the semantics: a SupplyDelivery is a **custody transfer** of stock (to a facility, a distribution point, a household receiving nets), while tablets swallowed by community members are **treatment**. The remap therefore (a) drops Form 4's SupplyDelivery templates — the distributed totals stay on the QR and the ingestion pipeline folds them into the Form 2 receipt's stock-accountability ledger; and (b) adds to Form 3 an `ICRDeliveryUnit` community Group plus one **Group-subject `ICRMedicationAdministration` per treated drug** — the register-level treatment pattern §6.2 was designed for, which also gives `ICRAdverseEvent.suspectEntity` a treatment event to reference for MDA pharmacovigilance. The rule of thumb: *tablet counts are supply chain; people counts are treatment.* The ingestion pipeline (the fhir-icr OpenFn adaptor) additionally anchors each Form 3 submission to the campaign layer — an `ICRCampaignProtocol` per state × year, an `ICRCampaign` village round, and one completed `ICRCampaignTask` whose outputs reference the treatment events and tally — a transform-layer concern the extraction templates deliberately leave out. **New terminology:** `ICRNTDDiseaseCS` (the disease-scope axis) and `ICRMDAMedicinePackageCS` (the medicine-package axis), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists bind to the existing `ICRMissedReasonCS` and `ICRCommunicationChannelCS` vocabularies. Full design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
+**The espen-remap adjustment (2026-07-07).** The original round extracted Form 4's per-drug distributed totals as standalone "distributed" `ICRSupplyDelivery` resources. That misstated the semantics: a SupplyDelivery is a **custody transfer** of stock (to a facility, a distribution point, a household receiving nets), while tablets swallowed by community members are **treatment**. The remap therefore (a) drops Form 4's SupplyDelivery templates — the distributed totals stay on the QR and the ingestion pipeline folds them into the Form 2 receipt's stock-accountability ledger; and (b) adds to Form 3 an `ICRDeliveryUnit` community Group plus one **Group-subject `ICRMedicationAdministration` per treated drug** — the register-level treatment pattern §6.2 was designed for, which also gives `ICRAdverseEvent.suspectEntity` a treatment event to reference for MDA pharmacovigilance. The rule of thumb: *tablet counts are supply chain; people counts are treatment.* The ingestion pipeline (the fhir-icr OpenFn adaptor) additionally anchors each Form 3 submission to the campaign layer — an `ICRCampaignProtocol` per state × year, an `ICRCampaign` **district** round (the global target — subject is a district eligible denominator summed with provenance from the Form 1 village registrations; villages sit under it via `Location.partOf` rather than each getting a CarePlan), and one completed `ICRCampaignTask` whose outputs reference the treatment events and tally — a transform-layer concern the extraction templates deliberately leave out. **New terminology:** `ICRNTDDiseaseCS` (the disease-scope axis) and `ICRMDAMedicinePackageCS` (the medicine-package axis), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists bind to the existing `ICRMissedReasonCS` and `ICRCommunicationChannelCS` vocabularies. Full design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
 
 * * *
 ## 5. Population & geography profiles

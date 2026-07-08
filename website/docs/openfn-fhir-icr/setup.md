@@ -76,7 +76,11 @@ A minimal job for form 1:
 ```js title="form1.js"
 // state.data.value = ODK Central OData submissions for the location form
 fn(state => {
-  state.entries = state.data.value.flatMap(b.fromLocationForm);
+  state.entries = [
+    ...state.data.value.flatMap(b.fromLocationForm),
+    // aggregate the batch into district-level eligible Groups — the campaign's global target
+    ...b.districtDenominators(state.data.value),
+  ];
   return state;
 });
 upsertBundle($.entries);

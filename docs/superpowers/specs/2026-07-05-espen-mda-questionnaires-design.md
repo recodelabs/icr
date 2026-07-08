@@ -136,8 +136,13 @@ different axes.
    - one `ICRCampaignProtocol` (PlanDefinition, `type = mda`,
      `delivery-strategy = community-directed`) per state × year;
    - one `ICRCampaign` (CarePlan, `intent = order`, `instantiatesCanonical` → the
-     protocol, `subject` → the village's eligible `ICRTargetPopulation` by logical
-     identifier reference) per village × year;
+     protocol, `subject` → a **district-level** eligible `ICRTargetPopulation` by logical
+     identifier reference) per **district × year** — the campaign is the higher-level
+     scope with the global target; villages sit under it operationally via
+     `Location.partOf`, each keeping its own denominators and coverage, without a
+     CarePlan per village (Matt, 2026-07-07). The district eligible Group is aggregated
+     from the Form 1 village registrations (`districtDenominators`, provenance
+     microcensus/summed);
    - one completed `ICRCampaignTask` per Form 3 submission (`for` → the community
      Group, `location` → the village, `focus` → the CarePlan,
      `delivery-strategy = community-directed`, `task-origin = pre-planned`,
