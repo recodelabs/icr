@@ -1,6 +1,8 @@
 # ESPEN MDA forms → FHIR Questionnaires with template-based extraction
 
 **Date:** 2026-07-05 · **Status:** Approved by Matt · **Round tag:** `espen-forms`
+**Amended:** 2026-07-07 (`espen-remap` round, approved by Matt) — see
+*Adapted mapping* below; the Form 3/4 rows in the extraction table are superseded.
 
 ## Goal
 
@@ -92,9 +94,62 @@ MeasureReport for derived or stratified coverage*):
 |---|---|---|
 | 1 location | `ICRLocation` + `ICRTargetPopulation` Groups | Location: `name`, `position` from geopoint, `partOf` up the cascade; Groups: `quantity` from the population integers — one total-population Group, one eligible-population Group, age-band Groups with the age-band characteristic |
 | 2 receipt | `ICRSupplyDelivery` per drug | Item-level templates so only answered drug totals extract; `suppliedItem.itemCodeableConcept` = drug code, `quantity` = answer |
-| 3 treatment | `ICRAdministrativeCoverage` MeasureReport | `measure → icr-mda-treatment-coverage`; per-drug `group` with `sex` / `age-band` / `disposition` stratifiers — same shape as `example-mda-treatment-tally` (§7.3). Disposition mapping: under-height/pregnant/breastfeeding counts → `excluded`, absent → `absent` (missed), refusal → `refused` |
-| 4 case mgmt | `ICRSupplyDelivery` per drug (distributed) | Side-effect and other-NTD counts remain in the QR, documented: person-level `ICRAdverseEvent` cannot be minted from aggregate counts |
+| 3 treatment | `ICRAdministrativeCoverage` MeasureReport **+ (espen-remap) one `ICRDeliveryUnit` community Group and one Group-subject `ICRMedicationAdministration` per answered drug** | `measure → icr-mda-treatment-coverage`; per-drug `group` with `sex` / `age-band` / `disposition` stratifiers — same shape as `example-mda-treatment-tally` (§7.3). Disposition mapping: under-height/pregnant/breastfeeding counts → `excluded`, absent → `absent` (missed), refusal → `refused` |
+| 4 case mgmt | ~~`ICRSupplyDelivery` per drug (distributed)~~ **(espen-remap) None** | Distributed totals stay on the QR; stock reconciliation onto the Form 2 receipt happens in the transform layer. Side-effect and other-NTD counts remain in the QR, documented: person-level `ICRAdverseEvent` cannot be minted from aggregate counts |
 | 5 & 6 supervision | **None — by design** | Per §4.6 the QuestionnaireResponse *is* the record (`ICRSupervisionReport`); each Questionnaire carries a description note saying so |
+
+## Adapted mapping — `espen-remap` round (2026-07-07)
+
+**Trigger.** Matt's review of the deployed pipeline: a "distributed" `SupplyDelivery`
+misstates what happened. SupplyDelivery means a custody transfer of stock (to a clinic,
+a distribution point, a household receiving nets). Tablets swallowed by community
+members are treatment, not a transfer — and the IG already sanctions the shape for it:
+`ICRMedicationAdministration.subject` allows an `ICRDeliveryUnit` Group precisely for
+register-level (tally-sheet) capture where individuals are not enumerated.
+
+**The rule, restated.** Tablet counts are supply chain; people counts are treatment.
+The two are different numbers (dose poles put 1–4 tablets in each person) and live on
+different axes.
+
+### Changes
+
+1. **Form 3 (treatment)** — extraction additionally mints, per submission:
+   - one **`ICRDeliveryUnit` community Group** (`code = community`, `quantity` =
+     census men + women, `group-location` → the village by identifier), allocated an id
+     so sibling templates can reference it;
+   - one **Group-subject `ICRMedicationAdministration` per answered drug block**
+     (ATC-coded, `subject` → the allocated community Group, `effective` from
+     `authored`, `record-origin = campaign`). This is the treatment *event* the
+     MeasureReport's numbers describe, and gives `ICRAdverseEvent.suspectEntity`
+     something to reference for MDA pharmacovigilance.
+   - The stratified MeasureReport is unchanged — a MedicationAdministration has no
+     slot for counts; the cube stays on the report.
+2. **Form 4 (case management)** — the eight per-drug "distributed" `ICRSupplyDelivery`
+   templates (`EspenSDUsed*`) are **removed**. Distributed totals stay on the
+   QuestionnaireResponse. Folding them into the **stock-accountability extension on the
+   Form 2 receipt** `SupplyDelivery` is a cross-form merge, which template-based
+   extraction cannot express — it happens in the **transform layer** (the fhir-icr
+   OpenFn adaptor's `reconcileStockUsed` operation: read the receipt by business
+   identifier, merge `used` (+ derived `remaining`), conditional PUT).
+3. **Campaign anchor (adaptor only)** — the pipeline additionally upserts a minimal
+   campaign layer so extracted resources no longer float free of any campaign:
+   - one `ICRCampaignProtocol` (PlanDefinition, `type = mda`,
+     `delivery-strategy = community-directed`) per state × year;
+   - one `ICRCampaign` (CarePlan, `intent = order`, `instantiatesCanonical` → the
+     protocol, `subject` → the village's eligible `ICRTargetPopulation` by logical
+     identifier reference) per village × year;
+   - one completed `ICRCampaignTask` per Form 3 submission (`for` → the community
+     Group, `location` → the village, `focus` → the CarePlan,
+     `delivery-strategy = community-directed`, `task-origin = pre-planned`,
+     `output` → the per-drug MedicationAdministrations and MeasureReports).
+   The IG extraction templates do **not** mint the campaign layer — shared,
+   cross-submission resources are a transform-layer concern (same boundary rationale
+   as the surveillance scope decision, working doc §13.2).
+
+### Not changed
+
+Form 2 receipt SupplyDeliveries (a true stock drop at the health facility); Forms 5/6
+no-extraction rule; the canonical checklists; all terminology.
 
 ## IG & working-doc wiring
 

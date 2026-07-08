@@ -1,6 +1,6 @@
 ---
-version: 0.24.0
-last_modified: 2026-07-05T20:22:00Z
+version: 0.25.0
+last_modified: 2026-07-08T02:24:00Z
 tags:
   - icr
   - fhir
@@ -10,7 +10,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-<sub>`v0.24.0 · Last modified Jul 5, 2026 at 4:22 PM EDT`</sub>
+<sub>`v0.25.0 · Last modified Jul 7, 2026 at 10:24 PM EDT`</sub>
 
 ⁠
 
@@ -1020,11 +1020,13 @@ The six instruments (in `ig/input/fsh/questionnaires-espen.fsh`): **`espen-mda-l
 | --- | --- | --- |
 | 1 location | `ICRLocation` + 5 `ICRTargetPopulation` Groups | population totals (total / eligible / 1–4 / 5–14 / 15+); each Group's geography characteristic references the co-extracted Location via allocate-id |
 | 2 receipt | `ICRSupplyDelivery` per drug (8 templates) | item-level, ATC-coded — only answered drug totals extract |
-| 3 treatment | `ICRAdministrativeCoverage` MeasureReport (8, per drug) | `measure = icr-mda-treatment-coverage`; sex × age-band × disposition stratifiers — the same cube as `example-mda-treatment-tally` (§7.3) |
-| 4 case mgmt | `ICRSupplyDelivery` per drug (8, distributed) | distributed counts as stock-accountability *used*; side-effect / other-NTD counts stay on the QR |
+| 3 treatment | `ICRDeliveryUnit` community Group (allocate-id) + `ICRMedicationAdministration` per drug (8, Group-subject) + `ICRAdministrativeCoverage` MeasureReport (8, per drug) | *(espen-remap)* the community Group and per-drug Group-subject treatment events are the *what happened*; the MeasureReport (`measure = icr-mda-treatment-coverage`; sex × age-band × disposition stratifiers — the same cube as `example-mda-treatment-tally`, §7.3) is the *how many* |
+| 4 case mgmt | **None — by design** *(espen-remap)* | a distributed total is not a custody transfer, so it mints no SupplyDelivery; the counts stay on the QR and the ingestion pipeline folds them into the Form 2 receipt's stock-accountability (`received`/`used`/`remaining`) — a cross-form merge extraction cannot express. Side-effect / other-NTD counts stay on the QR |
 | 5 & 6 supervision | **None — by design** | the QuestionnaireResponse *is* the record (`ICRSupervisionReport`, §4.6) |
 
-**The no-extraction rule for the supervision pair is a design decision, not a gap.** Per §4.6 a supervision `QuestionnaireResponse` is itself the record of a visit; there is no downstream resource to mint, so Forms 5 and 6 carry no templates. Likewise Form 4's person-level side-effects cannot be minted as `ICRAdverseEvent`s from aggregate counts, so those counts remain on the response. **New terminology:** `ICRNTDDiseaseCS` (the disease-scope axis) and `ICRMDAMedicinePackageCS` (the medicine-package axis), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists bind to the existing `ICRMissedReasonCS` and `ICRCommunicationChannelCS` vocabularies. Full design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
+**The no-extraction rule for the supervision pair is a design decision, not a gap.** Per §4.6 a supervision `QuestionnaireResponse` is itself the record of a visit; there is no downstream resource to mint, so Forms 5 and 6 carry no templates. Likewise Form 4's person-level side-effects cannot be minted as `ICRAdverseEvent`s from aggregate counts, so those counts remain on the response.
+
+**The espen-remap adjustment (2026-07-07).** The original round extracted Form 4's per-drug distributed totals as standalone "distributed" `ICRSupplyDelivery` resources. That misstated the semantics: a SupplyDelivery is a **custody transfer** of stock (to a facility, a distribution point, a household receiving nets), while tablets swallowed by community members are **treatment**. The remap therefore (a) drops Form 4's SupplyDelivery templates — the distributed totals stay on the QR and the ingestion pipeline folds them into the Form 2 receipt's stock-accountability ledger; and (b) adds to Form 3 an `ICRDeliveryUnit` community Group plus one **Group-subject `ICRMedicationAdministration` per treated drug** — the register-level treatment pattern §6.2 was designed for, which also gives `ICRAdverseEvent.suspectEntity` a treatment event to reference for MDA pharmacovigilance. The rule of thumb: *tablet counts are supply chain; people counts are treatment.* The ingestion pipeline (the fhir-icr OpenFn adaptor) additionally anchors each Form 3 submission to the campaign layer — an `ICRCampaignProtocol` per state × year, an `ICRCampaign` village round, and one completed `ICRCampaignTask` whose outputs reference the treatment events and tally — a transform-layer concern the extraction templates deliberately leave out. **New terminology:** `ICRNTDDiseaseCS` (the disease-scope axis) and `ICRMDAMedicinePackageCS` (the medicine-package axis), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists bind to the existing `ICRMissedReasonCS` and `ICRCommunicationChannelCS` vocabularies. Full design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
 
 * * *
 ## 5. Population & geography profiles
@@ -2197,7 +2199,7 @@ A synthesis of eight global-health source analyses (WHO SIA, RED microplanning, 
 
 **espen-forms (built, v0.22.0 IG round).** A third field-evidence pass converted the six **ESPEN MDA demo XLSForms** (`forms/espen mda/`) into complete, source-faithful FHIR `Questionnaire` example instruments (`espen-mda-*`, §4.8), coexisting with — not replacing — the canonical condensed checklists:
 - **Six example instruments** in `ig/input/fsh/questionnaires-espen.fsh` — location registration, drug receipt, treatment tally, case management, and the HF + CDD supervision pair — `linkId`s verbatim from the XLSForms, `relevant` → `enableWhen`, `calculate` → hidden SDC `calculatedExpression`.
-- **SDC template-based extraction** — the IG's first real dependency (`hl7.fhir.uv.sdc` 4.0.0); `templateExtract` mints `ICRLocation` + `ICRTargetPopulation` Groups (Form 1), per-drug `ICRSupplyDelivery` (Forms 2 & 4), and per-drug `ICRAdministrativeCoverage` MeasureReports on `icr-mda-treatment-coverage` (Form 3).
+- **SDC template-based extraction** — the IG's first real dependency (`hl7.fhir.uv.sdc` 4.0.0); `templateExtract` mints `ICRLocation` + `ICRTargetPopulation` Groups (Form 1), per-drug `ICRSupplyDelivery` receipts (Form 2), and — per the espen-remap adjustment, §4.8 — an `ICRDeliveryUnit` community Group with per-drug Group-subject `ICRMedicationAdministration` treatment events alongside the per-drug `ICRAdministrativeCoverage` MeasureReports on `icr-mda-treatment-coverage` (Form 3). Form 4 extracts nothing: distributed totals are not custody transfers; the pipeline folds them into the receipt's stock-accountability.
 - **No extraction for the supervision pair, by design** — per §4.6 the `QuestionnaireResponse` *is* the `ICRSupervisionReport`; Form 4's aggregate side-effect counts likewise stay on the response (no person-level `ICRAdverseEvent` from aggregates).
 - **New terminology** — `ICRNTDDiseaseCS` (disease scope) and `ICRMDAMedicinePackageCS` (medicine package), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9); supervision answer lists reuse `ICRMissedReasonCS` / `ICRCommunicationChannelCS`.
 - **Demonstrates the "countries extend the IG" story** end-to-end — a filled national form to ICR-profiled resources. Design: `docs/superpowers/specs/2026-07-05-espen-mda-questionnaires-design.md`.
