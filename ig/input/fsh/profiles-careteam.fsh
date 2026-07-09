@@ -22,7 +22,7 @@ Description: "The campaign delivery team — the vaccinators/CDDs who do the wor
 * participant 1..* MS
 * participant.role 1..1 MS
 * participant.role from ICRTeamRoleVS (extensible)
-* participant.role ^short = "vaccinator | cdd | supervisor | social-mobilizer | recorder"
+* participant.role ^short = "vaccinator | cdd | supervisor | social-mobilizer | enumerator"
 * participant.member MS
 * participant.member only Reference(Practitioner or PractitionerRole or RelatedPerson)
 * participant.member ^short = "The CDD/vaccinator/supervisor — a community volunteer is a RelatedPerson"
