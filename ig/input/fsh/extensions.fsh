@@ -87,8 +87,8 @@ Context: Task
 
 Extension: NoncomplianceReason
 Id: noncompliance-reason
-Title: "Noncompliance Reason"
-Description: "Why the household/caregiver declined — drives social mobilization and mop-up targeting."
+Title: "Refusal Reason"
+Description: "Why the household/caregiver refused the intervention (WHO IDHC: 'intervention refusal') — drives social mobilization and mop-up targeting."
 Context: Task
 * ^experimental = false
 * value[x] only CodeableConcept
@@ -97,7 +97,7 @@ Context: Task
 Extension: ExclusionReason
 Id: exclusion-reason
 Title: "Exclusion Reason"
-Description: "Why a present, age-eligible person was clinically excluded from the intervention this round (under dose-pole height/age, pregnant, breastfeeding, acutely ill). Distinct from missed (not reached) and noncompliance (declined): the person was there and age-eligible but contraindicated. MDA treatment forms tally these per drug (espen.md rec 2 / §17.4)."
+Description: "Why a present, age-eligible person was clinically excluded from the intervention this round (under dose-pole height/age, pregnant, breastfeeding, acutely ill). Distinct from missed (not reached) and refusal (declined): the person was there and age-eligible but contraindicated. MDA treatment forms tally these per drug (espen.md rec 2 / §17.4)."
 Context: Task
 * ^experimental = false
 * value[x] only CodeableConcept

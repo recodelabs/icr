@@ -106,6 +106,21 @@ Location; Task `focus` by campaign type; population-scale access patterns (Bulk 
 Group-based cohort export); and the conformant record-linkage/deduplication pattern
 for cross-campaign household and location identity.
 
+#### Relationship to the WHO IDHC toolkit
+
+The WHO AFRO **Integrated Digitization of Health Campaigns toolkit** (WHO + CHAI,
+UNICEF co-branded, 2026) defines the reference architecture, use-case taxonomy and
+MLE indicator bank for campaign digitization — and deliberately stops short of a
+data standard, naming HL7 FHIR (FHIR Questionnaire for forms, FHIR-based aggregate
+exchange), GS1 and ICD-11 as the standards solutions should adopt. The ICR IG is
+that missing layer: the IDHC shared data registries (georegistry + master lists +
+terminology service) map to ICR Location / Practitioner / Group / Patient and the
+IG's terminology; the IDHC three-phase lifecycle (planning, readiness and execution,
+monitoring and response) is the CarePlan lifecycle; and IDHC vocabulary (beneficiary,
+enumerator, refusal, campaign worker, master list) is adopted throughout the IG.
+Deliberately out of ICR scope, with the toolkit as the reference: training, payments,
+grievance redressal, device management and costing.
+
 #### Relationship to WHO SMART Guidelines
 
 The ICR IG declares its relationship to the WHO SMART Immunizations IG and the

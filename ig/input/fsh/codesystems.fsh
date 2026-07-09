@@ -50,7 +50,7 @@ Description: "How a campaign activity reaches its target population. A first-cla
 * #school "School-based" "Delivery through schools to enrolled (and catch-up for non-enrolled) school-age children."
 * #school ^designation[0].language = #fr
 * #school ^designation[0].value = "En milieu scolaire"
-* #house-to-house "House-to-house" "Teams systematically visit every dwelling; the only strategy that natively produces houses-visited, present/absent, and noncompliance data."
+* #house-to-house "House-to-house" "Teams systematically visit every dwelling (door-to-door); the only strategy that natively produces houses-visited, present/absent, and refusal data."
 * #house-to-house ^designation[0].language = #fr
 * #house-to-house ^designation[0].value = "Porte-à-porte"
 * #community-directed "Community-directed distribution" "Community-selected drug distributors (CDDs) treat their own communities — the NTD MDA backbone (CDTI)."
@@ -136,7 +136,7 @@ Description: "Why an eligible person or household was not reached during a campa
 * #absent "Absent" "Eligible person not present at the time of the visit."
 * #sleeping "Sleeping" "Child asleep and not woken (polio doorstep convention)."
 * #sick "Sick" "Deferred due to illness or contraindication at time of visit."
-* #refusal "Refusal" "Caregiver or individual refused — capture the noncompliance reason separately."
+* #refusal "Refusal" "Caregiver or individual refused — capture the refusal reason separately."
 * #refusal ^designation[0].language = #en-US
 * #refusal ^designation[0].value = "Population refusal"
 * #inaccessible "Inaccessible" "Dwelling or settlement could not be reached (security, terrain, weather)."
@@ -155,8 +155,8 @@ Description: "Why an eligible person or household was not reached during a campa
 
 CodeSystem: ICRNoncomplianceReasonCS
 Id: icr-noncompliance-reason-cs
-Title: "ICR Noncompliance Reason"
-Description: "Why a household or caregiver declined the intervention — drives social-mobilization targeting and mop-up planning."
+Title: "ICR Refusal Reason"
+Description: "Why a household or caregiver refused the intervention (WHO IDHC: 'intervention refusal'; ESPEN forms say noncompliance) — drives social-mobilization targeting and mop-up planning."
 * ^caseSensitive = true
 * ^experimental = false
 * #safety-concern "Safety concern / fear of adverse events" "Fear of AEFI or medicine side effects."
@@ -278,8 +278,8 @@ Description: "Role of a member within a campaign CareTeam — the front-line del
 * #vaccinator "Vaccinator" "Administers vaccines at a post or house-to-house."
 * #cdd "Community drug distributor (CDD)" "Community-selected distributor who delivers MDA treatment (CDTI backbone)."
 * #supervisor "Supervisor" "Oversees a team/area and very often files the report; see the oversees-area extension and MeasureReport.reporter."
-* #social-mobilizer "Social mobilizer" "Conducts community sensitisation / demand generation ahead of and during the campaign."
-* #recorder "Recorder" "Captures and reports the data (tally sheets, registers, digital forms)."
+* #social-mobilizer "Social mobilizer" "Conducts community sensitisation / demand generation (social and behaviour change, SBC) ahead of and during the campaign."
+* #enumerator "Enumerator" "Registers households and individuals and captures/reports the data (enumeration, tally sheets, registers, digital forms) — WHO IDHC enumeration/registrar role; ESPEN instruments call this role the recorder."
 
 // --- v0.20.0 additions (espen-v4 round: fuller supervision + AE finish) --------
 

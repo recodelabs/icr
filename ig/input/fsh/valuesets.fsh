@@ -52,8 +52,8 @@ Description: "Reasons an eligible person/household was missed. Binding: extensib
 
 ValueSet: ICRNoncomplianceReasonVS
 Id: icr-noncompliance-reason
-Title: "ICR Noncompliance Reason"
-Description: "Reasons for refusal/noncompliance. Binding: extensible — countries may add local codes."
+Title: "ICR Refusal Reason"
+Description: "Reasons for intervention refusal (WHO IDHC term; ESPEN forms say noncompliance). Binding: extensible — countries may add local codes."
 * ^experimental = false
 * include codes from system ICRNoncomplianceReasonCS
 

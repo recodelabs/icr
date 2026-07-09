@@ -14,6 +14,19 @@ coverage — are expressed in **HL7 FHIR R4**, so that interchangeable open-sour
 components (data collection, transformation, FHIR store, data quality, geospatial
 microplanning, analytics) can share one model.
 
+The IG is the FHIR data layer of the **WHO AFRO Integrated Digitization of Health
+Campaigns (IDHC) reference architecture** (WHO:AFRO/ARD:2025-10): its shared data
+registries — the **georegistry** and master lists (administrative boundaries, health
+facilities, schools, health workers, households, **beneficiaries**) and the
+**terminology list(s)** — are ICR Location, Practitioner/CareTeam, Group, Patient,
+and the IG's code systems, and its content standards (FHIR Questionnaire for data
+collection forms, FHIR-based aggregate reporting) are how the ICR ships forms and
+coverage. IDHC vocabulary is used throughout: the person receiving an intervention
+is a **beneficiary** (the FHIR resource is `Patient` by necessity, but human-facing
+language never is), the front-line data collector is an **enumerator**, declines are
+**refusals**, and the campaign lifecycle follows the IDHC phases — *campaign
+planning*, *campaign readiness and execution*, *campaign monitoring and response*.
+
 #### The architecture in one paragraph
 
 FHIR has no native `Campaign` resource, so the IG profiles existing resources —

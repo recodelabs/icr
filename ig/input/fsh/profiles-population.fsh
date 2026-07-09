@@ -7,8 +7,8 @@
 Profile: ICRPatient
 Parent: Patient
 Id: ICRPatient
-Title: "ICR Patient (Registered Individual)"
-Description: "An individual person registered in a campaign — a household or community member, and the subject of every person-level delivery event. Person registration is a mainline capture mode in community-and-household campaigns, not an exception. Base R4 Patient aligned to WHO IMMZ.Patient (required gender/birthDate; MS name/phone/address), with a sliced cross-campaign identifier (national ID preferred, registry-assigned ID as fallback) so the same person is rejoinable across rounds. A person need not belong to any Group: they may be a household member, a community member, or simply the patient/subject of a standalone event. The caregiver is a RelatedPerson (WHO IMMZ.Caregiver), not an ICRPatient (working doc §6.4)."
+Title: "ICR Patient (Beneficiary / Registered Individual)"
+Description: "A beneficiary — an individual registered in a campaign, a household or community member, and the subject of every person-level delivery event. This is the WHO IDHC 'beneficiary list' master registry entry; the resource is FHIR Patient by necessity, but human-facing text (forms, reports, training material) should say 'beneficiary' or 'individual', never 'patient'. Person registration is a mainline capture mode in community-and-household campaigns, not an exception. Base R4 Patient aligned to WHO IMMZ.Patient (required gender/birthDate; MS name/phone/address), with a sliced cross-campaign identifier (national ID preferred, registry-assigned ID as fallback) so the same individual is rejoinable across rounds. A beneficiary need not belong to any Group: they may be a household member, a community member, or simply the subject of a standalone event. The caregiver is a RelatedPerson (WHO IMMZ.Caregiver), not an ICRPatient (working doc §6.4)."
 * ^experimental = false
 * identifier 1..* MS
 * identifier ^slicing.discriminator.type = #value
@@ -84,7 +84,7 @@ Profile: ICRLocation
 Parent: Location
 Id: ICRLocation
 Title: "ICR Location"
-Description: "The most-customized ICR resource: nested administrative hierarchy (6+ levels in campaign countries), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — Overture Maps GERS IDs (building / place / division) as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases (working doc §7.7, §9)."
+Description: "The most-customized ICR resource — the ICR's georegistry layer, covering the WHO IDHC administrative boundary, health facility and school master lists: nested administrative hierarchy (6+ levels in campaign countries), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — Overture Maps GERS IDs (building / place / division) as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases. Per the IDHC georegistry rule, this layer holds only identify/classify/locate/contact data; programmatic data references it but never lives in it (working doc §7.7, §9)."
 * ^experimental = false
 * name MS
 * status MS
