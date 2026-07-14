@@ -1462,7 +1462,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 | `patient` | MS  |     | `Reference(Patient)` | The person who received the dose — the person-level capture (only a `Patient`, never a Group). |
 | `occurrence[x]` | MS  |     | dateTime / string | When the dose was given. |
 | `location` | MS  |     | `Reference(Location)` | Where the dose was given. |
-| `lotNumber` | MS  |     | string | Vaccine lot number — for stock accountability and AEFI traceability. |
+| `lotNumber` | MS  |     | string | {==Vaccine lot number — for stock accountability and AEFI traceability.==}{>>Should we also include the lot's expiration date? Technically we should be able to look this up based on the lotNumber, but I'm just used to seeing the expiration date and lotNumber reported side by side.<<}{id="c23" by="mckinnoj" at="2026-07-14T08:38:38.384Z"} |
 | `manufacturer` | MS  |     | Reference | Vaccine manufacturer — paired with the lot for traceability. |
 | `performer` | MS  |     |     | Who administered the dose (the team/worker). |
 | `vaccineCode` | MS  |     | CodeableConcept, **extensible** → core FHIR vaccine VS (CVX) | The vaccine; local codes map back via ConceptMap. |
@@ -1535,7 +1535,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 ### 6.2 ICRMedicationAdministration — `MedicationAdministration`
 **Purpose.** A **drug administration** in a mass drug administration (MDA) — albendazole, ivermectin, etc. — with the two distinctly-MDA patterns: dose derived from a **dose-pole height band**, and **directly-observed consumption** (the supervised-swallow protocol).
 
-> [!note] What a dose pole is In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
+> [!note] {==What a dose pole is==}{>>Needs rephrasing or a formatting change to split this text from the rest of the quote.<<}{id="c24" by="mckinnoj" at="2026-07-14T08:44:25.961Z"} In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
 
 **Properties.**
 
@@ -1608,7 +1608,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 **Key observations.**
 
-- `subject` **may be an** `ICRDeliveryUnit` **Group, not only a Patient.** This supports register-level MDA capture where individuals are not enumerated, and is the drug-side application of the aggregate-versus-individual rule (§6.3).
+- {==`subject` **may be an** `ICRDeliveryUnit` **Group, not only a Patient.** This supports register-level MDA capture where individuals are not enumerated, and is the drug-side application of the aggregate-versus-individual rule (§6.3).==}{>>We should review how the significance of some of the fields might change based on tracking Groups versus Patients. For example, what does directlyObserved track in a group setting? What is recorded if the reporter sees some individuals swallow the medication but not all members of the group?<<}{id="c25" by="mckinnoj" at="2026-07-14T08:46:12.009Z"}
 - **The dose-pole pattern is specific to MDA.** The dose is derived from a height-band Observation referenced through `supportingInformation`, with the band itself recorded on `dose-pole-band` — together they record how the tablet count was determined.
 - `directly-observed-consumption` **records the supervision protocol** that distinguishes a drug handed out from a drug observed being swallowed, which affects treatment-coverage validity.
 
@@ -1616,7 +1616,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 - Proposed for a later round: a `stockpile-source` axis (ICG / national / Gavi), a `dosing-regimen` axis, and a fuller typed band→dose table for the dose pole (§13.2).
 ### 6.3 ICRSupplyDelivery — `SupplyDelivery`
-**Purpose.** A **commodity delivery** — bed-nets handed to a household, or drug stock delivered to a distribution point — with a stock-accountability record for wastage and reconciliation.
+{==**Purpose.** A **commodity delivery** — bed-nets handed to a household, or drug stock delivered to a distribution point — with a stock-accountability record for wastage and reconciliation.==}{>>It technically works to capture a bed net distribution to a household using the same concept as a supply delivery to a warehouse, but in my experience the service delivery level is kept distinct from supply chain events. That could just be a consequence of focusing on higher levels of the supply chain though. No specific action recommended, just flagging for discussion.<<}{id="c26" by="mckinnoj" at="2026-07-14T08:48:11.614Z"}
 
 **Properties.**
 
@@ -1628,7 +1628,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 | `suppliedItem.item[x]` | MS  |     | CodeableConcept / Reference, **extensible** → ICRSuppliedItemVS | Which commodity — **WHO ATC** for drug commodities (the same code as the matching administration), GS1 GTIN / free text for physical commodities. |
 | `destination` | MS  |     | `Reference(Location)` | Where the commodity went (post, household, settlement). |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | Differentiates campaign data from routine-programme data. |
-| `extension[stockAccountability]` | MS  | 0..1 | complex: `received` / `used` / `remaining` / `notUsable` / `returned` (Quantity) + `concordant` (boolean) + `vvmStage` (integer) | The wastage / stock-reconciliation record — usable for vaccines (vials, VVM stage), drugs (tablets), and ITNs alike. |
+| `extension[stockAccountability]` | MS  | 0..1 | complex: `received` / {==`used`==}{>>Would `used` track product being issues from 1 warehouse to another as well as a distribution to a household?<<}{id="c27" by="mckinnoj" at="2026-07-14T08:51:11.163Z"} / `remaining` / `notUsable` / `returned` (Quantity) + `concordant` (boolean) + `vvmStage` (integer) | The wastage / stock-reconciliation record — usable for vaccines (vials, VVM stage), drugs (tablets), and ITNs alike. |
 
 **Example.** `example-itn-delivery` — 3 nets delivered to a dwelling:
 
@@ -1667,11 +1667,11 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600 tablets received at a settlement, `suppliedItem.item` coded **ATC** `P02CA03` — the same code as the matching administration (§6.2), so receipt → administration → reconciliation share one drug code — plus a `stock-accountability` record (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓).
 
-**Aggregate vs individual records — the rule.** The split is: **individual record when you have a person; aggregate count on** `Task.output` **when you don't;** `MeasureReport` **for derived or stratified coverage** (numerator/denominator/score, with `group.stratifier` for a disaggregated cube), never as a raw scalar tally. Concretely:
+{==**Aggregate vs individual records — the rule.** The split is: **individual record when you have a person; aggregate count on** `Task.output` **when you don't;** `MeasureReport` **for derived or stratified coverage** (numerator/denominator/score, with `group.stratifier` for a disaggregated cube), never as a raw scalar tally. Concretely:==}{>>I'm not sure what the purpose of this section is--is it just explaining why tracking the movement of drugs/vaccines can't be accomplished using these other concepts? I'd remove if so.<<}{id="c28" by="mckinnoj" at="2026-07-14T08:53:54.038Z"}
 
-- **MDA / drugs** — `ICRMedicationAdministration.subject` already allows an `ICRDeliveryUnit` Group, so a community-register aggregate is a perfectly consistent MedicationAdministration.
-- **Vaccines** — R4 `Immunization.patient` is `1..1 Reference(Patient)` and *cannot* point at a Group, and re-housing a vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention. So a Type-A vaccine **session tally** lives as an aggregate count on `Task.output` (e.g. 412 doses), and individual `Immunization`s are minted only when person-level data exists.
-- **Multi-dimensional tallies** — a disaggregated treatment cube (drug × sex × age band, plus dispositions) is carried as a **stratified MeasureReport** (§7.3), the FHIR-native disaggregation mechanism; the per-visit scalar still rides `Task.output` and references the stratified report.
+- {==**MDA / drugs** — `ICRMedicationAdministration.subject` already allows an `ICRDeliveryUnit` Group, so a community-register aggregate is a perfectly consistent MedicationAdministration.==}{>>I'm not sure what the purpose of this section is--is it just explaining why tracking the movement of drugs/vaccines can't be accomplished using these other concepts? I'd remove if so.<<}{id="c28" by="mckinnoj" at="2026-07-14T08:53:54.038Z"}
+- {==**Vaccines** — R4 `Immunization.patient` is `1..1 Reference(Patient)` and *cannot* point at a Group, and re-housing a vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention. So a Type-A vaccine **session tally** lives as an aggregate count on `Task.output` (e.g. 412 doses), and individual `Immunization`s are minted only when person-level data exists.==}{>>I'm not sure what the purpose of this section is--is it just explaining why tracking the movement of drugs/vaccines can't be accomplished using these other concepts? I'd remove if so.<<}{id="c28" by="mckinnoj" at="2026-07-14T08:53:54.038Z"}
+- {==**Multi-dimensional tallies** — a disaggregated treatment cube (drug × sex × age band, plus dispositions) is carried as a **stratified MeasureReport** (§7.3), the FHIR-native disaggregation mechanism; the per-visit scalar still rides `Task.output` and references the stratified report.==}{>>I'm not sure what the purpose of this section is--is it just explaining why tracking the movement of drugs/vaccines can't be accomplished using these other concepts? I'd remove if so.<<}{id="c28" by="mckinnoj" at="2026-07-14T08:53:54.038Z"}
 
 **Key observations.**
 
@@ -1684,7 +1684,7 @@ A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600
 ### 6.4 Structure-applied interventions — IRS and the "treat a place" gap
 **The problem.** Indoor Residual Spraying (IRS) — and larviciding, and bed-net hanging — is applied to a **structure**, not a person. It genuinely does **not** fit `ICRMedicationAdministration`: that profile's `subject` is a `Patient` or an ICRDeliveryUnit *Group of people*, and `MedicationAdministration` semantics are "a medication given to a subject who receives it." Spraying a house is not an administration to anyone, so forcing it through that profile would be a category error.
 
-**What the IG does today (interim, no new profile).** The act already has a home: **the Task itself.** `ICRCampaignTask.for` allows `Reference(ICRLocation)`, so an IRS Task's `for` is the **structure Location** being sprayed (`physicalType` building/house), `Task.location` is where it happened, and the spray's product is the activity it instantiates (`example-irs-activity`, Pirimiphos-methyl). Per-house results (sprayed / refused / locked, rooms or surface area, insecticide quantity) sit on `Task.output` as coded aggregate counts. So for v1 an IRS round is fully recordable as **structure-targeted Tasks with no delivery-event resource hanging off them** — the Task *is* the event. The same shape covers any "treat a place" intervention (larviciding a water body, fogging a block).
+**What the IG does today (interim, no new profile).** The act already has a home: **the Task itself.** `ICRCampaignTask.for` allows `Reference(ICRLocation)`, so an IRS Task's `for` is the **structure Location** being sprayed (`physicalType` building/house), `Task.location` is where it happened, and the spray's product is the activity it instantiates (`example-irs-activity`, Pirimiphos-methyl). Per-house results (sprayed / refused / locked, rooms or surface area, insecticide quantity) sit on `Task.output` as coded aggregate counts. {==So for v1 an IRS round is fully recordable as **structure-targeted Tasks with no delivery-event resource hanging off them** — the Task *is* the event. The same shape covers any "treat a place" intervention (larviciding a water body, fogging a block).==}{>>This makes sense, but one consequence is that IRS campaigns are going to generate far, far more Tasks than campaigns where delivery events hang off of Tasks.<<}{id="c29" by="mckinnoj" at="2026-07-14T08:55:55.327Z"}
 
 **Proposed for a later round.** A dedicated `ICRStructureTreatment` **event profile** so IRS/larviciding get a first-class event (parallel to Immunization/MedicationAdministration/SupplyDelivery) rather than living only on `Task.output`. FHIR R4 has no perfectly-shaped base resource — candidates are a profiled `Procedure` (whose `subject` is still `Patient`, so it would need an extension carrying the structure Location — awkward) or a Location-keyed custom/SupplyDelivery-style event (cleaner). Either way it carries the same `record-origin` firewall and references the structure Location. The base resource is a drafting-round decision (§13.4).
 ### 6.5 ICRAdverseEvent — `AdverseEvent` (intervention-neutral)
@@ -1720,7 +1720,7 @@ Both profiles are based on **MeasureReport** (its numerator/denominator `group.p
 Beyond the data source, coverage carries two more coded axes:
 
 - `denominator-type` — **total population vs at-risk/eligible population**. Dividing by the total population gives *programme* coverage; dividing by the at-risk population gives *epidemiological* coverage. NTD programmes report both, so the axis is explicit rather than implied by context.
-- `coverage-unit` — **people vs implementation units**. Most coverage counts people; *geographic* coverage counts implementation units ("188 of 200 villages treated ≈ 94%"). Same profile, different unit, declared on the report.
+- `coverage-unit` — **people vs** {==**implementation units**==}{>>Are these the formally defined Implementation Units established by the country NTD program, or is this language meant to be a generic reference to admin units? For example, in Nigeria the formally defined implementation units are Local Government Areas (LGAs), and each LGA consists of several Wards. Does the IG support calculating geographic coverage at either level? If so, I suggest we avoid the phrase "implementation unit" since that has a well-established meaning.<<}{id="c30" by="mckinnoj" at="2026-07-14T09:00:08.656Z"}. Most coverage counts people; *geographic* coverage counts implementation units ("188 of 200 villages treated ≈ 94%"). Same profile, different unit, declared on the report.
 ### 7.1 ICRAdministrativeCoverage — `MeasureReport`
 **Purpose.** Coverage computed from the campaign's **own** tally and delivery data (numerator over the planning denominator). Only as good as its denominator, so it carries the denominator's provenance.
 
@@ -1932,7 +1932,7 @@ These are the design rules that recur across the profiles — the things to hold
 
 **The 25 CodeSystems** (the forms-v1 round, §13.2, added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, `ICRSettlementTypeCS`; the espen-forms round, §4.8, added `ICRNTDDiseaseCS` and `ICRMDAMedicinePackageCS`; several existing systems were extended — marked below).
 
-| CodeSystem | Codes | FR? | Bound on (strength) |
+| CodeSystem | {==Codes==}{>>I have not reviewed this column for completeness.<<}{id="c31" by="mckinnoj" at="2026-07-14T09:19:10.956Z"} | FR? | Bound on (strength) |
 | --- | --- | --- | --- |
 | **ICRCampaignTypeCS** | `vaccination-sia`, `mda`, `itn-distribution`, `irs`, `vitamin-a`, `integrated` (6) | ✔   | Protocol.type, Campaign.category (**required**) |
 | **ICRDeliveryStrategyCS** | `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed`, `outreach` (7) | ✔   | delivery-strategy ext (**required**) — `outreach` added forms-v1 for outside-household/special-strategy sites |
@@ -1968,7 +1968,7 @@ These are the design rules that recur across the profiles — the things to hold
 - **ICRAdverseEventSeriousnessVS** — reuses the HL7 `adverse-event-seriousness` CodeSystem (`serious` / `non-serious`); no new CodeSystem was minted because a standard one already exists.
 - **ICRExclusionReasonVS / ICRCommunicationChannelVS / ICRSeriousCriteriaVS** — whole-system sets over their CodeSystems, listed above with their bindings.
 
-**The binding-strength pattern is deliberate.** **Structural discriminators** (delivery strategy, record origin, lineage, coverage source, denominator type, coverage unit) are `required` — analytics must be able to branch on them. **Field-reality vocabularies** (missed/noncompliance/exclusion reasons, denominator sources, location types, team roles, channels) are `extensible` — countries add local codes, mapped back via ConceptMap. The data type tracks this too: pure discriminators use a bare `code`; concepts countries extend use `CodeableConcept` (so text and local codings survive).
+{==**The binding-strength pattern is deliberate.** **Structural discriminators** (delivery strategy, record origin, lineage, coverage source, denominator type, coverage unit) are `required` — analytics must be able to branch on them. **Field-reality vocabularies** (missed/noncompliance/exclusion reasons, denominator sources, location types, team roles, channels) are `extensible` — countries add local codes, mapped back via ConceptMap. The data type tracks this too: pure discriminators use a bare `code`; concepts countries extend use `CodeableConcept` (so text and local codings survive).==}{>>It might be good at some point to build a table showing which fields are required structural discriminators and which are extensible.<<}{id="c32" by="mckinnoj" at="2026-07-14T09:22:52.692Z"}
 
 **Domain notes.** `sleeping` is the polio doorstep convention; `community-directed` is CDTI, the NTD-MDA delivery backbone; campaign types are grouped **by delivery model, not disease**; `integrated` exists because co-delivered campaigns are the norm (component activities carry their own types).
 
@@ -1977,7 +1977,7 @@ These are the design rules that recur across the profiles — the things to hold
 **Open questions.**
 
 - The required-bound `code`-typed extensions have **no** `other` **escape** — confirm the closed sets (campaign/routine; realtime/reconciled; the four coverage sources) really are exhaustive (e.g. is *post-campaign administrative correction* a third lineage? is *desk review* a coverage source?).
-- The disease-agnostic typing needs partner acceptance — the **polio programme** treats "polio campaigns" as a first-class thing, so confirm they are comfortable querying `campaign-type = vaccination-sia AND addresses = polio`.
+- {==The disease-agnostic typing needs partner acceptance — the **polio programme** treats "polio campaigns" as a first-class thing, so confirm they are comfortable querying `campaign-type = vaccination-sia AND addresses = polio`.==}{>>Just emphasizing this point. I didn't leave any comments earlier because "use vaccine codes to identify disease rather than campaign type" makes sense from a technical perspective, but we should keep in mind that the disease being targeted is always the primary descriptor whenever program implementers describe campaigns.<<}{id="c33" by="mckinnoj" at="2026-07-14T09:24:51.472Z"}{>>I.e., practitioners say things like, "We hit this District during our 2025 Oncho campaign," they don't say, "We hit this District during our door-to-door campaign in 2025, the one where we targeted Oncho."<<}{id="c34" by="mckinnoj" at="2026-07-14T09:26:44.022Z" re="c33"}
 - The **FR designations** need review by a francophone public-health reviewer (especially "Monitorage rapide de convenance" for RCM), plus a stated localization policy (which languages, where).
 - Proposed additions (§13.2): an `activity-type` CodeSystem, reconciling `missed-reason`/`noncompliance-reason` with the WHO RCM field lists, and further location-type/denominator-source codes.
 
@@ -1991,7 +1991,7 @@ FHIR has no native campaign semantics, so 35 extensions carry them on the profil
 | --- | --- | --- | --- |
 | DeliveryStrategy (`delivery-strategy`) | PlanDefinition, ActivityDefinition, Task, Location | CodeableConcept, **required** → ICRDeliveryStrategyVS | Protocol 1..*, Activity 0..1, Task 1..1, Location 0..1 |
 | CampaignRound (`campaign-round`) | CarePlan | positiveInt | 0..1 |
-| TargetGeography (`target-geography`) | CarePlan | Reference(ICRLocation) | 0..* |
+| {==TargetGeography (`target-geography`)==}{>>We've supported campaigns where the target geography was a subset of Wards belonging to different LGAs. I'm leaving this comment as a reminder to confirm that this setup supports this scenario.<<}{id="c35" by="mckinnoj" at="2026-07-14T09:28:35.855Z"} | CarePlan | Reference(ICRLocation) | 0..* |
 | PlanningDenominator (`planning-denominator`) | CarePlan | Reference(ICRTargetPopulation) | 0..1 |
 | RealtimeVsReconciled (`realtime-vs-reconciled`) | CarePlan, Task, MeasureReport | code, **required** → ICRDataLineageVS; default **absent ⇒ realtime** | CarePlan 0..1 MS, Task 0..1, coverage MeasureReports **1..1 MS** |
 | TaskOrigin (`task-origin`) | Task | code, **required** → ICRTaskOriginVS | Task **1..1** |
@@ -2076,7 +2076,7 @@ graph LR
 
 **The 41 example instances** (forms-v1 added `example-followup-task` and `example-readiness-report`, and enriched `example-settlement` with a `settlement-type` and `example-mcv-dose` with a `prior-dose-status`).
 
-*Locations, people & groups*
+{==*Locations, people & groups*==}{>>I haven't reviewed these in detail.<<}{id="c36" by="mckinnoj" at="2026-07-14T09:35:18.627Z"}
 
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
