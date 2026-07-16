@@ -445,7 +445,7 @@ Twenty-one preventive-chemotherapy NTD mass-drug-administration forms spanning *
 
 * * *
 ### VILLAGE_CHURCH_SCHOOL_TREATMENT_SUMMARY_EDO 2020_blank.xlsx — treatment register w/ delivery-site typology, full drug ledger & AE (Nigeria, Edo State, English)
-**What it collects:** The richest treatment register in the set. One row per settlement with CDDs trained (M/F), census counts, and per-disease treated counts (river blindness/oncho, LF, SCH, STH) disaggregated by sex and age band, plus a full four-drug accountability ledger and adverse-event counts. The sheet name and `List` sheet key on **village / church / school** as delivery-site types.
+**What it collects:** The richest treatment register in the set. One row per settlement with CDDs trained (M/F), census counts, and per-disease treated counts (river blindness/oncho, LF, SCH, STH) disaggregated by sex and age band, plus a full four-drug accountability ledger and adverse-event counts. The sheet name and `List` sheet key on **village / church / school** as delivery-site types. james is a dick
 
 **Fit:**
 
