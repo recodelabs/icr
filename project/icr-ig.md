@@ -135,7 +135,7 @@ The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide that g
 
 - **Campaign architecture** — a reusable protocol, its executions and rounds, the discrete activities, the operational units of work (Tasks), and the teams that carry them out.
 - **Population & geography** — denominators with provenance, the actual household/community groups reached, the registered individuals within them, and a rich location model (administrative hierarchy, operational geography, stable cross-campaign place IDs, GeoJSON boundaries).
-- **Delivery events** — the vaccine doses, drug administrations, and commodity deliveries, each tagged campaign-vs-routine so a campaign never contaminates routine analytics, plus the adverse events that follow them.
+- {==**Delivery events** — the vaccine doses, drug administrations, and commodity deliveries, each tagged campaign-vs-routine so a campaign never contaminates routine analytics, plus the adverse events that follow them.==}{>>What does this mean?<<}{id="c37" by="mberg" at="2026-07-20T13:30:59.871Z"}
 - **Coverage** — administrative and independently-surveyed coverage as **separate, never-merged lineages** of the same quantity, backed by canonical `Measure` definitions.
 
 ICR is intentionally a **complement** to WHO's SMART Immunizations IG, which is routine-only: a campaign dose and a routine dose can sit in the same store, distinguished by a single `record-origin` flag. ICR positions itself as "the campaign SMART-Guidelines IG" (see §13.3).
