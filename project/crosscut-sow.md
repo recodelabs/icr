@@ -40,31 +40,7 @@ Author the technical schema that defines data exchange between the ICR (via Open
 • Error response schema: validation errors, partial success handling  
 • Authentication and authorization model for API access by ICR/OpenFn
 # Phase 2: Platform Development and Country Pilots (Months 3–6) - $90,000
-{>>**Budget check.** The six activities below total **$90,000** against the original Phase 2 figure of **$89,262** — a **+$738** delta, trivial to absorb but worth truing up. The bigger consequence: because the six buckets consume the whole phase, the old **Country Pilot Support** block (2.12 pilot campaign-data analysis $7,970 · 2.13 on-site Sierra Leone support, up to 10 days in-country, $7,970 · 2.14 second-country deployment support $7,970 = **$23,910**) no longer has a line. Three ways to land it: **(a)** carve pilot support back out and size the six buckets to ~$65K; **(b)** keep the six at $90K and fund Crosscut's pilot participation from Ona's pilot budget instead; **(c)** absorb pilot work into the buckets (validation-against-real-data is already written into 2.5, and country adaptation into 2.2) and accept that the Sierra Leone travel drops. My recommendation is **(b)** if UNICEF will wear it, since it preserves your $40K/$50K intent intact — but the in-country days are the thing I'd least want to lose, so this needs your call rather than a default.<<}{id="c3" by="claude" at="2026-07-21T18:40:40.000Z"}
-
-> [!note] Framing (Matt, Jul 21)
-> 
-> - I would rather define what are the core APIs that need to be built within crosscut that support the current data model and then support the specific integration work via OpenFN. Don't want to spend the entire budget on API integrations and not adding new functionality to help address the needs of the project.
-> - Need to understand the use cases for viewing data within crosscut. I think there is value but we need to discuss how crosscut fits in that capacity.
-> - Want to preserve budget for new activities which include the potential of new tools outside of crosscut and/or the new catchment area calculators ideas you showed me.
-> 
-> In summary — I'd like to do proper walk through of Crosscut platform to understand the proposed integrations and improvements to the project. Ideally I would like to keep the Crosscut platform improvements to ~$40K so we can have ~$50K, for crosscut team to contribute to core tool building and innovations for the project. We can shift this once we have better discussions on role of crosscut platform. Right now the two main things are catchment area generation / data enrichment. Data enrichment can be done generically with a lot of non-proprietary tools so I'm a bit on the fence on that and as an interface for microplanning.
-> 
-> Main thing is to leverage the Crosscut team to help bring your capabilities and experience to help figure out how to make the ICR work and be adopted. That's the core focus on the grant. I want crosscut platform to play an important role in that but I am hoping to be able to work together to pursue new ideas / opportunities that emerge through this work where we think we can have the most impact.
-## Proposed activities
-| #   | Activity | Amount |
-| --- | --- | --- |
-| 2.1 | Strengthening of the Crosscut APIs and internal data models to meet ICR needs | $5,000 |
-| 2.2 | OpenFn integrations for ingesting and exporting ICR and enriched data | $10,000 |
-| 2.3 | Static asset / map tile generation | $5,000 |
-| 2.4 | Crosscut App improvements — to better visualize ICR data | $10,000 |
-| 2.5 | Catchment area calculation and sharing | $30,000 |
-| 2.6 | New ICR tool development — community identifier / de-duplicator | $30,000 |
-|     | **Total** | **$90,000** |
-
-{>>**Does this hit the split you asked for?** Buckets 2.1–2.4 are the *Crosscut platform improvements* line and come to **$30,000**; 2.5–2.6 are *core tool building and innovation* at **$60,000**. You asked for ~$40K / ~$50K. The gap is 2.5 — new catchment approaches are arguably platform work (they run in the Crosscut engine) even though they're genuinely new capability, so where you file it swings the ratio by $30K. If you want the stated $40K/$50K exactly, the cleanest lever is moving ~$10K from 2.5 into 2.1/2.4. Tell me which reading you want and I'll re-cut the numbers.<<}{id="c4" by="claude" at="2026-07-21T18:40:40.000Z"}
-
-This is the core development phase. Crosscut strengthens its APIs and internal data model to carry ICR concepts, builds the OpenFn-mediated exchange with the ICR FHIR store, improves how ICR data is visualized, and — the majority of the budget — develops new campaign-planning capability: additional catchment approaches with a sharing model, and a new open tool for community identity and de-duplication. Development follows two-week Agile sprints coordinated with Recode Labs.
+This is the core development phase. Crosscut strengthens its APIs and internal data model to carry ICR concepts, builds the OpenFn-mediated exchange with the ICR FHIR store, improves how ICR data is visualized, and — the majority of the budget — develops new campaign-planning capability: additional catchment approaches with a sharing model, and a new open tool for community identity and de-duplication.
 ### 2.1 — Strengthening of the Crosscut APIs and internal data models to meet ICR needs - $5,000
 **Lead:** Sam Hoogewind
 
