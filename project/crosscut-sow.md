@@ -120,16 +120,9 @@ Technical scope:
 ### 2.6 — New ICR tool development - eg. community identifier / de-duplicator - $30,000
 **Lead:** TBD (Crosscut), with Ona
 
-Build a new, standalone, non-proprietary tool addressing the identity problem underneath every campaign dataset: the same settlement or community appears under different names, spellings, languages, and codes across rounds, partners, and source systems, which is what makes cross-campaign data reuse fail in practice. This is the clearest "new tool outside of Crosscut" opportunity in the SOW and is sized accordingly.
+Build a new tooling (exact stope still BD) standalone, non-proprietary tools that help address needs to help deliver campaigns under the ICR initiative. This could include tools that help match and de-dedupe community names based on fuzzy name search, geometry and proximity matching. Recode Labs and Crosscut will work together to define the scope of what is possible to build within the available budget.
 
-Technical scope:  
-• **Community identifier assignment**: mint and maintain stable identifiers for settlements/communities, reconciled against existing identifier systems — national P-codes, Overture GERS IDs, DHIS2 org unit IDs, health facility codes  
-• **Matching and de-duplication** across incoming datasets: fuzzy name matching across languages and transliterations, geometry and proximity matching, and detection of the same place arriving under multiple codes  
-• **Human-in-the-loop review** for ambiguous matches — a reviewer UI with accept/reject/merge and an audit trail, since fully automatic matching is not credible at national scale  
-• **FHIR-native output**: reconciliation published as `Location` identifiers plus ConceptMap-style crosswalks, so the resolved identity lands in the ICR and is available to every downstream consumer rather than staying inside a tool  
-• Delivered as an **open component usable independently of the Crosscut platform**
-
-{>>**This is the largest single line and the least specified — it needs a scoping session before it can be committed to.** Three questions decide its shape: **(1)** What is the unit of identity — settlement/village, household, or health facility? The forms corpus shows the pain at all three levels but the tool is very different in each case. **(2)** Is this reconciling *within* the ICR (records arriving from several campaigns) or *against an external authority* (national gazetteer, Overture GERS)? **(3)** Who operates it — is it a service the ICR runs continuously, or a batch tool a country team runs at the start of a campaign round? Related evidence: [[crosscut-forms]] §5 documents the same concept appearing in EN/FR/PT across 33 real forms (`Fokontany` / `Colline` / `Tabanca` / `Arrondissement`, plus outright spelling drift like `Health Distrcit`), which is the strongest argument that this tool is worth $30K.<<}{id="c9" by="claude" at="2026-07-21T18:40:40.000Z"}
+Note these tools are intended to be open components usable independently of the Crosscut platform.
 # Phase 3: Capacity Building and Training (Months 7–12) - $9,620
 Phase 3 focuses on documentation and training materials for the integration components that Crosscut is responsible for. In-country training is delivered during the Phase 2 pilot trips; this phase formalizes those learnings into reusable materials.
 ## 3.1 — Integration Technical Documentation - $3,000
