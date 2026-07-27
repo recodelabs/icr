@@ -25,7 +25,7 @@ tags: [icr, workplan]
 ## Project governance (cross-cutting)
 - **Weekly** check-ins with the UNICEF project contact and HQ focal points
 - **Bi-weekly** sprint demos during active development phases (Phases 2 and 5)
-- **Quarterly** steering-committee reviews with the broader stakeholder group
+
 - **Phase-gate review** at the end of each phase before proceeding
 - Two-week Agile sprints throughout, on a shared project-management platform
 
@@ -39,7 +39,7 @@ tags: [icr, workplan]
 
 | #   | Activity | Deliverable | Depends on |
 | --- | --- | --- | --- |
-| 1.1 | Project inception with UNICEF; workplan and stakeholder-engagement plan signed off | (a) | — |
+| 1.1 | Project inception with UNICEF; workplan and stakeholder-engagement plan signed off | (a) | —   |
 | 1.2 | Obtain and review data from 3–4 existing campaigns (NTD MDA, immunization, polio, malaria); catalogue the data elements | (c) | UNICEF data access |
 | 1.3 | Synthesize a canonical campaign data model — target populations, households, locations, services, commodities, teams, metadata | (c) | 1.2 |
 | 1.4 | Define real-time vs. campaign-close data components, with rationale | (c) | 1.2 |
@@ -72,7 +72,7 @@ tags: [icr, workplan]
 | 2.4 | Configure deduplication and data-quality functions for the first country's data (cross-campaign household/location dedup) | Prototype | 2.2, 2.3 |
 | 2.5 | First-country visit — end-to-end testing with live data, cross-campaign reuse validation, user acceptance testing, hands-on MoH/country-office training | Prototype + training | 2.3, travel approval |
 | 2.6 | Document the first country's integration workflows (data-flow diagrams, connector configuration, data-quality procedures) | Workflow docs | 2.5 |
-| 2.7 | Produce the v2 IG and system update from pilot feedback (model gaps, edge cases, performance, usability) | v2 | 2.5 |
+| 2.7 | Produce the v2 IG and system update from pilot feedback (model gaps, edge cases, performance, usability) | v2  | 2.5 |
 | 2.8 | Deploy v2 in the second country — connectors for its two campaigns, adapted ValueSets/ConceptMaps, Location hierarchy configuration | Second-country deployment | 2.7, country campaign identification |
 | 2.9 | Second-country visit — testing, training and stakeholder engagement (English/French as needed) | Second-country deployment + training | 2.8, travel approval |
 | 2.10 | Assemble the packaged ICR solution — user manual, administration guide, replication documentation, security & data-protection documentation, Apache 2.0 licensing | Packaged solution | 2.6, 2.8 |
@@ -140,4 +140,3 @@ tags: [icr, workplan]
 | 6.4 | Assemble the replication toolkit — the published IG with localization guidance, the deployable ICR package, connector templates, and the Phase 3 training materials — public, Apache 2.0 | Replication toolkit | Phases 2–5 |
 
 **Key dependencies:** successful Phases 2 and 3; MoH institutional commitment; lessons from both pilots.
-
