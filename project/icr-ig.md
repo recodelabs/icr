@@ -285,8 +285,6 @@ The IG defines aliases (short names) for the external and internal systems it re
 
 **Why ICR mints geographic-identifier URIs.** GERS IDs and P-codes need *some* system URI to live under in `Location.identifier`; parking them under the ICR canonical is the pragmatic v0.1 choice. CVX/ATC/GS1 serve as the international product-code backbone, so ICR does not re-invent product codes.
 
-{==**Two follow-ups.**==}{>>I think these might be internal artifacts from a Claude review.<<}{id="d7b9c685-53f1-4a4e-a28a-4b588cd0171c" by="James McKinnon" at="2026-07-07T16:55:38.671Z"} (1) Whether ICR should mint the GERS/P-code system URIs at all — if Overture or OCHA ever publish official URIs, stored identifiers would need migration (tracked as the Overture engagement, §13.4). (2) **GS1 is named in the narrative but has no alias and no binding** — physical commodities on `ICRSupplyDelivery.suppliedItem.item[x]` use free text pending a GS1 GTIN binding, a known gap (§6.3).
-
 * * *
 ## 3. How to read the profiles
 A **profile** is a constrained, specialized version of a base FHIR resource. The base resource (say `Location`) is general-purpose; a profile (say `ICRLocation`) tightens it for one use-case by doing some combination of:
