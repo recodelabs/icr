@@ -11,7 +11,6 @@ tags: [icr, workplan]
 
 # Integrated Campaign Registry (ICR) — Project Workplan
 `v1.0 · Prepared for UNICEF · Jul 2026`
-
 ### Phase timeline
 | Phase | Months | Calendar | Focus |
 | --- | --- | --- | --- |
@@ -32,7 +31,7 @@ tags: [icr, workplan]
 
 * * *
 ## Phase 1 — HL7 FHIR Implementation Guide (M1–2)
-Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system. **Deliverables:** (a) project workplan, (b) draft IG, (c) data-element & reporting-requirements specification, (d) revised IG endorsed for pilot.
+*Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.* ***Deliverables:*** *(a) project workplan, (b) draft IG, (c) data-element & reporting-requirements specification, (d) revised IG endorsed for pilot.*
 
 **Stages:** Inception & campaign data review (Wk 1–3) → Draft IG authoring (Wk 3–6) → Revision & endorsement (Wk 6–8).
 
@@ -57,7 +56,7 @@ Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.
 
 * * *
 ## Phase 2 — ICR Platform Development & Deployment (M3–6)
-> [!abstract] Goal Build, deploy and validate the reference solution in the **two pilot countries**, working in two-week sprints. In-country trips (subject to UNICEF approval) double as prototype testing and initial hands-on training. The data warehouse and DHIS2 integration are Phase 5.
+*Goal Build, deploy and validate the reference solution in the* ***two pilot countries****, working in two-week sprints. In-country trips (subject to UNICEF approval) double as prototype testing and initial hands-on training. The data warehouse and DHIS2 integration are Phase 5.*
 
 **Cadence:** M3–4 first-country pilot → M5 pilot feedback & v2 update → M6 second-country deployment.
 
@@ -78,7 +77,7 @@ Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.
 
 * * *
 ## Phase 3 — Capacity Building & Training (M7–12)
-> [!abstract] Goal Hands-on training begins during the Phase 2 site visits. Phase 3 **formalizes, documents and extends** it into reusable materials so UNICEF and MoH teams can operate the ICR independently.
+*Goal Hands-on training begins during the Phase 2 site visits. Phase 3* ***formalizes, documents and extends*** *it into reusable materials so UNICEF and MoH teams can operate the ICR independently.*
 
 **Activities**
 
@@ -93,7 +92,7 @@ Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.
 
 * * *
 ## Phase 4 — Global & National Reporting Alignment (M13–17, concurrent)
-> [!abstract] Goal UNICEF-supported MDA campaigns report in **WHO JAP-aligned** formats, embedded in national reporting cycles so the practice outlives the project.
+*Goal UNICEF-supported MDA campaigns report in* ***WHO JAP-aligned*** *formats, embedded in national reporting cycles so the practice outlives the project.*
 
 **Activities**
 
@@ -106,7 +105,7 @@ Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.
 
 * * *
 ## Phase 5 — Systems Integration (M13–17, concurrent)
-> [!abstract] Goal The Phase 2 connectors cover data collection. Phase 5 adds **DHIS2**, the **analytics data warehouse**, and the **two-way WHO Geospatial Microplanner** integration.
+*Goal The Phase 2 connectors cover data collection. Phase 5 adds* ***DHIS2****, the* ***analytics data warehouse****, and the* ***two-way WHO Geospatial Microplanner*** *integration.*
 
 **Activities**
 
@@ -119,7 +118,7 @@ Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.
 
 * * *
 ## Phase 6 — Sustainability & Continuity (M13–17, concurrent)
-> [!abstract] Goal Formalize the sustainability designed in from Phase 1 — institutionalize the ICR in national cycles, hand it over to government, and package it for replication.
+*Goal Formalize the sustainability designed in from Phase 1 — institutionalize the ICR in national cycles, hand it over to government, and package it for replication.*
 
 **Activities**
 
@@ -130,14 +129,3 @@ Goal Produce the FHIR Implementation Guide (IG) that underpins the whole system.
 
 **Key dependencies:** successful Phases 2 and 3; MoH institutional commitment; lessons from both pilots.
 
-* * *
-## Scope boundaries
-> [!warning] Out of scope (changes require a formal Change Order)
-> 
-> - No integration with UNICEF internal systems, or custom/bespoke local solutions
-> - The ICR does **not** replace data collection tools
-> - The consortium does not procure or distribute medicines, run MDAs, or lead microplanning
-> - No generation of geospatial source data (footprints, imagery, population estimates) — these are provided by UNICEF, MoH or public sources
-> - Deployment is limited to the **two pilot countries**; scale-up is out of scope (the replication toolkit enables it)
-> - The 17-month period only; maintenance and support beyond it is an optional extension
-> - Data ownership rests with governments; shareability is not guaranteed
