@@ -627,7 +627,7 @@ Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns p
 - {==**Nested scopes do not sum to their parent.**==}{>>Just re-iterating my previous comment about allowing diverging population estimates at different levels.<<}{id="403be919-0a12-4d73-914d-bc5d213b43e4" by="James McKinnon" at="2026-07-07T17:00:22.584Z"} A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 WorldPop), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation.
 - **The umbrella is itself an ICRCampaign**, so it carries its own national denominator, `category`, and `period`.
 - `instantiatesCanonical 1..1` **has a designed relief valve.** If the requirement ever proves too strict for emergency campaigns, the fallback is to relax it to `0..1` with a flag — but the forcing function (every campaign authors a protocol first) is deliberate.
-### 4.3 {==ICRCampaignActivity==}{>>Note that this does not exist in the 'model at a glance' in https://icr.healthcampaigns.org/. That diagram goes straight from ICRCampaign to ICRCampaignTask.<<}{id="c5" by="mckinnoj" at="2026-07-13T09:22:09.713Z"} — `ActivityDefinition`
+### 4.3 {==ICRCampaignActivity==}{>>Note that this does not exist in the 'model at a glance' in https://icr.healthcampaigns.org/. That diagram goes straight from ICRCampaign to ICRCampaignTask.<<}{id="c5" by="mckinnoj" at="2026-07-13T09:22:09.713Z"}{>>Claude can we make sure this is included?<<}{id="c39" by="mberg" at="2026-07-27T13:55:34.885Z" re="c5"} — `ActivityDefinition`
 A **CampaignActivity** is a discrete **activity** within a campaign. For example:
 
 - Administer albendazole to children 5–14
