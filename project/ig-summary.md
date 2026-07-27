@@ -15,14 +15,9 @@ public: true
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion
 `Companion to ICR IG v0.1.0 · First release for partner review & feedback · Jul 27, 2026`
 
-
-
 ⁠
 
-> [!note] What this document is
-> A self-contained technical companion to **v0.1.0 of the ICR (Integrated Campaign Registry) FHIR Implementation Guide** — the first release shared with partners for review and feedback. It is written for readers who know public health campaigns well but are not necessarily FHIR specialists: it explains what a FHIR Implementation Guide is, introduces the ICR IG, walks through its architecture, and then documents every profile (resource), extension, and code system — with worked examples, plain-language property descriptions, key observations, and the design rationale. Where a feature is *proposed but not yet built into the IG*, it is labelled **(proposed)**. Abbreviations are spelled out on first use and collected in the glossary immediately below.
->
-> **This is a draft for feedback, not a final standard.** The open questions and roadmap (§13) are printed deliberately — v0.1 exists to be tested against real campaign data and partner experience, and every design decision here is open to challenge. The published IG lives at **https://icr.healthcampaigns.org**; please direct feedback to the ICR project team at Ona/UNICEF.
+> [!note] **This is a draft for feedback, not a final standard.** The open questions and roadmap (§13) are printed deliberately — v0.1 exists to be tested against real campaign data and partner experience, and every design decision here is open to challenge. The published IG lives at [**https://icr.healthcampaigns.org**](https://icr.healthcampaigns.org); please direct feedback to the ICR project team at Ona/UNICEF.
 
 * * *
 ## Abbreviations & glossary
@@ -427,8 +422,7 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
 ### 4.2 ICRCampaign — `CarePlan`
 A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the record of the campaign implementation as Tasks complete and coverage accumulates against it — the *same* resource is used to support each phase of the campaign. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
 
-> [!note] What "round" means in ICR
-> A **round** is a child ICRCampaign execution (`partOf` the umbrella) with its own period and reporting obligation — the Kambia June round vs the Port Loko July round. The `campaign-round` extension carries only the ordinal (round 1, round 2) for repeated passes of the same campaign (a two-round OCV campaign, NIDs round 2). "Round" is *not* the number of campaigns run on a given model — that is answered by querying the executions of a protocol.
+> [!note] What "round" means in ICR A **round** is a child ICRCampaign execution (`partOf` the umbrella) with its own period and reporting obligation — the Kambia June round vs the Port Loko July round. The `campaign-round` extension carries only the ordinal (round 1, round 2) for repeated passes of the same campaign (a two-round OCV campaign, NIDs round 2). "Round" is *not* the number of campaigns run on a given model — that is answered by querying the executions of a protocol.
 
 **Lifecycle — in plain terms.** One CarePlan, two stages. It starts as the **plan** (a microplan: `intent = plan`, `status = draft`), then becomes the **record of what actually happened** as the work is done — `intent` changes to `order` and `status` moves `draft → active → completed`, with Tasks and coverage accumulating against that same resource.
 
@@ -634,7 +628,7 @@ Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns p
 **Key observations.**
 
 - **Planned and executed states are the same resource at different lifecycle stages, not two resources.** The microplan and the execution record are one CarePlan at different `intent` values. The planned figure is retained in the `planningDenominator` extension, and the planned-versus-actual audit trail is provided by FHIR resource history and Provenance. ICR does not create a separate planning-snapshot Group.
-- **The number of CarePlans is determined by reporting scopes, not administrative boundaries — and never by sub-area disaggregation.** Each CarePlan has exactly one `subject` (denominator) but `targetGeography` is `0..*`. The default is **one CarePlan at the reporting scope**: the highest level that carries the campaign's global target — typically the district round — with `subject` that scope's denominator. Operational sub-units (wards, health facilities, communities) sit *under* it through the Location hierarchy (`partOf`) and their own geography-scoped ICRTargetPopulation estimates; their estimates and coverage remain fully queryable per area, but they are referenced, never subjects — a district with hundreds of communities is still **one** campaign resource. Child CarePlans under an umbrella (`partOf`) are reserved for genuine sub-rounds that carry their own period or reporting obligation (district rounds reporting independently under a national umbrella), not for levels of denominator disaggregation. The rule is one CarePlan per reporting scope — not per administrative area, and not per level of the population-estimate hierarchy. 
+- **The number of CarePlans is determined by reporting scopes, not administrative boundaries — and never by sub-area disaggregation.** Each CarePlan has exactly one `subject` (denominator) but `targetGeography` is `0..*`. The default is **one CarePlan at the reporting scope**: the highest level that carries the campaign's global target — typically the district round — with `subject` that scope's denominator. Operational sub-units (wards, health facilities, communities) sit *under* it through the Location hierarchy (`partOf`) and their own geography-scoped ICRTargetPopulation estimates; their estimates and coverage remain fully queryable per area, but they are referenced, never subjects — a district with hundreds of communities is still **one** campaign resource. Child CarePlans under an umbrella (`partOf`) are reserved for genuine sub-rounds that carry their own period or reporting obligation (district rounds reporting independently under a national umbrella), not for levels of denominator disaggregation. The rule is one CarePlan per reporting scope — not per administrative area, and not per level of the population-estimate hierarchy.
 - **Nested scopes do not sum to their parent.** A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 GRID3), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation.
 - **The umbrella is itself an ICRCampaign**, so it carries its own national denominator, `category`, and `period`.
 - `instantiatesCanonical 1..1` **has a designed relief valve.** If the requirement ever proves too strict for emergency campaigns, the fallback is to relax it to `0..1` with a flag — but the forcing function (every campaign authors a protocol first) is deliberate.
@@ -1261,7 +1255,7 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 **Open questions.**
 
 - The geography characteristic is `0..1` so estimates *can* exist without a Location; tightening to `1..1` once pilots confirm every estimate has one is tracked (§13.4).
-- ~~Whether to make `denominator-source` mandatory~~ *(decided v0.1: yes — `1..1` with `govt-estimate`/`unknown` escapes; `estimate-date` stays recommended).*
+- ~~Whether to make~~ `denominator-source` ~~mandatory~~ *(decided v0.1: yes —* `1..1` *with* `govt-estimate`*/*`unknown` *escapes;* `estimate-date` *stays recommended).*
 - Proposed for a later round: a **population-estimation-method + source-raster version/date** (so two `worldpop` estimates become distinguishable) and a **population-vulnerability / equity** characteristic (§13.2).
 ### 5.3 ICRLocation — `Location`
 **Purpose.** The **place model**, and the most-customized ICR resource: a nested administrative hierarchy (6+ levels), operational geography that is *linkable-but-distinct* from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes, national codes, and ISO codes as coequal aliases.
@@ -1546,8 +1540,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 ### 6.2 ICRMedicationAdministration — `MedicationAdministration`
 **Purpose.** A **drug administration** in a mass drug administration (MDA) — albendazole, ivermectin, etc. — with the two distinctly-MDA patterns: dose derived from a **dose-pole height band**, and **directly-observed consumption** (the supervised-swallow protocol).
 
-> [!note] What a dose pole is
-> In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
+> [!note] What a dose pole is In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
 
 **Properties.**
 
@@ -1680,7 +1673,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600 tablets received at a settlement, `suppliedItem.item` coded **ATC** `P02CA03` — the same code as the matching administration (§6.2), so receipt → administration → reconciliation share one drug code — plus a `stock-accountability` record (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓).
 
-#### Aggregate vs individual records — the cross-cutting rule
+Aggregate vs individual records — the cross-cutting rule
 
 > [!note] This rule governs every form-to-FHIR mapping in the IG (including the ESPEN extraction, §4.8) — it is placed here where the drug and ITN examples converge, and §8 restates it as an invariant.
 
