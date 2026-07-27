@@ -37,18 +37,20 @@ tags: [icr, workplan]
 
 **Activities**
 
-1. Project inception with UNICEF; workplan and stakeholder-engagement plan signed off *(deliverable a)*
-2. Obtain and review data from 3–4 existing campaigns (NTD MDA, immunization, polio, malaria); catalogue the data elements *(c)*
-3. Synthesize a canonical campaign data model — target populations, households, locations, services, commodities, teams, metadata *(c)*
-4. Define real-time vs. campaign-close data components, with rationale *(c)*
-5. Map terminology and ValueSets (CVX, WHO ATC, GS1 GTIN, EML); plan ConceptMaps for local code alignment *(b, c)*
-6. Profile FHIR R4 resources on the CarePlan architecture (PlanDefinition, ActivityDefinition, Task, CareTeam, Group, and the delivery-event resources) *(b)*
-7. Extend the Location resource — GeoJSON boundaries and multi-system identifiers (P-codes, Overture GERS, national codes) *(b)*
-8. Author the IG in FHIR Shorthand with automated build and validation on every change *(b)*
-9. Test data conformance by converting real campaign datasets into the model; log gaps *(b)*
-10. Publish the v0.1 draft IG — versioned, browsable, public repository *(b)*
-11. Circulate the draft for stakeholder and FHIR-community review (MoH, UNICEF, WHO, ESPEN, partners); track feedback openly *(b, d)*
-12. Incorporate feedback and publish the revised IG endorsed for pilot, with changelog *(d)*
+| #   | Activity | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 1.1 | Project inception with UNICEF; workplan and stakeholder-engagement plan signed off | (a) | — |
+| 1.2 | Obtain and review data from 3–4 existing campaigns (NTD MDA, immunization, polio, malaria); catalogue the data elements | (c) | UNICEF data access |
+| 1.3 | Synthesize a canonical campaign data model — target populations, households, locations, services, commodities, teams, metadata | (c) | 1.2 |
+| 1.4 | Define real-time vs. campaign-close data components, with rationale | (c) | 1.2 |
+| 1.5 | Map terminology and ValueSets (CVX, WHO ATC, GS1 GTIN, EML); plan ConceptMaps for local code alignment | (b)(c) | 1.3 |
+| 1.6 | Profile FHIR R4 resources on the CarePlan architecture (PlanDefinition, ActivityDefinition, Task, CareTeam, Group, and the delivery-event resources) | (b) | 1.3 |
+| 1.7 | Extend the Location resource — GeoJSON boundaries and multi-system identifiers (P-codes, Overture GERS, national codes) | (b) | 1.6 |
+| 1.8 | Author the IG in FHIR Shorthand with automated build and validation on every change | (b) | 1.6 |
+| 1.9 | Test data conformance by converting real campaign datasets into the model; log gaps | (b) | 1.8 |
+| 1.10 | Publish the v0.1 draft IG — versioned, browsable, public repository | (b) | 1.8 |
+| 1.11 | Circulate the draft for stakeholder and FHIR-community review (MoH, UNICEF, WHO, ESPEN, partners); track feedback openly | (b)(d) | 1.10 |
+| 1.12 | Incorporate feedback and publish the revised IG endorsed for pilot, with changelog | (d) | 1.11 |
 
 **Status note (Jul 2026).** The v0.1 draft IG is built and published for partner review and feedback, together with a companion summary document — activities 1–10 are complete and the stakeholder-review cycle (11–12) is underway.
 
@@ -62,16 +64,18 @@ tags: [icr, workplan]
 
 **Activities**
 
-1. Stand up the FHIR store in the agreed cloud environment; load IG profiles, extensions, and terminology
-2. Deploy the data-browsing, validation and quality-management layer
-3. Build data-collection connectors for the first country's two campaigns (ODK / DHIS2 Tracker / CommCare → FHIR) and test end-to-end loading
-4. Configure deduplication and data-quality functions for the first country's data (cross-campaign household/location dedup)
-5. First-country visit — end-to-end testing with live data, cross-campaign reuse validation, user acceptance testing, hands-on MoH/country-office training
-6. Document the first country's integration workflows (data-flow diagrams, connector configuration, data-quality procedures)
-7. Produce the v2 IG and system update from pilot feedback (model gaps, edge cases, performance, usability)
-8. Deploy v2 in the second country — connectors for its two campaigns, adapted ValueSets/ConceptMaps, Location hierarchy configuration
-9. Second-country visit — testing, training and stakeholder engagement (English/French as needed)
-10. Assemble the packaged ICR solution — user manual, administration guide, replication documentation, security & data-protection documentation, Apache 2.0 licensing
+| #   | Activity | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 2.1 | Stand up the FHIR store in the agreed cloud environment; load IG profiles, extensions, and terminology | Prototype | Phase 1 (d) |
+| 2.2 | Deploy the data-browsing, validation and quality-management layer | Prototype | 2.1 |
+| 2.3 | Build data-collection connectors for the first country's two campaigns (ODK / DHIS2 Tracker / CommCare → FHIR) and test end-to-end loading | Prototype + workflow docs | 2.1, country campaign identification |
+| 2.4 | Configure deduplication and data-quality functions for the first country's data (cross-campaign household/location dedup) | Prototype | 2.2, 2.3 |
+| 2.5 | First-country visit — end-to-end testing with live data, cross-campaign reuse validation, user acceptance testing, hands-on MoH/country-office training | Prototype + training | 2.3, travel approval |
+| 2.6 | Document the first country's integration workflows (data-flow diagrams, connector configuration, data-quality procedures) | Workflow docs | 2.5 |
+| 2.7 | Produce the v2 IG and system update from pilot feedback (model gaps, edge cases, performance, usability) | v2 | 2.5 |
+| 2.8 | Deploy v2 in the second country — connectors for its two campaigns, adapted ValueSets/ConceptMaps, Location hierarchy configuration | Second-country deployment | 2.7, country campaign identification |
+| 2.9 | Second-country visit — testing, training and stakeholder engagement (English/French as needed) | Second-country deployment + training | 2.8, travel approval |
+| 2.10 | Assemble the packaged ICR solution — user manual, administration guide, replication documentation, security & data-protection documentation, Apache 2.0 licensing | Packaged solution | 2.6, 2.8 |
 
 **Key dependencies:** the endorsed Phase 1 IG; country offices identify the two campaigns per country before M3 and facilitate MoH engagement; campaign schedules overlap the pilot window; country system API availability (with file/bulk-export fallback); written travel approval.
 
@@ -81,12 +85,14 @@ tags: [icr, workplan]
 
 **Activities**
 
-1. Develop role-based, step-by-step job aids grounded in the pilot workflows (online format)
-2. Write SOPs for integrating ICR data across current and future campaigns
-3. Produce visual workflow documentation (campaign tools ↔ ICR ↔ DHIS2 ↔ reporting)
-4. Write troubleshooting guides for the issues encountered in the pilots
-5. Document the training delivered during Phase 2 — attendance and curricula
-6. Guide UNICEF planning teams on accessing ICR data for microplanning
+| #   | Activity | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 3.1 | Develop role-based, step-by-step job aids grounded in the pilot workflows (online format) | Role guides | Phase 2 |
+| 3.2 | Write SOPs for integrating ICR data across current and future campaigns | SOPs | Phase 2 |
+| 3.3 | Produce visual workflow documentation (campaign tools ↔ ICR ↔ DHIS2 ↔ reporting) | SOPs | Phase 2 |
+| 3.4 | Write troubleshooting guides for the issues encountered in the pilots | Role guides | Phase 2 |
+| 3.5 | Document the training delivered during Phase 2 — attendance and curricula | Training record | 2.5, 2.9 |
+| 3.6 | Guide UNICEF planning teams on accessing ICR data for microplanning | Microplanning integration doc | Phase 2 |
 
 **Key dependencies:** a working ICR from Phase 2.
 
@@ -96,10 +102,12 @@ tags: [icr, workplan]
 
 **Activities**
 
-1. Map ICR data elements to JAP form fields (coverage by admin unit, drug consumption/wastage, demographics, performance indicators) with WHO/ESPEN focal points
-2. Configure export modules that generate submission-ready JAP outputs, documented so future JAP changes need no vendor involvement
-3. Validate reporting outputs against WHO and national requirements; document the MoH self-service generate-and-submit procedure
-4. Establish and document data-access workflows for real-time programme monitoring
+| #   | Activity | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 4.1 | Map ICR data elements to JAP form fields (coverage by admin unit, drug consumption/wastage, demographics, performance indicators) with WHO/ESPEN focal points | JAP mapping | Phases 2–3 data; WHO/ESPEN |
+| 4.2 | Configure export modules that generate submission-ready JAP outputs, documented so future JAP changes need no vendor involvement | JAP outputs | 4.1 |
+| 4.3 | Validate reporting outputs against WHO and national requirements; document the MoH self-service generate-and-submit procedure | Validated reporting | 4.2 |
+| 4.4 | Establish and document data-access workflows for real-time programme monitoring | Monitoring data access | Phase 2 |
 
 **Key dependencies:** an operational ICR with real data; current JAP specifications and validation from WHO/ESPEN; availability of UNICEF data & analytics counterparts.
 
@@ -109,10 +117,12 @@ tags: [icr, workplan]
 
 **Activities**
 
-1. Build the SQL-on-FHIR data-warehouse layer, driven by ViewDefinition resources published in the IG, automated to feed JAP and country reporting
-2. Build a bidirectional DHIS2 connector (organisation units, aggregate indicators, import and export) — open, documented, and included in the toolkit
-3. Feed ICR FHIR data into geospatial microplanning — catchment areas, population estimates, risk scores, supervisory zones
-4. Push microplanning-enriched data back into the ICR FHIR store and test the flow in both directions
+| #   | Activity | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 5.1 | Build the SQL-on-FHIR data-warehouse layer, driven by ViewDefinition resources published in the IG, automated to feed JAP and country reporting | Warehouse connector | Phase 2; Phase 4 requirements |
+| 5.2 | Build a bidirectional DHIS2 connector (organisation units, aggregate indicators, import and export) — open, documented, and included in the toolkit | DHIS2 connector | 5.1; DHIS2 API |
+| 5.3 | Feed ICR FHIR data into geospatial microplanning — catchment areas, population estimates, risk scores, supervisory zones | Microplanner integration | Phase 2 |
+| 5.4 | Push microplanning-enriched data back into the ICR FHIR store and test the flow in both directions | Microplanner integration | 5.3 |
 
 **Key dependencies:** a stable ICR with real data; DHIS2 API availability per country (import/export fallback available).
 
@@ -122,10 +132,12 @@ tags: [icr, workplan]
 
 **Activities**
 
-1. Embed ICR reporting into national MoH reporting cycles (DHIS2/JAP); support directives, SOPs and calendar integration per country
-2. Structured system handover — source repositories, CI/CD documentation, and build/deploy instructions to MoH counterparts
-3. Deliver the system administration & maintenance guide (FHIR store management, connector monitoring, data-quality procedures, troubleshooting)
-4. Assemble the replication toolkit — the published IG with localization guidance, the deployable ICR package, connector templates, and the Phase 3 training materials — public, Apache 2.0
+| #   | Activity | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 6.1 | Embed ICR reporting into national MoH reporting cycles (DHIS2/JAP); support directives, SOPs and calendar integration per country | Institutionalization | Phases 2–3; MoH commitment |
+| 6.2 | Structured system handover — source repositories, CI/CD documentation, and build/deploy instructions to MoH counterparts | Handover | Phase 2 |
+| 6.3 | Deliver the system administration & maintenance guide (FHIR store management, connector monitoring, data-quality procedures, troubleshooting) | Handover | 6.2 |
+| 6.4 | Assemble the replication toolkit — the published IG with localization guidance, the deployable ICR package, connector templates, and the Phase 3 training materials — public, Apache 2.0 | Replication toolkit | Phases 2–5 |
 
 **Key dependencies:** successful Phases 2 and 3; MoH institutional commitment; lessons from both pilots.
 
