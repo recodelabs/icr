@@ -1,6 +1,6 @@
 ---
-version: 0.28.0
-last_modified: 2026-07-27T14:41:13Z
+version: 0.28.1
+last_modified: 2026-07-27T14:54:28Z
 tags:
   - icr
   - fhir
@@ -10,9 +10,9 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) — FHIR Implementation Guide
-`v0.28.0 · Last modified Jul 27, 2026 at 10:41 AM EDT`
+`v0.28.1 · Last modified Jul 27, 2026 at 10:54 AM EDT`
 
-{>>Rewrite pass (v0.28.0): applied the content edits queued in the c43–c87 replies — comments kept in place per Matt's request rather than deleted on resolution. Notable changes: denominator-source is now required (1..1, with govt-estimate/unknown escape codes) across §2.3/§5.2/§8/§9/§10; the descoping worked example approved in c88 is documented in §11 (FSH lands with the IG update); the aggregate-vs-individual rule got its own heading; Immunization.expirationDate added MS; plus the ~15 wording/formatting fixes from the review. Also dropped the stray "sddfgsdf" keystrokes in §1.3. Matching IG source changes + rebuild are in progress.<<}{id="c89" by="claude" at="2026-07-27T14:41:13.000Z"}
+{>>Rewrite pass (v0.28.0): applied the content edits queued in the c43–c87 replies — comments kept in place per Matt's request rather than deleted on resolution. Notable changes: denominator-source is now required (1..1, with govt-estimate/unknown escape codes) across §2.3/§5.2/§8/§9/§10; the descoping worked example approved in c88 is documented in §11 (FSH lands with the IG update); the aggregate-vs-individual rule got its own heading; Immunization.expirationDate added MS; plus the ~15 wording/formatting fixes from the review. Also dropped the stray "sddfgsdf" keystrokes in §1.3. Matching IG source changes + rebuild are in progress.<<}{id="c89" by="claude" at="2026-07-27T14:41:13.000Z"}{>>Status (v0.28.1): all done and live. (1) IG source updated — denominator-source mandatory with govt-estimate/unknown codes, estimate-date relaxed to recommended, Immunization.expirationDate MS, ICRCampaignActivity added to the model-at-a-glance, and the c88-approved descoping trio (example-sch-mda-protocol / example-target-population-sac / example-sch-descoped-round). SUSHI 0 errors / 0 warnings. (2) IG rebuilt & published via CI → https://icr-ig.pages.dev (new codes, expirationDate, diagram node, and descoped-round page all verified live). (3) ig-summary.md regenerated as the clean ICR IG v0.1 release companion for partners — annotations stripped, internal paths scrubbed. One discrepancy found & fixed: this doc's worked example said WorldPop where the IG instances use GRID3; doc body now matches the IG (comments left as the record).<<}{id="c90" by="claude" at="2026-07-27T14:54:28.000Z" re="c89"}
 
 ⁠
 
