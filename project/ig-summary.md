@@ -1,6 +1,7 @@
 ---
 title: ICR FHIR Implementation Guide v0.1 — Summary & Companion
-status: release companion to ICR IG v0.1.0 — first shareable version for partner review & feedback
+status: release companion to ICR IG v0.1.0 — first shareable version for partner
+  review & feedback
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
 last_modified: 2026-07-27T14:41:13Z
@@ -10,6 +11,7 @@ tags:
   - ig
   - summary
 public: true
+comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion
