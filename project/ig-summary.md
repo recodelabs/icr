@@ -445,7 +445,7 @@ The *where* is separate and plural: `targetGeography` is `0..*`. Multiple and ne
 ```mermaid
 graph TD
     N["National umbrella CarePlan<br/>subject: 2,150,000 (census projection)"]
-    D1["Kambia round CarePlan<br/>subject: 48,250 (WorldPop)"]
+    D1["Kambia round CarePlan<br/>subject: 48,250 (GRID3)"]
     D2["Port Loko round CarePlan<br/>subject: its own denominator"]
     W["Per-ward targets<br/>more ICRTargetPopulations,<br/>each geography-scoped — referenced,<br/>not subjects"]
     D1 -- partOf --> N
@@ -635,7 +635,7 @@ Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns p
 
 - **Planned and executed states are the same resource at different lifecycle stages, not two resources.** The microplan and the execution record are one CarePlan at different `intent` values. The planned figure is retained in the `planningDenominator` extension, and the planned-versus-actual audit trail is provided by FHIR resource history and Provenance. ICR does not create a separate planning-snapshot Group.
 - **The number of CarePlans is determined by reporting scopes, not administrative boundaries — and never by sub-area disaggregation.** Each CarePlan has exactly one `subject` (denominator) but `targetGeography` is `0..*`. The default is **one CarePlan at the reporting scope**: the highest level that carries the campaign's global target — typically the district round — with `subject` that scope's denominator. Operational sub-units (wards, health facilities, communities) sit *under* it through the Location hierarchy (`partOf`) and their own geography-scoped ICRTargetPopulation estimates; their estimates and coverage remain fully queryable per area, but they are referenced, never subjects — a district with hundreds of communities is still **one** campaign resource. Child CarePlans under an umbrella (`partOf`) are reserved for genuine sub-rounds that carry their own period or reporting obligation (district rounds reporting independently under a national umbrella), not for levels of denominator disaggregation. The rule is one CarePlan per reporting scope — not per administrative area, and not per level of the population-estimate hierarchy. 
-- **Nested scopes do not sum to their parent.** A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 WorldPop), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation.
+- **Nested scopes do not sum to their parent.** A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 GRID3), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation.
 - **The umbrella is itself an ICRCampaign**, so it carries its own national denominator, `category`, and `period`.
 - `instantiatesCanonical 1..1` **has a designed relief valve.** If the requirement ever proves too strict for emergency campaigns, the fallback is to relax it to `0..1` with a flag — but the forcing function (every campaign authors a protocol first) is deliberate.
 ### 4.3 ICRCampaignActivity — `ActivityDefinition`
@@ -1172,11 +1172,11 @@ Here `quantity` (6) equals the enumerated `member` count because nobody is left 
 
 | Instance | Geography | Count | Source | Date | Planning? |
 | --- | --- | --- | --- | --- | --- |
-| `example-target-population` | → Kambia District | **48,250** | WorldPop modelled | 2026-01-15 | **true** |
+| `example-target-population` | → Kambia District | **48,250** | GRID3 modelled | 2026-01-15 | **true** |
 | `example-target-population-enumerated` | → Kambia District | **51,800** | microcensus / H2H enumeration | 2026-03-02 | false |
 | `example-target-population-national` | → Sierra Leone | 2,150,000 | census projection | 2025-11-30 | true (national) |
 
-The first two are the **same geography disagreeing by ~7%**. Both are retained; exactly one carries the planning flag. The consequence is concrete: 47,766 children reached is **99% coverage against WorldPop but 92% against the enumeration** — the denominator you pick changes the answer. That is why a source is required — and a date recommended — on every estimate. (In practice a campaign that ran a March enumeration would usually **re-baseline** — move the planning flag to the enumeration before the June round; the flag can move, with resource history/Provenance recording the switch. The example freezes the January microplan moment to keep the two-estimate contrast visible.)
+The first two are the **same geography disagreeing by ~7%**. Both are retained; exactly one carries the planning flag. The consequence is concrete: 47,766 children reached is **99% coverage against GRID3 but 92% against the enumeration** — the denominator you pick changes the answer. That is why a source is required — and a date recommended — on every estimate. (In practice a campaign that ran a March enumeration would usually **re-baseline** — move the planning flag to the enumeration before the June round; the flag can move, with resource history/Provenance recording the switch. The example freezes the January microplan moment to keep the two-estimate contrast visible.)
 
 **Properties.**
 
@@ -1193,7 +1193,7 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 | `extension[isPlanningDenominator]` | MS  | 0..1 | boolean | Flags *the* one coverage is computed against. |
 | `extension[confidence]` |     | 0..1 | string | Free-text confidence (coded confidence is a later refinement). |
 
-**Example.** `example-target-population` — Kambia's WorldPop planning denominator (the `subject` of the round CarePlan):
+**Example.** `example-target-population` — Kambia's GRID3 planning denominator (the `subject` of the round CarePlan):
 
 ```json
 {
@@ -1230,7 +1230,7 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
         "coding": [
           {
             "system": "https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source",
-            "code": "worldpop"
+            "code": "grid3"
           }
         ]
       }
@@ -1249,12 +1249,12 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 
 `actual: false` is what makes this a *conceptual cohort* — a denominator, not a roster of real people (contrast `example-household`, `actual: true`). The competing `example-target-population-enumerated` (51,800, microcensus, planning flag false) is the identical shape with a different source, date, and flag — which is exactly how the same geography keeps two disagreeing estimates side by side.
 
-**Relevant terminology.** `denominator-source` binds extensible to **ICRDenominatorSourceVS** (`census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `other`).
+**Relevant terminology.** `denominator-source` binds extensible to **ICRDenominatorSourceVS** (`census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `govt-estimate`, `unknown`, `other`).
 
 **Key observations.**
 
 - **Provenance: source required, date recommended (changed in v0.1).** `denominator-source` is now `1..1` — every estimate declares where it came from, with `govt-estimate` and `unknown` as low-precision escapes so early or placeholder estimates aren't blocked; `estimate-date` remains `0..1 MS`. Where a real number is recorded, its date should be recorded with it.
-- **Competing estimates are retained side by side.** Census-projection, WorldPop, and microcensus estimates are kept as sibling Groups, each with its own provenance, rather than overwriting one with the next.
+- **Competing estimates are retained side by side.** Census-projection, GRID3, and microcensus estimates are kept as sibling Groups, each with its own provenance, rather than overwriting one with the next.
 - **Scope is computable at any level.** The geography characteristic references an ICRLocation, so an estimate can be joined to the location hierarchy at country, district, ward, settlement, or operational-area level. Target populations are not household-bound; that is the role of ICRDeliveryUnit.
 - **"Exactly one planning denominator" is not enforced by the profile.** Nothing prevents two same-geography Groups from both setting, or neither setting, the planning flag. The actual enforcement point is the single-valued `ICRCampaign.planningDenominator` extension (`0..1`), which is where coverage reads its denominator from.
 
@@ -1848,7 +1848,7 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
         "coding": [
           {
             "system": "https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source",
-            "code": "worldpop"
+            "code": "grid3"
           }
         ]
       }
@@ -1904,7 +1904,7 @@ Same quantity, two records, distinguished only by this flag — so a "final figu
 }
 ```
 
-The same quantity — coverage of the Kambia round — reported **23 points apart** (mirroring Cuamba's 99-vs-76). The admin report shows its numerator/denominator (47,766 / 48,250 = 99% against WorldPop — against the enumerated 51,800 it would read 92%); the survey carries its `sample-design` *instead of* a denominator (its denominator IS the sample). Both are `reconciled` (final close-out figures).
+The same quantity — coverage of the Kambia round — reported **23 points apart** (mirroring Cuamba's 99-vs-76). The admin report shows its numerator/denominator (47,766 / 48,250 = 99% against GRID3 — against the enumerated 51,800 it would read 92%); the survey carries its `sample-design` *instead of* a denominator (its denominator IS the sample). Both are `reconciled` (final close-out figures).
 
 **Relevant terminology.** `coverage-source` on admin coverage is fixed to `administrative`; on survey coverage it binds required to **ICRIndependentCoverageSourceVS** (`survey`, `lqas`, `rcm`). `dataLineage` binds required to **ICRDataLineageVS** (`realtime`, `reconciled`).
 ### 7.3 Stratified and geographic coverage
@@ -2120,7 +2120,7 @@ graph LR
 | 11  | `example-household-enumerated` | ICRDeliveryUnit | The same household **fully enumerated** — six members, each an ICRPatient |
 | 12  | `example-community` | ICRDeliveryUnit | code `community` — "Rokupr community", quantity 3,480, groupLocation → settlement (the Type-C unit) |
 | 13  | `example-consent` | ICRConsent | Head of household permits the child's data to be held and shared |
-| 14  | `example-target-population` | ICRTargetPopulation | 48,250 children 9m–14y, Kambia; WorldPop, 2026-01-15, isPlanningDenominator true; geography → district |
+| 14  | `example-target-population` | ICRTargetPopulation | 48,250 children 9m–14y, Kambia; GRID3, 2026-01-15, isPlanningDenominator true; geography → district |
 | 15  | `example-target-population-enumerated` | ICRTargetPopulation | 51,800 children 9m–14y, Kambia; microcensus/enumeration, 2026-03-02, isPlanningDenominator **false** — the competing estimate |
 | 16  | `example-target-population-national` | ICRTargetPopulation | 2,150,000 children 9m–14y, national; census projection, 2025-11-30; geography → country |
 
@@ -2158,7 +2158,7 @@ graph LR
 | --- | --- | --- | --- |
 | 35  | `example-mda-treatment-tally` | ICRAdministrativeCoverage | the **stratified treatment cube**: 2,900 / 3,200 ≈ 91%; stratifiers sex (1,500 F / 1,400 M), age band (1,100 / 1,800), disposition (2,900 treated / 180 excluded / 95 absent / 25 refused); denominator-type at-risk; measure → icr-mda-treatment-coverage |
 | 36  | `example-geographic-coverage` | ICRAdministrativeCoverage | **implementation-unit coverage**: 188/200 villages ≈ 94%; coverage-unit implementation-units; disposition stratifier (insecurity 7, medication-shortage 5); measure → icr-geographic-coverage |
-| 37  | `example-admin-coverage` | ICRAdministrativeCoverage | numerator 47,766 / denominator 48,250, **measureScore 99%**; denominatorSource WorldPop; dataLineage reconciled |
+| 37  | `example-admin-coverage` | ICRAdministrativeCoverage | numerator 47,766 / denominator 48,250, **measureScore 99%**; denominatorSource GRID3; dataLineage reconciled |
 | 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**; coverageSource survey; sampleDesign "WHO 30×10 cluster survey…"; dataLineage reconciled — the same quantity as #37, **23 points apart** |
 | 39  | `example-supervision-report` | ICRSupervisionReport | QuestionnaireResponse against the supervision checklist: DOC observed ✓, height chart ✓, ineligibles identified ✓, stock concordant ✗; subject → community; author → supervisor |
 | 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `focus` → the missed child, `partOf` → the mop-up Task, `revisit-outcome` → already-vaccinated |
@@ -2172,7 +2172,7 @@ graph LR
 | `icr-mda-supervision-checklist`, `icr-campaign-readiness-checklist` *(forms-v1)* | Questionnaire | The structured supervision checklist (supplies / CDD observation / stock / social mobilization) and the pre-campaign readiness checklist (microplan / cold-chain / social-mobilization / trainings), coded linkIds |
 | `icr-aefi-causality-to-immz` | ConceptMap | ICR causality A/B/C/D → WHO `IMMZ.AdverseEvent` (provisional targets) |
 
-**What the scenario demonstrates.** The full Location chain with GERS at every level (country → dwelling) plus a delivery site; operational geography overlaying (not inside) the admin hierarchy; the generalized delivery-unit pattern at both scales (household and community), at both registration depths (count-only and fully enumerated); competing denominators for the same geography (WorldPop vs enumeration, 7% apart, one planning flag) alongside the cross-level contrast (district WorldPop vs national census projection); the activity gallery across campaign types; protocol→activity→campaign wiring; the umbrella/round `partOf` lifecycle (`plan` umbrella, `order` round); all three Task shapes (Type A site session, Type B house-to-house, Type C community-directed) and both task origins; a Type-B trail end-to-end down to the dose and its AEFI; the MDA thread from drug receipt through community task to the stratified tally; and the never-merge rule made visible by a 99-vs-76 coverage pair on the same round.
+**What the scenario demonstrates.** The full Location chain with GERS at every level (country → dwelling) plus a delivery site; operational geography overlaying (not inside) the admin hierarchy; the generalized delivery-unit pattern at both scales (household and community), at both registration depths (count-only and fully enumerated); competing denominators for the same geography (GRID3 vs enumeration, 7% apart, one planning flag) alongside the cross-level contrast (district GRID3 vs national census projection); the activity gallery across campaign types; protocol→activity→campaign wiring; the umbrella/round `partOf` lifecycle (`plan` umbrella, `order` round); all three Task shapes (Type A site session, Type B house-to-house, Type C community-directed) and both task origins; a Type-B trail end-to-end down to the dose and its AEFI; the MDA thread from drug receipt through community task to the stratified tally; and the never-merge rule made visible by a 99-vs-76 coverage pair on the same round.
 
 **Scenario notes for a future pass.**
 

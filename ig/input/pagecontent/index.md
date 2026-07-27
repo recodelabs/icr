@@ -57,7 +57,9 @@ survey coverage are **separate, never-merged lineages**
 ```mermaid
 graph TD
   PD["ICRCampaignProtocol (PlanDefinition)"] -->|reusable protocol| CP["ICRCampaign (CarePlan)"]
+  PD -->|action| AD["ICRCampaignActivity (ActivityDefinition)"]
   CP -->|operational unit| TASK["ICRCampaignTask (Task)"]
+  AD -->|instantiated as| TASK
   TASK -->|Task.output| IMM["ICRImmunizationEvent"]
   TASK -->|Task.output| MA["ICRMedicationAdministration"]
   TASK -->|Task.output| SD["ICRSupplyDelivery"]
@@ -68,7 +70,7 @@ graph TD
   CP --> SC["ICRSurveyCoverage"]
 ```
 
-<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, whose Tasks carry the operational work and hang delivery events off `Task.output`; denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
+<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, and defines its discrete work types once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate; the Tasks carry the operational work and hang delivery events off `Task.output`; denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
 
 #### Status
 

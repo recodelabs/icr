@@ -191,6 +191,8 @@ Description: "The method/source behind a target-population estimate. Every estim
 * #worldpop "WorldPop modelled estimate" "Modelled gridded population estimate (WorldPop)."
 * #grid3 "GRID3 modelled estimate" "Modelled gridded population estimate (GRID3)."
 * #hmis "HMIS-derived" "Derived from routine HMIS targets or registers."
+* #govt-estimate "Government estimate" "An official government figure whose underlying method is unspecified — the low-precision escape that lets early or administrative estimates declare a source (v0.1: denominator-source is mandatory on every estimate)."
+* #unknown "Unknown" "Source not recorded — for historical/back-loaded datasets where provenance cannot be reconstructed."
 * #other "Other" "Other source — record detail in text."
 
 CodeSystem: ICRDataLineageCS

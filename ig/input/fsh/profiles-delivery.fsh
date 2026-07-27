@@ -17,6 +17,8 @@ Description: "A vaccination delivery event: CVX-coded, with lot accountability a
 * occurrence[x] MS
 * location MS
 * lotNumber MS
+* expirationDate MS
+* expirationDate ^short = "Vaccine expiry — field forms report it alongside the lot number (v0.1)"
 * manufacturer MS
 * performer MS
 * protocolApplied MS

@@ -75,10 +75,12 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * extension contains
     DenominatorSource named denominatorSource 1..1 MS and
     DenominatorType named denominatorType 0..1 MS and
-    EstimateDate named estimateDate 1..1 MS and
+    EstimateDate named estimateDate 0..1 MS and
     IsPlanningDenominator named isPlanningDenominator 0..1 MS and
     EstimateConfidence named confidence 0..1
 * extension[denominatorType] ^short = "total-population vs at-risk/eligible — lets a campaign retain both a total and an eligible denominator for the same geography (programme vs epidemiological coverage, v0.19.0)"
+* extension[denominatorSource] ^short = "Required (v0.1): where the estimate came from — govt-estimate / unknown are the low-precision escapes so early or back-loaded estimates aren't blocked"
+* extension[estimateDate] ^short = "Recommended: when the estimate was made — denominators decay fast (1–3 years)"
 
 Profile: ICRLocation
 Parent: Location

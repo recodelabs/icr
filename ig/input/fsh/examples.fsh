@@ -801,3 +801,57 @@ Usage: #example
 * item[2].item[0].linkId = "tr.teams-trained"
 * item[2].item[0].text = "Supervisors and teams trained"
 * item[2].item[0].answer.valueBoolean = true
+
+// --- Supply-driven descoping (v0.1): the "planned per protocol vs targeted
+// this round" comparison. The national SCH policy treats everyone 2 years and
+// older, but this round's praziquantel supply covers only school-aged children —
+// so the round's subject is a NARROWER denominator than the protocol's subject
+// template, and the deviation stays visible by comparing the two. Targeting
+// deviations (population or geography) never require a protocol change; a
+// durable eligibility change would be a new protocol version (working doc §4.2).
+
+Instance: example-sch-mda-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "Schistosomiasis MDA protocol — national policy: everyone 2+"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #active
+* version = "1.0.0"
+* title = "Schistosomiasis MDA (praziquantel), entire population 2 years and older"
+* type = $CampaignType#mda "Mass drug administration"
+* subjectCodeableConcept.text = "Entire population 2 years and older (national SCH policy)"
+* goal.description.text = "≥75% epidemiological coverage of the eligible population"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#community-directed "Community-directed"
+
+Instance: example-target-population-sac
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — school-aged children 5–14, Kambia District (descoped round)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* type = #person
+* actual = false
+* name = "School-aged children 5–14, Kambia District — the narrower population actually targeted this round"
+* quantity = 14800
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#govt-estimate "Government estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-02-01"
+* extension[isPlanningDenominator].valueBoolean = true
+
+Instance: example-sch-descoped-round
+InstanceOf: ICRCampaign
+Title: "Kambia SCH MDA 2026 — descoped round (SAC only, supply-constrained)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* instantiatesCanonical = Canonical(example-sch-mda-protocol)
+* status = #active
+* intent = #order
+* title = "SCH MDA, Kambia District, 2026 — school-aged children only (praziquantel supply shortfall)"
+* category = $CampaignType#mda "Mass drug administration"
+* subject = Reference(example-target-population-sac)
+* period.start = "2026-09-07"
+* period.end = "2026-09-18"
+* extension[targetGeography].valueReference = Reference(example-district)
+* extension[planningDenominator].valueReference = Reference(example-target-population-sac)
