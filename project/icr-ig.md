@@ -113,8 +113,8 @@ Quick reference for every abbreviation used in this document, grouped by area. N
 | **CPG / CRMI / SDC** | HL7 frameworks: Clinical Practice Guidelines / Canonical Resource Management Infrastructure / Structured Data Capture |
 
 * * *
-## 1. Introduction
-### 1.1 What is FHIR?
+## 1. {==Introduction==}{>>Here is a collection of 9 separate microplanning guidance documents across malaria, immunization, and NTD. I suggest using AI to cross-reference the ICR with this guidance to ensure all concepts are accounted for. https://drive.google.com/drive/folders/1jH6vQ06ywmRPksIyq3R4TpC0oRQVDa5o<<}{id="c91" by="coitemanuel" at="2026-08-01T12:56:41.027Z"}
+### {==1.1 What is FHIR?==}{>>If this self-contained technical companion is meant for persons who know health campaigns but aren't FHIR specialists, I suggest zooming out a lot with this introductory content. Who is this companion guide intended for? What is the problem FHIR is solving for? Why would I want to use FHIR? How do I know this will work with our current setup? How complex and expensive will it be to implement? How long will it take to implement and who all needs to be involved? I think an infographic might be helpful.<<}{id="c92" by="coitemanuel" at="2026-08-01T13:03:44.539Z"}
 **FHIR** (Fast Healthcare Interoperability Resources) is the modern standard, published by HL7, for representing and exchanging health data. Instead of bespoke file formats, FHIR defines a library of building blocks called **resources** — `Patient`, `Immunization`, `Location`, `Group`, `CarePlan`, and so on — each a structured object with a defined set of fields. A resource can be serialized as JSON (used throughout this document), exchanged over a standard REST API, and validated against its definition. Because every system speaks the same resource vocabulary, two systems that have never met can still understand each other's data.
 
 This IG uses **FHIR Release 4 (R4, version 4.0.1)** — the most widely deployed release and the one WHO's digital-health guidelines target.
@@ -421,8 +421,7 @@ The profiles that model the structure of a campaign: the template (Protocol, §4
 ### 4.2 ICRCampaign — `CarePlan`
 A **specific campaign execution.** It begins life as a microplan (`intent = plan`) and evolves into the record of the campaign implementation as Tasks complete and coverage accumulates against it — the *same* resource is used to support each phase of the campaign. Rounds are sibling ICRCampaigns under a national "umbrella" campaign via `partOf`, and every execution points back at the one versioned protocol.
 
-> [!note] What "round" means in ICR
-> A **round** is a child ICRCampaign execution (`partOf` the umbrella) with its own period and reporting obligation — the Kambia June round vs the Port Loko July round. The `campaign-round` extension carries only the ordinal (round 1, round 2) for repeated passes of the same campaign (a two-round OCV campaign, NIDs round 2). "Round" is *not* the number of campaigns run on a given model — that is answered by querying the executions of a protocol.
+> [!note] What "round" means in ICR A **round** is a child ICRCampaign execution (`partOf` the umbrella) with its own period and reporting obligation — the Kambia June round vs the Port Loko July round. The `campaign-round` extension carries only the ordinal (round 1, round 2) for repeated passes of the same campaign (a two-round OCV campaign, NIDs round 2). "Round" is *not* the number of campaigns run on a given model — that is answered by querying the executions of a protocol.
 
 **Lifecycle — in plain terms.** One CarePlan, two stages. It starts as the **plan** (a microplan: `intent = plan`, `status = draft`), then becomes the **record of what actually happened** as the work is done — `intent` changes to `order` and `status` moves `draft → active → completed`, with Tasks and coverage accumulating against that same resource.
 
@@ -1255,7 +1254,7 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 **Open questions.**
 
 - The geography characteristic is `0..1` so estimates *can* exist without a Location; tightening to `1..1` once pilots confirm every estimate has one is tracked (§13.4).
-- ~~Whether to make `denominator-source` mandatory~~ *(decided v0.1: yes — `1..1` with `govt-estimate`/`unknown` escapes; `estimate-date` stays recommended).*
+- ~~Whether to make~~ `denominator-source` ~~mandatory~~ *(decided v0.1: yes —* `1..1` *with* `govt-estimate`*/*`unknown` *escapes;* `estimate-date` *stays recommended).*
 - Proposed for a later round: a **population-estimation-method + source-raster version/date** (so two `worldpop` estimates become distinguishable) and a **population-vulnerability / equity** characteristic (§13.2).
 ### 5.3 ICRLocation — `Location`
 **Purpose.** The **place model**, and the most-customized ICR resource: a nested administrative hierarchy (6+ levels), operational geography that is *linkable-but-distinct* from admin units, GeoJSON boundaries, and multi-system geospatial identity — GERS IDs as the preferred cross-campaign join key, with P-codes, national codes, and ISO codes as coequal aliases.
@@ -1540,8 +1539,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 ### 6.2 ICRMedicationAdministration — `MedicationAdministration`
 **Purpose.** A **drug administration** in a mass drug administration (MDA) — albendazole, ivermectin, etc. — with the two distinctly-MDA patterns: dose derived from a **dose-pole height band**, and **directly-observed consumption** (the supervised-swallow protocol).
 
-> [!note] {==What a dose pole is==}{>>Needs rephrasing or a formatting change to split this text from the rest of the quote.<<}{id="c24" by="mckinnoj" at="2026-07-14T08:44:25.961Z"}{>>Agreed — the callout title runs into the body text in some renderers. Formatting fix queued for the rewrite (title on its own line).<<}{id="c76" by="claude" at="2026-07-27T14:07:36.000Z" re="c24"}
-> In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
+> [!note] {==What a dose pole is==}{>>Needs rephrasing or a formatting change to split this text from the rest of the quote.<<}{id="c24" by="mckinnoj" at="2026-07-14T08:44:25.961Z"}{>>Agreed — the callout title runs into the body text in some renderers. Formatting fix queued for the rewrite (title on its own line).<<}{id="c76" by="claude" at="2026-07-27T14:07:36.000Z" re="c24"} In PC-NTD MDA the correct dose depends on body weight, which can't be measured door-to-door. The distributor stands the person against a height stick marked with bands and gives the tablet count printed for that band (height as a weight proxy) — e.g. a child at band B gets 2 praziquantel tablets. The `dose-pole-band` extension records the band, making the height→dose decision auditable. A person below the bottom of the pole is too short to dose — captured as `exclusion-reason = under-height-age` (§4.4).
 
 **Properties.**
 
@@ -1674,7 +1672,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 
 A second example, `example-albendazole-supply`, shows the drug-stock side: 3,600 tablets received at a settlement, `suppliedItem.item` coded **ATC** `P02CA03` — the same code as the matching administration (§6.2), so receipt → administration → reconciliation share one drug code — plus a `stock-accountability` record (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓).
 
-#### Aggregate vs individual records — the cross-cutting rule
+Aggregate vs individual records — the cross-cutting rule
 
 > [!note] This rule governs every form-to-FHIR mapping in the IG (including the ESPEN extraction, §4.8) — it is placed here where the drug and ITN examples converge, and §8 restates it as an invariant.
 
