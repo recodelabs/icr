@@ -568,6 +568,27 @@ Usage: #example
 * extension[estimateDate].valueDate = "2026-01-20"
 * extension[isPlanningDenominator].valueBoolean = true
 
+// S8 — the LGA carries TWO estimates side by side: its native GRID3 estimate
+// (above) and a DERIVED estimate that is the sum of its wards' microcensuses
+// (9,800 + 8,400 = 18,200). The competing-estimates pattern carries both; the
+// derivation is recorded in the source CodeableConcept's text.
+Instance: sc-pop-lokoja-sac-wardsum
+InstanceOf: ICRTargetPopulation
+Title: "Scenario — SAC 5–14, Lokoja LGA (derived: sum of ward microcensuses)"
+Usage: #example
+* type = #person
+* actual = false
+* name = "School-aged children 5–14, Lokoja LGA — derived by summing the Felele and Adankolo ward microcensus estimates"
+* quantity = 18200
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(sc-lokoja-lga)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[denominatorSource].valueCodeableConcept.text = "Sum of ward-level CDD microcensus estimates: Felele (9,800) + Adankolo (8,400)"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-03-15"
+* extension[isPlanningDenominator].valueBoolean = false
+
 Instance: sc-pop-felele-sac-micro
 InstanceOf: ICRTargetPopulation
 Title: "Scenario — SAC 5–14, Felele Ward (microcensus)"
