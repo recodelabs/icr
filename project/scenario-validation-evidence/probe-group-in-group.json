@@ -1,0 +1,10 @@
+{
+  "resourceType": "Group",
+  "id": "probe-group-in-group",
+  "meta": {"profile": ["https://icr.healthcampaigns.org/StructureDefinition/ICRDeliveryUnit"]},
+  "type": "person",
+  "actual": true,
+  "code": {"coding": [{"system": "https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs", "code": "community"}]},
+  "member": [{"entity": {"reference": "Group/sc-household-a12"}}],
+  "extension": [{"url": "https://icr.healthcampaigns.org/StructureDefinition/group-location", "valueReference": {"reference": "Location/sc-felele-central"}}]
+}

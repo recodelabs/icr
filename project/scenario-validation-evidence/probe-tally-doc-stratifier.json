@@ -1,0 +1,277 @@
+{
+  "resourceType": "MeasureReport",
+  "id": "sc-tally-felele",
+  "meta": {
+    "profile": [
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/coverage-source",
+      "valueCode": "administrative"
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled",
+      "valueCode": "reconciled"
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/denominator-source",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "microcensus",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs",
+            "display": "Microcensus / enumeration"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/denominator-type",
+      "valueCode": "at-risk"
+    }
+  ],
+  "status": "complete",
+  "type": "summary",
+  "measure": "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage",
+  "subject": {
+    "reference": "Location/sc-felele-central"
+  },
+  "period": {
+    "start": "2026-06-03",
+    "end": "2026-06-06"
+  },
+  "reporter": {
+    "display": "Mariam Adamu (CDD) via Emeka Okafor (supervisor)"
+  },
+  "group": [
+    {
+      "population": [
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "numerator",
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "display": "Numerator"
+              }
+            ]
+          },
+          "count": 312
+        },
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "denominator",
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "display": "Denominator"
+              }
+            ]
+          },
+          "count": 340
+        }
+      ],
+      "measureScore": {
+        "value": 92,
+        "code": "%",
+        "system": "http://unitsofmeasure.org",
+        "unit": "%"
+      },
+      "stratifier": [
+        {
+          "code": [
+            {
+              "coding": [
+                {
+                  "code": "sex",
+                  "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs",
+                  "display": "Sex"
+                }
+              ]
+            }
+          ],
+          "stratum": [
+            {
+              "value": {
+                "text": "female"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 160
+                }
+              ]
+            },
+            {
+              "value": {
+                "text": "male"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 152
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": [
+            {
+              "coding": [
+                {
+                  "code": "disposition",
+                  "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs",
+                  "display": "Disposition"
+                }
+              ]
+            }
+          ],
+          "stratum": [
+            {
+              "value": {
+                "text": "treated"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 312
+                }
+              ]
+            },
+            {
+              "value": {
+                "text": "not treated — absent"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 18
+                }
+              ]
+            },
+            {
+              "value": {
+                "text": "not treated — refused"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 6
+                }
+              ]
+            },
+            {
+              "value": {
+                "text": "not treated — excluded (under-height)"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": [
+            {
+              "text": "directly-observed consumption (local axis — no standard stratifier code)"
+            }
+          ],
+          "stratum": [
+            {
+              "value": {
+                "text": "swallowed under observation"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 305
+                }
+              ]
+            },
+            {
+              "value": {
+                "text": "dispensed, not observed to swallow"
+              },
+              "population": [
+                {
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "numerator",
+                        "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                        "display": "Numerator"
+                      }
+                    ]
+                  },
+                  "count": 7
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

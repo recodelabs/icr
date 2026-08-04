@@ -1,0 +1,16 @@
+{
+  "resourceType": "Task",
+  "id": "probe-task-focus-careplan",
+  "meta": {"profile": ["https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask"]},
+  "status": "completed",
+  "intent": "order",
+  "code": {"text": "Administer MCV — house-to-house mop-up visit (prose §4.4 example shape)"},
+  "for": {"reference": "Group/sc-household-a12"},
+  "focus": {"reference": "CarePlan/sc-kogi-round"},
+  "location": {"reference": "Location/sc-dwelling-a12"},
+  "extension": [
+    {"url": "https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy",
+     "valueCodeableConcept": {"coding": [{"system": "https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs", "code": "house-to-house"}]}},
+    {"url": "https://icr.healthcampaigns.org/StructureDefinition/task-origin", "valueCode": "field-registered"}
+  ]
+}

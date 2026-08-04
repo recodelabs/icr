@@ -1,0 +1,42 @@
+{
+  "resourceType": "MedicationAdministration",
+  "id": "sc-pzq-amina",
+  "meta": {
+    "profile": [
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration"
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/record-origin",
+      "valueCode": "campaign"
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/directly-observed-consumption",
+      "valueBoolean": true
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/dose-pole-band",
+      "valueCodeableConcept": {
+        "text": "Band C (125–137 cm → 3 tablets)"
+      }
+    }
+  ],
+  "status": "completed",
+  "medicationCodeableConcept": {
+    "coding": [
+      {
+        "code": "P02BA01",
+        "system": "http://www.whocc.no/atc",
+        "display": "praziquantel"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/sc-amina"
+  },
+  "effectiveDateTime": "2026-06-05T10:12:00+01:00",
+  "dosage": {
+    "text": "3 tablets (600 mg × 3), dose-pole band C"
+  }
+}

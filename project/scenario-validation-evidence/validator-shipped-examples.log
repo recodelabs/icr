@@ -1,0 +1,182 @@
+FHIR Validation tool Version 6.10.0 (Git# bb739da1c59d). Built 2026-07-31T15:42:30.825Z (3 days old)
+  Java:   17.0.20 from /tmp/claude-1000/-home-mckinnoj-git-icr/67a0e984-8d70-4c7a-80a1-8179a867a7eb/scratchpad/jdk-17.0.20+8-jre on amd64 (64bit). 1952MB available
+  Paths:  Current = /tmp/claude-1000/-home-mckinnoj-git-icr/67a0e984-8d70-4c7a-80a1-8179a867a7eb/scratchpad, Package Cache = /home/mckinnoj/.fhir/packages
+  Params: shipped -version 4.0.1 -ig /home/mckinnoj/git/icr/ig/fsh-generated/resources -tx n/a
+  Locale: /
+  Jurisdiction: None specified (locale = )
+  Note that exceptions and validation failures may happen in the absence of a locale
+Loading
+  Loading FHIR v4.0.1 from hl7.fhir.r4.core#4.0.1
+  Load hl7.terminology.r4#6.2.0 - 4288 resources (00:46.213)
+  Load hl7.fhir.uv.extensions.r4#5.2.0 - 759 resources (00:12.693)
+  Loaded FHIR - 8268 resources (00:00.000)
+  Terminology server null - Version n/a: No Terminology Server (00:00.000)
+  Load hl7.fhir.uv.extensions.r5#5.2.0 - 759 resources (00:02.155)
+  Load hl7.terminology.r5#7.1.0 - 4072 resources (00:04.506)
+  Load hl7.fhir.uv.extensions.r5#5.3.0 - 856 resources (00:00.037)
+  Load hl7.terminology#7.3.0 - 4146 resources (00:10.996)
+  Load hl7.fhir.uv.extensions#5.3.0 - 856 resources (00:00.995)
+* load file: AdverseEvent-example-mda-adverse-event.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+* load file: AdverseEvent-example-aefi.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+* load file: AdverseEvent-example-aefi-serious.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+  Load /home/mckinnoj/git/icr/ig/fsh-generated/resources - 251 resources (00:01.037)
+  Package Summary: [hl7.fhir.r4.core#4.0.1, hl7.fhir.xver-extensions#0.1.0, hl7.terminology.r4#6.2.0, hl7.fhir.uv.extensions.r4#5.2.0, hl7.fhir.uv.extensions.r5#5.2.0, hl7.terminology.r5#7.1.0, hl7.fhir.uv.extensions.r5#5.3.0, hl7.terminology#7.3.0, hl7.fhir.uv.extensions#5.3.0]
+  Terminology Cache at /tmp/default-tx-cache
+  Get set... 
+  ...go! (00:21.021)
+Cached new session. Cache size = 1
+Sources to validate: shipped
+Validating
+  Validate shipped/MedicationAdministration-example-albendazole-administration.json
+ 00:01.631
+  Validate shipped/SupplyDelivery-example-albendazole-supply.json
+ 00:02.839
+  Validate shipped/Task-example-mopup-task.json
+ 00:00.734
+  Validate shipped/MeasureReport-example-admin-coverage.json
+ 00:00.491
+  Validate shipped/Task-example-followup-task.json
+ 00:00.520
+  Validate shipped/MeasureReport-example-survey-coverage.json
+ 00:00.340
+  Validate shipped/MeasureReport-example-mda-treatment-tally.json
+ 00:00.778
+  Validate shipped/Task-example-site-session-task.json
+ 00:00.316
+  Validate shipped/MeasureReport-example-geographic-coverage.json
+ 00:00.405
+  Validate shipped/Immunization-example-mcv-dose.json
+ 00:00.244
+  Validate shipped/Group-example-household.json
+ 00:00.216
+Done. Times: Loading: 01:40.075, validation: 00:08.529 (#11). Memory = 442Mb
+
+-- shipped/MedicationAdministration-example-albendazole-administration.json --------------------------------------------------------------------------------
+*FAILURE*: 1 errors, 3 warnings, 1 notes
+  Information @ MedicationAdministration.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 33, col4): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Error @ MedicationAdministration.dosage (line 46, col4): Constraint failed: mad-1: 'SHALL have at least one of dosage.dose or dosage.rate[x]', validating against Base FHIR Standard
+  Warning @ MedicationAdministration (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 33, col4): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- shipped/SupplyDelivery-example-albendazole-supply.json --------------------------------------------------------------
+Success: 0 errors, 13 warnings, 1 notes
+  Information @ SupplyDelivery.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[0].value.ofType(Quantity) (line 25, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[0].value.ofType(Quantity) (line 25, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[1].value.ofType(Quantity) (line 34, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[1].value.ofType(Quantity) (line 34, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[2].value.ofType(Quantity) (line 43, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[2].value.ofType(Quantity) (line 43, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[3].value.ofType(Quantity) (line 52, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[3].value.ofType(Quantity) (line 52, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 69, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 69, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 75, col6): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 75, col6): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+------------------------------------------------------------------------------------------------------------------------
+
+-- shipped/Task-example-mopup-task.json --------------------------------------------
+Success: 0 errors, 1 warnings, 5 notes
+  Information @ Task.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 19, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.extension[4].value.ofType(CodeableConcept) (line 43, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-missed-reason-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 81, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 81, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+------------------------------------------------------------------------------------
+
+-- shipped/MeasureReport-example-admin-coverage.json ---------------------------------------------------------
+*FAILURE*: 8 errors, 2 warnings, 2 notes
+  Information @ MeasureReport.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.extension[2].value.ofType(CodeableConcept) (line 27, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport.group[0].measureScore (line 76, col8): Unable to validate code '%' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Error @ MeasureReport.group[0].measureScore.unit (line 80, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.system (line 79, col46): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.code (line 78, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.value (line 77, col20): The value is invalid - it must be between 0 and 1
+  Error @ MeasureReport.group[0] (line 49, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#sex' (id = '')
+  Error @ MeasureReport.group[0] (line 49, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#age-band' (id = '')
+  Error @ MeasureReport.group[0] (line 49, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#delivery-strategy' (id = '')
+  Error @ MeasureReport.group[0] (line 49, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#geography' (id = '')
+--------------------------------------------------------------------------------------------------------------
+
+-- shipped/Task-example-followup-task.json -----------------------------------------------
+Success: 0 errors, 1 warnings, 3 notes
+  Information @ Task.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 19, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.extension[2].value.ofType(CodeableConcept) (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-revisit-outcome-cs, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------
+
+-- shipped/MeasureReport-example-survey-coverage.json ----------------------------------------------------------
+*FAILURE*: 8 errors, 2 warnings, 1 notes
+  Information @ MeasureReport.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport.group[0].measureScore (line 42, col8): Unable to validate code '%' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Error @ MeasureReport.group[0] (line 41, col6): The MeasureReport does not include a population for the population with linkId 'Numerator' and code '{1}'
+  Error @ MeasureReport.group[0] (line 41, col6): The MeasureReport does not include a population for the population with linkId 'Denominator' and code '{1}'
+  Error @ MeasureReport.group[0].measureScore.unit (line 46, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.system (line 45, col46): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.code (line 44, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.value (line 43, col20): The value is invalid - it must be between 0 and 1
+  Error @ MeasureReport.group[0] (line 41, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#sex' (id = '')
+  Error @ MeasureReport.group[0] (line 41, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#age-band' (id = '')
+----------------------------------------------------------------------------------------------------------------
+
+-- shipped/MeasureReport-example-mda-treatment-tally.json --------------------------------------------------------------
+*FAILURE*: 4 errors, 2 warnings, 5 notes
+  Information @ MeasureReport.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.extension[2].value.ofType(CodeableConcept) (line 27, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport.group[0].measureScore (line 84, col8): Unable to validate code '%' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[0].code[0] (line 93, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[1].code[0] (line 146, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[2].code[0] (line 199, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Error @ MeasureReport.group[0].measureScore.unit (line 88, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.system (line 87, col46): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.code (line 86, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.value (line 85, col20): The value is invalid - it must be between 0 and 1
+------------------------------------------------------------------------------------------------------------------------
+
+-- shipped/Task-example-site-session-task.json ---------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Task.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 19, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 58, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 58, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+--------------------------------------------------------------------------------------------------
+
+-- shipped/MeasureReport-example-geographic-coverage.json --------------------------------------------------------------
+*FAILURE*: 5 errors, 2 warnings, 2 notes
+  Information @ MeasureReport.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport.group[0].measureScore (line 68, col8): Unable to validate code '%' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[0].code[0] (line 77, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Error @ MeasureReport.group[0].measureScore.unit (line 72, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.system (line 71, col46): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.code (line 70, col20): A measureScore for this Measure Scoring (proportion) should not have units
+  Error @ MeasureReport.group[0].measureScore.value (line 69, col20): The value is invalid - it must be between 0 and 1
+  Error @ MeasureReport.group[0] (line 41, col6): The MeasureReport does not include a stratifier for the stratifier with code 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs#geography' (id = '')
+------------------------------------------------------------------------------------------------------------------------
+
+-- shipped/Immunization-example-mcv-dose.json --------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Immunization.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Warning @ Immunization (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Immunization.vaccineCode (line 27, col4): Could not confirm that the codes provided are from the extensible value set http://hl7.org/fhir/ValueSet/vaccine-code because there is no terminology service, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRImmunizationEvent
+------------------------------------------------------------------------------------------------
+
+-- shipped/Group-example-household.json --------------------------------------------
+Success: 0 errors, 1 warnings, 3 notes
+  Information @ Group.meta.tag[0] (line 6, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs, validating against Base FHIR Standard
+  Information @ Group.code (line 26, col4): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 26, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------
+
+Done. Times: Loading: 01:40.075, validation: 00:08.529 (#11). Max Memory = 1Gb

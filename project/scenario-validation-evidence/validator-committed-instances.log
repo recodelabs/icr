@@ -1,0 +1,912 @@
+FHIR Validation tool Version 6.10.0 (Git# bb739da1c59d). Built 2026-07-31T15:42:30.825Z (3 days old)
+  Java:   17.0.20 from /tmp/claude-1000/-home-mckinnoj-git-icr/67a0e984-8d70-4c7a-80a1-8179a867a7eb/scratchpad/jdk-17.0.20+8-jre on amd64 (64bit). 1952MB available
+  Paths:  Current = /tmp/claude-1000/-home-mckinnoj-git-icr/67a0e984-8d70-4c7a-80a1-8179a867a7eb/scratchpad, Package Cache = /home/mckinnoj/.fhir/packages
+  Params: sc-instances -version 4.0.1 -ig /home/mckinnoj/git/icr/ig/fsh-generated/resources -tx n/a
+  Locale: /
+  Jurisdiction: None specified (locale = )
+  Note that exceptions and validation failures may happen in the absence of a locale
+Loading
+  Loading FHIR v4.0.1 from hl7.fhir.r4.core#4.0.1
+  Load hl7.terminology.r4#6.2.0 - 4288 resources (00:33.500)
+  Load hl7.fhir.uv.extensions.r4#5.2.0 - 759 resources (00:07.855)
+  Loaded FHIR - 8268 resources (00:00.000)
+  Terminology server null - Version n/a: No Terminology Server (00:00.000)
+  Load hl7.fhir.uv.extensions.r5#5.2.0 - 759 resources (00:04.120)
+  Load hl7.terminology.r5#7.1.0 - 4072 resources (00:08.493)
+  Load hl7.fhir.uv.extensions.r5#5.3.0 - 856 resources (00:00.037)
+  Load hl7.terminology#7.3.0 - 4146 resources (00:11.350)
+  Load hl7.fhir.uv.extensions#5.3.0 - 856 resources (00:00.833)
+* load file: AdverseEvent-example-mda-adverse-event.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+* load file: AdverseEvent-example-aefi.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+* load file: AdverseEvent-example-aefi-serious.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+  Load /home/mckinnoj/git/icr/ig/fsh-generated/resources - 251 resources (00:00.917)
+  Package Summary: [hl7.fhir.r4.core#4.0.1, hl7.fhir.xver-extensions#0.1.0, hl7.terminology.r4#6.2.0, hl7.fhir.uv.extensions.r4#5.2.0, hl7.fhir.uv.extensions.r5#5.2.0, hl7.terminology.r5#7.1.0, hl7.fhir.uv.extensions.r5#5.3.0, hl7.terminology#7.3.0, hl7.fhir.uv.extensions#5.3.0]
+  Terminology Cache at /tmp/default-tx-cache
+  Get set... 
+  ...go! (00:17.889)
+Cached new session. Cache size = 1
+Sources to validate: sc-instances
+Validating
+  Validate sc-instances/CarePlan-sc-mda-umbrella.json
+ 00:02.423
+  Validate sc-instances/SupplyDelivery-sc-supply-post-to-cdd.json
+ 00:01.366
+  Validate sc-instances/Location-sc-kogi-state-store.json
+ 00:00.107
+  Validate sc-instances/MedicationAdministration-sc-pzq-kemi-notdone.json
+ 00:00.119
+  Validate sc-instances/Location-sc-structure-g07-kitchen.json
+ 00:00.088
+  Validate sc-instances/Group-sc-pop-lokoja-sac-grid3.json
+ 00:00.238
+  Validate sc-instances/MeasureReport-sc-cov-round-realtime.json
+ 00:00.314
+  Validate sc-instances/Task-sc-task-household-a12.json
+ 00:00.215
+  Validate sc-instances/Group-sc-pop-kogi-sac-censusproj.json
+ 00:00.254
+  Validate sc-instances/Group-sc-pop-kogi-sac-grid3.json
+ 00:00.163
+  Validate sc-instances/Location-sc-sa-grouping.json
+ 00:00.165
+  Validate sc-instances/Location-sc-felele-ward.json
+ 00:00.131
+  Validate sc-instances/Task-sc-task-mr-house-visit.json
+ 00:00.247
+  Validate sc-instances/Location-sc-national-store.json
+ 00:00.094
+  Validate sc-instances/Immunization-sc-mcv-refusal.json
+ 00:00.191
+  Validate sc-instances/Location-sc-sa-cross.json
+ 00:00.184
+  Validate sc-instances/SupplyDelivery-sc-supply-state-to-lokoja.json
+ 00:01.789
+  Validate sc-instances/MedicationAdministration-sc-pzq-amina.json
+ 00:00.203
+  Validate sc-instances/CarePlan-sc-mr-round.json
+ 00:00.196
+  Validate sc-instances/MedicationAdministration-sc-pzq-tunde.json
+ 00:00.195
+  Validate sc-instances/Task-sc-task-ward-mobilization.json
+ 00:00.502
+  Validate sc-instances/Group-sc-pop-kogi-sac-hmis.json
+ 00:00.329
+  Validate sc-instances/Patient-sc-musa-head.json
+ 00:00.174
+  Validate sc-instances/Task-sc-task-logistics-leg.json
+ 00:00.304
+  Validate sc-instances/Location-sc-dwelling-a12.json
+ 00:00.105
+  Validate sc-instances/MeasureReport-sc-cov-round-reconciled.json
+ 00:00.497
+  Validate sc-instances/Group-sc-pop-footprint-sac.json
+ 00:00.280
+  Validate sc-instances/CarePlan-sc-itn-round.json
+ 00:00.128
+  Validate sc-instances/Group-sc-pop-kogi-total-hmis.json
+ 00:00.246
+  Validate sc-instances/Patient-sc-baba.json
+ 00:00.114
+  Validate sc-instances/SupplyDelivery-sc-supply-lokoja-to-post.json
+ 00:00.221
+  Validate sc-instances/Location-sc-felele-health-post.json
+ 00:00.115
+  Validate sc-instances/Group-sc-pop-felele-sac-micro.json
+ 00:00.409
+  Validate sc-instances/MeasureReport-sc-tally-felele.json
+ 00:00.524
+  Validate sc-instances/ActivityDefinition-sc-logistics-activity.json
+ 00:00.116
+  Validate sc-instances/Group-sc-pop-lokoja-residents.json
+ 00:00.164
+  Validate sc-instances/Patient-sc-hafsat.json
+ 00:00.080
+  Validate sc-instances/PlanDefinition-sc-irs-protocol.json
+ 00:00.212
+  Validate sc-instances/Group-sc-pop-kogi-total-grid3.json
+ 00:00.346
+  Validate sc-instances/Group-sc-community-felele.json
+ 00:00.129
+  Validate sc-instances/Patient-sc-kemi.json
+ 00:00.151
+  Validate sc-instances/Group-sc-school-cohort-felele.json
+ 00:00.162
+  Validate sc-instances/Location-sc-nigeria.json
+ 00:00.180
+  Validate sc-instances/Location-sc-ajaokuta-lga.json
+ 00:00.150
+  Validate sc-instances/CareTeam-sc-cdd-team-felele.json
+ 00:00.382
+  Validate sc-instances/Location-sc-adankolo-ward.json
+ 00:00.121
+  Validate sc-instances/Task-sc-task-school-session.json
+ 00:00.340
+  Validate sc-instances/MeasureReport-sc-cov-felele-ward.json
+ 00:00.766
+  Validate sc-instances/Location-sc-lokoja-lga.json
+ 00:00.173
+  Validate sc-instances/Location-sc-felele-central.json
+ 00:00.149
+  Validate sc-instances/ActivityDefinition-sc-irs-spray-activity.json
+ 00:00.063
+  Validate sc-instances/Location-sc-geregu-ward.json
+ 00:00.151
+  Validate sc-instances/Location-sc-target-footprint.json
+ 00:00.205
+  Validate sc-instances/Patient-sc-zainab.json
+ 00:00.129
+  Validate sc-instances/Group-sc-household-g07.json
+ 00:00.123
+  Validate sc-instances/Location-sc-sa-nested.json
+ 00:00.179
+  Validate sc-instances/Group-sc-pop-adankolo-sac-micro.json
+ 00:00.468
+  Validate sc-instances/PlanDefinition-sc-mr-protocol.json
+ 00:00.362
+  Validate sc-instances/Group-sc-pop-nigeria-2plus.json
+ 00:00.460
+  Validate sc-instances/Immunization-sc-mcv-dose-ok.json
+ 00:00.327
+  Validate sc-instances/SupplyDelivery-sc-itn-post-delivery.json
+ 00:00.196
+  Validate sc-instances/Group-sc-community-geregu.json
+ 00:00.278
+  Validate sc-instances/Group-sc-pop-kogi-mr-children.json
+ 00:00.287
+  Validate sc-instances/Location-sc-felele-school.json
+ 00:00.385
+  Validate sc-instances/Task-sc-task-community-felele.json
+ 00:00.443
+  Validate sc-instances/ActivityDefinition-sc-pzq-activity.json
+ 00:00.207
+  Validate sc-instances/SupplyDelivery-sc-supply-national-to-state.json
+ 00:00.331
+  Validate sc-instances/Group-sc-household-a12.json
+ 00:00.101
+  Validate sc-instances/Group-sc-pop-nigeria-sac.json
+ 00:00.244
+  Validate sc-instances/SupplyDelivery-sc-itn-household-handover.json
+ 00:00.267
+  Validate sc-instances/Location-sc-kogi-state.json
+ 00:00.248
+  Validate sc-instances/Task-sc-task-spray-kitchen.json
+ 00:00.382
+  Validate sc-instances/Patient-sc-tunde.json
+ 00:00.143
+  Validate sc-instances/Task-sc-task-settlement-sweep.json
+ 00:00.449
+  Validate sc-instances/Location-sc-geregu-riverside.json
+ 00:00.276
+  Validate sc-instances/Location-sc-dwelling-g07.json
+ 00:00.280
+  Validate sc-instances/Location-sc-lokoja-lga-store.json
+ 00:00.169
+  Validate sc-instances/PlanDefinition-sc-sch-protocol.json
+ 00:00.602
+  Validate sc-instances/SupplyDelivery-sc-supply-return-to-state.json
+ 00:00.173
+  Validate sc-instances/Group-sc-pop-geregu-residents.json
+ 00:00.384
+  Validate sc-instances/MedicationAdministration-sc-medadmin-community-felele.json
+ 00:00.263
+  Validate sc-instances/Group-sc-pop-kogi-total-censusproj.json
+ 00:00.202
+  Validate sc-instances/Task-sc-task-spray-main.json
+ 00:00.243
+  Validate sc-instances/Patient-sc-amina.json
+ 00:00.156
+  Validate sc-instances/CarePlan-sc-kogi-round.json
+ 00:00.482
+  Validate sc-instances/Location-sc-structure-g07-main.json
+ 00:00.164
+  Validate sc-instances/CarePlan-sc-irs-round.json
+ 00:00.217
+  Validate sc-instances/PlanDefinition-sc-itn-protocol.json
+ 00:00.330
+Done. Times: Loading: 01:25.280, validation: 00:26.732 (#88). Memory = 458Mb
+
+-- sc-instances/CarePlan-sc-mda-umbrella.json --------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ CarePlan.instantiatesCanonical[0] (line 18, col69): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/PlanDefinition/sc-sch-protocol', validating against Base FHIR Standard
+  Information @ CarePlan.category[0] (line 24, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs, validating against Base FHIR Standard
+  Warning @ CarePlan (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-supply-post-to-cdd.json --------------------------------------------------------------
+Success: 0 errors, 13 warnings, 0 notes
+  Warning @ SupplyDelivery.extension[1].extension[0].value.ofType(Quantity) (line 18, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[0].value.ofType(Quantity) (line 18, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[1].value.ofType(Quantity) (line 27, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[1].value.ofType(Quantity) (line 27, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[2].value.ofType(Quantity) (line 36, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[2].value.ofType(Quantity) (line 36, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[3].value.ofType(Quantity) (line 45, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[3].value.ofType(Quantity) (line 45, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 62, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 62, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 68, col6): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 68, col6): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-kogi-state-store.json ------------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 21, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------
+
+-- sc-instances/MedicationAdministration-sc-pzq-kemi-notdone.json ----------------------------------------------------------------------
+Success: 0 errors, 3 warnings, 0 notes
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 25, col4): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ MedicationAdministration (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 25, col4): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration
+----------------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-structure-g07-kitchen.json -----------------------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-lokoja-sac-grid3.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/MeasureReport-sc-cov-round-realtime.json -------------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ MeasureReport.extension[2].value.ofType(CodeableConcept) (line 20, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[0].code[0] (line 79, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[1].code[0] (line 132, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[2].code[0] (line 185, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-household-a12.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 3 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 58, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 58, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-sac-censusproj.json ----------------------------------------------------------
+Success: 0 errors, 1 warnings, 10 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].code (line 54, col8): Binding for path Group.characteristic[1].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].code (line 54, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].value.ofType(CodeableConcept) (line 63, col8): Binding for path Group.characteristic[1].value.ofType(CodeableConcept) in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[1] (line 53, col6): This element does not match any known slice defined in the profile https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation (this may not be a problem, but you should check that it's not intended to match a slice), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[1].code (line 54, col8): Binding for path Group.characteristic[1].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[1].value.ofType(CodeableConcept) (line 63, col8): Binding for path Group.characteristic[1].value.ofType(CodeableConcept) in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-sac-grid3.json -----------------------------------------------------
+Success: 0 errors, 1 warnings, 10 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].code (line 54, col8): Binding for path Group.characteristic[1].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].code (line 54, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].value.ofType(CodeableConcept) (line 63, col8): Binding for path Group.characteristic[1].value.ofType(CodeableConcept) in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[1] (line 53, col6): This element does not match any known slice defined in the profile https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation (this may not be a problem, but you should check that it's not intended to match a slice), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[1].code (line 54, col8): Binding for path Group.characteristic[1].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[1].value.ofType(CodeableConcept) (line 63, col8): Binding for path Group.characteristic[1].value.ofType(CodeableConcept) in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-sa-grouping.json -------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 41, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-felele-ward.json -------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-mr-house-visit.json -----------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.extension[3].value.ofType(CodeableConcept) (line 32, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-noncompliance-reason-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 63, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 63, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-national-store.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 21, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/Immunization-sc-mcv-refusal.json -----------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Immunization.statusReason (line 16, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-noncompliance-reason-cs, validating against Base FHIR Standard
+  Warning @ Immunization (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Immunization.vaccineCode (line 26, col4): Could not confirm that the codes provided are from the extensible value set http://hl7.org/fhir/ValueSet/vaccine-code because there is no terminology service, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRImmunizationEvent
+------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-sa-cross.json ----------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 35, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-supply-state-to-lokoja.json ------------------------------------------------------------------
+Success: 0 errors, 15 warnings, 0 notes
+  Warning @ SupplyDelivery.extension[1].extension[0].value.ofType(Quantity) (line 18, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[0].value.ofType(Quantity) (line 18, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[1].value.ofType(Quantity) (line 27, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[1].value.ofType(Quantity) (line 27, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[2].value.ofType(Quantity) (line 36, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[2].value.ofType(Quantity) (line 36, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[3].value.ofType(Quantity) (line 45, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[3].value.ofType(Quantity) (line 45, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[4].value.ofType(Quantity) (line 54, col12): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.extension[1].extension[4].value.ofType(Quantity) (line 54, col12): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 71, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 71, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 77, col6): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 77, col6): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/MedicationAdministration-sc-pzq-amina.json ---------------------------------------------------------------
+Success: 0 errors, 4 warnings, 0 notes
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 26, col4): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ MedicationAdministration.dosage.dose (line 41, col6): Unable to validate code 'mg' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ MedicationAdministration (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 26, col4): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration
+--------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/CarePlan-sc-mr-round.json ----------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ CarePlan.instantiatesCanonical[0] (line 18, col68): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/PlanDefinition/sc-mr-protocol', validating against Base FHIR Standard
+  Information @ CarePlan.category[0] (line 24, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs, validating against Base FHIR Standard
+  Warning @ CarePlan (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------
+
+-- sc-instances/MedicationAdministration-sc-pzq-tunde.json ---------------------------------------------------------------
+Success: 0 errors, 4 warnings, 0 notes
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 26, col4): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ MedicationAdministration.dosage.dose (line 41, col6): Unable to validate code 'mg' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ MedicationAdministration (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 26, col4): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration
+--------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-ward-mobilization.json --------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.extension[2].extension[1].value.ofType(CodeableConcept) (line 34, col12): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-communication-channel-cs, validating against Base FHIR Standard
+  Information @ Task.extension[2].extension[2].value.ofType(CodeableConcept) (line 46, col12): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-communication-channel-cs, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.extension[2] (line 26, col6): This element does not match any known slice defined in the profile https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask (this may not be a problem, but you should check that it's not intended to match a slice), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-sac-hmis.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 10 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].code (line 54, col8): Binding for path Group.characteristic[1].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].code (line 54, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[1].value.ofType(CodeableConcept) (line 63, col8): Binding for path Group.characteristic[1].value.ofType(CodeableConcept) in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[1] (line 53, col6): This element does not match any known slice defined in the profile https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation (this may not be a problem, but you should check that it's not intended to match a slice), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[1].code (line 54, col8): Binding for path Group.characteristic[1].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+  Information @ Group.characteristic[1].value.ofType(CodeableConcept) (line 63, col8): Binding for path Group.characteristic[1].value.ofType(CodeableConcept) in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-musa-head.json ----------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-logistics-leg.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 3 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 47, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 47, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-dwelling-a12.json --------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------
+
+-- sc-instances/MeasureReport-sc-cov-round-reconciled.json ---------------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ MeasureReport.extension[2].value.ofType(CodeableConcept) (line 20, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[0].code[0] (line 79, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[1].code[0] (line 132, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[2].code[0] (line 185, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-footprint-sac.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/CarePlan-sc-itn-round.json -----------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ CarePlan.instantiatesCanonical[0] (line 18, col69): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/PlanDefinition/sc-itn-protocol', validating against Base FHIR Standard
+  Information @ CarePlan.category[0] (line 24, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs, validating against Base FHIR Standard
+  Warning @ CarePlan (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-total-hmis.json ------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+--------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-baba.json -----------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-supply-lokoja-to-post.json -----------------------------------------------------------------
+Success: 0 errors, 5 warnings, 0 notes
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 23, col6): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 23, col6): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-felele-health-post.json --------------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 21, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-felele-sac-micro.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/MeasureReport-sc-tally-felele.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ MeasureReport.extension[2].value.ofType(CodeableConcept) (line 20, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[0].code[0] (line 82, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[1].code[0] (line 135, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[2].code[0] (line 264, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/ActivityDefinition-sc-logistics-activity.json ------------------------------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ ActivityDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-lokoja-residents.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-hafsat.json -------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------
+
+-- sc-instances/PlanDefinition-sc-irs-protocol.json --------------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ PlanDefinition.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ PlanDefinition.action[0].definition.ofType(canonical) (line 38, col104): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/ActivityDefinition/sc-irs-spray-activity', validating against Base FHIR Standard
+  Warning @ PlanDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-total-grid3.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-community-felele.json ---------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Group.code (line 19, col4): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 19, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-kemi.json -----------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-school-cohort-felele.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Group.code (line 19, col4): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 19, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-nigeria.json ---------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-ajaokuta-lga.json --------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------
+
+-- sc-instances/CareTeam-sc-cdd-team-felele.json -----------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ CareTeam.participant[0].role[0] (line 44, col10): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-team-role, validating against Base FHIR Standard
+  Information @ CareTeam.participant[1].role[0] (line 60, col10): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-team-role, validating against Base FHIR Standard
+  Warning @ CareTeam (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-adankolo-ward.json ---------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-school-session.json -----------------------------------------------------
+Success: 0 errors, 1 warnings, 6 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.extension[3].value.ofType(CodeableConcept) (line 32, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-exclusion-reason-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 66, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[1].type (line 72, col8): Binding for path Task.output[1].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 66, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[1].type (line 72, col8): Binding for path Task.output[1].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+------------------------------------------------------------------------------------------------------
+
+-- sc-instances/MeasureReport-sc-cov-felele-ward.json ----------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ MeasureReport.extension[2].value.ofType(CodeableConcept) (line 20, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[0].code[0] (line 82, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[1].code[0] (line 135, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Information @ MeasureReport.group[0].stratifier[2].code[0] (line 188, col14): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs, validating against Base FHIR Standard
+  Warning @ MeasureReport (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-lokoja-lga.json ------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-felele-central.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Location.extension[0].value.ofType(CodeableConcept) (line 18, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-settlement-type-cs, validating against Base FHIR Standard
+  Information @ Location.type[0] (line 41, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/ActivityDefinition-sc-irs-spray-activity.json ------------------------------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ ActivityDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-geregu-ward.json -------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-target-footprint.json ------------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 35, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-zainab.json -------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-household-g07.json ------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Group.code (line 19, col4): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 19, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-sa-nested.json -----------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 29, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-adankolo-sac-micro.json ---------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 39, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+--------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/PlanDefinition-sc-mr-protocol.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ PlanDefinition.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ PlanDefinition.extension[1].value.ofType(CodeableConcept) (line 24, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Warning @ PlanDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-nigeria-2plus.json ----------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/Immunization-sc-mcv-dose-ok.json -----------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Warning @ Immunization (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Immunization.vaccineCode (line 20, col4): Could not confirm that the codes provided are from the extensible value set http://hl7.org/fhir/ValueSet/vaccine-code because there is no terminology service, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRImmunizationEvent
+------------------------------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-itn-post-delivery.json -------------------------------------------------------------
+Success: 0 errors, 4 warnings, 0 notes
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): Unable to validate code '{Net}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): UCUM Codes that contain human readable annotations like {Net} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept) (line 23, col6): No code provided, and a code should be provided from the value set 'ICR Supplied Item' (https://icr.healthcampaigns.org/ValueSet/icr-supplied-item), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+----------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-community-geregu.json ---------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Group.code (line 19, col4): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 19, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-mr-children.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-felele-school.json ---------------------------------------------------
+Success: 0 errors, 1 warnings, 3 notes
+  Information @ Location.extension[0].value.ofType(CodeableConcept) (line 18, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Location.type[0] (line 41, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Information @ Location.type[1] (line 50, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-community-felele.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 12 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.extension[3].value.ofType(CodeableConcept) (line 32, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-noncompliance-reason-cs, validating against Base FHIR Standard
+  Information @ Task.reasonCode (line 48, col4): Binding for path Task.reasonCode in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 69, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[1].type (line 75, col8): Binding for path Task.output[1].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[2].type (line 83, col8): Binding for path Task.output[2].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[3].type (line 91, col8): Binding for path Task.output[3].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.reasonCode (line 48, col4): Binding for path Task.reasonCode in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[0].type (line 69, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[1].type (line 75, col8): Binding for path Task.output[1].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[2].type (line 83, col8): Binding for path Task.output[2].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[3].type (line 91, col8): Binding for path Task.output[3].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/ActivityDefinition-sc-pzq-activity.json ------------------------------------------------------------
+Success: 0 errors, 2 warnings, 0 notes
+  Warning @ ActivityDefinition.product.ofType(CodeableConcept).coding[0].system (line 15, col4): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ ActivityDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-supply-national-to-state.json --------------------------------------------------------------------
+Success: 0 errors, 5 warnings, 0 notes
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 23, col6): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 23, col6): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+------------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-household-a12.json ------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Group.code (line 19, col4): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 19, col4): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-nigeria-sac.json --------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+------------------------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-itn-household-handover.json ------------------------------------------------------------------
+Success: 0 errors, 4 warnings, 0 notes
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): Unable to validate code '{Net}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): UCUM Codes that contain human readable annotations like {Net} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept) (line 23, col6): No code provided, and a code should be provided from the value set 'ICR Supplied Item' (https://icr.healthcampaigns.org/ValueSet/icr-supplied-item), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-kogi-state.json ------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-spray-kitchen.json ----------------------------------------------------
+Success: 0 errors, 3 warnings, 7 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 47, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[1].type (line 55, col8): Binding for path Task.output[1].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task.output[1].value.ofType(Quantity) (line 58, col8): Unable to validate code '{sachet}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ Task.output[1].value.ofType(Quantity) (line 58, col8): UCUM Codes that contain human readable annotations like {sachet} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, validating against Base FHIR Standard
+  Information @ Task.output[2].type (line 66, col8): Binding for path Task.output[2].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 47, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[1].type (line 55, col8): Binding for path Task.output[1].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[2].type (line 66, col8): Binding for path Task.output[2].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+----------------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-tunde.json ------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-settlement-sweep.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 3 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 54, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 54, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-geregu-riverside.json ------------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Location.extension[0].value.ofType(CodeableConcept) (line 18, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-settlement-type-cs, validating against Base FHIR Standard
+  Information @ Location.type[0] (line 41, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-dwelling-g07.json --------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 27, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-lokoja-lga-store.json ------------------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Location.type[0] (line 21, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs, validating against Base FHIR Standard
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------------------
+
+-- sc-instances/PlanDefinition-sc-sch-protocol.json --------------------------------------------------------
+Success: 0 errors, 2 warnings, 4 notes
+  Information @ PlanDefinition.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ PlanDefinition.extension[1].value.ofType(CodeableConcept) (line 24, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Warning @ PlanDefinition.subject.ofType(CodeableConcept) (line 47, col4): No code provided, and a code should be provided from the value set 'Subject type' (http://hl7.org/fhir/ValueSet/subject-type|4.0.1), validating against Base FHIR Standard
+  Information @ PlanDefinition.action[0].definition.ofType(canonical) (line 60, col98): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/ActivityDefinition/sc-pzq-activity', validating against Base FHIR Standard
+  Information @ PlanDefinition.action[1].definition.ofType(canonical) (line 64, col104): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/ActivityDefinition/sc-logistics-activity', validating against Base FHIR Standard
+  Warning @ PlanDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/SupplyDelivery-sc-supply-return-to-state.json ------------------------------------------------------------------
+Success: 0 errors, 5 warnings, 0 notes
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.quantity (line 17, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 23, col6): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ SupplyDelivery (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ SupplyDelivery.suppliedItem.item.ofType(CodeableConcept).coding[0].system (line 23, col6): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-geregu-residents.json -------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+----------------------------------------------------------------------------------------------------------
+
+-- sc-instances/MedicationAdministration-sc-medadmin-community-felele.json -------------------------------------------------------------------------------
+Success: 0 errors, 5 warnings, 0 notes
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 20, col4): A definition for CodeSystem 'http://www.whocc.no/atc' could not be found, so the code cannot be validated, validating against Base FHIR Standard
+  Warning @ MedicationAdministration.dosage.dose (line 38, col6): Unable to validate code '{tbl}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ MedicationAdministration.dosage.dose (line 38, col6): UCUM Codes that contain human readable annotations like {tbl} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, and the Quantity.unit 'tablets' SHOULD contain the annotation (it does not), validating against Base FHIR Standard
+  Warning @ MedicationAdministration (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Warning @ MedicationAdministration.medication.ofType(CodeableConcept).coding[0].system (line 20, col4): A definition for CodeSystem 'http://www.whocc.no/atc' version 'null' could not be found, so the code cannot be validated. Valid versions: 2.0.1, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRMedicationAdministration
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Group-sc-pop-kogi-total-censusproj.json ------------------------------------------------------------
+Success: 0 errors, 1 warnings, 4 notes
+  Information @ Group.extension[0].value.ofType(CodeableConcept) (line 14, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Group.characteristic[0].code (line 35, col8): Binding for path Group.characteristic[0].code in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation
+--------------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/Task-sc-task-spray-main.json -------------------------------------------------
+Success: 0 errors, 3 warnings, 7 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 47, col8): Binding for path Task.output[0].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Task.output[1].type (line 55, col8): Binding for path Task.output[1].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task.output[1].value.ofType(Quantity) (line 58, col8): Unable to validate code '{sachet}' in system 'http://unitsofmeasure.org' because the validator is running without terminology services, validating against Base FHIR Standard
+  Warning @ Task.output[1].value.ofType(Quantity) (line 58, col8): UCUM Codes that contain human readable annotations like {sachet} can be misleading (e.g. they are ignored when comparing units). Best Practice is not to depend on annotations in the UCUM code, so this usage should be checked, validating against Base FHIR Standard
+  Information @ Task.output[2].type (line 66, col8): Binding for path Task.output[2].type in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Task|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Information @ Task.output[0].type (line 47, col8): Binding for path Task.output[0].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[1].type (line 55, col8): Binding for path Task.output[1].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Information @ Task.output[2].type (line 66, col8): Binding for path Task.output[2].type in profile StructureDefinition[https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask] has no source, so can't be checked, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+----------------------------------------------------------------------------------------------
+
+-- sc-instances/Patient-sc-amina.json ------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Patient (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------
+
+-- sc-instances/CarePlan-sc-kogi-round.json ------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ CarePlan.instantiatesCanonical[0] (line 38, col69): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/PlanDefinition/sc-sch-protocol', validating against Base FHIR Standard
+  Information @ CarePlan.category[0] (line 44, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs, validating against Base FHIR Standard
+  Warning @ CarePlan (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------------
+
+-- sc-instances/Location-sc-structure-g07-main.json --------------------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Location (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------------
+
+-- sc-instances/CarePlan-sc-irs-round.json -----------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ CarePlan.instantiatesCanonical[0] (line 18, col69): A definition could not be found for Canonical URL 'https://icr.healthcampaigns.org/PlanDefinition/sc-irs-protocol', validating against Base FHIR Standard
+  Information @ CarePlan.category[0] (line 24, col6): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs, validating against Base FHIR Standard
+  Warning @ CarePlan (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------
+
+-- sc-instances/PlanDefinition-sc-itn-protocol.json --------------------------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ PlanDefinition.extension[0].value.ofType(CodeableConcept) (line 12, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Information @ PlanDefinition.extension[1].value.ofType(CodeableConcept) (line 24, col8): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Warning @ PlanDefinition (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+------------------------------------------------------------------------------------------------------------
+
+Done. Times: Loading: 01:25.280, validation: 00:26.732 (#88). Max Memory = 1Gb

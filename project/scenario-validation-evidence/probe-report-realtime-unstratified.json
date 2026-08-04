@@ -1,0 +1,81 @@
+{
+  "resourceType": "MeasureReport",
+  "id": "sc-cov-round-realtime",
+  "meta": {
+    "profile": [
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRAdministrativeCoverage"
+    ]
+  },
+  "extension": [
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/coverage-source",
+      "valueCode": "administrative"
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled",
+      "valueCode": "realtime"
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/denominator-source",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "microcensus",
+            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs",
+            "display": "Microcensus / enumeration"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/denominator-type",
+      "valueCode": "at-risk"
+    }
+  ],
+  "status": "complete",
+  "type": "summary",
+  "measure": "https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage",
+  "period": {
+    "start": "2026-06-01",
+    "end": "2026-06-06"
+  },
+  "reporter": {
+    "display": "Kogi State NTD coordinator"
+  },
+  "group": [
+    {
+      "population": [
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "numerator",
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "display": "Numerator"
+              }
+            ]
+          },
+          "count": 15900
+        },
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "denominator",
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "display": "Denominator"
+              }
+            ]
+          },
+          "count": 17500
+        }
+      ],
+      "measureScore": {
+        "value": 91,
+        "code": "%",
+        "system": "http://unitsofmeasure.org",
+        "unit": "%"
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "resourceType": "Group",
+  "id": "probe-group-in-group-base",
+  "type": "person",
+  "actual": true,
+  "member": [{"entity": {"reference": "Group/sc-household-a12"}}]
+}

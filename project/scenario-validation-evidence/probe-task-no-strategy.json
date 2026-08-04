@@ -1,0 +1,13 @@
+{
+  "resourceType": "Task",
+  "id": "probe-task-no-strategy",
+  "meta": {"profile": ["https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask"]},
+  "status": "completed",
+  "intent": "order",
+  "code": {"text": "Deliver drugs to district staging location"},
+  "focus": {"reference": "Location/sc-lokoja-lga-store"},
+  "location": {"reference": "Location/sc-lokoja-lga-store"},
+  "extension": [
+    {"url": "https://icr.healthcampaigns.org/StructureDefinition/task-origin", "valueCode": "pre-planned"}
+  ]
+}

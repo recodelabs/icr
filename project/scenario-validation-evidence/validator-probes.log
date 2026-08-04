@@ -1,0 +1,65 @@
+FHIR Validation tool Version 6.10.0 (Git# bb739da1c59d). Built 2026-07-31T15:42:30.825Z (3 days old)
+  Java:   17.0.20 from /tmp/claude-1000/-home-mckinnoj-git-icr/67a0e984-8d70-4c7a-80a1-8179a867a7eb/scratchpad/jdk-17.0.20+8-jre on amd64 (64bit). 1952MB available
+  Paths:  Current = /tmp/claude-1000/-home-mckinnoj-git-icr/67a0e984-8d70-4c7a-80a1-8179a867a7eb/scratchpad, Package Cache = /home/mckinnoj/.fhir/packages
+  Params: probes -version 4.0.1 -ig /home/mckinnoj/git/icr/ig/fsh-generated/resources -tx n/a
+  Locale: /
+  Jurisdiction: None specified (locale = )
+  Note that exceptions and validation failures may happen in the absence of a locale
+Loading
+  Loading FHIR v4.0.1 from hl7.fhir.r4.core#4.0.1
+  Load hl7.terminology.r4#6.2.0 - 4288 resources (00:07.224)
+  Load hl7.fhir.uv.extensions.r4#5.2.0 - 759 resources (00:01.578)
+  Loaded FHIR - 8268 resources (00:00.000)
+  Terminology server null - Version n/a: No Terminology Server (00:00.000)
+  Load hl7.fhir.uv.extensions.r5#5.2.0 - 759 resources (00:01.278)
+  Load hl7.terminology.r5#7.1.0 - 4072 resources (00:00.993)
+  Load hl7.fhir.uv.extensions.r5#5.3.0 - 856 resources (00:00.015)
+  Load hl7.terminology#7.3.0 - 4146 resources (00:00.962)
+  Load hl7.fhir.uv.extensions#5.3.0 - 856 resources (00:00.726)
+* load file: AdverseEvent-example-mda-adverse-event.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+* load file: AdverseEvent-example-aefi.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+* load file: AdverseEvent-example-aefi-serious.json - ignored due to error: The resource AdverseEvent cannot be converted from R4 to R5
+  Load /home/mckinnoj/git/icr/ig/fsh-generated/resources - 251 resources (00:00.189)
+  Package Summary: [hl7.fhir.r4.core#4.0.1, hl7.fhir.xver-extensions#0.1.0, hl7.terminology.r4#6.2.0, hl7.fhir.uv.extensions.r4#5.2.0, hl7.fhir.uv.extensions.r5#5.2.0, hl7.terminology.r5#7.1.0, hl7.fhir.uv.extensions.r5#5.3.0, hl7.terminology#7.3.0, hl7.fhir.uv.extensions#5.3.0]
+  Terminology Cache at /tmp/default-tx-cache
+  Get set... 
+  ...go! (00:03.455)
+Cached new session. Cache size = 1
+Sources to validate: probes
+Validating
+  Validate probes/probe-task-no-strategy.json
+ 00:00.378
+  Validate probes/probe-task-focus-careplan.json
+ 00:00.081
+  Validate probes/probe-group-in-group-base.json
+ 00:00.030
+  Validate probes/probe-group-in-group.json
+ 00:00.044
+Done. Times: Loading: 00:16.493, validation: 00:00.536 (#4). Memory = 597Mb
+
+-- probes/probe-task-no-strategy.json ------------------------------------------
+*FAILURE*: 2 errors, 1 warnings, 0 notes
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+  Error @ Task (line 1, col2): Task.extension: minimum required = 2, but only found 1 (from https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask), validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+  Error @ Task (line 1, col2): Slice 'Task.extension:deliveryStrategy' for extension 'https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy': a matching slice is required, but not found (from https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask). Note that other slices are allowed in addition to this required slice, validating against https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignTask
+--------------------------------------------------------------------------------
+
+-- probes/probe-task-focus-careplan.json ---------------------------------------------
+Success: 0 errors, 1 warnings, 1 notes
+  Information @ Task.extension[0].value.ofType(CodeableConcept) (line 13, col151): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs, validating against Base FHIR Standard
+  Warning @ Task (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------
+
+-- probes/probe-group-in-group-base.json ---------------------------------------------
+Success: 0 errors, 1 warnings, 0 notes
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+--------------------------------------------------------------------------------------
+
+-- probes/probe-group-in-group.json ----------------------------------------
+Success: 0 errors, 1 warnings, 2 notes
+  Information @ Group.code (line 7, col120): Binding for path Group.code in profile StructureDefinition[http://hl7.org/fhir/StructureDefinition/Group|4.0.1] has no source, so can't be checked, validating against Base FHIR Standard
+  Information @ Group.code (line 7, col120): Reference to draft CodeSystem https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs, validating against Base FHIR Standard
+  Warning @ Group (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+----------------------------------------------------------------------------
+
+Done. Times: Loading: 00:16.493, validation: 00:00.536 (#4). Max Memory = 1Gb
