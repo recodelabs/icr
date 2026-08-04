@@ -8,7 +8,7 @@
 
 // =============================================================================
 // Cluster 1a — Admin hierarchy: country → state → LGA → ward → settlement → dwelling
-// (S5 depth, S10 drill-down, S21 cross-LGA wards)
+// (S1 depth, S6 drill-down, S21 cross-LGA wards)
 // =============================================================================
 
 Instance: sc-nigeria
@@ -152,7 +152,7 @@ Usage: #example
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2c4d5e6f7a8b9-building-g07"
 
-// S16 — one Location, two campaign roles: a school that is also a community
+// S20 — one Location, two campaign roles: a school that is also a community
 // distribution point. Base Location.type is 0..*, so both codes ride one resource.
 Instance: sc-felele-school
 InstanceOf: ICRLocation
@@ -170,7 +170,7 @@ Usage: #example
 * identifier[gers].value = "08f2c4d5e6f7a8b9-building-felele-school"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#school "School-based"
 
-// --- Supply-chain node Locations (S2, S19) -----------------------------------
+// --- Supply-chain node Locations (S12, S13) -----------------------------------
 
 Instance: sc-national-store
 InstanceOf: ICRLocation
@@ -212,7 +212,7 @@ Usage: #example
 * type = $LocationType#facility "Health facility"
 * partOf = Reference(sc-felele-central)
 
-// --- IRS structures (Satellite A, S9) ----------------------------------------
+// --- IRS structures (Satellite A, S18) ----------------------------------------
 
 Instance: sc-structure-g07-main
 InstanceOf: ICRLocation
@@ -238,7 +238,7 @@ Usage: #example
 
 // =============================================================================
 // Cluster 1b — Operational geography: supervisory areas in three configurations
-// (S15) and the cross-LGA target footprint (S21)
+// (S3) and the cross-LGA target footprint (S21)
 // =============================================================================
 
 // Config 1: a supervisory area CUTTING ACROSS wards — overlays two wards, neither
@@ -297,7 +297,7 @@ Usage: #example
 * extension[overlaysAdminUnit][1].valueReference = Reference(sc-geregu-ward)
 
 // =============================================================================
-// Cluster 1c — People and delivery-unit Groups (S1, S10, S12, S14, S18)
+// Cluster 1c — People and delivery-unit Groups (S15, S6, S7, S8, S11)
 // =============================================================================
 
 Instance: sc-amina
@@ -366,7 +366,7 @@ Usage: #example
 * gender = #male
 * birthDate = "1978-12-30"
 
-// Household A12: fully enumerated household at dwelling A12 (S10 drill-down anchor).
+// Household A12: fully enumerated household at dwelling A12 (S6 drill-down anchor).
 Instance: sc-household-a12
 InstanceOf: ICRDeliveryUnit
 Title: "Scenario — Household A12 (Bello family)"
@@ -392,7 +392,7 @@ Usage: #example
 * member[1].entity = Reference(sc-zainab)
 * extension[groupLocation].valueReference = Reference(sc-dwelling-g07)
 
-// Community delivery units (S12, S14): same profile as the households, different
+// Community delivery units (S7, S8): same profile as the households, different
 // group-kind code. The household→community containment is NOT a Group link — it is
 // inferred: household's dwelling partOf settlement == community's group-location.
 Instance: sc-community-felele
@@ -417,7 +417,7 @@ Usage: #example
 * quantity = 1400
 * extension[groupLocation].valueReference = Reference(sc-geregu-riverside)
 
-// S1 — the school-based delivery unit: enrolled children as a school cohort.
+// S15 — the school-based delivery unit: enrolled children as a school cohort.
 Instance: sc-school-cohort-felele
 InstanceOf: ICRDeliveryUnit
 Title: "Scenario — Felele Model Primary School cohort"
@@ -433,13 +433,13 @@ Usage: #example
 
 // =============================================================================
 // Cluster 1d — Population estimates
-// S6: three sources for Kogi school-aged children, each paired with the SAME
+// S17: three sources for Kogi school-aged children, each paired with the SAME
 //     source's total-population estimate (sibling Groups, denominator-type axis).
-// S8: different sources at different admin levels + the ward→LGA sum-check pair.
+// S5: different sources at different admin levels + the ward→LGA sum-check pair.
 // S21: the round denominator scoped to the cross-LGA footprint.
 // =============================================================================
 
-// --- S6: Kogi State — census projection (SAC + total) ------------------------
+// --- S17: Kogi State — census projection (SAC + total) ------------------------
 
 Instance: sc-pop-kogi-sac-censusproj
 InstanceOf: ICRTargetPopulation
@@ -475,7 +475,7 @@ Usage: #example
 * extension[denominatorType].valueCode = #total-population
 * extension[estimateDate].valueDate = "2025-12-01"
 
-// --- S6: Kogi State — GRID3 (SAC + total) ------------------------------------
+// --- S17: Kogi State — GRID3 (SAC + total) ------------------------------------
 
 Instance: sc-pop-kogi-sac-grid3
 InstanceOf: ICRTargetPopulation
@@ -511,7 +511,7 @@ Usage: #example
 * extension[denominatorType].valueCode = #total-population
 * extension[estimateDate].valueDate = "2026-01-20"
 
-// --- S6: Kogi State — HMIS (SAC + total) -------------------------------------
+// --- S17: Kogi State — HMIS (SAC + total) -------------------------------------
 
 Instance: sc-pop-kogi-sac-hmis
 InstanceOf: ICRTargetPopulation
@@ -547,7 +547,7 @@ Usage: #example
 * extension[denominatorType].valueCode = #total-population
 * extension[estimateDate].valueDate = "2026-02-10"
 
-// --- S8: different sources at different levels + ward→LGA sum-check ----------
+// --- S5: different sources at different levels + ward→LGA sum-check ----------
 // State = census projection (above); LGA = GRID3; wards = microcensus.
 // Sum-check demo: Felele 9,800 + Adankolo 8,400 = 18,200 vs Lokoja GRID3 19,500
 // (−6.7% divergence, visible but only via a query convention).
@@ -568,7 +568,7 @@ Usage: #example
 * extension[estimateDate].valueDate = "2026-01-20"
 * extension[isPlanningDenominator].valueBoolean = true
 
-// S8 — the LGA carries TWO estimates side by side: its native GRID3 estimate
+// S5 — the LGA carries TWO estimates side by side: its native GRID3 estimate
 // (above) and a DERIVED estimate that is the sum of its wards' microcensuses
 // (9,800 + 8,400 = 18,200). The competing-estimates pattern carries both; the
 // derivation is recorded in the source CodeableConcept's text.
@@ -717,10 +717,10 @@ Usage: #example
 * extension[isPlanningDenominator].valueBoolean = true
 
 // =============================================================================
-// Cluster 2 — Campaign architecture (S2, S4, S5, S21) + team
+// Cluster 2 — Campaign architecture (S12, S16, S1, S21) + team
 // =============================================================================
 
-// The SOP: national SCH policy treats EVERYONE 2 years and older (S4 baseline).
+// The SOP: national SCH policy treats EVERYONE 2 years and older (S16 baseline).
 Instance: sc-sch-protocol
 InstanceOf: ICRCampaignProtocol
 Title: "Scenario — Nigeria SCH MDA protocol (praziquantel, everyone 2y+)"
@@ -749,7 +749,7 @@ Usage: #example
 * productCodeableConcept = $ATC#P02BA01 "praziquantel"
 * dosage.text = "40 mg/kg equivalent via dose-pole height band; tablet count per band"
 
-// S2 — a SUPPORTING activity, not an intervention: moving drugs to the district
+// S12 — a SUPPORTING activity, not an intervention: moving drugs to the district
 // staging location. The activity `code` is unbound, so the logistics work type is
 // definable; the friction appears on its Tasks (see sc-task-logistics-leg).
 Instance: sc-logistics-activity
@@ -787,7 +787,7 @@ Usage: #example
 * period.end = "2026-12-15"
 * extension[planningDenominator].valueReference = Reference(sc-pop-nigeria-2plus)
 
-// S4 — the DEVIATION: the protocol targets everyone 2y+, but this round's PZQ stock
+// S16 — the DEVIATION: the protocol targets everyone 2y+, but this round's PZQ stock
 // expires in August and covers only school-aged children, so the round's subject is
 // the narrower SAC denominator. The deviation is visible by comparing round.subject
 // against the protocol's subject template; the REASON lives only in free text (note).
@@ -917,15 +917,15 @@ Usage: #example
 * activity[0].reference = Reference(sc-task-mr-house-visit)
 
 // =============================================================================
-// Cluster 3 — Tasks (S1, S2, S5, S9, S11, S13) and delivery events
-// (S3, S17, S18). NOTE ON focus/for: the compiled FSH profile constrains
+// Cluster 3 — Tasks (S15, S12, S1, S18, S4, S19) and delivery events
+// (S10, S14, S11). NOTE ON focus/for: the compiled FSH profile constrains
 // Task.focus (1..1, DeliveryUnit|Location|Patient) as the TARGET slot and leaves
 // Task.for unconstrained; the prose doc (§4.4, v0.28.1) documents the OPPOSITE
 // (for = target 1..1, focus = workflow lineage). Instances follow the FSH.
 // Both fields are populated so the divergence is visible in the data.
 // =============================================================================
 
-// S1 — school-based SCH distribution: a Type-A site session at the school, with
+// S15 — school-based SCH distribution: a Type-A site session at the school, with
 // the enrolled cohort Group as the unit acted on.
 Instance: sc-task-school-session
 InstanceOf: ICRCampaignTask
@@ -949,10 +949,10 @@ Usage: #example
 * output[1].type.text = "Treatment event (person-level)"
 * output[1].valueReference = Reference(sc-pzq-tunde)
 
-// S2 — the logistics leg as a Task. The activity code is free, but the profile
+// S12 — the logistics leg as a Task. The activity code is free, but the profile
 // REQUIRES delivery-strategy 1..1 from a value set of population-facing delivery
 // modes — none of which describes a stock movement. #mobile is used under protest;
-// this forced mislabel is the S2 finding.
+// this forced mislabel is the S12 finding.
 Instance: sc-task-logistics-leg
 InstanceOf: ICRCampaignTask
 Title: "Scenario — Deliver PZQ to Lokoja LGA staging store"
@@ -970,9 +970,9 @@ Usage: #example
 * output.type.text = "Stock receipt at staging store"
 * output.valueReference = Reference(sc-supply-state-to-lokoja)
 
-// S13 — one distributor, BOTH counts: people treated (treatment home) and tablets
+// S19 — one distributor, BOTH counts: people treated (treatment home) and tablets
 // dispensed (stock home), on their two respective resources off one Task.
-// S7 — this Task is the real-time stream (same-day CDD phone submission).
+// S9 — this Task is the real-time stream (same-day CDD phone submission).
 Instance: sc-task-community-felele
 InstanceOf: ICRCampaignTask
 Title: "Scenario — Community-directed MDA, Felele-Central"
@@ -1000,7 +1000,7 @@ Usage: #example
 * output[3].type.text = "Disaggregated treatment tally"
 * output[3].valueReference = Reference(sc-tally-felele)
 
-// S10 — the household visit that treats Amina; S7 — reconciled lineage (this record
+// S6 — the household visit that treats Amina; S9 — reconciled lineage (this record
 // was corrected at close-out after the paper register was reconciled).
 Instance: sc-task-household-a12
 InstanceOf: ICRCampaignTask
@@ -1022,7 +1022,7 @@ Usage: #example
 * output.type.text = "Treatment event (person-level)"
 * output.valueReference = Reference(sc-pzq-amina)
 
-// S11 — Task targeting a SETTLEMENT-level Location.
+// S4 — Task targeting a SETTLEMENT-level Location.
 Instance: sc-task-settlement-sweep
 InstanceOf: ICRCampaignTask
 Title: "Scenario — Settlement mop-up sweep, Geregu-Riverside"
@@ -1042,9 +1042,9 @@ Usage: #example
 * output.type.text = "Persons treated on sweep"
 * output.valueUnsignedInt = 44
 
-// S11 — Task targeting a WARD-level Location. A ward has no delivery strategy of
+// S4 — Task targeting a WARD-level Location. A ward has no delivery strategy of
 // its own; #community-directed is the least-wrong required code (same friction
-// family as S2).
+// family as S12).
 Instance: sc-task-ward-mobilization
 InstanceOf: ICRCampaignTask
 Title: "Scenario — Ward-level pre-round mobilization, Felele Ward"
@@ -1064,7 +1064,7 @@ Usage: #example
 * extension[SocialMobilization].extension[channel][0].valueCodeableConcept = $CommunicationChannel#town-criers "Town criers"
 * extension[SocialMobilization].extension[channel][1].valueCodeableConcept = $CommunicationChannel#schools "Schools"
 
-// S9 — IRS: the Task IS the event; per-house insecticide quantity rides Task.output.
+// S18 — IRS: the Task IS the event; per-house insecticide quantity rides Task.output.
 Instance: sc-task-spray-main
 InstanceOf: ICRCampaignTask
 Title: "Scenario — Spray structure G07 main building"
@@ -1107,7 +1107,7 @@ Usage: #example
 * output[2].type.text = "Rooms sprayed"
 * output[2].valueUnsignedInt = 1
 
-// S3 — the MR SIA house visit where the caregiver refuses: visit-level refusal
+// S10 — the MR SIA house visit where the caregiver refuses: visit-level refusal
 // reason on the Task (the IG's mainline mechanism).
 Instance: sc-task-mr-house-visit
 InstanceOf: ICRCampaignTask
@@ -1130,7 +1130,7 @@ Usage: #example
 
 // --- Delivery events ----------------------------------------------------------
 
-// S10 — Amina's treatment: the person-level anchor of the drill-down chain.
+// S6 — Amina's treatment: the person-level anchor of the drill-down chain.
 Instance: sc-pzq-amina
 InstanceOf: ICRMedicationAdministration
 Title: "Scenario — Praziquantel to Amina Bello (household visit)"
@@ -1145,7 +1145,7 @@ Usage: #example
 * extension[directlyObserved].valueBoolean = true
 * extension[dosePoleBand].valueCodeableConcept.text = "Band C (125–137 cm → 3 tablets)"
 
-// S1 — the dose to a student during the school session.
+// S15 — the dose to a student during the school session.
 Instance: sc-pzq-tunde
 InstanceOf: ICRMedicationAdministration
 Title: "Scenario — Praziquantel to Tunde Ojo (school session)"
@@ -1160,7 +1160,7 @@ Usage: #example
 * extension[directlyObserved].valueBoolean = true
 * extension[dosePoleBand].valueCodeableConcept.text = "Band C (125–137 cm → 3 tablets)"
 
-// S18 — the register-level Group-subject administration. directlyObserved=true here
+// S11 — the register-level Group-subject administration. directlyObserved=true here
 // can only mean "the DOC protocol was applied to this administration" — it cannot
 // say WHO swallowed. The partial-observation numbers live in the tally's strata.
 Instance: sc-medadmin-community-felele
@@ -1175,12 +1175,12 @@ Usage: #example
 * dosage.text = "Dose-pole banded; 650 tablets dispensed across 312 persons"
 // mad-1 requires dosage.dose; on a Group-subject administration the only coherent
 // value is the TOTAL dispensed — per-person dose varies by dose-pole band and is
-// unrecoverable from this record (S18 semantic blur, see validation report).
+// unrecoverable from this record (S11 semantic blur, see validation report).
 * dosage.dose = 650 '{tbl}' "tablets"
 * extension[recordOrigin].valueCode = #campaign
 * extension[directlyObserved].valueBoolean = true
 
-// S18 — the person-level contrast: Kemi received tablets but was NOT observed to
+// S11 — the person-level contrast: Kemi received tablets but was NOT observed to
 // swallow and spat them out; recorded as status=not-done with a reason.
 Instance: sc-kemi
 InstanceOf: ICRPatient
@@ -1205,7 +1205,7 @@ Usage: #example
 * extension[recordOrigin].valueCode = #campaign
 * extension[directlyObserved].valueBoolean = false
 
-// S17 — vaccine dose carrying lotNumber AND expirationDate side by side.
+// S14 — vaccine dose carrying lotNumber AND expirationDate side by side.
 Instance: sc-mcv-dose-ok
 InstanceOf: ICRImmunizationEvent
 Title: "Scenario — MR dose to Tunde Ojo (lot + expiry)"
@@ -1223,7 +1223,7 @@ Usage: #example
 * extension[recordOrigin].valueCode = #campaign
 * extension[priorDoseStatus].valueCode = #previously-received
 
-// S3 — the refusal, person-level: Immunization status=not-done + statusReason,
+// S10 — the refusal, person-level: Immunization status=not-done + statusReason,
 // carrying the refusal reason "concerned about negative side effects".
 Instance: sc-mcv-refusal
 InstanceOf: ICRImmunizationEvent
@@ -1239,10 +1239,10 @@ Usage: #example
 * extension[recordOrigin].valueCode = #campaign
 
 // =============================================================================
-// Cluster 4 — Supply chain (S2, S19, Satellite B) and coverage (S5, S7, S8, S13, S18)
+// Cluster 4 — Supply chain (S12, S13, Satellite B) and coverage (S1, S9, S5, S19, S11)
 // =============================================================================
 
-// S19 leg 1 — national store → state store (upstream custody transfer).
+// S13 leg 1 — national store → state store (upstream custody transfer).
 Instance: sc-supply-national-to-state
 InstanceOf: ICRSupplyDelivery
 Title: "Scenario — PZQ transfer: national store → Kogi state store"
@@ -1255,7 +1255,7 @@ Usage: #example
 * destination = Reference(sc-kogi-state-store)
 * extension[recordOrigin].valueCode = #campaign
 
-// S19 leg 2 / S2 — state store → LGA staging store. Stock-accountability here is
+// S13 leg 2 / S12 — state store → LGA staging store. Stock-accountability here is
 // the RECEIVING node's ledger. Note the ledger identity received = used + remaining
 // + notUsable + returned does NOT balance at a mid-chain node: 120,000 received but
 // 102,000 went onward as separate SupplyDeliveries, for which the extension has no
@@ -1278,7 +1278,7 @@ Usage: #example
 * extension[stockAccountability].extension[returned].valueQuantity = 4000 '{tbl}' "tablets"
 * extension[stockAccountability].extension[concordant].valueBoolean = false
 
-// S19 leg 3 — LGA staging → ward health post (onward issue, its own SupplyDelivery).
+// S13 leg 3 — LGA staging → ward health post (onward issue, its own SupplyDelivery).
 Instance: sc-supply-lokoja-to-post
 InstanceOf: ICRSupplyDelivery
 Title: "Scenario — PZQ transfer: Lokoja staging → Felele health post"
@@ -1291,7 +1291,7 @@ Usage: #example
 * destination = Reference(sc-felele-health-post)
 * extension[recordOrigin].valueCode = #campaign
 
-// S19 leg 4 — health post → CDD. The receiving party is a PERSON, not a place:
+// S13 leg 4 — health post → CDD. The receiving party is a PERSON, not a place:
 // destination (Location-only) cannot name the CDD; receiver carries her.
 // This node's ledger DOES balance: 800 = 650 used + 140 remaining + 10 notUsable.
 Instance: sc-supply-post-to-cdd
@@ -1312,7 +1312,7 @@ Usage: #example
 * extension[stockAccountability].extension[notUsable].valueQuantity = 10 '{tbl}' "tablets"
 * extension[stockAccountability].extension[concordant].valueBoolean = true
 
-// S19 leg 5 — the return leg back UP the chain (near-expiry stock sent back).
+// S13 leg 5 — the return leg back UP the chain (near-expiry stock sent back).
 Instance: sc-supply-return-to-state
 InstanceOf: ICRSupplyDelivery
 Title: "Scenario — PZQ return: Lokoja staging → Kogi state store (near-expiry)"
@@ -1325,7 +1325,7 @@ Usage: #example
 * destination = Reference(sc-kogi-state-store)
 * extension[recordOrigin].valueCode = #campaign
 
-// Satellite B / S19 — the ITN pair: an upstream transfer and a last-mile handover
+// Satellite B / S13 — the ITN pair: an upstream transfer and a last-mile handover
 // share one resource type, distinguished only by the destination's level.
 Instance: sc-itn-post-delivery
 InstanceOf: ICRSupplyDelivery
@@ -1351,9 +1351,9 @@ Usage: #example
 * destination = Reference(sc-dwelling-a12)
 * extension[recordOrigin].valueCode = #campaign
 
-// --- Coverage (S5, S7, S8, S13, S18) -----------------------------------------
+// --- Coverage (S1, S9, S5, S19, S11) -----------------------------------------
 
-// S7 — the REAL-TIME stream: campaign-night figure from the CDD phone submissions,
+// S9 — the REAL-TIME stream: campaign-night figure from the CDD phone submissions,
 // before cleaning. Feeds the dashboard.
 Instance: sc-cov-round-realtime
 InstanceOf: ICRAdministrativeCoverage
@@ -1399,7 +1399,7 @@ Usage: #example
 * extension[denominatorType].valueCode = #at-risk
 * extension[dataLineage].valueCode = #realtime
 
-// S7 — the RECONCILED stream: same round, same measure, corrected at close-out
+// S9 — the RECONCILED stream: same round, same measure, corrected at close-out
 // (duplicate register rows removed, late paper tallies added). Exported to ESPEN.
 Instance: sc-cov-round-reconciled
 InstanceOf: ICRAdministrativeCoverage
@@ -1442,7 +1442,7 @@ Usage: #example
 * extension[denominatorType].valueCode = #at-risk
 * extension[dataLineage].valueCode = #reconciled
 
-// S5 — ward-level coverage without a ward CarePlan: geography scoping via
+// S1 — ward-level coverage without a ward CarePlan: geography scoping via
 // MeasureReport.subject (base-R4 element, allowed but NOT profiled/MS in the IG).
 Instance: sc-cov-felele-ward
 InstanceOf: ICRAdministrativeCoverage
@@ -1486,9 +1486,9 @@ Usage: #example
 * extension[denominatorType].valueCode = #at-risk
 * extension[dataLineage].valueCode = #reconciled
 
-// S13/S18 — the community tally: sex × disposition, PLUS a locally-defined
+// S19/S11 — the community tally: sex × disposition, PLUS a locally-defined
 // "directly-observed consumption" stratifier (no standard code exists in
-// ICRCoverageStratifierCS — carried as text, which is the S18 gap made visible).
+// ICRCoverageStratifierCS — carried as text, which is the S11 gap made visible).
 Instance: sc-tally-felele
 InstanceOf: ICRAdministrativeCoverage
 Title: "Scenario — Felele-Central community treatment tally (stratified)"
@@ -1525,7 +1525,7 @@ Usage: #example
 * group.stratifier[1].stratum[3].value.text = "not treated — excluded (under-height)"
 * group.stratifier[1].stratum[3].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.stratifier[1].stratum[3].population[0].count = 4
-// S18 — the partial-swallow split. There is NO standard stratifier axis for
+// S11 — the partial-swallow split. There is NO standard stratifier axis for
 // directly-observed consumption (ICRCoverageStratifierCS has none, and a locally-
 // added stratifier fails full validation because it has no match in the Measure
 // definition — see probe-tally-doc-stratifier in the validation report). The split
