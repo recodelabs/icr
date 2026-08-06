@@ -173,7 +173,7 @@ The canonical `https://icr.healthcampaigns.org` is the project-controlled domain
 | Layer | Count | Artifacts |
 | --- | --- | --- |
 | **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
-| **Profiles — population & geography** | 4   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location) |
+| **Profiles — population & geography** | 5   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location), ICRFacilityOrganization (Organization — the accountable facility entity, mCSD pairing) |
 | **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
 | **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRSupervisionReport (QuestionnaireResponse) |
@@ -1293,6 +1293,7 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 | `physicalType` | MS  |     | CodeableConcept | The base-FHIR shape — jurisdiction / site / building / household. |
 | `type` | MS  |     | CodeableConcept, **extensible** → ICRLocationTypeVS | The ICR location type — `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area`. Base `type` is `0..*`, so one place may carry several (a school serving as a distribution point carries both `school` and `community-distribution-point`); alternatively a campaign-lifecycle service point is modelled as its own `temporary-post` Location at the same GPS. |
 | `position` | MS  |     |     | GPS point (longitude/latitude). |
+| `managingOrganization` | MS  | 0..1 | `Reference(ICRFacilityOrganization)` only | For facilities: the accountable facility Organization (the mCSD pairing, see below). Absent on admin units and other non-facility places. |
 | `identifier` | MS  |     | **sliced by** `system` (open): `gers` 0..1 MS, `pcode` 0..1 MS, `national` 0..*,* `iso` *0..* | Multi-system identity. **≥1 identifier required when** `type = admin-unit` (invariant `icr-loc-admin-id`). |
 | `extension[boundary]` (`location-boundary-geojson`) | MS  | 0..1 | Attachment, `contentType` fixed `application/geo+json` | The GeoJSON geometry (a Polygon/MultiPolygon shape, or a Point). |
 | `extension[deliveryStrategy]` |     | 0..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | For delivery sites (fixed/temporary posts): the strategy this site serves. |
@@ -1379,6 +1380,28 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 - **Overture release version has no field yet.** FHIR `Identifier` has no version slot. Awaiting the Overture-side answer (does Overture expose a stable release identifier, and in what form) before modelling it — likely a small `gers-release` extension on the identifier slice.
 - `partOf` **strict-typing vs widening.** `partOf` is constrained to `Reference(ICRLocation)`, keeping the whole ancestor chain ICR-conformant and queryable — but you can't hang an ICR site directly under a Location from a pre-existing national MFL/GIS without re-profiling that parent. The relief valve is to widen `partOf` to `Reference(Location)`. Open design decision, paired with the national/ISO admin-code work.
 - The proposed `location-ancestors` breadcrumb extension is not yet in the IG.
+
+#### The facility pairing — ICRFacilityOrganization (`Organization`)
+
+**Purpose.** A health facility is two things, and the IG models both — the standard mCSD/OpenHIE facility-registry pattern. The **Organization** is the conceptual/legal entity: the accountable thing that owns registry codes, classification, ownership, and contact. The **Location** is the physical place: GPS, physical type, geography. The link runs `Location.managingOrganization` → Organization. Both resources are created for every facility, even 1:1, because the pairing cleanly separates two hierarchies that real health systems keep distinct:
+
+- **`Organization.partOf` is the administrative *reporting* hierarchy** — facility → LGA/district health office → state/national agency. Reporting structure, not geography.
+- **`Location.partOf` stays the *geographic* hierarchy** — facility → ward → district. A facility can report to one authority while sitting in territory that authority does not govern; the pairing is what lets both facts be true at once.
+
+**Where facility metadata goes.** `Organization.type` is the **source of truth for facility classification**, carrying three coding axes: the generic `prov` (Healthcare Provider), the national tier from **ICRFacilityTypeVS** (`primary`/`secondary`/`tertiary`, with the country-specific kind — "Primary Health Center", "Health Post" — as display/text), and ownership from **ICROwnershipVS** (`public`, `private-for-profit`, `faith-based`, …; base Organization has no ownership element, so a type coding is the convention). Registry identifiers (national MFL codes — e.g. Nigeria NHFR facility code and uid) live on `Organization.identifier`, because they identify the entity; the paired Location keeps only place identifiers (GERS, GRID3 ids). `Location.type` keeps the generic `facility` functional code and is *not* authoritative for classification. Per-axis formal slicing of `Organization.type` is deferred to the mCSD-alignment pass (§13.3).
+
+**Properties (ICRFacilityOrganization).**
+
+| Element | Flags | Card. | Type / Binding | Description |
+| --- | --- | --- | --- | --- |
+| `active` | MS  |     | boolean | Operational status of the entity. |
+| `name` | MS  | 1..1 | string | The facility's registered name. |
+| `type` | MS  | 1..* | CodeableConcept | The three axes: `prov` + national tier (**extensible** → ICRFacilityTypeVS) + ownership (**extensible** → ICROwnershipVS). |
+| `identifier` | MS  |     | Identifier | National facility-registry identity (MFL/NHFR codes, GERS place ID). |
+| `partOf` | MS  |     | `Reference(ICRFacilityOrganization \| Organization)` | Administrative reporting hierarchy — deliberately independent of the geographic `Location.partOf` chain. |
+| `telecom` | MS  |     | ContactPoint | Facility contact — contact data belongs to the entity. |
+
+**Scope.** The georegistry rule (§7.7) applies unchanged: identify/classify/locate/contact only. Programme facts about a facility (stock, readiness, staffing) reference the pair; they never live in it.
 ### 5.4 ICRPatient — `Patient` (the registered individual)
 **Purpose.** The individual person — enumerated within a delivery unit (household or community), or captured standalone as the subject of a person-level event with no Group at all. The chain is plain FHIR: a household (or community) is an `ICRDeliveryUnit` (Group, §5.1); its `member`s are `ICRPatient`s; each dose or treatment given to a member is an `Immunization`/`MedicationAdministration` whose `patient`/`subject` is that `ICRPatient` (§6). The profile is aligned to WHO's `IMMZ.Patient`, so a registered campaign member is a WHO-conformant immunization subject carrying a stable cross-campaign identity.
 
@@ -1974,6 +1997,8 @@ These are the design rules that recur across the profiles — the things to hold
 | **ICRDoseHistoryCS** *(forms-v1)* | `zero-dose`, `previously-received`, `no-recall` (3) | —   | prior-dose-status ext (**required**); value space of the `dose-history` stratifier — the polio SIA never/previously/no-recall split |
 | **ICRRevisitOutcomeCS** *(forms-v1)* | `already-vaccinated`, `vaccinated-on-revisit`, `still-missing` (3) | —   | revisit-outcome ext (**extensible**) — outcome of a follow-up revisit |
 | **ICRSettlementTypeCS** *(forms-v1)* | `ordinary`, `urban`, `rural`, `urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`, `immigrant`, `other` (11) | —   | settlement-type ext (**extensible**) — vulnerability/special-population axis for HTRA targeting |
+| **ICRFacilityTypeCS** *(facility-pairing)* | `primary`, `secondary`, `tertiary`, `unknown` (4) | —   | ICRFacilityOrganization.type (**extensible**) — the national MFL tier; the country-specific kind ("Primary Health Center", "Health Post") travels as display/text or a country localization |
+| **ICROwnershipCS** *(facility-pairing)* | `public`, `private-for-profit`, `private-not-for-profit`, `faith-based`, `military`, `unknown` (6) | —   | ICRFacilityOrganization.type (**extensible**) — ownership as a second type axis (base Organization has no ownership element; the mCSD/OpenHIE convention) |
 | **ICRNTDDiseaseCS** *(espen-forms)* | `lf`, `oncho`, `schisto`, `sth`, `trachoma` (5) | —   | ESPEN MDA disease-scope axis (bound in the espen-forms instruments, §4.8) — the PC-NTDs an MDA campaign addresses |
 | **ICRMDAMedicinePackageCS** *(espen-forms)* | `ivm`, `ivm-alb`, `ivm-alb-dec`, `alb`, `meb`, `pzq`, `pzq-alb`, `pzq-meb`, `azm-tab`, `azm-susp`, `tetra` (11) | —   | ESPEN MDA medicine-package axis (§4.8) — single drugs and standard co-administration combinations |
 
