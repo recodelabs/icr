@@ -855,3 +855,37 @@ Usage: #example
 * period.end = "2026-09-18"
 * extension[targetGeography].valueReference = Reference(example-district)
 * extension[planningDenominator].valueReference = Reference(example-target-population-sac)
+
+// mCSD-style facility pairing: the Organization is the accountable entity
+// (registry codes, classification, ownership, reporting hierarchy); the
+// Location is the physical place, linked via managingOrganization.
+
+Instance: example-facility-org
+InstanceOf: ICRFacilityOrganization
+Title: "Example Facility Organization — Rokupr CHC"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* active = true
+* name = "Rokupr Community Health Centre"
+* type[+].coding = $OrgType#prov "Healthcare Provider"
+* type[+].coding = $FacilityType#primary "Primary care facility"
+* type[=].text = "Community Health Centre"
+* type[+].coding = $Ownership#public "Public"
+* identifier[+].system = $RegistryId
+* identifier[=].value = "SL-MFL-0421"
+
+Instance: example-facility
+InstanceOf: ICRLocation
+Title: "Example Facility — Rokupr CHC (place)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* name = "Rokupr Community Health Centre"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#si "Site"
+* type = $LocationType#facility "Health facility"
+* partOf = Reference(example-settlement)
+* managingOrganization = Reference(example-facility-org)
+* position.longitude = -12.9465
+* position.latitude = 9.0140
+* identifier[gers].system = $GERSId
+* identifier[gers].value = "08f2a3b4c5d6e7f8-place-chc-example"

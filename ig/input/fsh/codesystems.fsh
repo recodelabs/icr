@@ -408,3 +408,47 @@ Description: "Project/programme provenance tags applied as meta.tag on example i
 * #mr-sia "MR SIA (Sierra Leone)" "The worked Sierra Leone measles-rubella SIA scenario (working doc §11): protocol, umbrella + round campaigns, site-session/mop-up/follow-up tasks, dose, AEFIs, and the admin-vs-survey coverage pair."
 * #mda "MDA (Rokupr)" "The community-directed albendazole MDA thread: drug supply, community task, register entry, stratified treatment tally, geographic coverage, and supervision."
 * #gallery "Gallery" "Standalone activity-gallery pieces demonstrating other campaign types (ITN distribution, IRS)."
+
+CodeSystem: ICRFacilityTypeCS
+Id: icr-facility-type-cs
+Title: "ICR Facility Type"
+Description: "National facility-classification tiers for the mCSD-style facility Organization (working doc §5.3 facility pairing). The authoritative classification axis lives on Organization.type — not Location.type — because facility level is an administrative designation (funding, staffing norms, reporting), which is an Organization concern. Codes are the broad tiers shared across national MFLs; the country-specific kind (e.g. Nigeria NHFR 'Primary Health Center' vs 'Health Post') travels as the coding display/text or a country localization system."
+* ^caseSensitive = true
+* ^experimental = false
+* #primary "Primary care facility" "First-contact care: health posts, dispensaries, primary health clinics and centres."
+* #primary ^designation[0].language = #fr
+* #primary ^designation[0].value = "Établissement de soins primaires"
+* #secondary "Secondary care facility" "Referral care: general/district hospitals."
+* #secondary ^designation[0].language = #fr
+* #secondary ^designation[0].value = "Établissement de soins secondaires"
+* #tertiary "Tertiary care facility" "Specialized referral care: teaching, specialist and federal medical centres."
+* #tertiary ^designation[0].language = #fr
+* #tertiary ^designation[0].value = "Établissement de soins tertiaires"
+* #unknown "Unknown level" "The national registry does not record or know the facility's tier — the low-precision escape so unclassified facilities aren't blocked."
+* #unknown ^designation[0].language = #fr
+* #unknown ^designation[0].value = "Niveau inconnu"
+
+CodeSystem: ICROwnershipCS
+Id: icr-ownership-cs
+Title: "ICR Facility Ownership"
+Description: "Ownership / managing-authority classification for the facility Organization — a second Organization.type axis (base FHIR Organization has no ownership element; carrying it as a type coding is the mCSD/OpenHIE convention). The governmental tier detail (local/state/federal) travels as display/text or a country localization."
+* ^caseSensitive = true
+* ^experimental = false
+* #public "Public" "Government-owned at any tier (local, state/regional, federal/national)."
+* #public ^designation[0].language = #fr
+* #public ^designation[0].value = "Public"
+* #private-for-profit "Private for-profit" "Privately owned, operated for profit."
+* #private-for-profit ^designation[0].language = #fr
+* #private-for-profit ^designation[0].value = "Privé à but lucratif"
+* #private-not-for-profit "Private not-for-profit" "Privately owned, operated not for profit (NGO, community)."
+* #private-not-for-profit ^designation[0].language = #fr
+* #private-not-for-profit ^designation[0].value = "Privé à but non lucratif"
+* #faith-based "Faith-based" "Owned or operated by a religious organization or faith-based network."
+* #faith-based ^designation[0].language = #fr
+* #faith-based ^designation[0].value = "Confessionnel"
+* #military "Military / paramilitary" "Owned by military or paramilitary formations."
+* #military ^designation[0].language = #fr
+* #military ^designation[0].value = "Militaire / paramilitaire"
+* #unknown "Unknown ownership" "The national registry does not record or know the owner — the low-precision escape."
+* #unknown ^designation[0].language = #fr
+* #unknown ^designation[0].value = "Propriété inconnue"

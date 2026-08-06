@@ -100,6 +100,9 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * type ^short = "admin-unit / settlement / facility / school / community-distribution-point / temporary-post / household / supervisory-area / operational-area"
 * position MS
 * position ^short = "GPS point (longitude/latitude/altitude)"
+* managingOrganization only Reference(ICRFacilityOrganization)
+* managingOrganization MS
+* managingOrganization ^short = "For facilities: the accountable facility Organization (mCSD pairing) — carries the registry codes, national classification, and ownership; this Location carries only the physical place. Absent on admin units and other non-facility places."
 * identifier MS
 * identifier ^slicing.discriminator.type = #value
 * identifier ^slicing.discriminator.path = "system"
@@ -121,3 +124,22 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * extension[deliveryStrategy] ^short = "For delivery sites (fixed/temporary posts): the strategy this site serves"
 * extension[overlaysAdminUnit] ^short = "For operational geography (supervisory/operational areas): the admin unit(s) this area overlays — linkable-but-distinct from the admin hierarchy (working doc §9)"
 * extension[settlementType] ^short = "Settlement / special-population type (urban-slum, refugee-IDP, nomad-pastoralist, security-compromised, hard-to-reach…) — vulnerability/equity attribute for HTRA targeting (v0.21.0)"
+
+Profile: ICRFacilityOrganization
+Parent: Organization
+Id: ICRFacilityOrganization
+Title: "ICR Facility Organization"
+Description: "The accountable facility entity — the mCSD-style pairing partner of a facility ICRLocation. A health facility is two things: an Organization (the conceptual/legal entity that owns registry codes, classification, and accountability) and a Location (the physical place where care happens), linked Location.managingOrganization → Organization. Organization.type is the source of truth for the national facility classification (ICRFacilityTypeVS) and ownership (ICROwnershipVS) alongside the generic 'prov' provider coding; Location.type keeps only the generic 'facility' functional code. Organization.partOf carries the administrative *reporting* hierarchy (facility → LGA/district health office → state agency), which is deliberately distinct from — and need not mirror — the geographic hierarchy on Location.partOf: a facility can report to one authority while sitting in territory that authority does not govern. Per the georegistry rule this profile still holds only identify/classify/contact data (working doc §5.3, §9)."
+* ^experimental = false
+* active MS
+* name 1..1 MS
+* name ^short = "The facility's registered name"
+* type 1..* MS
+* type ^short = "Three coding axes: 'prov' (healthcare provider), the national classification tier (ICRFacilityTypeVS — primary/secondary/tertiary, country kind as display/text), and ownership (ICROwnershipVS). Organization.type — not Location.type — is authoritative for facility classification. Formal per-axis slicing is deferred to the mCSD-alignment pass."
+* identifier MS
+* identifier ^short = "The facility-registry identity: national MFL/registry codes (e.g. Nigeria NHFR facility code and uid), GERS place ID. Registry codes identify the entity, so they live here rather than on the paired Location."
+* partOf only Reference(ICRFacilityOrganization or Organization)
+* partOf MS
+* partOf ^short = "Administrative reporting hierarchy: facility → LGA/district health office → state/national agency. Reporting structure, not geography — it need not mirror the Location partOf chain."
+* telecom MS
+* telecom ^short = "Facility contact (phone, email) — contact data belongs to the entity"
