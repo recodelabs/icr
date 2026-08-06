@@ -745,7 +745,7 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 | `executionPeriod` | MS  |     | Period | When the work was carried out. |
 | `code` | MS  | 1..1 | CodeableConcept | What the Task is. |
 | `for` | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit being **targeted**: a household/community delivery-unit Group (Type B/C), the site Location (Type A), or a Patient for person-targeted follow-up. |
-| `focus` | MS  |     | `Reference(CarePlan \| ActivityDefinition \| ServiceRequest \| Task)` | **Workflow lineage**: the campaign/activity this work instantiates, or the prior Task it follows (e.g. a mop-up Task following the session Task that missed a child). |
+| {==`focus`==}{>>Need to check if this can also be on a person of if it's just a location.<<}{id="c1" by="mberg" at="2026-08-06T14:48:48.514Z"} | MS  |     | `Reference(CarePlan \| ActivityDefinition \| ServiceRequest \| Task)` | **Workflow lineage**: the campaign/activity this work instantiates, or the prior Task it follows (e.g. a mop-up Task following the session Task that missed a child). |
 | `reasonCode` | MS  |     | CodeableConcept | The disease/programme this Task serves — used to scope a Task to a disease where one community Task covers several concurrent programmes. |
 | `location` | MS  | 1..1 | `Reference(ICRLocation)` only | Where the work happened. |
 | `output` | MS  |     |     | References to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts. |
@@ -1377,12 +1377,12 @@ Every box on the solid `partOf` layer is an ICRLocation pointing at its single p
 - `partOf` **strict-typing vs widening.** `partOf` is constrained to `Reference(ICRLocation)`, keeping the whole ancestor chain ICR-conformant and queryable — but you can't hang an ICR site directly under a Location from a pre-existing national MFL/GIS without re-profiling that parent. The relief valve is to widen `partOf` to `Reference(Location)`. Open design decision, paired with the national/ISO admin-code work.
 - The proposed `location-ancestors` breadcrumb extension is not yet in the IG.
 
-#### The facility pairing — ICRFacilityOrganization (`Organization`)
+The facility pairing — ICRFacilityOrganization (`Organization`)
 
 **Purpose.** A health facility is two things, and the IG models both — the standard mCSD/OpenHIE facility-registry pattern. The **Organization** is the conceptual/legal entity: the accountable thing that owns registry codes, classification, ownership, and contact. The **Location** is the physical place: GPS, physical type, geography. The link runs `Location.managingOrganization` → Organization. Both resources are created for every facility, even 1:1, because the pairing cleanly separates two hierarchies that real health systems keep distinct:
 
-- **`Organization.partOf` is the administrative *reporting* hierarchy** — facility → LGA/district health office → state/national agency. Reporting structure, not geography.
-- **`Location.partOf` stays the *geographic* hierarchy** — facility → ward → district. A facility can report to one authority while sitting in territory that authority does not govern; the pairing is what lets both facts be true at once.
+- `Organization.partOf` **is the administrative *reporting* hierarchy** — facility → LGA/district health office → state/national agency. Reporting structure, not geography.
+- `Location.partOf` **stays the *geographic* hierarchy** — facility → ward → district. A facility can report to one authority while sitting in territory that authority does not govern; the pairing is what lets both facts be true at once.
 
 **Where facility metadata goes.** `Organization.type` is the **source of truth for facility classification**, carrying three coding axes: the generic `prov` (Healthcare Provider), the national tier from **ICRFacilityTypeVS** (`primary`/`secondary`/`tertiary`, with the country-specific kind — "Primary Health Center", "Health Post" — as display/text), and ownership from **ICROwnershipVS** (`public`, `private-for-profit`, `faith-based`, …; base Organization has no ownership element, so a type coding is the convention). Registry identifiers (national MFL codes — e.g. Nigeria NHFR facility code and uid) live on `Organization.identifier`, because they identify the entity; the paired Location keeps only place identifiers (GERS, GRID3 ids). `Location.type` carries the generic `facility` functional code and **may additionally carry copies of the classification codings** — the duplication mCSD explicitly allows, because many consumers only query one resource type (geospatial exports and map layers read Locations alone). The copy is a convenience projection: on any disagreement, `Organization.type` is authoritative. Per-axis formal slicing of `Organization.type` is deferred to the mCSD-alignment pass (§13.3).
 
