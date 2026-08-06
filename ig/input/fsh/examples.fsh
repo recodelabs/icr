@@ -882,7 +882,11 @@ Usage: #example
 * name = "Rokupr Community Health Centre"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#si "Site"
-* type = $LocationType#facility "Health facility"
+* type[+] = $LocationType#facility "Health facility"
+// Duplicated classification (Organization.type stays authoritative):
+* type[+].coding = $FacilityType#primary "Primary care facility"
+* type[=].text = "Community Health Centre"
+* type[+].coding = $Ownership#public "Public"
 * partOf = Reference(example-settlement)
 * managingOrganization = Reference(example-facility-org)
 * position.longitude = -12.9465
