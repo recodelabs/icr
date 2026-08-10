@@ -1557,7 +1557,7 @@ The concrete record of what was delivered — a vaccine dose, a drug administrat
 | `medication[x]` |     |     | CodeableConcept only, **extensible** → ICRMDAMedicationVS (WHO ATC) | The drug. |
 | `subject` | MS  |     | `Reference(Patient \| ICRDeliveryUnit)` only | The treated person, **or the community/household delivery-unit Group** for register-level capture. |
 | `dosage` | MS  |     |     | Tablet count — usually derived from a dose-pole height-band Observation. |
-g. the dose-pole Observation the dosage was derived from. |
+| `supportingInformation` | MS  |     | Reference | Supporting context — e.g. the dose-pole Observation the dosage was derived from. |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | Differentiates campaign data from routine-programme data. |
 | `extension[priorDoseStatus]` *(forms-v1)* | MS  | 0..1 | code, **required** → ICRDoseHistoryVS | Prior-dose status of the treatment at this contact (`zero-dose` \| `previously-received` \| `no-recall`) — the drug-side counterpart of the immunization axis. |
 | `extension[directlyObserved]` | MS  | 0..1 | boolean | The MDA DOC protocol — distinguishes "handed out" from "actually swallowed". |
