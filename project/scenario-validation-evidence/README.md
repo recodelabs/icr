@@ -14,10 +14,13 @@ re-runnable evidence.
 | `probe-group-in-group-base.json` | S8/S7 | PASSES — plain R4 allows Group-in-Group (refutes reply c66) |
 | `probe-group-in-group.json` | S8 + methods note | Passes despite violating ICRDeliveryUnit — validator does not type-check unresolved references |
 | `probe-task-focus-careplan.json` | S4 + methods note | Passes despite violating ICRCampaignTask.focus — same validator blind spot |
+| `probe-location-supervisory-no-overlay.json` | Finding 2 (S3) | PASSES — supervisory area overlaying nothing; the documented `icr-loc-overlays` invariant is not in the FSH |
+| `probe-location-admin-no-identifier.json` | Finding 2 (S3) | PASSES — admin unit with no identifier; the documented `icr-loc-admin-id` invariant is not in the FSH |
 
 Logs (ANSI-stripped validator output):
 
 - `validator-probes.log` — the run over these probes
+- `validator-probes-location.log` — the run over the two Location-invariant probes (added Aug 10)
 - `validator-committed-instances.log` — final run over the 88 committed `sc-*` instances (88/88 pass)
 - `validator-shipped-examples.log` — spot-check of 11 shipped `example-*` instances (5 fail)
 
