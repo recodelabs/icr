@@ -13,6 +13,9 @@ Alias: $IMMZAdverseEventCausality = http://smart.who.int/immunizations/CodeSyste
 // ICR identifier system URIs (provisional — to be confirmed before v1.0)
 Alias: $GERSId = https://icr.healthcampaigns.org/identifiers/overture-gers
 Alias: $PCode = https://icr.healthcampaigns.org/identifiers/pcode
+// FHIR-designated ISO 3166 system URIs (not ICR-minted): 3166-1 country / 3166-2 subdivision
+Alias: $ISO3166 = urn:iso:std:iso:3166
+Alias: $ISO3166v2 = urn:iso:std:iso:3166:-2
 Alias: $NationalId = https://icr.healthcampaigns.org/identifiers/national-id
 Alias: $RegistryId = https://icr.healthcampaigns.org/identifiers/registry-id
 
