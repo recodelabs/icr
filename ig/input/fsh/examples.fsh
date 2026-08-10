@@ -381,6 +381,7 @@ Usage: #example
 * subject = Reference(example-target-population)
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
+* careTeam = Reference(example-careteam)
 * partOf = Reference(example-mr-sia-national)
 * extension[campaignRound].valuePositiveInt = 1
 * extension[targetGeography].valueReference = Reference(example-district)
