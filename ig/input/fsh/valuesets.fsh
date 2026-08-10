@@ -190,14 +190,14 @@ Description: "WHO ATC-coded preventive-chemotherapy medications. Binding: extens
 // --- espen-forms ----------------------------------------------------------------
 
 ValueSet: ICRNTDDiseaseVS
-Id: icr-ntd-disease-vs
+Id: icr-ntd-disease
 Title: "ICR NTD Disease"
 Description: "Diseases covered by an MDA campaign (espen-forms)."
 * ^experimental = false
 * include codes from system ICRNTDDiseaseCS
 
 ValueSet: ICRMDAMedicinePackageVS
-Id: icr-mda-medicine-package-vs
+Id: icr-mda-medicine-package
 Title: "ICR MDA Medicine Package"
 Description: "MDA medicine packages, single and combined (espen-forms)."
 * ^experimental = false

@@ -4,7 +4,7 @@ status: release companion to ICR IG v0.1.0 — first shareable version for partn
   review & feedback
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-10T20:54:33Z
+last_modified: 2026-08-10T21:09:24Z
 tags:
   - icr
   - fhir
@@ -15,13 +15,15 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion
-`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 10, 2026 at 4:54 PM EDT`
+`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 10, 2026 at 5:09 PM EDT`
 
 {>>Rewrite pass (Aug 10): the §4.4 reference-role tension is settled and applied on BOTH sides. Target on `for` (1..1 → DeliveryUnit | Location | Patient); campaign link on `basedOn` (1..1 → ICRCampaign, new — tasks point at the campaign, the CarePlan is never updated as tasks are created); `partOf` = originating task on revisits; `focus` left unconstrained. The IG FSH, its examples (incl. a new STH-MDA protocol/denominator/round so every Task example has a basedOn target, plus Task.reasonCode now MS), and this doc's §2 / §4.2 / §4.4 / §11 were updated together; threads c1–c7 are resolved with notes in place. The full IG↔doc comparison lives in ig-compare.md.<<}{id="c11" by="claude" at="2026-08-10T19:36:31.000Z"}
 
 {>>Rewrite pass (Aug 10, later): Location identity settled and applied on both sides — formal iso slices (isoCountry / isoSubdivision on FHIR's standard 3166 URNs, optional + MS); national codes via the use = official convention (the $NationalAdminCode placeholder URI and `national` slice are gone); and the invariants now actually exist in the FSH: icr-loc-admin-id (error), icr-loc-admin-official (warning), icr-loc-overlays (warning → error at v1.0). Also repaired an id collision: my earlier notes c8/c9/c10 were renumbered c12/c13/c14 because reviewer comments pushed the same afternoon already used those ids. Open reviewer proposals still pending: c10 (isCalculated on denominator estimates).<<}{id="c17" by="claude" at="2026-08-10T19:58:29.000Z"}
 
 {>>Rewrite pass (Aug 10, evening): reviewer proposal c10 (mckinnoj) implemented — new is-calculated boolean on ICRTargetPopulation (36th extension), marking estimates aggregated from other estimates as non-independent; worked example example-target-population-ward-sum added beside the independent Kambia estimates. §4.2's nested-scopes observation, the §5.2 table, and §10 updated; extension count 35→36 in §1.5.<<}{id="c19" by="claude" at="2026-08-10T20:54:33.000Z"}
+
+{>>Rewrite pass (Aug 10, night — mechanical batch): (1) MeasureReport.reporter fixed on both sides — R4 forbids CareTeam as reporter, so reporter = the accountable supervisor/organization and a new reporter-team extension (37th) carries the team join; §2 diagram + §7 tables updated. (2) icr-campaign-readiness now declares the readiness-domain stratifier (new 7th code in ICRCoverageStratifierCS). (3) Stock-ledger identity is a warning invariant (icr-stock-ledger). (4) SupervisionReport and dose-pole-band descriptions de-contradicted; background.md's ViewDefinitions claim corrected. (5) Example gaps closed: district GeoJSON boundary, full IRS chain (protocol/denominator/round/structure-Task), zero-dose + readiness MeasureReports (examples.fsh now 57 instances). (6) Breaking-while-cheap id normalization: icr-team-role→icr-team-role-cs, icr-ntd-disease-vs→icr-ntd-disease, icr-mda-medicine-package-vs→icr-mda-medicine-package. A full doc-alignment pass (counts, stale JSON, §11 gallery) is next and will sweep the remaining drift.<<}{id="c20" by="claude" at="2026-08-10T21:09:24.000Z"}
 
 ⁠
 
@@ -183,7 +185,7 @@ The canonical `https://icr.healthcampaigns.org` is the project-controlled domain
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
 | **Measures** | 6   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, and (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness` — the canonical definitions the coverage/readiness MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 36  | See §10 |
+| **Extensions** | 37  | See §10 |
 | **CodeSystems** | 25  | See §9 |
 | **ValueSets** | 28  | One per code system (mostly), plus purpose-built sets (§9) |
 | **Example instances** | 44  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11) |
@@ -221,7 +223,7 @@ graph TD
     CP -- "subject" --> TP
     CP -- "careTeam MS" --> CT
     CT -- "owner/performer" --> T
-    CT -. "reporter" .-> AC
+    AC -. "reporter-team ext" .-> CT
     T -- "basedOn 1..1" --> CP
     T -- "for: DeliveryUnit|Location|Patient" --> HH
     T -- "location 1..1" --> L
@@ -1763,7 +1765,8 @@ Beyond the data source, coverage carries two more coded axes:
 | `status` | MS  |     | code | Report status (`complete`, etc.). |
 | `type` | MS  |     | code | MeasureReport type (`summary`). |
 | `measure` | MS  |     | canonical | The canonical ICR coverage `Measure` this report instantiates. |
-| `reporter` | MS  | 1..1 | Reference | **Required** — who reported the figure: typically the supervisor's ICRCareTeam or their organization (§4.5), so "who reported this number" is always answerable. |
+| `reporter` | MS  | 1..1 | Reference | **Required** — who reported the figure: the accountable supervisor (Practitioner/PractitionerRole) or their organization. R4 forbids CareTeam here; the team join is `extension[reporterTeam]` (below), so "who reported this number" is always answerable. |
+| `extension[reporterTeam]` | MS  | 0..1 | `Reference(ICRCareTeam)` | The team whose figures this report rolls up — the direct team join R4's `reporter` cannot carry. |
 | `period` | MS  | 1..1 | Period | The coverage window. |
 | `group` | MS  |     | BackboneElement | Carries `group.population` (numerator/denominator counts) and `measureScore` (the rate). |
 | `group.stratifier` | MS  |     |     | Disaggregation by the standard axes the Measure declares (ICRCoverageStratifierVS: sex, age-band, delivery-strategy, disposition, geography). |
@@ -1783,6 +1786,7 @@ Beyond the data source, coverage carries two more coded axes:
 | `type` | MS  |     | code | MeasureReport type (`summary`). |
 | `measure` | MS  |     | canonical | The canonical survey `Measure`. |
 | `reporter` | MS  | 1..1 | Reference | **Required** — who reported the survey result. |
+| `extension[reporterTeam]` | MS  | 0..1 | `Reference(ICRCareTeam)` | The survey team whose figures this report rolls up. |
 | `period` | MS  | 1..1 | Period | The survey window. |
 | `group` | MS  |     | BackboneElement | Carries `measureScore` (the survey coverage rate); the denominator *is* the sample, so no numerator/denominator population is required. |
 | `extension[coverageSource]` | MS  | 1..1 | code, **required** → ICRIndependentCoverageSourceVS (`survey` \| `lqas` \| `rcm`) | The independent-measurement method — the value set *excludes* `administrative`. |
@@ -1928,7 +1932,7 @@ Two further shapes of the same administrative-coverage profile show how disaggre
 - **The stratified treatment tally** (`example-mda-treatment-tally`). MDA field forms collect a **multi-dimensional** aggregate — treated counts by drug × sex × age band, plus exclusion dispositions — which a single Group-subject MedicationAdministration cannot hold. The canonical home is an `ICRAdministrativeCoverage` MeasureReport with `group.stratifier`: 2,900 / 3,200 ≈ **91%**, stratified by **sex** (1,500 F / 1,400 M), **age band** (1,100 at 5–14 / 1,800 at 15+), and **disposition** (2,900 treated / 180 excluded / 95 absent / 25 refused) — the full not-treated cube in one report, with `denominator-type = at-risk` and `measure` → `icr-mda-treatment-coverage`. The operational per-visit scalar (the community Task's "2,900 treated") still rides `Task.output` and references this report.
 - **Geographic (implementation-unit) coverage** (`example-geographic-coverage`). The `coverage-unit = implementation-units` axis turns the supervision-form "villages treated / total" figure into a first-class coverage report: 188/200 ≈ **94%**, with the non-treatment reasons (insecurity 7, medication shortage 5) as a disposition stratifier and `icr-geographic-coverage` as the Measure. Same profile as dose coverage, different unit.
 
-The standard stratifier axes are named in **ICRCoverageStratifierCS** (`sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, and — forms-v1 — `dose-history`) so disaggregation shares one vocabulary across reports.
+The standard stratifier axes are named in **ICRCoverageStratifierCS** (`sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history` (forms-v1), and `readiness-domain`) so disaggregation shares one vocabulary across reports.
 
 **Two forms-v1 Measures** extend the coverage family: `icr-zero-dose-coverage` — zero-dose children reached ÷ children reached, stratified by `dose-history` (the polio tally's never/previously/no-recall split, feeding zero-dose-reduction analytics); and `icr-campaign-readiness` — operational units validated ready ÷ total targeted (`coverage-unit = implementation-units`), the roll-up of the readiness checklist (§4.7). Both carry placeholder CQL like the other four.
 
@@ -1979,7 +1983,7 @@ These are the design rules that recur across the profiles — the things to hold
 | **ICRDenominatorSourceCS** | `census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `govt-estimate`, `unknown`, `other` (9) | —   | denominator-source ext (**extensible**, `1..1` on ICRTargetPopulation) — `govt-estimate`/`unknown` added v0.1 as the low-precision escapes backing the now-mandatory source |
 | **ICRDataLineageCS** | `realtime`, `reconciled` (2) | ✔   | realtime-vs-reconciled ext (**required**) |
 | **ICRCoverageSourceCS** | `administrative`, `survey`, `lqas`, `rcm` (4) | ✔   | coverage-source ext (**required**) |
-| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history` (6) | —   | Measure/MeasureReport stratifier code (**extensible**) — `dose-history` added forms-v1 (zero-dose axis) |
+| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history`, `readiness-domain` (7) | —   | `group.stratifier.code` on both coverage profiles (**extensible**) — `dose-history` added forms-v1 (zero-dose axis), `readiness-domain` added v0.1.1 |
 | **ICRDenominatorTypeCS** | `total-population`, `at-risk` (2) | —   | denominator-type ext (**required**) |
 | **ICRCoverageUnitCS** | `people`, `implementation-units` (2) | —   | coverage-unit ext (**required**) |
 | **ICRAdverseEventCausalityCS** | `a-consistent`, `b-indeterminate`, `c-coincidental`, `d-unclassifiable` (4) | —   | ICRAdverseEvent causality (**extensible**) — WHO/CIOMS A/B/C/D |
@@ -2085,6 +2089,7 @@ FHIR has no native campaign semantics, so 35 extensions carry them on the profil
 | CoverageSource (`coverage-source`) | MeasureReport | code, **required** → ICRCoverageSourceVS |
 | CoverageUnit (`coverage-unit`) | MeasureReport | code, **required** → ICRCoverageUnitVS — people \| implementation-units; absent ⇒ people |
 | SampleDesign (`sample-design`) | MeasureReport | string — survey/LQAS/RCM method & sample-design detail |
+| ReporterTeam (`reporter-team`) *(v0.1.1)* | MeasureReport | `Reference(ICRCareTeam)` — the team whose figures the report rolls up; R4 `reporter` cannot target a CareTeam, so the team join lives here |
 
 **Design notes.**
 

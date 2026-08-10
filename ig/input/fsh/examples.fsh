@@ -43,6 +43,8 @@ Usage: #example
 * identifier[pcode].value = "SL0201"
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-division-example"
+* extension[boundary].valueAttachment.contentType = #application/geo+json
+* extension[boundary].valueAttachment.data = "eyJ0eXBlIjoiUG9seWdvbiIsImNvb3JkaW5hdGVzIjpbW1stMTMuMDUsOC45NV0sWy0xMi44NSw4Ljk1XSxbLTEyLjg1LDkuMTVdLFstMTMuMDUsOS4xNV0sWy0xMy4wNSw4Ljk1XV1dfQ=="
 
 Instance: example-settlement
 InstanceOf: ICRLocation
@@ -335,6 +337,76 @@ Usage: #example
 * code.text = "Spray"
 * productCodeableConcept.text = "Pirimiphos-methyl 300CS (IRS insecticide)"
 
+// IRS gallery completed into a runnable chain (ig-compare §9 item 7): protocol →
+// denominator → round → structure-targeted Task. For structure-applied work the
+// Task IS the event (§6.4) — spray results ride Task.output; no delivery-event
+// resource hangs off it.
+
+Instance: example-irs-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "IRS protocol — annual indoor residual spraying"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #active
+* version = "1.0.0"
+* title = "Indoor residual spraying, all eligible structures, annual round"
+* type = $CampaignType#irs
+* goal.description.text = "≥85% of targeted structures sprayed"
+* action.title = "Spray eligible structures (Pirimiphos-methyl 300CS)"
+* action.definitionCanonical = Canonical(example-irs-activity)
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+
+Instance: example-target-population-irs
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — population protected, Rokupr IRS"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* type = #person
+* actual = false
+* name = "Population protected by IRS, Rokupr settlement (resident population of targeted structures)"
+* quantity = 4100
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-settlement)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#govt-estimate "Government estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-04-01"
+* extension[isPlanningDenominator].valueBoolean = true
+
+Instance: example-irs-round
+InstanceOf: ICRCampaign
+Title: "IRS Rokupr — 2026 annual round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* instantiatesCanonical = Canonical(example-irs-protocol)
+* status = #completed
+* intent = #order
+* title = "IRS, Rokupr settlement, 2026 annual round"
+* category = $CampaignType#irs
+* subject = Reference(example-target-population-irs)
+* period.start = "2026-05-04"
+* period.end = "2026-05-15"
+* extension[targetGeography].valueReference = Reference(example-settlement)
+* extension[planningDenominator].valueReference = Reference(example-target-population-irs)
+
+Instance: example-irs-task
+InstanceOf: ICRCampaignTask
+Title: "IRS structure visit — Rokupr block 4, house 12"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #completed
+* intent = #order
+* code.text = "Spray structure — Pirimiphos-methyl 300CS"
+* basedOn = Reference(example-irs-round)
+* for = Reference(example-dwelling)
+* location = Reference(example-dwelling)
+* executionPeriod.start = "2026-05-06T10:15:00Z"
+* executionPeriod.end = "2026-05-06T10:40:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[taskOrigin].valueCode = #pre-planned
+* output[0].type.text = "Structure sprayed — rooms treated"
+* output[0].valueUnsignedInt = 4
+
 Instance: example-mr-sia-protocol
 InstanceOf: ICRCampaignProtocol
 Title: "Measles–Rubella SIA Protocol"
@@ -495,6 +567,7 @@ Usage: #example
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
 * reporter.display = "Kambia District Health Management Team"
+* extension[reporterTeam].valueReference = Reference(example-careteam)
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].count = 47766
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
@@ -888,6 +961,66 @@ Usage: #example
 // template, and the deviation stays visible by comparing the two. Targeting
 // deviations (population or geography) never require a protocol change; a
 // durable eligibility change would be a new protocol version (working doc §4.2).
+
+// The two forms-v1 Measures instantiated (ig-compare §9 item 7): worked
+// MeasureReports for zero-dose reach and pre-campaign readiness.
+
+Instance: example-zero-dose-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Zero-dose reach — Kambia MR SIA, June 2026 round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-zero-dose-coverage"
+* period.start = "2026-06-15"
+* period.end = "2026-06-26"
+* reporter.display = "Kambia District Health Management Team"
+* extension[reporterTeam].valueReference = Reference(example-careteam)
+* extension[coverageSource].valueCode = #administrative
+* extension[dataLineage].valueCode = #reconciled
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 2866
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 47766
+* group.measureScore = 6 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#dose-history "Dose history / zero-dose status"
+* group.stratifier[0].stratum[0].value.text = "zero-dose"
+* group.stratifier[0].stratum[0].measureScore = 6 '%' "%"
+* group.stratifier[0].stratum[1].value.text = "previously-received"
+* group.stratifier[0].stratum[1].measureScore = 91 '%' "%"
+* group.stratifier[0].stratum[2].value.text = "no-recall"
+* group.stratifier[0].stratum[2].measureScore = 3 '%' "%"
+
+Instance: example-readiness-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Campaign readiness roll-up — Kambia, pre-campaign validation"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-campaign-readiness"
+* period.start = "2026-06-01"
+* period.end = "2026-06-12"
+* reporter.display = "Kambia District Health Management Team"
+* extension[reporterTeam].valueReference = Reference(example-careteam)
+* extension[coverageSource].valueCode = #administrative
+* extension[coverageUnit].valueCode = #implementation-units
+* extension[dataLineage].valueCode = #realtime
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 10
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 12
+* group.measureScore = 83 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#readiness-domain "Readiness domain"
+* group.stratifier[0].stratum[0].value.text = "microplan"
+* group.stratifier[0].stratum[0].measureScore = 100 '%' "%"
+* group.stratifier[0].stratum[1].value.text = "cold-chain"
+* group.stratifier[0].stratum[1].measureScore = 83 '%' "%"
+* group.stratifier[0].stratum[2].value.text = "social-mobilization"
+* group.stratifier[0].stratum[2].measureScore = 75 '%' "%"
+* group.stratifier[0].stratum[3].value.text = "trainings"
+* group.stratifier[0].stratum[3].measureScore = 83 '%' "%"
 
 Instance: example-sch-mda-protocol
 InstanceOf: ICRCampaignProtocol

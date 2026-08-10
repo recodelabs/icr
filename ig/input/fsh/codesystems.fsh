@@ -241,6 +241,7 @@ Description: "The standard disaggregation axes a coverage MeasureReport stratifi
 * #disposition "Disposition" "Disaggregation by treatment disposition (treated vs not-treated reason: absent, refused, excluded)."
 * #geography "Geography" "Disaggregation by the location/admin level the figure covers."
 * #dose-history "Dose history / zero-dose status" "Disaggregation by prior-dose status (ICRDoseHistoryCS: zero-dose | previously-received | no-recall) — the polio SIA tally's never-received / previously-received / no-recall split, and the zero-dose vs not-zero-dose axis (forms-v1 / jul3-form-analysis §Aggregate #1)."
+* #readiness-domain "Readiness domain" "Disaggregation of the campaign-readiness measure by checklist domain (microplan | cold-chain | social-mobilization | trainings) (forms-v1 / jul3-form-analysis §Aggregate #2)."
 
 CodeSystem: ICRDenominatorTypeCS
 Id: icr-denominator-type-cs
@@ -272,7 +273,7 @@ Description: "WHO/CIOMS causality classification of an adverse event following a
 * #d-unclassifiable "D — Unclassifiable" "Unclassifiable: insufficient information to assess."
 
 CodeSystem: ICRTeamRoleCS
-Id: icr-team-role
+Id: icr-team-role-cs
 Title: "ICR Team Role"
 Description: "Role of a member within a campaign CareTeam — the front-line delivery and supervision roles (working doc §5.5). Bound extensible: countries add local roles. Supervisor *level* (national/regional/district/partner/health-facility, ESPEN Forms 5/6) is carried by managingOrganization or the overseen area, not multiplied into roles."
 * ^caseSensitive = true

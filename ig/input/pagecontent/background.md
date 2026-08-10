@@ -58,8 +58,9 @@ activity/task**, not of the campaign.
 10. **Every delivery event is flagged campaign vs routine** (`record-origin`).
 11. **Provenance on everything ingested** — lineage is a model feature, not an ETL
     afterthought.
-12. **ViewDefinitions ship in the IG** — the analytics layer is as portable as the
-    data model (planned for the next draft).
+12. **ViewDefinitions are planned, not yet shipped** — SQL-on-FHIR view definitions
+    will make the analytics layer as portable as the data model (targeted for the
+    next draft; none ship in v0.1).
 
 #### Campaign work vs routine encounters
 
