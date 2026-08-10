@@ -43,6 +43,8 @@ Description: "A specific campaign execution — the keystone resource. Begins li
 * period 1..1 MS
 * period ^short = "Campaign / round dates"
 * careTeam MS
+* careTeam only Reference(ICRCareTeam)
+* careTeam ^short = "The campaign roster: the delivery team(s) and supervisor — same constraint as Task.owner, so 'who ran this campaign' is a real join"
 * addresses MS
 * addresses ^short = "The disease/condition targeted"
 * partOf only Reference(ICRCampaign)

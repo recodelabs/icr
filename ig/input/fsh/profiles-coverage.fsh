@@ -18,7 +18,9 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * reporter 1..1 MS
 * reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — typically the supervisor's ICRCareTeam / their organization"
 * group MS
-* group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — ICRCoverageStratifierVS (v0.19.0)"
+* group.stratifier MS
+* group.stratifier.code from ICRCoverageStratifierVS (extensible)
+* group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — extensible binding to ICRCoverageStratifierVS, so custom country axes stay legal (v0.19.0)"
 * extension contains
     CoverageSource named coverageSource 1..1 MS and
     DenominatorSource named denominatorSource 0..1 MS and
@@ -44,7 +46,9 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * reporter 1..1 MS
 * reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — typically the supervisor's ICRCareTeam / their organization"
 * group MS
-* group.stratifier ^short = "Disaggregation by the standard axes (ICRCoverageStratifierVS) the Measure declares (v0.19.0)"
+* group.stratifier MS
+* group.stratifier.code from ICRCoverageStratifierVS (extensible)
+* group.stratifier ^short = "Disaggregation by the standard axes (ICRCoverageStratifierVS, extensible) the Measure declares (v0.19.0)"
 * extension contains
     CoverageSource named coverageSource 1..1 MS and
     SampleDesign named sampleDesign 0..1 MS and
