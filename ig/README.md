@@ -36,8 +36,25 @@ canonical URLs, publisher validation/QA untouched, but with a modern shell — c
 palette (⌘K), Pagefind full-text search, interactive element trees, filterable
 terminology tables, dark mode. Serve it over HTTP for search: `cd output-topcoat && npx serve`.
 
-The live site publishes to https://icr-ig.pages.dev via `.github/workflows/publish-ig.yml`,
-which renders with `recodelabs/ig-topcoat@v1`.
+## Published sites
+
+`.github/workflows/publish-ig.yml` builds the IG once and publishes both renderings:
+
+| Rendering | Source dir | URL |
+| --- | --- | --- |
+| Stock HL7 IG Publisher | `output/` | https://icr-ig-standard.pages.dev |
+| IG Topcoat (modern shell) | `output-topcoat/` → `_site` | https://icr-ig.pages.dev |
+
+Both are also uploaded as run artifacts (`icr-ig-standard`, `icr-ig-site`).
+
+Topcoat rewrites the HTML **in place** — same filenames, same canonical URLs — so the stock
+rendering cannot be recovered from the Topcoat site. That is why the two live in separate
+Pages projects rather than under one site at different paths. The machine-readable artifacts
+(`package.tgz`, `full-ig.zip`, `definitions.*.zip`, `validator.pack`, per-resource JSON/XML)
+are byte-identical in both, at the root of either site.
+
+Use the stock site when someone expects the standard HL7 layout — FHIR community review,
+HL7 balloting, or cross-checking how the publisher actually rendered a profile.
 
 ## Status / roadmap
 
