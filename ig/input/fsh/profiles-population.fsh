@@ -82,12 +82,34 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * extension[denominatorSource] ^short = "Required (v0.1): where the estimate came from — govt-estimate / unknown are the low-precision escapes so early or back-loaded estimates aren't blocked"
 * extension[estimateDate] ^short = "Recommended: when the estimate was made — denominators decay fast (1–3 years)"
 
+// Location-identity invariants (working doc §9; ig-compare item 1, decided 2026-08-10).
+// The "official" convention: whichever identifier is the country's authoritative admin
+// code (DHIS2 orgUnit, MoH code, or the P-code itself) is marked use = official, so
+// every consumer finds THE admin id with one query — identifier.where(use = 'official')
+// — while its system URI stays country-declared (no ICR-invented national-code URI).
+
+Invariant: icr-loc-admin-id
+Description: "An administrative unit must carry at least one identifier (any system — P-code, GERS, ISO, or the country's own code); without one it cannot be joined to any other system or campaign."
+Severity: #error
+Expression: "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs' and code = 'admin-unit').exists() implies identifier.exists()"
+
+Invariant: icr-loc-admin-official
+Description: "An administrative unit should mark its authoritative country code with identifier.use = 'official' — the uniform cross-country join key. Warning in v0.x; expected to be promoted to error at v1.0."
+Severity: #warning
+Expression: "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs' and code = 'admin-unit').exists() implies identifier.where(use = 'official').exists()"
+
+Invariant: icr-loc-overlays
+Description: "A supervisory or operational area should declare the administrative unit(s) it overlays via the overlays-admin-unit extension — an area that overlays nothing cannot roll up into administrative reporting. Warning in v0.x; expected to be promoted to error at v1.0."
+Severity: #warning
+Expression: "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs' and (code = 'supervisory-area' or code = 'operational-area')).exists() implies extension('https://icr.healthcampaigns.org/StructureDefinition/overlays-admin-unit').exists()"
+
 Profile: ICRLocation
 Parent: Location
 Id: ICRLocation
 Title: "ICR Location"
 Description: "The most-customized ICR resource — the ICR's georegistry layer, covering the WHO IDHC administrative boundary, health facility and school master lists: nested administrative hierarchy (6+ levels in campaign countries), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — Overture Maps GERS IDs (building / place / division) as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases. Per the IDHC georegistry rule, this layer holds only identify/classify/locate/contact data; programmatic data references it but never lives in it (working doc §7.7, §9)."
 * ^experimental = false
+* obeys icr-loc-admin-id and icr-loc-admin-official and icr-loc-overlays
 * name MS
 * status MS
 * partOf only Reference(ICRLocation)
@@ -107,14 +129,20 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * identifier ^slicing.discriminator.type = #value
 * identifier ^slicing.discriminator.path = "system"
 * identifier ^slicing.rules = #open
-* identifier ^short = "Multi-system identity: GERS (preferred cross-campaign join key), P-code, national codes"
+* identifier ^short = "Multi-system identity, all slices optional: GERS (preferred cross-campaign join key), P-code, ISO 3166. The country's own admin code rides the open list under the country's system URI, marked use = official — the uniform join key: identifier.where(use = 'official')"
 * identifier contains
     gers 0..1 MS and
-    pcode 0..1 MS
+    pcode 0..1 MS and
+    isoCountry 0..1 MS and
+    isoSubdivision 0..1 MS
 * identifier[gers].system = $GERSId
 * identifier[gers] ^short = "Overture Maps GERS ID (building / place / division). Record the Overture release version alongside (working doc §9.1)."
 * identifier[pcode].system = $PCode
 * identifier[pcode] ^short = "OCHA P-code for administrative units"
+* identifier[isoCountry].system = $ISO3166
+* identifier[isoCountry] ^short = "ISO 3166-1 country code (admin level 0) — FHIR-designated system URI"
+* identifier[isoSubdivision].system = $ISO3166v2
+* identifier[isoSubdivision] ^short = "ISO 3166-2 subdivision code (first-level subdivisions) — FHIR-designated system URI"
 * extension contains
     LocationBoundaryGeoJson named boundary 0..1 MS and
     DeliveryStrategy named deliveryStrategy 0..1 and

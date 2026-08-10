@@ -19,6 +19,9 @@ Usage: #example
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
 * type = $LocationType#admin-unit "Administrative unit"
+* identifier[isoCountry].use = #official
+* identifier[isoCountry].system = $ISO3166
+* identifier[isoCountry].value = "SL"
 * identifier[pcode].system = $PCode
 * identifier[pcode].value = "SL"
 * identifier[gers].system = $GERSId
@@ -35,6 +38,7 @@ Usage: #example
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
 * type = $LocationType#admin-unit "Administrative unit"
 * partOf = Reference(example-country)
+* identifier[pcode].use = #official
 * identifier[pcode].system = $PCode
 * identifier[pcode].value = "SL0201"
 * identifier[gers].system = $GERSId
