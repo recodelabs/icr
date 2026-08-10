@@ -4,7 +4,7 @@ status: release companion to ICR IG v0.1.0 — first shareable version for partn
   review & feedback
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-07-27T14:41:13Z
+last_modified: 2026-08-10T19:36:31Z
 tags:
   - icr
   - fhir
@@ -15,7 +15,9 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion
-`Companion to ICR IG v0.1.0 · First release for partner review & feedback · Jul 27, 2026`
+`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 10, 2026 at 3:36 PM EDT`
+
+{>>Rewrite pass (Aug 10): the §4.4 reference-role tension is settled and applied on BOTH sides. Target on `for` (1..1 → DeliveryUnit | Location | Patient); campaign link on `basedOn` (1..1 → ICRCampaign, new — tasks point at the campaign, the CarePlan is never updated as tasks are created); `partOf` = originating task on revisits; `focus` left unconstrained. The IG FSH, its examples (incl. a new STH-MDA protocol/denominator/round so every Task example has a basedOn target, plus Task.reasonCode now MS), and this doc's §2 / §4.2 / §4.4 / §11 were updated together; threads c1–c7 are resolved with notes in place. The full IG↔doc comparison lives in ig-compare.md.<<}{id="c11" by="claude" at="2026-08-10T19:36:31.000Z"}
 
 ⁠
 
@@ -216,7 +218,7 @@ graph TD
     CP -- "careTeam MS" --> CT
     CT -- "owner/performer" --> T
     CT -. "reporter" .-> AC
-    CP -- "activity.reference" --> T
+    T -- "basedOn 1..1" --> CP
     T -- "for: DeliveryUnit|Location|Patient" --> HH
     T -- "location 1..1" --> L
     T -- "output →" --> IMM
@@ -428,7 +430,7 @@ A **specific campaign execution.** It begins life as a microplan (`intent = plan
 
 **Lifecycle — in plain terms.** One CarePlan, two stages. It starts as the **plan** (a microplan: `intent = plan`, `status = draft`), then becomes the **record of what actually happened** as the work is done — `intent` changes to `order` and `status` moves `draft → active → completed`, with Tasks and coverage accumulating against that same resource.
 
-`mermaid graph LR PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/>versioned recipe"] U["Umbrella ICRCampaign<br/>intent: plan · status: active<br/>subject: national denominator"] R1["Kambia round<br/>intent: order · status: completed<br/>subject: district denominator"] R2["Port Loko round<br/>intent: order · status: active"] T["ICRCampaignTask(s)<br/>→ delivery events"] PD -- "instantiatesCanonical 1..1" --> U PD -- "instantiatesCanonical 1..1" --> R1 PD -- "instantiatesCanonical 1..1" --> R2 R1 -- "partOf" --> U R2 -- "partOf" --> U R1 -- "activity.reference" --> T R2 -- "activity.reference" --> T`
+`mermaid graph LR PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/>versioned recipe"] U["Umbrella ICRCampaign<br/>intent: plan · status: active<br/>subject: national denominator"] R1["Kambia round<br/>intent: order · status: completed<br/>subject: district denominator"] R2["Port Loko round<br/>intent: order · status: active"] T["ICRCampaignTask(s)<br/>→ delivery events"] PD -- "instantiatesCanonical 1..1" --> U PD -- "instantiatesCanonical 1..1" --> R1 PD -- "instantiatesCanonical 1..1" --> R2 R1 -- "partOf" --> U R2 -- "partOf" --> U T -- "basedOn 1..1" --> R1 T -- "basedOn 1..1" --> R2`
 
 The campaign umbrella (representing the microplan) stays `intent = plan` — it is the planning shell holding the national denominator and binding the rounds together; each round goes `plan → order` as it executes. Because every box points at the **same** protocol, "all MR SIA rounds, anywhere" is one query.
 
@@ -462,7 +464,7 @@ graph TD
 | `careTeam` | MS  |     | `Reference(ICRCareTeam)` | The team(s) running the campaign — see ICRCareTeam (§4.5). |
 | `addresses` | MS  |     | `Reference(Condition)` | The disease/condition targeted (where the specific disease lives, since `type` is disease-agnostic). |
 | `partOf` |     |     | `Reference(ICRCampaign)` only | The umbrella/round pattern — a round is `partOf` its umbrella. |
-| `activity` | MS  |     | `activity.reference` → `Reference(ICRCampaignTask)` only | The round's Tasks. Inline activities (`activity.detail`) are out — the work is always a referenced Task. |
+| `activity` |     |     | `activity.reference` → `Reference(ICRCampaignTask)` only | **Optional** curated Task list — the canonical link runs the other way (`Task.basedOn` → this campaign), so the CarePlan is never rewritten as tasks are created. Inline activities (`activity.detail`) are out — work is always a referenced Task. |
 | `extension[campaignRound]` | MS  | 0..1 | positiveInt | Which round this is. |
 | `extension[targetGeography]` | MS  | 0..* | `Reference(ICRLocation)` | The *where* — plural, since one campaign may name several geographies. |
 | `extension[planningDenominator]` | MS  | 0..1 | `Reference(ICRTargetPopulation)` | Singles out *which* estimate is THE denominator coverage is computed against, when several compete. |
@@ -561,18 +563,6 @@ graph TD
       "display": "Measles and rubella"
     }
   ],
-  "activity": [
-    {
-      "reference": {
-        "reference": "Task/example-site-session-task"
-      }
-    },
-    {
-      "reference": {
-        "reference": "Task/example-mopup-task"
-      }
-    }
-  ],
   "extension": [
     {
       "url": "https://icr.healthcampaigns.org/StructureDefinition/campaign-round",
@@ -625,7 +615,7 @@ graph TD
 }
 ```
 
-Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §4.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the *who* — each scope has its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §5.2): different numbers from different sources, *not* a partition of one total. `partOf` makes the round a child of the umbrella. `activity.reference` lists the round's Tasks (§4.4). The extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (the *where*, `0..*` — here the district Location, §5.3), the `planning-denominator` that singles out *the* denominator coverage is computed against, and the `social-mobilization` record for the round. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference because the scenario ships no Condition instance; in production it would point at a Condition coded to SNOMED CT / ICD-11, which is where the specific disease lives since campaign `type` is deliberately disease-agnostic.)
+Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns point at the one protocol in §4.1. `intent` is the lifecycle dial — the umbrella stays `plan`, the round is `order` (executing). `subject` is the *who* — each scope has its own ICRTargetPopulation denominator Group (national 2,150,000 vs Kambia 48,250; §5.2): different numbers from different sources, *not* a partition of one total. `partOf` makes the round a child of the umbrella. The round's Tasks are *not* listed on the CarePlan — each Task points back at it through `basedOn` (§4.4), so the plan is never rewritten as work is created. The extensions carry exactly what the protocol omits: which `campaign-round` this is, the `target-geography` (the *where*, `0..*` — here the district Location, §5.3), the `planning-denominator` that singles out *the* denominator coverage is computed against, and the `social-mobilization` record for the round. (`addresses` is R4 `Reference(Condition)` — shown here as a display-only reference because the scenario ships no Condition instance; in production it would point at a Condition coded to SNOMED CT / ICD-11, which is where the specific disease lives since campaign `type` is deliberately disease-agnostic.)
 
 **Key observations.**
 
@@ -733,7 +723,7 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 ### 4.4 ICRCampaignTask — `Task`
 The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models **all use one and the same profile**: the *same* `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
-**Two reference roles —** `for` **vs** `focus`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for`. `Task.focus` is reserved for **workflow lineage** — the CarePlan, activity, or prior Task this work derives from. This split keeps "what we acted on" and "where this work came from" separate and queryable.
+**Three reference roles —** `for`**,** `basedOn`**,** `partOf`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for` — R4's *beneficiary* slot, which also powers the standard `Task?patient=` / `Task?subject=` searches. **Workflow lineage** is carried by `basedOn` (**1..1** — the campaign this task executes; tasks point at the campaign, so the CarePlan is never updated as tasks are created) and, on follow-up revisits, `partOf` (the originating Task). `Task.focus` — R4's "request being actioned" — is deliberately left **unconstrained**, free for deployments whose systems generate per-task order resources. This split keeps "what we acted on" and "where this work came from" separate and queryable.
 
 **Properties.**
 
@@ -744,10 +734,10 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 | `owner` | MS  |     | `Reference(ICRCareTeam)` only | The team that owns/performs the work — a real reference to an ICRCareTeam (§4.5), not a display string, so "who worked this" is a query. |
 | `executionPeriod` | MS  |     | Period | When the work was carried out. |
 | `code` | MS  | 1..1 | CodeableConcept | What the Task is. |
-| {==`for`==}{>>We currently have some outstanding tension around the roles of `for`, `focus`, and `location`. Here is my current understanding of the way to smooth out this tension, though it could change as I get more comfortable with the IG:<br>- `for`: Exclude from ICR IG. FHIR intends this to be used to track the beneficiary, but this is already done via ICRTargetPopulation. If this is insufficient, bring back `for` here and use to track beneficiaries.<br>- `focus`: Use this to track the unit being targeted (ie., the summary document's current description of `for`). FHIR confirms that can track a location, person, etc. (https://hl7.org/fhir/R4/task-definitions.html#Task.focus)<br>- `basedOn`: Tracks workflow lineage (ie., the summary document's current description of `focus`). <br>- `location`: Tracks the specific physical location where the work occurred. At first this feels redundant with focus, but consider the scenario where focus = a specific person. In that situation you would need to track the physical location separately. Additionally, I've noted elsewhere that the IG treats communities and settlements as distinct concepts--communities are groups of people, settlements are the geographic locations where people live. Keeping those separate further emphasizes the need for both `focus` and `location`.<<}{id="c6" by="mckinnoj" at="2026-08-10T12:47:36.747Z"} | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | {==The unit being **targeted**: a household/community delivery-unit Group (Type B/C), the site Location (Type A), or a Patient for person-targeted follow-up.==}{>>This will probably drop out once we address the bigger point about tracing lineage, but for now just confirming that this documents summary of for and focus is out of sync with the IG. The IG has 'focus => What the task acts on: household/community delivery-unit Group (Type B/C — the norm) or site Location (Type A); a Patient only for person-targeted follow-up tasks' and nothing tracking lineage.<<}{id="c7" by="mckinnoj" at="2026-08-10T16:04:20.775Z"} |
-| {==`focus`==}{>>Need to check if this can also be on a person of if it's just a location.<<}{id="c1" by="mberg" at="2026-08-06T14:48:48.514Z"}{>>This does not point back to the careplan in the actual IG.  But we need this concept too.  More of a partof?<<}{id="c2" by="mberg" at="2026-08-06T14:56:30.275Z" re="c1"}{>>partOf makes sense, and would be consistent with using CarePlan.partOf to link campaign rounds to umbrella campaigns. However, it appears that Task.partOf can only link to other Tasks, which would make it impossible to use this field for this purpose (https://hl7.org/fhir/R4/task-definitions.html#Task.partOf)<<}{id="c4" by="mckinnoj" at="2026-08-10T12:25:06.245Z" re="c2"}{>>The other lineage field that could fill this role would be basedOn, which can point to any resource.<<}{id="c5" by="mckinnoj" at="2026-08-10T12:30:58.000Z" re="c4"} | MS  |     | `Reference(CarePlan \| ActivityDefinition \| ServiceRequest \| Task)` | **Workflow lineage**: the campaign/activity this work instantiates, or the prior Task it follows (e.g. a mop-up Task following the session Task that missed a child). |
+| `for` | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit being **targeted**: a household/community delivery-unit Group (Type B/C), the site Location (Type A), or a Patient for person-targeted follow-up.{>>Resolved — the IG was the wrong side and has been fixed: the FSH constrained `focus` while this table said `for`. Decision (Matt, Aug 10): the target lives on `for` — R4's beneficiary slot, which carries the standard Task?patient= / Task?subject= searches and matches OpenSRP/Reveal campaign tasking. It is not redundant with ICRTargetPopulation: the denominator cohort is the campaign's subject, while `for` is the concrete unit this visit acts on. The profile now enforces for 1..1 → DeliveryUnit | Location | Patient; `focus` (R4's request-being-actioned slot) is left unconstrained, free for deployments whose systems generate per-task orders.<<}{id="c8" by="claude" at="2026-08-10T19:36:31.000Z"} |
+| `basedOn` | MS  | 1..1 | `Reference(ICRCampaign)` only | **The campaign this task executes** — the required workflow-lineage link. Tasks point at the campaign, never the reverse: a round with ten thousand Tasks is never rewritten as they are created.{>>Resolves the c1/c2/c4/c5 thread (partOf can only reference other Tasks, so it is kept for follow-up → originating task; basedOn — which may reference any resource — is the campaign link): the profile now enforces basedOn 1..1 → ICRCampaign, and CarePlan.activity is demoted to an optional curated list.<<}{id="c9" by="claude" at="2026-08-10T19:36:31.000Z"} |
 | `reasonCode` | MS  |     | CodeableConcept | The disease/programme this Task serves — used to scope a Task to a disease where one community Task covers several concurrent programmes. |
-| {==`location`==}{>>This is duplicative of the IG I think<<}{id="c3" by="mberg" at="2026-08-06T14:57:49.241Z"} | MS  | 1..1 | `Reference(ICRLocation)` only | Where the work happened. |
+| `location` | MS  | 1..1 | `Reference(ICRLocation)` only | Where the work happened.{>>Kept (resolving the duplication question): location is the physical-place axis, distinct from the target — a household visit has for = the household Group but location = the dwelling; a person-targeted follow-up has for = the Patient. Communities (Groups of people) and settlements (places) stay separate concepts.<<}{id="c10" by="claude" at="2026-08-10T19:36:31.000Z"} |
 | `output` | MS  |     |     | References to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts. |
 | `extension[deliveryStrategy]` | MS  | 1..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | The strategy this Task runs under — mandatory, since it determines which other fields apply. |
 | `extension[taskOrigin]` | MS  | 1..1 | code, **required** → ICRTaskOriginVS (`pre-planned` \| `field-registered`) | Whether the Task was pre-generated from the microplan or created in the field on discovery. |
@@ -758,7 +748,7 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 | `extension[noncomplianceReason]` |     | 0..* | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS | Why a household/person declined. |
 | `extension[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height/age, pregnant, breastfeeding, acute illness. Deliberately distinct from *missed* (not reached) and *noncompliance* (declined). |
 | `extension[fingerMarked]` |     | 0..1 | boolean | (Type B) the in-field "already covered" marker. |
-| `extension[revisitOutcome]` *(forms-v1)* |     | 0..1 | CodeableConcept, **extensible** → ICRRevisitOutcomeVS | On a **person-targeted follow-up** Task (`focus` = the missed Patient, `partOf` = the originating Task): the outcome of the revisit — `already-vaccinated` \| `vaccinated-on-revisit` \| `still-missing`. |
+| `extension[revisitOutcome]` *(forms-v1)* |     | 0..1 | CodeableConcept, **extensible** → ICRRevisitOutcomeVS | On a **person-targeted follow-up** Task (`for` = the missed Patient, `partOf` = the originating Task): the outcome of the revisit — `already-vaccinated` \| `vaccinated-on-revisit` \| `still-missing`. |
 | `extension[dataLineage]` |     | 0..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled. |
 
 **Example.** `example-mopup-task` — the Type-B house-to-house visit, the richer Task shape, which chains to a delivery event:
@@ -777,11 +767,13 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
   "code": {
     "text": "Administer MCV — house-to-house mop-up visit"
   },
+  "basedOn": [
+    {
+      "reference": "CarePlan/example-mr-sia-2026"
+    }
+  ],
   "for": {
     "reference": "Group/example-household"
-  },
-  "focus": {
-    "reference": "CarePlan/example-mr-sia-2026"
   },
   "location": {
     "reference": "Location/example-dwelling"
@@ -846,12 +838,12 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 }
 ```
 
-Reading the links out: `for` points at the **household delivery-unit Group** (§5.1) — the Type-B target (a Type-A site-session Task instead has `for` = the fixed-post Location); `focus` carries the **workflow lineage**, here the round CarePlan (§4.2), so the dose traces back to the campaign that ordered it; `location` is where the work happened (the dwelling, §5.3); `owner` references the CareTeam that worked the visit (§4.5). `output` is the **whole Task→event mechanism** — it references the `Immunization` in §6.1 (R4 Immunization has no `basedOn`, so the link runs this way). The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin` — here `field-registered`, the discovery-mode pattern: this household wasn't in the microplan; the team created it and its Task on the doorstep. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason absent`, `finger-marked`) only exist for strategy B — they would be meaningless on a fixed-post session.
+Reading the links out: `for` points at the **household delivery-unit Group** (§5.1) — the Type-B target (a Type-A site-session Task instead has `for` = the fixed-post Location); `basedOn` carries the **workflow lineage** — the round CarePlan (§4.2) — so the dose traces back to the campaign that ordered it; `location` is where the work happened (the dwelling, §5.3); `owner` references the CareTeam that worked the visit (§4.5). `output` is the **whole Task→event mechanism** — it references the `Immunization` in §6.1 (R4 Immunization has no `basedOn`, so the link runs this way). The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin` — here `field-registered`, the discovery-mode pattern: this household wasn't in the microplan; the team created it and its Task on the doorstep. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason absent`, `finger-marked`) only exist for strategy B — they would be meaningless on a fixed-post session.
 
 **Key observations.**
 
 - **One Task per visit; person-level detail is held in the delivery events.** A doorstep visit is a single Task, closed when the visit completes. Each person vaccinated is recorded as a separate `Immunization` referenced from `Task.output` and pointing at that person's `Patient`. The Task is the unit of work (one visit); the delivery events are the units of service (the doses given). The same pattern serves the community scale: containment runs on the Location axis (a household's dwelling is `partOf` the community's settlement, §5.1), so community → household → person stays queryable without nesting Groups.
-- **Person-targeted Tasks are used only for follow-up.** When a specific missed or zero-dose individual must be traced, a new Task is created whose `for` is that person's `Patient`, with `focus` referencing the originating Task that missed them. This is the only intended person-targeted Task. Creating a Task per person for routine delivery would multiply Task volume roughly fivefold without recording anything the Immunization records do not already carry.
+- **Person-targeted Tasks are used only for follow-up.** When a specific missed or zero-dose individual must be traced, a new Task is created whose `for` is that person's `Patient`, with `partOf` referencing the originating Task that missed them (and `basedOn`, as always, the campaign). This is the only intended person-targeted Task. Creating a Task per person for routine delivery would multiply Task volume roughly fivefold without recording anything the Immunization records do not already carry.
 - **The count and reason extensions apply mainly to Type B.** Houses visited, eligible present/absent, and finger-marking have no meaning for a fixed-post tally, so they are optional (`0..x`) and populated only for house-to-house work. The reason axes are deliberately three: `missed-reason` (not reached — including area-level causes such as insecurity), `noncompliance-reason` (reached but declined), and `exclusion-reason` (reached and willing but contraindicated).
 - `task-origin` **is mandatory because the value is itself a measurement.** A team that finds an unenumerated household creates the delivery unit and its Task in the field (`field-registered`). The count of field-registered Tasks per area measures how incomplete the microplan's enumeration was, which informs the next round's denominators.
 - **Delivery events are linked from** `Task.output`**.** R4 `Immunization` has no `basedOn` element, so there is no reverse link from event to Task. The link is therefore directed Task → event (§6).
@@ -2116,7 +2108,7 @@ graph LR
     U -- instantiatesCanonical --> P
     R -- partOf --> U
     R -- instantiatesCanonical --> P
-    R -- activity.reference --> T
+    T -- basedOn --> R
     T -- output --> D
     D -- patient --> C
 ```
@@ -2181,7 +2173,7 @@ graph LR
 | 37  | `example-admin-coverage` | ICRAdministrativeCoverage | numerator 47,766 / denominator 48,250, **measureScore 99%**; denominatorSource GRID3; dataLineage reconciled |
 | 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**; coverageSource survey; sampleDesign "WHO 30×10 cluster survey…"; dataLineage reconciled — the same quantity as #37, **23 points apart** |
 | 39  | `example-supervision-report` | ICRSupervisionReport | QuestionnaireResponse against the supervision checklist: DOC observed ✓, height chart ✓, ineligibles identified ✓, stock concordant ✗; subject → community; author → supervisor |
-| 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `focus` → the missed child, `partOf` → the mop-up Task, `revisit-outcome` → already-vaccinated |
+| 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `for` → the missed child, `partOf` → the mop-up Task, `revisit-outcome` → already-vaccinated |
 | 41  | `example-readiness-report` *(forms-v1)* | QuestionnaireResponse | Pre-campaign readiness validation of Kambia supervision zone 2 against the readiness checklist: microplan ✓, HTRA ✓, supplies-on-time ✗, teams trained ✓ |
 
 *Definitional artifacts (alongside the examples)*
