@@ -4,7 +4,7 @@ status: release companion to ICR IG v0.1.0 — first shareable version for partn
   review & feedback
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-10T19:58:29Z
+last_modified: 2026-08-10T20:54:33Z
 tags:
   - icr
   - fhir
@@ -15,11 +15,13 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion
-`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 10, 2026 at 3:58 PM EDT`
+`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 10, 2026 at 4:54 PM EDT`
 
 {>>Rewrite pass (Aug 10): the §4.4 reference-role tension is settled and applied on BOTH sides. Target on `for` (1..1 → DeliveryUnit | Location | Patient); campaign link on `basedOn` (1..1 → ICRCampaign, new — tasks point at the campaign, the CarePlan is never updated as tasks are created); `partOf` = originating task on revisits; `focus` left unconstrained. The IG FSH, its examples (incl. a new STH-MDA protocol/denominator/round so every Task example has a basedOn target, plus Task.reasonCode now MS), and this doc's §2 / §4.2 / §4.4 / §11 were updated together; threads c1–c7 are resolved with notes in place. The full IG↔doc comparison lives in ig-compare.md.<<}{id="c11" by="claude" at="2026-08-10T19:36:31.000Z"}
 
 {>>Rewrite pass (Aug 10, later): Location identity settled and applied on both sides — formal iso slices (isoCountry / isoSubdivision on FHIR's standard 3166 URNs, optional + MS); national codes via the use = official convention (the $NationalAdminCode placeholder URI and `national` slice are gone); and the invariants now actually exist in the FSH: icr-loc-admin-id (error), icr-loc-admin-official (warning), icr-loc-overlays (warning → error at v1.0). Also repaired an id collision: my earlier notes c8/c9/c10 were renumbered c12/c13/c14 because reviewer comments pushed the same afternoon already used those ids. Open reviewer proposals still pending: c10 (isCalculated on denominator estimates).<<}{id="c17" by="claude" at="2026-08-10T19:58:29.000Z"}
+
+{>>Rewrite pass (Aug 10, evening): reviewer proposal c10 (mckinnoj) implemented — new is-calculated boolean on ICRTargetPopulation (36th extension), marking estimates aggregated from other estimates as non-independent; worked example example-target-population-ward-sum added beside the independent Kambia estimates. §4.2's nested-scopes observation, the §5.2 table, and §10 updated; extension count 35→36 in §1.5.<<}{id="c19" by="claude" at="2026-08-10T20:54:33.000Z"}
 
 ⁠
 
@@ -181,7 +183,7 @@ The canonical `https://icr.healthcampaigns.org` is the project-controlled domain
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
 | **Measures** | 6   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, and (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness` — the canonical definitions the coverage/readiness MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 35  | See §10 |
+| **Extensions** | 36  | See §10 |
 | **CodeSystems** | 25  | See §9 |
 | **ValueSets** | 28  | One per code system (mostly), plus purpose-built sets (§9) |
 | **Example instances** | 44  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11) |
@@ -623,7 +625,7 @@ Reading the links out: `instantiatesCanonical` (**1..1**) makes both campaigns p
 
 - **Planned and executed states are the same resource at different lifecycle stages, not two resources.** The microplan and the execution record are one CarePlan at different `intent` values. The planned figure is retained in the `planningDenominator` extension, and the planned-versus-actual audit trail is provided by FHIR resource history and Provenance. ICR does not create a separate planning-snapshot Group.
 - **The number of CarePlans is determined by reporting scopes, not administrative boundaries — and never by sub-area disaggregation.** Each CarePlan has exactly one `subject` (denominator) but `targetGeography` is `0..*`. The default is **one CarePlan at the reporting scope**: the highest level that carries the campaign's global target — typically the district round — with `subject` that scope's denominator. Operational sub-units (wards, health facilities, communities) sit *under* it through the Location hierarchy (`partOf`) and their own geography-scoped ICRTargetPopulation estimates; their estimates and coverage remain fully queryable per area, but they are referenced, never subjects — a district with hundreds of communities is still **one** campaign resource. Child CarePlans under an umbrella (`partOf`) are reserved for genuine sub-rounds that carry their own period or reporting obligation (district rounds reporting independently under a national umbrella), not for levels of denominator disaggregation. The rule is one CarePlan per reporting scope — not per administrative area, and not per level of the population-estimate hierarchy.
-- **Nested scopes do not sum to their parent.** A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 GRID3), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation.
+- **Nested scopes do not sum to their parent.** A district denominator and the national total are produced by different sources and methods (national 2,150,000 census projection versus Kambia 48,250 GRID3), so they can legitimately differ. The `partOf` relationship is conceptual nesting, not arithmetic aggregation. When a parent figure *is* an arithmetic roll-up of child estimates, it must say so via the `is-calculated` flag (§5.2) — a summed figure is not independent evidence for its inputs.
 - **The umbrella is itself an ICRCampaign**, so it carries its own national denominator, `category`, and `period`.
 - `instantiatesCanonical 1..1` **has a designed relief valve.** If the requirement ever proves too strict for emergency campaigns, the fallback is to relax it to `0..1` with a flag — but the forcing function (every campaign authors a protocol first) is deliberate.
 ### 4.3 ICRCampaignActivity — `ActivityDefinition`
@@ -1177,10 +1179,11 @@ The first two are the **same geography disagreeing by ~7%**. Both are retained; 
 | `quantity` | MS  | 1..1 | unsignedInt | The denominator count. |
 | `characteristic` | MS  |     |     | Age band, sex, eligibility rule, geography; **sliced** (pattern on `code`, open). |
 | `characteristic[geography]` | MS  | 0..1 | `value[x]` → `Reference(ICRLocation)`; `code` fixed `geography`; `exclude` fixed `false` | The **computable** scope link — joins the estimate to the location hierarchy at any level (country → district → ward → settlement — or an operational area, which typically overlays a *group* of settlements/wards rather than sitting below any one of them) by reference, not by parsing a name. |
-| {==`extension[denominatorSource]`==}{>>I recommend a new `extension[isCalculated]` boolean. Imagine a bunch of Wards are reporting population estimates to their parent District with `denominatorSource = '2026-microplannin'`. We would to store the summed total of all Wards' population estimates at the District level, but we would want to indicate that this estimate was calculated based on lower-level estimates.<<}{id="c10" by="mckinnoj" at="2026-08-10T16:42:19.994Z"} | MS  | 1..1 | CodeableConcept, **extensible** → ICRDenominatorSourceVS | **Required as of v0.1** — every estimate declares its source; the low-precision escape codes `govt-estimate` and `unknown` cover early placeholders and historical imports. |
+| `extension[denominatorSource]` | MS  | 1..1 | CodeableConcept, **extensible** → ICRDenominatorSourceVS | **Required as of v0.1** — every estimate declares its source; the low-precision escape codes `govt-estimate` and `unknown` cover early placeholders and historical imports. |
 | `extension[denominatorType]` | MS  | 0..1 | code, **required** → ICRDenominatorTypeVS (`total-population` \| `at-risk`) | Whether this denominator is the total population or the at-risk/eligible population — the axis that separates programme coverage from epidemiological coverage (§7). |
 | `extension[estimateDate]` | MS  | 0..1 | date | When the estimate was made (denominators decay fast — 1–3 years). |
 | `extension[isPlanningDenominator]` | MS  | 0..1 | boolean | Flags *the* one coverage is computed against. |
+| `extension[isCalculated]` | MS  | 0..1 | boolean | **True when this figure aggregates other estimates** — ward sums rolled up to a district, or an apportioned share of a parent figure — rather than being independently sourced; `denominatorSource` then describes the underlying inputs' method. Absent ⇒ not known to be calculated. A calculated figure is not independent evidence for its inputs, and goes stale when any input is revised.{>>Implemented from your c10 proposal — it closes a real provenance gap: a summed district figure previously looked identical to an independent measurement, inviting circular corroboration and silent staleness. Kept your shape exactly (boolean; denominatorSource unchanged, describing the underlying inputs' method). The richer derived-from Reference list — the actual input estimates, enabling recomputation tracing — is noted in the extension definition as the future enrichment; its presence would imply isCalculated. A worked example ships: example-target-population-ward-sum (50,120 = ward sum) beside the independent GRID3 and enumeration estimates for the same district.<<}{id="c18" by="claude" at="2026-08-10T20:54:33.000Z"} |
 | `extension[confidence]` |     | 0..1 | string | Free-text confidence (coded confidence is a later refinement). |
 
 **Example.** `example-target-population` — Kambia's GRID3 planning denominator (the `subject` of the round CarePlan):
@@ -2062,6 +2065,7 @@ FHIR has no native campaign semantics, so 35 extensions carry them on the profil
 | DenominatorType (`denominator-type`) | Group, MeasureReport | code, **required** → ICRDenominatorTypeVS — total-population \| at-risk (programme vs epidemiological coverage) |
 | EstimateDate (`estimate-date`) | Group | date — denominators decay fast (1–3 years) |
 | IsPlanningDenominator (`is-planning-denominator`) | Group | boolean |
+| IsCalculated (`is-calculated`) | Group | boolean — the estimate aggregates other estimates (ward sums / apportionment) and is not independent evidence for them; `denominator-source` describes the inputs' method |
 | EstimateConfidence (`estimate-confidence`) | Group | string |
 
 **Geospatial, delivery, safety & coverage**

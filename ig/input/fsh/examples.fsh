@@ -243,6 +243,29 @@ Usage: #example
 * extension[estimateDate].valueDate = "2026-03-02"
 * extension[isPlanningDenominator].valueBoolean = false
 
+// The calculated/aggregated case (working-doc §5.2 c10): a district figure summed
+// from ward microplanning estimates. is-calculated marks it as NON-independent —
+// it corroborates nothing about its inputs and goes stale when any ward revises.
+// It sits beside the independent GRID3 and enumeration estimates for the same
+// district: three competing estimates, each with its provenance.
+
+Instance: example-target-population-ward-sum
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 9m–14y, Kambia District (sum of ward microplan estimates, calculated)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years, Kambia District (sum of ward microplanning estimates — calculated, not independently sourced)"
+* quantity = 50120
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[estimateDate].valueDate = "2026-03-10"
+* extension[isPlanningDenominator].valueBoolean = false
+* extension[isCalculated].valueBoolean = true
+
 Instance: example-target-population-national
 InstanceOf: ICRTargetPopulation
 Title: "Example Target Population — children 9m–14y, Sierra Leone (national)"

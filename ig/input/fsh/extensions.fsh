@@ -153,6 +153,14 @@ Context: Group
 * ^experimental = false
 * value[x] only boolean
 
+Extension: IsCalculated
+Id: is-calculated
+Title: "Is Calculated"
+Description: "True when this estimate was computed by aggregating other estimates — ward figures summed to a district, or a share apportioned from a parent figure — rather than sourced independently; denominator-source then describes the method of the underlying inputs. A calculated figure is not independent evidence for its inputs (comparing it against them is not corroboration) and goes stale when any input is revised. Absent = not known to be calculated. A future derived-from reference list may carry the actual input estimates; its presence would imply this flag (reviewer proposal, working doc §5.2 c10)."
+Context: Group
+* ^experimental = false
+* value[x] only boolean
+
 Extension: EstimateConfidence
 Id: estimate-confidence
 Title: "Estimate Confidence"
