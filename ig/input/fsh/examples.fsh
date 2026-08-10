@@ -372,8 +372,8 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "Fixed-post vaccination session"
-* focus = Reference(example-fixed-post)
-* for = Reference(example-target-population)
+* basedOn = Reference(example-mr-sia-2026)
+* for = Reference(example-fixed-post)
 * location = Reference(example-fixed-post)
 * executionPeriod.start = "2026-06-17T08:00:00Z"
 * executionPeriod.end = "2026-06-17T17:00:00Z"
@@ -391,7 +391,7 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "House-to-house mop-up: vaccinate children missed at fixed posts"
-* focus = Reference(example-household)
+* basedOn = Reference(example-mr-sia-2026)
 * for = Reference(example-household)
 * owner = Reference(example-careteam)
 * location = Reference(example-dwelling)
@@ -501,6 +501,56 @@ Usage: #example
 //   • the disaggregated treatment tally as a STRATIFIED MeasureReport (rec 1 / §2.1)
 //     — sex × age-band stratifiers are how the drug×sex×age cube lands when there
 //     is no person to attach a MedicationAdministration to.
+// The campaign frame (protocol → round) gives the community Task its basedOn
+// target — every Task points at its campaign; the CarePlan never lists tasks.
+
+Instance: example-sth-mda-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "STH MDA protocol — albendazole, community-directed"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* status = #active
+* version = "1.0.0"
+* title = "Soil-transmitted helminthiasis MDA (albendazole), community-directed distribution"
+* type = $CampaignType#mda "Mass drug administration"
+* goal.description.text = "≥75% epidemiological coverage of the at-risk population"
+* action.title = "Administer albendazole 400 mg single dose, community-directed"
+* action.definitionCanonical = Canonical(example-albendazole-activity)
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#community-directed "Community-directed distribution"
+
+Instance: example-target-population-sth
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — at-risk population, Rokupr community (STH MDA)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* type = #person
+* actual = false
+* name = "At-risk population, Rokupr community (STH MDA 2026 planning denominator)"
+* quantity = 3200
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-settlement)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-01-20"
+* extension[isPlanningDenominator].valueBoolean = true
+
+Instance: example-mda-round
+InstanceOf: ICRCampaign
+Title: "STH MDA, Rokupr community — February 2026 round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* instantiatesCanonical = Canonical(example-sth-mda-protocol)
+* status = #completed
+* intent = #order
+* title = "STH MDA (albendazole), Rokupr community, February 2026"
+* category = $CampaignType#mda "Mass drug administration"
+* subject = Reference(example-target-population-sth)
+* period.start = "2026-02-08"
+* period.end = "2026-02-12"
+* extension[targetGeography].valueReference = Reference(example-settlement)
+* extension[planningDenominator].valueReference = Reference(example-target-population-sth)
+* extension[dataLineage].valueCode = #reconciled
 
 Instance: example-albendazole-supply
 InstanceOf: ICRSupplyDelivery
@@ -531,7 +581,7 @@ Usage: #example
 // instantiate additional disease-specific activities/Tasks, so disease varies by
 // village without overloading Campaign.addresses.
 * reasonCode.text = "Soil-transmitted helminthiasis (STH)"
-* focus = Reference(example-community)
+* basedOn = Reference(example-mda-round)
 * for = Reference(example-community)
 * owner = Reference(example-careteam)
 * location = Reference(example-settlement)
@@ -756,7 +806,8 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "Revisit missed child from mop-up visit"
-* focus = Reference(example-child)
+* basedOn = Reference(example-mr-sia-2026)
+* for = Reference(example-child)
 * partOf = Reference(example-mopup-task)
 * owner = Reference(example-careteam)
 * location = Reference(example-dwelling)

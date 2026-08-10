@@ -328,7 +328,7 @@ Context: Immunization, MedicationAdministration
 Extension: RevisitOutcome
 Id: revisit-outcome
 Title: "Revisit Outcome"
-Description: "Outcome of a follow-up revisit to a previously-missed household/person (already-vaccinated | vaccinated-on-revisit | still-missing) — the 'outcome of the revisit' of the missed-children recording forms. Set on the person-targeted follow-up Task (Task.for = Patient, Task.focus = the originating Task that missed them) (forms-v1 / jul3-form-analysis §Aggregate #4)."
+Description: "Outcome of a follow-up revisit to a previously-missed household/person (already-vaccinated | vaccinated-on-revisit | still-missing) — the 'outcome of the revisit' of the missed-children recording forms. Set on the person-targeted follow-up Task (Task.for = the missed Patient, Task.partOf = the originating Task that missed them) (forms-v1 / jul3-form-analysis §Aggregate #4)."
 Context: Task
 * ^experimental = false
 * value[x] only CodeableConcept

@@ -47,8 +47,8 @@ Description: "A specific campaign execution — the keystone resource. Begins li
 * addresses ^short = "The disease/condition targeted"
 * partOf only Reference(ICRCampaign)
 * partOf ^short = "Umbrella campaign this round belongs to (multi-round pattern, working doc §6.3)"
-* activity MS
 * activity.reference only Reference(ICRCampaignTask)
+* activity ^short = "Optional curated Task list. The canonical link runs the other way — Task.basedOn points at this campaign — so the CarePlan is never rewritten as tasks are created"
 * extension contains
     CampaignRound named campaignRound 0..1 MS and
     TargetGeography named targetGeography 0..* MS and
@@ -77,23 +77,30 @@ Profile: ICRCampaignTask
 Parent: Task
 Id: ICRCampaignTask
 Title: "ICR Campaign Task"
-Description: "The assignable, trackable operational unit of work — one Task per site-session (Type A, focus = the site Location) or per household (Type B, focus = the household Group). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
+Description: "The assignable, trackable operational unit of work — one Task per site-session (Type A, for = the site Location) or per household (Type B, for = the household Group). Every Task points at its campaign via basedOn (the CarePlan is never updated as tasks are created). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
 * ^experimental = false
 * status MS
 * status ^short = "requested → in-progress → completed / failed"
 * intent MS
 * code 1..1 MS
 * code ^short = "The activity being performed"
-// focus: delivery-unit Group (B/C), site Location (A) — plus Patient as the
+* basedOn 1..1 MS
+* basedOn only Reference(ICRCampaign)
+* basedOn ^short = "The campaign (round) this task executes. Tasks point at the campaign — the CarePlan is never updated as tasks are created"
+// for: delivery-unit Group (B/C), site Location (A) — plus Patient as the
 // deliberate exception: person-targeted FOLLOW-UP tasks (a specific missed or
 // zero-dose child spawns a Task pointing at that child, working doc §4.4). The
 // norm remains one Task per visit/session with person-level detail in the
-// delivery events hanging off Task.output.
-* focus 1..1 MS
-* focus only Reference(ICRDeliveryUnit or ICRLocation or Patient)
-* focus ^short = "What the task acts on: household/community delivery-unit Group (Type B/C — the norm) or site Location (Type A); a Patient only for person-targeted follow-up tasks"
-* for MS
-* for ^short = "The target subject/population"
+// delivery events hanging off Task.output. R4 'for' is the beneficiary of the
+// work and carries the standard Task?patient=/subject= searches (OpenSRP/Reveal
+// precedent: the sprayed structure / visited family / traced person lives here).
+// 'focus' (the request being actioned) is deliberately left unconstrained, free
+// for deployments whose systems generate per-task order resources.
+* for 1..1 MS
+* for only Reference(ICRDeliveryUnit or ICRLocation or Patient)
+* for ^short = "What the task acts on: household/community delivery-unit Group (Type B/C — the norm) or site Location (Type A); a Patient only for person-targeted follow-up tasks"
+* reasonCode MS
+* reasonCode ^short = "The disease/programme this Task serves — scopes a Task to one disease where a community runs several concurrent programmes (per-village disease scoping in co-endemic MDA)"
 * owner MS
 * owner only Reference(ICRCareTeam)
 * owner ^short = "The assigned ICRCareTeam — a real join, not a display string (v0.20.0): 'who worked this' and (via the supervisor) 'who reports this'"
