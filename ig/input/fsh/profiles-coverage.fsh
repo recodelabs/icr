@@ -16,12 +16,13 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * measure ^short = "The canonical ICR coverage Measure this report instances — declares the populations and standard stratifiers (§8, v0.19.0)"
 * period 1..1 MS
 * reporter 1..1 MS
-* reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — typically the supervisor's ICRCareTeam / their organization"
+* reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — the accountable supervisor (Practitioner/PractitionerRole) or their organization (the R4 reporter targets; CareTeam is not one — the team join rides extension[reporterTeam])"
 * group MS
 * group.stratifier MS
 * group.stratifier.code from ICRCoverageStratifierVS (extensible)
 * group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — extensible binding to ICRCoverageStratifierVS, so custom country axes stay legal (v0.19.0)"
 * extension contains
+    ReporterTeam named reporterTeam 0..1 MS and
     CoverageSource named coverageSource 1..1 MS and
     DenominatorSource named denominatorSource 0..1 MS and
     DenominatorType named denominatorType 0..1 MS and
@@ -44,12 +45,13 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * measure ^short = "The canonical ICR coverage Measure this survey report instances (§8, v0.19.0)"
 * period 1..1 MS
 * reporter 1..1 MS
-* reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — typically the supervisor's ICRCareTeam / their organization"
+* reporter ^short = "Required (v0.20.0, §15 #7-bis): who reported this figure — the accountable survey lead (Practitioner/PractitionerRole) or their organization (the R4 reporter targets; CareTeam is not one — the team join rides extension[reporterTeam])"
 * group MS
 * group.stratifier MS
 * group.stratifier.code from ICRCoverageStratifierVS (extensible)
 * group.stratifier ^short = "Disaggregation by the standard axes (ICRCoverageStratifierVS, extensible) the Measure declares (v0.19.0)"
 * extension contains
+    ReporterTeam named reporterTeam 0..1 MS and
     CoverageSource named coverageSource 1..1 MS and
     SampleDesign named sampleDesign 0..1 MS and
     DenominatorType named denominatorType 0..1 MS and

@@ -234,7 +234,7 @@ Context: MeasureReport
 Extension: DosePoleBand
 Id: dose-pole-band
 Title: "Dose-pole Band"
-Description: "The measured dose-pole height band that determined the tablet count for a PC-NTD treatment — makes the height-band → dose logic machine-readable rather than buried in dosage.text. Bands are drug-specific; coded extensibly (espen-v3 minor-issue)."
+Description: "The measured dose-pole height band that determined the tablet count for a PC-NTD treatment — makes the height-band → dose logic machine-readable rather than buried in dosage.text. Bands are drug-specific and carried as text or local codings; deliberately unbound — no universal band ValueSet exists (espen-v3 minor-issue)."
 Context: MedicationAdministration, ActivityDefinition
 * ^experimental = false
 * value[x] only CodeableConcept
@@ -249,12 +249,18 @@ Context: CareTeam
 
 // --- v0.20.0 additions (espen-v4 round) ---------------------------------------
 
+Invariant: icr-stock-ledger
+Description: "Stock ledger identity: received = used + remaining + notUsable + returned (absent parts count as zero). Warning severity — a reconciliation gap is a data-quality signal worth surfacing, not always a recording error."
+Severity: #warning
+Expression: "extension('received').exists() and extension('used').exists() and extension('remaining').exists() implies extension('received').value.ofType(Quantity).value = extension('used').value.ofType(Quantity).value + extension('remaining').value.ofType(Quantity).value + iif(extension('notUsable').exists(), extension('notUsable').value.ofType(Quantity).value, 0) + iif(extension('returned').exists(), extension('returned').value.ofType(Quantity).value, 0)"
+
 Extension: StockAccountability
 Id: stock-accountability
 Title: "Stock Accountability"
 Description: "Vial/commodity accountability and wastage on a supply event — received / used / remaining / not-usable (expired/damaged) / returned, plus physical-vs-theoretical concordance and (vaccines) the VVM stage. Reusable for vaccines, drugs and ITNs; the ESPEN supervision Form 5 stock block (espen-v4 / §17.2 C2)."
 Context: SupplyDelivery
 * ^experimental = false
+* obeys icr-stock-ledger
 * extension contains
     received 0..1 MS and
     used 0..1 MS and
@@ -341,6 +347,16 @@ Context: Task
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRRevisitOutcomeVS (extensible)
+
+// --- v0.1.1 additions (ig-compare fix round) -----------------------------------
+
+Extension: ReporterTeam
+Id: reporter-team
+Title: "Reporter Team"
+Description: "The ICRCareTeam whose figures this MeasureReport rolls up. R4 MeasureReport.reporter cannot reference a CareTeam (legal targets: Practitioner | PractitionerRole | Location | Organization), so reporter carries the accountable supervisor or organization, and this extension carries the team join — 'which team's numbers are these' stays a single hop (ig-compare §9 item 1)."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only Reference(ICRCareTeam)
 
 Extension: SettlementType
 Id: settlement-type
