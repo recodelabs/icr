@@ -1058,7 +1058,7 @@ I haven't thought through the ramifications of using ICRDeliveryUnits for all 3 
 
 | Element | Flags | Card. | Type / Binding | Description |
 | --- | --- | --- | --- | --- |
-| `type` |     |     | fixed `#person` | A group of persons. |
+| `type` |     |     | fixed `#person` | {==A group of persons.==}{>>Just a note that the actual resource doesn't seem to fix this to just person, it seems to allow for all the options FHIR supports: "group-type (required) person \| animal \| practitioner \| device \| "<<}{id="c2" by="mckinnoj" at="2026-08-11T13:58:44.179Z"}{>>This also confused me at first because I thought, "This resource is tracking a household or community, not a person," but it turns out that FHIR uses this element to track MEMBERS of the group, not the group itself. So we're good, but I would recommend clarifying this in the summary document.<<}{id="c3" by="mckinnoj" at="2026-08-11T13:58:52.703Z" re="c2"} |
 | `actual` |     |     | fixed `true` | A real, enumerated group. Compare the denominator, which has `actual=false`. |
 | `code` | MS  | 1..1 | CodeableConcept, **required** → ICRGroupKindVS (`household` \| `community` \| `school-cohort`) | The kind of delivery unit. |
 | `member` | MS  |     | `member.entity` → `Reference(ICRPatient)` only | The enumerated persons. This is the main capture mode for community-and-household campaigns. |
