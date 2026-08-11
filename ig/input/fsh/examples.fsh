@@ -398,6 +398,7 @@ Usage: #example
 * intent = #order
 * code.text = "Spray structure — Pirimiphos-methyl 300CS"
 * basedOn = Reference(example-irs-round)
+* instantiatesCanonical = Canonical(example-irs-activity)
 * for = Reference(example-dwelling)
 * location = Reference(example-dwelling)
 * executionPeriod.start = "2026-05-06T10:15:00Z"
@@ -473,6 +474,7 @@ Usage: #example
 * intent = #order
 * code.text = "Fixed-post vaccination session"
 * basedOn = Reference(example-mr-sia-2026)
+* instantiatesCanonical = Canonical(example-mcv-activity)
 * for = Reference(example-fixed-post)
 * location = Reference(example-fixed-post)
 * executionPeriod.start = "2026-06-17T08:00:00Z"
@@ -492,6 +494,7 @@ Usage: #example
 * intent = #order
 * code.text = "House-to-house mop-up: vaccinate children missed at fixed posts"
 * basedOn = Reference(example-mr-sia-2026)
+* instantiatesCanonical = Canonical(example-mcv-activity)
 * for = Reference(example-household)
 * owner = Reference(example-careteam)
 * location = Reference(example-dwelling)
@@ -683,6 +686,7 @@ Usage: #example
 // village without overloading Campaign.addresses.
 * reasonCode.text = "Soil-transmitted helminthiasis (STH)"
 * basedOn = Reference(example-mda-round)
+* instantiatesCanonical = Canonical(example-albendazole-activity)
 * for = Reference(example-community)
 * owner = Reference(example-careteam)
 * location = Reference(example-settlement)

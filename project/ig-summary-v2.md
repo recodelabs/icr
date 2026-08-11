@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-10T22:45:26Z
+last_modified: 2026-08-11T21:13:27Z
 tags:
   - icr
   - fhir
@@ -16,7 +16,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 10, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 11, 2026`
 
 > [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document.
 
@@ -222,6 +222,7 @@ graph TD
     CT -- "owner/performer" --> T
     AC -. "reporter-team ext" .-> CT
     T -- "basedOn 1..1" --> CP
+    T -. "instantiatesCanonical" .-> AD
     T -- "for: DeliveryUnit|Location|Patient" --> HH
     T -- "location 1..1" --> L
     T -- "output →" --> IMM
@@ -703,9 +704,11 @@ The ICRCampaignTask is the **operational unit of work**. You can assign it and y
 
 Two things identify the delivery model: the target of the Task, and the mandatory coded delivery strategy. Teams can create Tasks before the round, from the microplan. Teams can also create Tasks in the field, when they find a new unit.
 
-**Three reference roles —** `for`**,** `basedOn`**,** `partOf`**.** `Task.for` carries the unit that the Task **targets**. The target can be a household, a community, or a person for follow-up. `Task.for` is R4's *beneficiary* element. It also powers the standard `Task?patient=` and `Task?subject=` searches. `for` is not redundant with ICRTargetPopulation. The denominator cohort is the campaign's subject; `for` is the concrete unit that this visit acts on.
+**Four reference roles —** `for`**,** `basedOn`**,** `instantiatesCanonical`**,** `partOf`**.** `Task.for` carries the unit that the Task **targets**. The target can be a household, a community, or a person for follow-up. `Task.for` is R4's *beneficiary* element. It also powers the standard `Task?patient=` and `Task?subject=` searches. `for` is not redundant with ICRTargetPopulation. The denominator cohort is the campaign's subject; `for` is the concrete unit that this visit acts on.
 
 `basedOn` carries the **workflow lineage** (**1..1** — the campaign that this task executes). Tasks point at the campaign. Thus the system never updates the CarePlan when it creates tasks. On a follow-up revisit, `partOf` carries the first Task. `Task.focus` — R4's "request being actioned" element — stays **unconstrained** on purpose. Deployments that generate an order resource for each task can use `focus` freely.
+
+`instantiatesCanonical` points at the ICRCampaignActivity that the Task carries out (**0..1**). This is the structured link to the work definition — the product, the dose, the intervention code. It uses the same convention as the CarePlan → Protocol link. In a campaign with more than one activity, each Task declares its activity. Then "all spray tasks" and per-activity coverage stay simple queries. `Task.code` stays a human-readable label. An ad-hoc field task can omit the link.
 
 This split keeps two questions separate: "what did we act on" and "where did this work come from". Each question stays queryable.
 
@@ -720,6 +723,7 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 | `code` | MS  | 1..1 | CodeableConcept | What the Task is. |
 | `for` | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit that the Task **targets**. For Type B/C, this is a household or community delivery-unit Group. For Type A, this is the site Location. For person-targeted follow-up, this is a Patient. |
 | `basedOn` | MS  | 1..1 | `Reference(ICRCampaign)` only | **The campaign that this task executes** — the required workflow-lineage link. Tasks point at the campaign, never the reverse. A round with ten thousand Tasks is never rewritten when the system creates the Tasks. |
+| `instantiatesCanonical` | MS  | 0..1 | `Canonical(ICRCampaignActivity)` only | **The activity that this task carries out** — the definition-to-execution link. It uses the same convention as CarePlan → Protocol. It makes per-activity queries structural in a multi-activity campaign. `code` stays the human-readable label. An ad-hoc task can omit it. |
 | `reasonCode` | MS  |     | CodeableConcept | The disease or programme that this Task serves. Use it to scope a Task to one disease, when one community Task covers several concurrent programmes. |
 | `location` | MS  | 1..1 | `Reference(ICRLocation)` only | The place where the work occurred. The place is a different axis from the target in `for`. Example: a household visit has `for` = the household Group and `location` = the dwelling. A person-targeted follow-up has `for` = the Patient. Communities (Groups of people) and settlements (places) stay separate concepts. |
 | `output` | MS  |     |     | References to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts. |

@@ -89,6 +89,9 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * basedOn 1..1 MS
 * basedOn only Reference(ICRCampaign)
 * basedOn ^short = "The campaign (round) this task executes. Tasks point at the campaign — the CarePlan is never updated as tasks are created"
+* instantiatesCanonical MS
+* instantiatesCanonical only Canonical(ICRCampaignActivity)
+* instantiatesCanonical ^short = "The activity this task carries out — the structured definition-to-execution link (same convention as CarePlan → Protocol). Carries the work definition (product, dose, intervention code) so multi-activity campaigns stay queryable per activity; Task.code is only the human-readable label. Optional: an ad-hoc field task may have no single activity"
 // for: delivery-unit Group (B/C), site Location (A) — plus Patient as the
 // deliberate exception: person-targeted FOLLOW-UP tasks (a specific missed or
 // zero-dose child spawns a Task pointing at that child, working doc §4.4). The
