@@ -1,15 +1,16 @@
 name: Publish IG to Cloudflare Pages
 
-# Builds the FHIR IG (sushi → HL7 IG Publisher) and publishes it twice:
+# Builds the FHIR IG (sushi → HL7 IG Publisher) and publishes the STOCK rendering
+# to both Pages projects:
 #
 #   ig/output → https://icr-ig-standard.pages.dev  — stock HL7 IG Publisher
 #               rendering, the layout HL7 reviewers expect.
-#   _site     → https://icr-ig.pages.dev           — the same IG re-rendered by
-#               IG Topcoat (https://github.com/recodelabs/ig-topcoat, pinned @v1).
+#   ig/output → https://icr-ig.pages.dev           — same stock rendering; this
+#               project carries the custom domain icr.healthcampaigns.org.
 #
-# Topcoat rewrites the HTML in place (identical filenames and canonical URLs), so
-# the stock rendering is otherwise unrecoverable once it runs — hence the separate
-# Pages project rather than a subpath.
+# IG Topcoat is DISABLED for now (Matt, 2026-08-11): its re-render has gaps
+# against the stock IG viewer. To re-enable: restore the commented Topcoat steps
+# below and point the icr-ig deploy back at _site.
 #
 # Deploy requires two repo secrets (Settings → Secrets and variables → Actions):
 #   CLOUDFLARE_API_TOKEN  — API token with "Cloudflare Pages: Edit" permission
@@ -98,23 +99,26 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy ig/output --project-name=icr-ig-standard --branch=main
 
-      - name: Render modern site with IG Topcoat
-        uses: recodelabs/ig-topcoat@v1
-        with:
-          input: ig/output
-          output: _site
+      # --- IG Topcoat disabled for now (2026-08-11) — re-enable by restoring
+      # --- these steps and deploying _site (not ig/output) to icr-ig.
+      #
+      # - name: Render modern site with IG Topcoat
+      #   uses: recodelabs/ig-topcoat@v1
+      #   with:
+      #     input: ig/output
+      #     output: _site
+      #
+      # - name: Upload site as run artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: icr-ig-site
+      #     path: _site
+      #     retention-days: 7
 
-      - name: Upload site as run artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: icr-ig-site
-          path: _site
-          retention-days: 7
-
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages (custom domain icr.healthcampaigns.org)
         if: env.CF_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy _site --project-name=icr-ig --branch=main
+          command: pages deploy ig/output --project-name=icr-ig --branch=main
