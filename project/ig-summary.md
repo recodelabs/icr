@@ -4,7 +4,7 @@ status: release companion to ICR IG v0.1.0 — first shareable version for partn
   review & feedback
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-10T22:21:04Z
+last_modified: 2026-08-11T21:13:27Z
 tags:
   - icr
   - fhir
@@ -15,7 +15,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion
-`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 10, 2026 at 6:21 PM EDT`
+`Companion to ICR IG v0.1.0 · Partner-review release · Last modified Aug 11, 2026 at 5:13 PM EDT`
 
 {>>Rewrite pass (Aug 10): the §4.4 reference-role tension is settled and applied on BOTH sides. Target on `for` (1..1 → DeliveryUnit | Location | Patient); campaign link on `basedOn` (1..1 → ICRCampaign, new — tasks point at the campaign, the CarePlan is never updated as tasks are created); `partOf` = originating task on revisits; `focus` left unconstrained. The IG FSH, its examples (incl. a new STH-MDA protocol/denominator/round so every Task example has a basedOn target, plus Task.reasonCode now MS), and this doc's §2 / §4.2 / §4.4 / §11 were updated together; threads c1–c7 are resolved with notes in place. The full IG↔doc comparison lives in ig-compare.md.<<}{id="c11" by="claude" at="2026-08-10T19:36:31.000Z"}
 
@@ -26,6 +26,8 @@ comments: true
 {>>Rewrite pass (Aug 10, night — mechanical batch): (1) MeasureReport.reporter fixed on both sides — R4 forbids CareTeam as reporter, so reporter = the accountable supervisor/organization and a new reporter-team extension (37th) carries the team join; §2 diagram + §7 tables updated. (2) icr-campaign-readiness now declares the readiness-domain stratifier (new 7th code in ICRCoverageStratifierCS). (3) Stock-ledger identity is a warning invariant (icr-stock-ledger). (4) SupervisionReport and dose-pole-band descriptions de-contradicted; background.md's ViewDefinitions claim corrected. (5) Example gaps closed: district GeoJSON boundary, full IRS chain (protocol/denominator/round/structure-Task), zero-dose + readiness MeasureReports (examples.fsh now 56 instances). (6) Breaking-while-cheap id normalization: icr-team-role→icr-team-role-cs, icr-ntd-disease-vs→icr-ntd-disease, icr-mda-medicine-package-vs→icr-mda-medicine-package. A full doc-alignment pass (counts, stale JSON, §11 gallery) is next and will sweep the remaining drift.<<}{id="c20" by="claude" at="2026-08-10T21:09:24.000Z"}
 
 {>>Doc-alignment pass (Aug 10, late): the summary is now reconciled against the post-fix IG. Counts corrected (28 CodeSystems / 30 ValueSets / 56 examples / six Measures); every embedded JSON example replaced with the canonical compiled instance from fsh-generated (fixing the -cs system URIs, the 6-vs-3-member household, invented fields, dates, and measureScore shapes); recorder→enumerator; FR flags fixed for FacilityType/Ownership and their bindings marked as planned (mCSD pass, per today's item-3 decision); ICRProjectTagCS added to §9; Consent/AdverseEvent/survey-stratifier rows added; §11 gallery extended to rows 45–56; §12 gains the WHO-IDHC section. Remaining known-minor: the §6.5 ConceptMap source/target asymmetry note and §5.4 identifier-slice cardinality detail.<<}{id="c21" by="claude" at="2026-08-10T22:21:04.000Z"}
+
+{>>Design addition (Aug 11, discussed with Matt): Task.instantiatesCanonical is now constrained to Canonical(ICRCampaignActivity) (0..1 MS) — the structured Task → activity link, completing the FHIR definition-to-execution triangle (basedOn = campaign, instantiatesCanonical = activity, for = target). Previously the activity was reachable only via basedOn → CarePlan → Protocol → action, which is ambiguous in multi-activity campaigns. The four scenario Tasks now set it (the follow-up task deliberately omits it, showing the ad-hoc case). §4.4 and the §2 diagram updated here and in ig-summary-v2.md.<<}{id="c22" by="claude" at="2026-08-11T21:13:27.000Z"}
 
 ⁠
 
@@ -227,6 +229,7 @@ graph TD
     CT -- "owner/performer" --> T
     AC -. "reporter-team ext" .-> CT
     T -- "basedOn 1..1" --> CP
+    T -. "instantiatesCanonical" .-> AD
     T -- "for: DeliveryUnit|Location|Patient" --> HH
     T -- "location 1..1" --> L
     T -- "output →" --> IMM
@@ -698,7 +701,7 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 ### 4.4 ICRCampaignTask — `Task`
 The assignable, trackable **operational unit of work** — one Task per site-session (Type A) or per household/community visit (Type B/C). This is where the three delivery models **all use one and the same profile**: the *same* `ICRCampaignTask` serves a fixed-post session and a house-to-house visit, told apart by what it targets and the mandatory coded delivery strategy. Tasks may be pre-planned from the microplan or field-registered on discovery.
 
-**Three reference roles —** `for`**,** `basedOn`**,** `partOf`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for` — R4's *beneficiary* slot, which also powers the standard `Task?patient=` / `Task?subject=` searches. **Workflow lineage** is carried by `basedOn` (**1..1** — the campaign this task executes; tasks point at the campaign, so the CarePlan is never updated as tasks are created) and, on follow-up revisits, `partOf` (the originating Task). `Task.focus` — R4's "request being actioned" — is deliberately left **unconstrained**, free for deployments whose systems generate per-task order resources. This split keeps "what we acted on" and "where this work came from" separate and queryable.
+**Four reference roles —** `for`**,** `basedOn`**,** `instantiatesCanonical`**,** `partOf`**.** The unit being **targeted** (household, community, or a person for follow-up) is carried by `Task.for` — R4's *beneficiary* slot, which also powers the standard `Task?patient=` / `Task?subject=` searches. **Workflow lineage** is carried by `basedOn` (**1..1** — the campaign this task executes; tasks point at the campaign, so the CarePlan is never updated as tasks are created), `instantiatesCanonical` (**0..1** — the ICRCampaignActivity this task carries out: the structured definition-to-execution link, same convention as CarePlan → Protocol, so multi-activity campaigns stay queryable per activity) and, on follow-up revisits, `partOf` (the originating Task). `Task.focus` — R4's "request being actioned" — is deliberately left **unconstrained**, free for deployments whose systems generate per-task order resources. This split keeps "what we acted on" and "where this work came from" separate and queryable.
 
 **Properties.**
 
@@ -711,6 +714,7 @@ The assignable, trackable **operational unit of work** — one Task per site-ses
 | `code` | MS  | 1..1 | CodeableConcept | What the Task is. |
 | `for` | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit being **targeted**: a household/community delivery-unit Group (Type B/C), the site Location (Type A), or a Patient for person-targeted follow-up.{>>Resolved — the IG was the wrong side and has been fixed: the FSH constrained `focus` while this table said `for`. Decision (Matt, Aug 10): the target lives on `for` — R4's beneficiary slot, which carries the standard Task?patient= / Task?subject= searches and matches OpenSRP/Reveal campaign tasking. It is not redundant with ICRTargetPopulation: the denominator cohort is the campaign's subject, while `for` is the concrete unit this visit acts on. The profile now enforces for 1..1 → DeliveryUnit | Location | Patient; `focus` (R4's request-being-actioned slot) is left unconstrained, free for deployments whose systems generate per-task orders. [renumbered c8→c12 — id collided with a reviewer comment pushed the same afternoon]<<}{id="c12" by="claude" at="2026-08-10T19:36:31.000Z"} |
 | `basedOn` | MS  | 1..1 | `Reference(ICRCampaign)` only | **The campaign this task executes** — the required workflow-lineage link. Tasks point at the campaign, never the reverse: a round with ten thousand Tasks is never rewritten as they are created.{>>Resolves the c1/c2/c4/c5 thread (partOf can only reference other Tasks, so it is kept for follow-up → originating task; basedOn — which may reference any resource — is the campaign link): the profile now enforces basedOn 1..1 → ICRCampaign, and CarePlan.activity is demoted to an optional curated list. [renumbered c9→c13 — id collided with a reviewer comment pushed the same afternoon]<<}{id="c13" by="claude" at="2026-08-10T19:36:31.000Z"} |
+| `instantiatesCanonical` | MS  | 0..1 | `Canonical(ICRCampaignActivity)` only | **The activity this task carries out** — the definition-to-execution link (same convention as CarePlan → Protocol). Makes per-activity queries ("all spray tasks", coverage per activity) structural in multi-activity campaigns; `code` stays the human-readable label. Optional: an ad-hoc task may have no single activity. |
 | `reasonCode` | MS  |     | CodeableConcept | The disease/programme this Task serves — used to scope a Task to a disease where one community Task covers several concurrent programmes. |
 | `location` | MS  | 1..1 | `Reference(ICRLocation)` only | Where the work happened.{>>Kept (resolving the duplication question): location is the physical-place axis, distinct from the target — a household visit has for = the household Group but location = the dwelling; a person-targeted follow-up has for = the Patient. Communities (Groups of people) and settlements (places) stay separate concepts. [renumbered c10→c14 — id collided with a reviewer comment pushed the same afternoon]<<}{id="c14" by="claude" at="2026-08-10T19:36:31.000Z"} |
 | `output` | MS  |     |     | References to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts. |
