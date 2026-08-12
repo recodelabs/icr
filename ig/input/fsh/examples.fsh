@@ -47,6 +47,27 @@ Usage: #example
 * extension[boundary].valueAttachment.contentType = #application/geo+json
 * extension[boundary].valueAttachment.data = "eyJ0eXBlIjoiUG9seWdvbiIsImNvb3JkaW5hdGVzIjpbW1stMTMuMDUsOC45NV0sWy0xMi44NSw4Ljk1XSxbLTEyLjg1LDkuMTVdLFstMTMuMDUsOS4xNV0sWy0xMy4wNSw4Ljk1XV1dfQ=="
 
+// A country using its OWN coding scheme: the open identifier slicing means a
+// national code (here a DHIS2 orgUnit UID under an MoH system URI) rides the
+// identifier list with NO profile change, marked use = official — that mark is
+// the uniform join key (identifier.where(use = 'official')). No GERS ID and no
+// P-code yet: the enrichment lifecycle (create unmatched → conflate → backfill
+// GERS with Provenance) applies. The icr-loc-admin-id invariant is satisfied
+// because an admin unit needs at least one identifier from ANY system.
+Instance: example-ward
+InstanceOf: ICRLocation
+Title: "Example Ward — national DHIS2 code only"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* name = "Kambia Ward 3 (Magbema)"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
+* type = $LocationType#admin-unit "Administrative unit"
+* partOf = Reference(example-district)
+* identifier[0].use = #official
+* identifier[0].system = "https://mohs.gov.sl/identifiers/dhis2-orgunit"
+* identifier[0].value = "Ax9uP3kL2mN"
+
 Instance: example-settlement
 InstanceOf: ICRLocation
 Title: "Example Settlement"
@@ -85,12 +106,12 @@ Usage: #example
 * name = "Rokupr Community Health Centre — fixed vaccination post"
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#si "Site"
+* type = $LocationType#facility "Health facility"
 * partOf = Reference(example-settlement)
 * position.longitude = -12.9465
 * position.latitude = 9.0140
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-building-chc-example"
-* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
 
 // Operational geography: a supervisory area is NOT in the admin partOf chain — it
 // overlays the admin units it covers via the overlays-admin-unit extension
@@ -594,9 +615,65 @@ Usage: #example
 * period.start = "2026-07-06"
 * period.end = "2026-07-12"
 * reporter.display = "Independent post-campaign coverage survey team"
+// The populations are SAMPLE counts (found vaccinated / children surveyed) —
+// a survey's denominator IS its sample, unlike the admin report's population
+// denominator. Shape deliberately parallels example-admin-coverage (same round).
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 1596
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 2100
 * group.measureScore = 76 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#sex "Sex"
+* group.stratifier[0].stratum[0].value.text = "female"
+* group.stratifier[0].stratum[0].measureScore = 78 '%' "%"
+* group.stratifier[0].stratum[1].value.text = "male"
+* group.stratifier[0].stratum[1].measureScore = 74 '%' "%"
+* group.stratifier[1].code = $CoverageStratifier#age-band "Age band"
+* group.stratifier[1].stratum[0].value.text = "9–59 months"
+* group.stratifier[1].stratum[0].measureScore = 71 '%' "%"
+* group.stratifier[1].stratum[1].value.text = "5–14 years"
+* group.stratifier[1].stratum[1].measureScore = 79 '%' "%"
 * extension[coverageSource].valueCode = #survey
-* extension[sampleDesign].valueString = "WHO 30×10 cluster survey, district-representative; card + caregiver recall"
+* extension[sampleDesign].valueString = "WHO 30×10 cluster survey (n = 2,100), district-representative; evidence: vaccination card + caregiver recall; 76% (95% CI 72–80)"
+* extension[dataLineage].valueCode = #reconciled
+
+// LQAS — the second independent method (coverage-source #lqas). LQAS is an
+// ACCEPT/REJECT decision rule per lot, not a coverage estimate: each lot
+// (here a supervision area) samples 19 children and is rejected if more than
+// 3 are unvaccinated. The report therefore counts LOTS (coverage-unit =
+// implementation-units): 12 of 15 accepted; the rejected lots — each of which
+// triggers mop-up — land in a disposition stratifier. The per-lot decision
+// threshold lives in sample-design; explicit pass/fail + trigger semantics
+// remain a §13.2 roadmap item.
+Instance: example-lqas-coverage
+InstanceOf: ICRSurveyCoverage
+Title: "LQAS lot assessment — Kambia MR SIA, June 2026 round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-survey-coverage"
+* period.start = "2026-06-29"
+* period.end = "2026-07-03"
+* reporter.display = "Kambia District LQAS monitoring team"
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 12
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 15
+* group.measureScore = 80 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#disposition "Disposition"
+* group.stratifier[0].stratum[0].value.text = "lot rejected — mop-up triggered (Rokupr zone 1)"
+* group.stratifier[0].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[0].population[0].count = 1
+* group.stratifier[0].stratum[1].value.text = "lot rejected — mop-up triggered (Mambolo zone 2)"
+* group.stratifier[0].stratum[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[1].population[0].count = 1
+* group.stratifier[0].stratum[2].value.text = "lot rejected — mop-up triggered (Magbema zone 4)"
+* group.stratifier[0].stratum[2].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.stratifier[0].stratum[2].population[0].count = 1
+* extension[coverageSource].valueCode = #lqas
+* extension[coverageUnit].valueCode = #implementation-units
+* extension[sampleDesign].valueString = "LQAS: 15 lots (supervision areas), 19 children sampled per lot; decision rule: reject the lot if >3 of 19 unvaccinated"
 * extension[dataLineage].valueCode = #reconciled
 
 // --- ESPEN MDA scenario: aggregate community-directed treatment ----------------
