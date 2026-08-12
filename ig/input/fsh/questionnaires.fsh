@@ -1,5 +1,5 @@
 // Supervision checklist (working doc §17.3; espen-v4 round).
-// The structured questionnaire behind ICRSupervisionReport — a coded, grouped
+// The structured questionnaire behind supervision-type ICRCampaignFormResponses — a coded, grouped
 // version of the ESPEN supervision forms (Form 5 health-facility, Form 6 CDD
 // observation). Representative items, not the full instrument; countries extend.
 

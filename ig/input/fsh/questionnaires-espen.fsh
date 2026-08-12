@@ -2294,7 +2294,7 @@ Usage: #example
 // --- Form 5: MDA Supervision — Health Facility --------------------------------
 // No extraction templates, by design: this is a supervision report, not a stock
 // or coverage event — the QuestionnaireResponse itself is the record
-// (ICRSupervisionReport, working doc §4.6).
+// (an ICRCampaignFormResponse, working doc §4.6).
 
 Instance: espen-mda-supervision-hf
 InstanceOf: Questionnaire
@@ -2305,7 +2305,7 @@ Usage: #example
 * name = "EspenMDASupervisionHF"
 * status = #active
 * experimental = false
-* description = "ESPEN MDA demo Form 5 (supervision at health facility): geographic coverage of villages treated, per-drug stock triplets (remaining/expired/concordance), distributor training, social mobilization, supervision area, pharmacovigilance, and free-text challenges/solutions/recommendations. No extraction templates: per ICRSupervisionReport (working doc §4.6) the QuestionnaireResponse itself is the supervision record."
+* description = "ESPEN MDA demo Form 5 (supervision at health facility): geographic coverage of villages treated, per-drug stock triplets (remaining/expired/concordance), distributor training, social mobilization, supervision area, pharmacovigilance, and free-text challenges/solutions/recommendations. No extraction templates: per the campaign-form pattern (ICRCampaignFormResponse, working doc §4.6) the QuestionnaireResponse itself is the supervision record."
 * subjectType = #Location
 // registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
 // resolve against the Location hierarchy / CareTeam registry at capture time
@@ -2576,7 +2576,7 @@ Usage: #example
 // --- Form 6: MDA Supervision — CDD Observation --------------------------------
 // No extraction templates, by design: this is a supervision report, not a stock
 // or coverage event — the QuestionnaireResponse itself is the record
-// (ICRSupervisionReport, working doc §4.6).
+// (an ICRCampaignFormResponse, working doc §4.6).
 
 Instance: espen-mda-supervision-cdd
 InstanceOf: Questionnaire
@@ -2587,7 +2587,7 @@ Usage: #example
 * name = "EspenMDASupervisionCDD"
 * status = #active
 * experimental = false
-* description = "ESPEN MDA demo Form 6 (CDD observation supervision): direct observation of a community drug distributor's technique and attitude during treatment, MDA-supplies availability, CDD training coverage, and free-text challenges/solutions/recommendations. No extraction templates: per ICRSupervisionReport (working doc §4.6) the QuestionnaireResponse itself is the supervision record."
+* description = "ESPEN MDA demo Form 6 (CDD observation supervision): direct observation of a community drug distributor's technique and attitude during treatment, MDA-supplies availability, CDD training coverage, and free-text challenges/solutions/recommendations. No extraction templates: per the campaign-form pattern (ICRCampaignFormResponse, working doc §4.6) the QuestionnaireResponse itself is the supervision record."
 * subjectType = #Location
 // stable domain list (National/Regional/Partner/District/Health Facility), not a
 // registry cascade — inline choice options

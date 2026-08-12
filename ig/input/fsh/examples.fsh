@@ -870,16 +870,18 @@ Usage: #example
 * extension[workloadTarget].extension[targetHouseholds].valueUnsignedInt = 640
 * extension[workloadTarget].extension[targetDays].valueUnsignedInt = 5
 
-// Structured supervision-visit record (ESPEN Form 6 CDD-observation) as a
-// QuestionnaireResponse against the icr-mda-supervision-checklist — each answer
-// links to a coded question; author is the supervising CareTeam (v0.20.0).
+// Structured supervision-visit record (ESPEN Form 6 CDD-observation): an
+// ICRCampaignFormResponse against the icr-mda-supervision-checklist — the
+// questionnaire canonical is the form-type discriminator, each answer links to
+// a coded question, and basedOn ties the submission to its round.
 Instance: example-supervision-report
-InstanceOf: ICRSupervisionReport
+InstanceOf: ICRCampaignFormResponse
 Title: "Supervision report — CDD observation, Rokupr"
 Usage: #example
 * meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
 * questionnaire = "https://icr.healthcampaigns.org/Questionnaire/icr-mda-supervision-checklist"
 * status = #completed
+* basedOn = Reference(example-mda-round)
 * subject = Reference(example-community)
 * authored = "2026-02-10"
 * author.display = "Ibrahim Conteh (supervisor), CDD team 7"
@@ -927,16 +929,18 @@ Usage: #example
 * extension[revisitOutcome].valueCodeableConcept = $RevisitOutcome#already-vaccinated "Already vaccinated"
 
 // Pre-campaign readiness validation of the Kambia round at ward/operational level
-// (UNICEF Preparedness Validation form) as a QuestionnaireResponse against the
-// readiness checklist — subject is the operational Location; rolls up via the
+// (UNICEF Preparedness Validation form): the SAME ICRCampaignFormResponse profile
+// as the supervision report — the readiness checklist canonical is what makes it
+// a readiness record — subject is the operational Location; rolls up via the
 // icr-campaign-readiness Measure (jul3-form-analysis §Aggregate #2).
 Instance: example-readiness-report
-InstanceOf: QuestionnaireResponse
+InstanceOf: ICRCampaignFormResponse
 Title: "Readiness validation — Kambia supervision zone 2"
 Usage: #example
 * meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
 * questionnaire = "https://icr.healthcampaigns.org/Questionnaire/icr-campaign-readiness-checklist"
 * status = #completed
+* basedOn = Reference(example-mr-sia-2026)
 * subject = Reference(example-supervisory-area)
 * authored = "2026-06-12"
 * author.display = "Ibrahim Conteh (national supervisor)"
