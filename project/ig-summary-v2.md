@@ -464,7 +464,7 @@ graph TD
 | `extension[campaignRound]` | MS  | 0..1 | positiveInt | The ordinal of this round. |
 | `extension[targetGeography]` | MS  | 0..* | `Reference(ICRLocation)` | The *where*. The element is plural because one campaign can name several geographies. |
 | `extension[planningDenominator]` | MS  | 0..1 | `Reference(ICRTargetPopulation)` | Identifies *which* estimate is THE denominator for coverage computation, when several estimates compete. |
-| `extension[dataLineage]` | MS  | 0..1 | code, **required** → ICRDataLineageVS | Realtime versus reconciled — the live in-field stream versus the corrected close-out figures. See the worked example in §7.2 (default: absent ⇒ realtime). |
+| `extension[dataLineage]` | MS  | 0..1 | code, **required** → ICRDataLineageVS | {==Realtime versus reconciled — the live in-field stream versus the corrected close-out figures. See the worked example in §7.2 (default: absent ⇒ realtime).==}{>>Small point about language, but I think 'realtime' is misleading here. It won't be uncommon for the "live in-field stream" to be only updated once a day, and the term "realtime" implies more frequent updates. I suggest using the terms "raw" and "reconciled" instead.<<}{id="c4" by="mckinnoj" at="2026-08-12T10:57:41.520Z"} |
 | `extension[socialMobilization]` | MS  | 0..1 | complex: `populationInformed` (boolean) + `channel` 0..* (CodeableConcept, **extensible** → ICRCommunicationChannelVS) | The demand/mobilization record. It states if the population was informed, and through which channels (radio, town criers, community leaders, …). |
 
 **Example — national umbrella (the microplan shell):**
