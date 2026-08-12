@@ -63,19 +63,19 @@ graph TD
   PD -->|action| AD["ICRCampaignActivity (ActivityDefinition)"]
   CP -->|operational unit| TASK["ICRCampaignTask (Task)"]
   AD -->|instantiated as| TASK
-  TASK -->|"Task.output (tally / optional refs)"| IMM["ICRImmunizationEvent"]
-  TASK -->|"Task.output (tally / optional refs)"| MA["ICRMedicationAdministration"]
-  TASK -->|"Task.output (tally / optional refs)"| SD["ICRSupplyDelivery"]
-  IMM -.->|"event-basedOn ext"| CP
-  MA -.->|"event-basedOn ext"| CP
-  TASK -->|acts on| DU["ICRDeliveryUnit (Group: household / community / school cohort)"]
-  DU -->|located at| LOC["ICRLocation (GERS join key)"]
+  TASK -->|"acts on (unit with members)"| DU["ICRDeliveryUnit (Group: household / community / school cohort)"]
+  TASK -->|"acts on (no members: site / structure / area)"| LOC["ICRLocation (GERS join key)"]
+  DU -->|group-location| LOC
+  DU -->|member| PT["ICRPatient (beneficiary)"]
+  TASK -->|"Task.output: tally + optional event refs"| EV["Delivery events: ICRImmunizationEvent · ICRMedicationAdministration · ICRSupplyDelivery"]
+  EV -.->|"campaign link (event-basedOn)"| CP
+  EV -->|"patient / subject"| PT
   TP["ICRTargetPopulation (denominator)"] -.->|denominator| CP
   CP --> AC["ICRAdministrativeCoverage"]
   CP --> SC["ICRSurveyCoverage"]
 ```
 
-<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, and defines its discrete work types once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate; the Tasks carry the operational work and close with a visit-level tally on `Task.output` (optionally referencing events captured in the visit workflow); each delivery event carries its own campaign link via the standard `event-basedOn` extension; denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
+<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, and defines its discrete work types once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate. A Task acts on a delivery unit — a **Group** where the unit has members (household, community, school cohort), a **Location** where it does not (a site, a structure under IRS, an area target) — and closes with a visit-level tally on `Task.output`, optionally referencing events captured in the visit workflow. Each delivery event stands alone: it points at its [ICRPatient](StructureDefinition-ICRPatient.html) (or a delivery-unit Group for register-level capture) and carries its own campaign link via the standard `event-basedOn` extension, so per-round queries never depend on Task wiring; person-level rollups run through Group membership. Denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
 
 #### Status
 
