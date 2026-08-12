@@ -9,6 +9,10 @@ Alias: $MeasureScoring = http://terminology.hl7.org/CodeSystem/measure-scoring
 Alias: $CareTeamCategory = http://loinc.org
 Alias: $AESeriousness = http://terminology.hl7.org/CodeSystem/adverse-event-seriousness
 Alias: $IMMZAdverseEventCausality = http://smart.who.int/immunizations/CodeSystem/IMMZ-aefi-causality
+// Standard HL7 event-pattern extension (reused, not ICR-minted): supplies basedOn
+// on Event resources that lack the element (R4 Immunization, MedicationAdministration,
+// SupplyDelivery) — ICR constrains its value to Reference(ICRCampaign)
+Alias: $eventBasedOn = http://hl7.org/fhir/StructureDefinition/event-basedOn
 
 // ICR identifier system URIs (provisional — to be confirmed before v1.0)
 Alias: $GERSId = https://icr.healthcampaigns.org/identifiers/overture-gers

@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-12T18:57:09Z
+last_modified: 2026-08-12T19:22:00Z
 tags:
   - icr
   - fhir
@@ -141,7 +141,7 @@ Health campaigns collect the same data again and again. Examples of health campa
 The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide. It gives campaigns one shared, reusable data model. With this model, the data from each campaign accumulates, and no team collects the same data again. The scope of the ICR is the part of immunization-and-delivery work that routine-health systems do **not** model. The WHO routine-immunization IG also does not model this part. The scope includes these areas:
 
 - **Campaign architecture** — a reusable protocol, its executions and rounds, the discrete activities, the operational units of work (Tasks), and the teams that do this work.
-- **Population & geography** — denominators with provenance, the household and community groups that the campaign reached, the registered individuals in these groups, and a rich location model. The location model includes the administrative hierarchy, the operational geography, stable cross-campaign place IDs, and GeoJSON boundaries.
+- **Population & geography** — denominators with provenance, the household, community, and school-cohort groups that the campaign reached, the registered individuals in these groups, and a rich location model. The location model includes the administrative hierarchy, the operational geography, stable cross-campaign place IDs, and GeoJSON boundaries.
 - **Delivery events** — the vaccine doses, the drug administrations, and the commodity deliveries, plus the adverse events that follow them. Each delivery event has a campaign-vs-routine flag. Campaign data and routine-programme data can be in the same system. The flag makes sure that each type is counted in its own statistics. A campaign dose never increases the routine coverage figures. A routine dose never increases the campaign coverage figures.
 - **Coverage** — administrative coverage and independently-surveyed coverage. These are two lineages of the same quantity. The IG keeps the two lineages **separate and never merges them**. Canonical `Measure` definitions support them.
 
@@ -223,9 +223,11 @@ graph TD
     T -. "instantiatesCanonical" .-> AD
     T -- "for: DeliveryUnit|Location|Patient" --> HH
     T -- "location 1..1" --> L
-    T -- "output →" --> IMM
-    T -- "output →" --> MED
-    T -- "output →" --> SUP
+    T -- "output: tally / optional refs" --> IMM
+    T -- "output: tally / optional refs" --> MED
+    T -- "output: tally / optional refs" --> SUP
+    IMM -. "event-basedOn ext" .-> CP
+    MED -. "event-basedOn ext" .-> CP
     HH -- "member" --> PT
     IMM -- "patient 1..1" --> PT
     MED -. "subject (person)" .-> PT
@@ -255,7 +257,7 @@ Read the IG as three layers that intersect:
 - **ICRDeliveryUnit** *(Group,* `actual=true`*)* — **the actual group of persons a Task acts on**: a household, a community, or a school cohort. A delivery unit without members (a structure, a temporary site, an area target) is a Location instead (§5.1).
 - **ICRTargetPopulation** *(Group,* `actual=false`*)* — **a denominator**: a conceptual cohort with a count and eligibility characteristics. It must also have source and date provenance; this requirement is important. Competing estimates for the same place stay side by side.
 - **ICRLocation** *(Location)* — **the place model.** It is the ICR resource with the most customization. It has a nested administrative hierarchy and an operational geography that is adjacent to the admin tree. It also has GeoJSON boundaries and a multi-system geospatial identity (GERS, P-codes, national and ISO codes).
-- **ICRPatient** *(Patient)* — **the registered individual**: a listed household or community member. The person has a stable identifier that applies across campaigns. Gender and birth date are mandatory because they control eligibility and disaggregation. A name is required. **ICRConsent** *(Consent)* is the related governance profile.
+- **ICRPatient** *(Patient)* — **the registered individual**: a listed household, community, or school-cohort member. The person has a stable identifier that applies across campaigns. Gender and birth date are mandatory because they control eligibility and disaggregation. A name is required. **ICRConsent** *(Consent)* is the related governance profile.
 
 **Delivery events & safety (§6)**
 
@@ -264,7 +266,7 @@ Read the IG as three layers that intersect:
 - **ICRSupplyDelivery** *(SupplyDelivery)* — **a commodity delivery** (bed-nets, drug stock). It has a stock-accountability extension for wastage and reconciliation.
 - **ICRAdverseEvent** *(AdverseEvent)* — an **intervention-neutral safety event**. One profile serves AEFI (after a vaccine dose) and MDA pharmacovigilance (after a drug).
 
-Each delivery event and the adverse event carry a mandatory `record-origin` flag (campaign vs routine).
+Each delivery event and the adverse event carry a mandatory `record-origin` flag (campaign vs routine). Each delivery event also carries its own **campaign link** — the standard `event-basedOn` extension, constrained to `Reference(ICRCampaign)`. A delivery event therefore stands alone: patient + campaign + origin. "All doses in this round" is a direct query and never depends on Task wiring.
 
 **Coverage (§7)**
 
@@ -634,7 +636,7 @@ A **CampaignActivity** is a discrete **activity** within a campaign. For example
 - Distribute ITNs to households
 - Spray a structure
 
-CampaignActivities are instantiated as ICRCampaignTask resources. The Activity defines the intervention — product and dosage — **one time**. Thousands of identical Tasks are then created under it, and the clinical content is not repeated. CampaignActivities are also **target-agnostic** by design. They define *what* to do and, at most, the *kind* of eligible target. They never name the specific household or community to act on.
+CampaignActivities are instantiated as ICRCampaignTask resources. The Activity defines the intervention — product and dosage — **one time**. Thousands of identical Tasks are then created under it, and the clinical content is not repeated. CampaignActivities are also **target-agnostic** by design. They define *what* to do and, at most, the *kind* of eligible target. They never name the specific household, community, or school to act on.
 
 **Properties.**
 
@@ -719,12 +721,12 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 | `owner` | MS  |     | `Reference(ICRCareTeam)` only | The team that owns and performs the work. This is a real reference to an ICRCareTeam (§4.5), not a display string. Thus "who worked this" is a query. |
 | `executionPeriod` | MS  |     | Period | The period in which the team did the work. |
 | `code` | MS  | 1..1 | CodeableConcept | What the Task is. |
-| `for` | MS  | 1..1 | {==`Reference(ICRDeliveryUnit \| ICRLocation \| Patient)`==}{>>This should include school-cohor too I believe.<<}{id="c5" by="mberg" at="2026-08-12T19:07:52.786Z"} | The unit that the Task **targets**. A delivery unit with members is a delivery-unit Group (household, community, school cohort). A delivery unit without members is a Location (a fixed or temporary post site, a structure under IRS, an area target). For person-targeted follow-up, this is a Patient. |
+| `for` | MS  | 1..1 | {==`Reference(ICRDeliveryUnit \| ICRLocation \| Patient)`==}{>>This should include school-cohor too I believe.<<}{id="c5" by="mberg" at="2026-08-12T19:07:52.786Z"}{>>School cohorts are already covered here: the union lists profiles, not group kinds — a school cohort IS an ICRDeliveryUnit (Group with code `school-cohort`), exactly like household and community. Household and community don't appear in the union either, for the same reason. That said, you're right that the surrounding prose still said only "household or community" in several places (ICRPatient, the MedicationAdministration/AdverseEvent subjects, the IG's index/background pages) — this pass sweeps them all to include school cohorts.<<}{id="c6" by="claude" at="2026-08-12T19:18:04.000Z" re="c5"} | The unit that the Task **targets**. A delivery unit with members is a delivery-unit Group (household, community, school cohort). A delivery unit without members is a Location (a fixed or temporary post site, a structure under IRS, an area target). For person-targeted follow-up, this is a Patient. |
 | `basedOn` | MS  | 1..1 | `Reference(ICRCampaign)` only | **The campaign that this task executes** — the required workflow-lineage link. Tasks point at the campaign, never the reverse. A round with ten thousand Tasks is never rewritten when the system creates the Tasks. |
 | `instantiatesCanonical` | MS  | 0..1 | `Canonical(ICRCampaignActivity)` only | **The activity that this task carries out** — the definition-to-execution link. It uses the same convention as CarePlan → Protocol. It makes per-activity queries structural in a multi-activity campaign. `code` stays the human-readable label. An ad-hoc task can omit it. |
 | `reasonCode` | MS  |     | CodeableConcept | The disease or programme that this Task serves. Use it to scope a Task to one disease, when one community Task covers several concurrent programmes. |
 | `location` | MS  | 1..1 | `Reference(ICRLocation)` only | The place where the work occurred. The place is a different axis from the target in `for`. Example: a household visit has `for` = the household Group and `location` = the dwelling. A person-targeted follow-up has `for` = the Patient. Communities (Groups of people) and settlements (places) stay separate concepts. |
-| `output` | MS  |     |     | References to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts. |
+| `output` | MS  |     |     | **The visit-level result.** The mainline content is aggregate counts — the tally that closes the visit ("household visited, 3 vaccinated"; a session's 412 doses). Where the visit workflow captures the doses, `output` may additionally reference the Immunization / MedicationAdministration / SupplyDelivery events. Events do not require this reference: each event carries its own campaign link (§6). |
 | `extension[deliveryStrategy]` | MS  | 1..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | The strategy that this Task runs under. It is mandatory, because it determines which other fields apply. |
 | `extension[taskOrigin]` | MS  | 1..1 | code, **required** → ICRTaskOriginVS (`pre-planned` \| `field-registered`) | Shows if the microplan pre-generated the Task, or if the team created it in the field on discovery. |
 | `extension[housesVisited]` |     | 0..1 | unsignedInt | (house-to-house) The houses that the team visited on the round. |
@@ -828,21 +830,21 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 
 Read the links as follows. `for` points at the **household delivery-unit Group** (§5.1). A site-session Task instead has `for` = the fixed-post Location. `basedOn` carries the **workflow lineage** — the round CarePlan (§4.2). Thus the dose traces back to the campaign that ordered it.
 
-`location` is the place where the work occurred — the dwelling (§5.3). `owner` references the CareTeam that worked the visit (§4.5). `output` is the **whole Task→event mechanism**. It references the `Immunization` in §6.1. R4 Immunization has no `basedOn`, so the link runs in this direction.
+`location` is the place where the work occurred — the dwelling (§5.3). `owner` references the CareTeam that worked the visit (§4.5). `output` here references the `Immunization` in §6.1, because this mop-up visit captured the dose inside the visit workflow. That reference is the optional tightening, not the required mechanism — the dose also carries its own campaign link (`event-basedOn`, §6), so it is attributable to the round without the Task.
 
 The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`. Here `task-origin` is `field-registered`, the discovery-mode pattern. This household was not in the microplan. The team created the household and its Task at the door. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason` `absent`, `finger-marked`) exist only for the house-to-house strategy. They have no meaning on a fixed-post session.
 
 **Key observations.**
 
-- **One Task records one visit; the delivery events hold the person-level detail.** A doorstep visit is a single Task. The Task closes when the visit completes. The system records each vaccinated person as a separate `Immunization`. `Task.output` references each `Immunization`, and each `Immunization` points at that person's `Patient`. The Task is the unit of work (one visit); the delivery events are the units of service (the given doses).
+- **One Task records one visit; the delivery events hold the person-level detail.** A doorstep visit is a single Task. The Task closes when the visit completes — in the common case with a **tally** on `Task.output` ("3 vaccinated"), because individuals are usually not known in advance. When person-level capture happens, the system records each vaccinated person as a separate `Immunization` that points at that person's `Patient` and carries its own campaign link (§6). Where the visit workflow captures the doses, `Task.output` may additionally reference them. The Task is the unit of work (one visit); the delivery events are the units of service (the given doses); neither depends on the other for campaign attribution.
   
-  The same pattern serves the community scale. Containment runs on the Location axis: a household's dwelling is `partOf` the community's settlement (§5.1). Thus community → household → person stays queryable without nested Groups.
+  The same pattern serves the community scale. Containment runs on the Location axis: a household's dwelling is `partOf` the community's settlement (§5.1). Thus community → household → person stays queryable without nested Groups. **Person-level rollups run through Group membership**, not through Task outputs: "all doses given to members of this community" joins `Immunization.patient` to the delivery unit's `member` list.
 - **Person-targeted Tasks serve follow-up only.** Sometimes a team must trace one specific missed or zero-dose person. Then the system creates a new Task. Its `for` is that person's `Patient`. Its `partOf` references the first Task — the Task that missed the person. Its `basedOn` is the campaign, as always.
   
   This is the only intended person-targeted Task. A Task per person for routine delivery would multiply Task volume approximately five times. It would record nothing that the Immunization records do not already carry.
 - **The count and reason extensions apply mainly to house-to-house work.** Houses visited, eligible present/absent, and finger-marking have no meaning for a fixed-post tally. Thus these extensions are optional (`0..x`), and teams populate them only for house-to-house work. The reason axes are three, on purpose. `missed-reason` = not reached, and includes area-level causes such as insecurity. `noncompliance-reason` = reached but declined. `exclusion-reason` = reached and willing, but contraindicated.
 - `task-origin` **is mandatory because the value is itself a measurement.** A team can find a household that the enumeration missed. The team then creates the delivery unit and its Task in the field (`field-registered`). The count of field-registered Tasks per area measures the gaps in the microplan's enumeration. This count informs the denominators for the next round.
-- `Task.output` **links the delivery events.** R4 `Immunization` has no `basedOn` element. Thus there is no reverse link from event to Task. The link runs from Task to event (§6).
+- `Task.output` **may reference the delivery events; the events' campaign link does not depend on it.** R4 `Immunization` has no `basedOn` element, so the delivery-event profiles carry the standard `event-basedOn` extension → `Reference(ICRCampaign)` (§6). The Task-to-event reference remains available for deployments that capture events inside the visit workflow, and it is the natural shape for the person-targeted follow-up Task. When both the tally and person-level events exist and disagree, that is a data-quality signal — the same rule as `Group.quantity` versus the enumerated `member` list (§5.1). Do not silently reconcile the two.
 - **Disaggregation (recommended pattern).** The count extensions are single visit-level totals. Do not multiply them to show age or sex breakdowns. Disaggregate in one of two ways. (a) Emit one `Task.output` entry per stratum, with a coded `type` for the age band or sex. (b) Where person-level data exists, derive the breakdown from the individual Immunization / MedicationAdministration records. These records already carry age and sex.
   
   The same rule applies to reasons. Task-level `missed-reason` / `noncompliance-reason` aggregate over the whole visit. Thus per-person reasons require person-level records. For multi-dimensional aggregate tallies (drug × sex × age band), the canonical home is a stratified MeasureReport (§7.3).
@@ -991,7 +993,7 @@ Two elements reference the team: `ICRCampaign.careTeam` (the campaign roster) an
 | --- | --- | --- | --- | --- |
 | `questionnaire` | MS  | 1..1 | canonical | The supervision checklist that this record answers: `icr-mda-supervision-checklist`. |
 | `status` | MS  |     | code | The status code, for example `in-progress` or `completed`. |
-| `subject` | MS  |     | `Reference(ICRDeliveryUnit \| ICRLocation)` | The supervised community or household, or the supervised settlement or area. |
+| `subject` | MS  |     | `Reference(ICRDeliveryUnit \| ICRLocation)` | The supervised delivery unit (community, household, or school cohort), or the supervised settlement or area. |
 | `authored` | MS  |     | dateTime | The time when the supervisor recorded the supervision visit. |
 | `author` | MS  |     | `Reference(Practitioner \| PractitionerRole \| Organization)` | The supervisor or the supervising organization. (`QuestionnaireResponse.author` cannot be a CareTeam. You reach the team through the supervisor's PractitionerRole or through `Task.owner`.) |
 | `item` | MS  |     |     | One answered checklist item for each question (`linkId` → answer). |
@@ -1178,7 +1180,7 @@ The system evaluates eligibility for each person against the protocol's `subject
 - **The model separates the group (who) from the location (where).** The location's identity (its GERS building or place ID) then persists when the group composition changes. The group also persists when it moves to a new location.
 - **One profile serves both scales.** A household and a community follow the same modelling pattern at different scales. ICR therefore uses one profile with a coded `code` (group kind), not two near-identical profiles. Set `code` to `community` and point `group-location` at a settlement. The same structure then becomes a community delivery unit. Set `code` to `school-cohort` and point `group-location` at a school. The same structure then becomes a school-based delivery unit. The three-value list can grow to other units as countries require, for example nomadic groups or camp populations.
 - **Person registration is a main capture mode, not an exception.** In community-and-household campaigns, the norm is to enumerate the persons in each household. `member` carries those persons, and each is an `ICRPatient` (§5.4). A person-level delivery event (§6) records what each person received and points back at that same person. `quantity` is the fallback for register-level capture, for example community-directed MDA or a round that counts without enumeration. The two modes can exist together.
-- **A person does not have to be tied to a household.** `member.entity` sits on `ICRDeliveryUnit` for every `code` value. A `community`-coded delivery unit can therefore enumerate `ICRPatient`s directly, with no household between, for example a community-session register or an MDA round that lists persons but not dwellings. A person can also exist with **no Group at all**: `Immunization.patient` and `MedicationAdministration.subject` (§6) point straight at the person. A standalone person-level event at a community session is therefore fully valid without a delivery-unit roster. The same person is reachable in three ways: as a household member, as a community member, or as a bare event subject.
+- **A person does not have to be tied to a household.** `member.entity` sits on `ICRDeliveryUnit` for every `code` value. A `community`-coded delivery unit can therefore enumerate `ICRPatient`s directly, with no household between, for example a community-session register or an MDA round that lists persons but not dwellings. A person can also exist with **no Group at all**: `Immunization.patient` and `MedicationAdministration.subject` (§6) point straight at the person. A standalone person-level event at a community session is therefore fully valid without a delivery-unit roster. The same person is reachable in several ways: as a household member, as a community member, as a school-cohort member, or as a bare event subject.
 - **Members are individual persons, never sub-Groups.** The community-to-household relation stays on the *where* axis. A household's dwelling is `partOf` the community's settlement Location (§5.3). The model does not nest a household Group inside a community Group.
 - `member.entity` **is restricted to** `Patient` **(profiled as ICRPatient).** FHIR has four person-shaped resources. **Patient** is any person who can receive a service. Despite the name, a healthy child who receives a measles dose is a Patient, and a household member who receives a net is a Patient. `Immunization.patient` accepts only a Patient. **RelatedPerson** is a caregiver defined relative to a patient. **Practitioner** is a worker, for example a CDD or a vaccinator. **Person** is an identity-linkage resource; it supports record linkage only and is not a care-record subject. Every enumerated household member is therefore a Patient. The restriction on `member.entity` excludes Practitioner and Device. It does not exclude RelatedPerson, because R4 `Group.member` never permitted RelatedPerson; R5 added RelatedPerson membership.
 - `group-location` **records the residence, not the service point.** `Task.location` and the delivery event's own `location` record where service occurred. Example: a household travels to a village distribution centre. The dwelling recorded here does not change, and the Task records the centre. The extension name is `group-location`, not `household-location`, by design. The same extension carries a community's settlement point and a school cohort's school.
@@ -1440,7 +1442,7 @@ Registry identifiers (national MFL codes — e.g. Nigeria NHFR facility code and
 
 **Scope.** The georegistry rule (§7.7) applies unchanged: identify, classify, locate, and contact only. Programme facts about a facility (stock, readiness, staffing) reference the pair. They never live in it.
 ### 5.4 ICRPatient — `Patient` (the registered individual)
-**Purpose.** This profile models the individual person. The person is enumerated in a delivery unit (household or community). Or the person is captured standalone, as the subject of a person-level event with no Group at all.
+**Purpose.** This profile models the individual person. The person is enumerated in a delivery unit (household, community, or school cohort). Or the person is captured standalone, as the subject of a person-level event with no Group at all.
 
 The chain is plain FHIR. A household (or community) is an `ICRDeliveryUnit` (Group, §5.1). Its `member`s are `ICRPatient`s. Each dose or treatment given to a member is an `Immunization`/`MedicationAdministration` whose `patient`/`subject` is that `ICRPatient` (§6). The profile is aligned to WHO's `IMMZ.Patient`. Thus a registered campaign member is a WHO-conformant immunization subject with a stable cross-campaign identity.
 
@@ -1524,7 +1526,7 @@ The **sliced** `identifier` is the cross-round join key. Here it is a national I
 This section holds the record of each delivery: a vaccine dose, a drug administration, or a commodity delivery. It also holds the safety events that follow a delivery. The delivery events share two design constants:
 
 - **A mandatory** `record-origin` **extension (**`1..1 MS`**)** — the code is campaign or routine. This code keeps campaign doses separate from routine coverage analytics.
-- **The Task→event link runs through** `Task.output`. R4 `Immunization` has no `basedOn` element. Thus the event cannot point back at the Task in the base resource.
+- **A campaign link on the event itself** — the standard HL7 `event-basedOn` extension (`0..1 MS`), constrained to `Reference(ICRCampaign)`. R4 `Immunization` has no `basedOn` element; the extension supplies it (reused, not ICR-minted — the same policy as the adverse-event seriousness codes). A delivery event therefore stands alone: patient + campaign + place + origin. "All doses in the Kambia June round" is a direct query. `Task.output` carries the visit-level tally and may *additionally* reference events captured inside the visit workflow — a tightening, not a requirement, because individuals are usually not known in advance and most Tasks close with a tally only.
 ### 6.1 ICRImmunizationEvent — `Immunization`
 **Purpose.** A **vaccine dose** given in a campaign. This is the person-level delivery event. It closes the chain `protocol → activity → campaign → task → dose → patient`.
 
@@ -1542,6 +1544,7 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
 | `performer` | MS  |     |     | The team or worker who gave the dose. |
 | `vaccineCode` | MS  |     | CodeableConcept, **extensible** → core FHIR vaccine VS (CVX) | The vaccine. Local codes map back through a ConceptMap. |
 | `protocolApplied` | MS  |     |     | The dose number and series. It supports multi-dose campaigns (OCV) and routine integration. |
+| `extension[campaign]` (`event-basedOn`) | MS  | 0..1 | `Reference(ICRCampaign)` — the **standard HL7** `event-basedOn` extension, reused not minted | **The campaign (round) this dose belongs to.** R4 Immunization has no `basedOn`; this supplies it. It makes "all doses in this round" a direct query, independent of any Task reference. |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS (`campaign` \| `routine`) | It shows if a dose is campaign-captured or a routine-immunization dose. It keeps the two types separate in coverage analytics. |
 | `extension[priorDoseStatus]` *(forms-v1)* | MS  | 0..1 | code, **required** → ICRDoseHistoryVS (`zero-dose` \| `previously-received` \| `no-recall`) | The person's prior-dose status for this antigen at the contact. This is the polio tally's never/previously/no-recall split. It is not the same as `protocolApplied.doseNumber`, which counts the doses in this series. It aggregates to the `dose-history` coverage stratifier and the zero-dose Measure (§7.3). |
 
@@ -1557,6 +1560,12 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
     ]
   },
   "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/event-basedOn",
+      "valueReference": {
+        "reference": "CarePlan/example-mr-sia-2026"
+      }
+    },
     {
       "url": "https://icr.healthcampaigns.org/StructureDefinition/record-origin",
       "valueCode": "campaign"
@@ -1604,7 +1613,8 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
 
 **Key observations.**
 
-- `patient` **captures person-level data without extra Tasks.** Each dose references one person. That person is the same `example-child` who is the household's `member`. The pattern is one Task per visit and one Immunization per person. `Task.output` makes the link.
+- `patient` **captures person-level data without extra Tasks.** Each dose references one person. That person is the same `example-child` who is the household's `member`. The pattern is one Task per visit and one Immunization per person.
+- **The dose stands alone — campaign attribution does not run through the Task.** The `event-basedOn` extension points at the round. Thus a dose captured outside any Task workflow (the common case — individuals are rarely known in advance) is still attributable to its campaign. Rollups by delivery unit run through Group membership: `Immunization.patient` joins the household, community, or school cohort through `member`, and the unit's `group-location` gives the place. `Task.output` references the dose only when the visit workflow captured it, as in this mop-up example.
 - `lotNumber` **and** `manufacturer` **are Must Support for lot accountability.** They let you trace doses to a lot after an adverse event following immunization (AEFI, §6.5).
 - `protocolApplied` **connects campaign doses to routine series logic.** Multi-dose campaigns (such as OCV) need its dose-number element. Integration with routine immunization records also needs it.
 
@@ -1625,9 +1635,10 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
 | `status` | MS  |     | code | Administration status (`completed` and other codes). |
 | `effective[x]` | MS  |     | dateTime / Period | The time when the drug was given. |
 | `medication[x]` |     |     | CodeableConcept only, **extensible** → ICRMDAMedicationVS (WHO ATC) | The drug. |
-| `subject` | MS  |     | `Reference(Patient \| ICRDeliveryUnit)` only | The treated person, **or the community or household delivery-unit Group** for register-level records. |
+| `subject` | MS  |     | `Reference(Patient \| ICRDeliveryUnit)` only | The treated person, **or the delivery-unit Group** (household, community, or school cohort) for register-level records. |
 | `dosage` | MS  |     |     | The tablet count. It usually comes from a dose-pole height-band Observation. |
 | `supportingInformation` | MS  |     |     | For example, the dose-pole Observation that set the dosage. |
+| `extension[campaign]` (`event-basedOn`) | MS  | 0..1 | `Reference(ICRCampaign)` — the standard HL7 extension | The campaign (round) this treatment belongs to. Per-round queries stay independent of Task wiring. |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | It keeps campaign data separate from routine-programme data. |
 | `extension[priorDoseStatus]` *(forms-v1)* | MS  | 0..1 | code, **required** → ICRDoseHistoryVS | The prior-dose status of the treatment at this contact (`zero-dose` \| `previously-received` \| `no-recall`). It is the drug-side counterpart of the immunization axis. |
 | `extension[directlyObserved]` | MS  | 0..1 | boolean | The MDA DOC protocol. It shows the difference between a drug handed out and a drug swallowed. |
@@ -1704,6 +1715,7 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
 | `suppliedItem.quantity` | MS  |     | SimpleQuantity | The quantity delivered (for example, 3 nets, UCUM `{Net}`; 3,600 tablets). |
 | `suppliedItem.item[x]` | MS  |     | CodeableConcept / Reference — the CodeableConcept form binds **extensible** → ICRSuppliedItemVS | The commodity. Use **WHO ATC** for drug commodities — the same code as the matching administration. Use GS1 GTIN or free text for physical commodities. |
 | `destination` | MS  |     | Reference (base R4 targets; not narrowed to ICRLocation) | The place that received the commodity (post, household, settlement). |
+| `extension[campaign]` (`event-basedOn`) | MS  | 0..1 | `Reference(ICRCampaign)` — the standard HL7 extension | The campaign (round) this delivery belongs to. |
 | `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | It keeps campaign data separate from routine-programme data. |
 | `extension[stockAccountability]` | MS  | 0..1 | complex: `received` / `used` / `remaining` / `notUsable` / `returned` (Quantity) + `concordant` (boolean) + `vvmStage` (integer) | The wastage and stock-reconciliation record. It works for vaccines (vials, VVM stage), drugs (tablets), and ITNs. `used` = the quantity consumed **at that node** (doses given, nets handed over). An onward issue to another warehouse or post is its **own** SupplyDelivery, with the next node as `destination`. `returned` = stock sent back up. A node's ledger reconciles as received = used + remaining + notUsable + returned. The `icr-stock-ledger` invariant (v0.1.1) enforces this as a **warning**. `vvmStage` is the one sub-extension without MS. |
 
@@ -1782,7 +1794,7 @@ The other candidate is a Location-keyed custom or SupplyDelivery-style event —
 | `actuality` | MS  |     | code | `actual` \| `potential` (the base resource requires this element). |
 | `category`, `date`, `severity` | MS  |     |     | `severity` = mild \| moderate \| severe. |
 | `event` | MS  |     | CodeableConcept | The event that occurred (fever, abscess, abdominal pain, anaphylaxis, and others), clinically coded. |
-| `subject` | MS  |     | `Reference(Patient \| ICRDeliveryUnit)` only | The affected person, or the community or household Group for aggregate counts. |
+| `subject` | MS  |     | `Reference(Patient \| ICRDeliveryUnit)` only | The affected person, or the delivery-unit Group (household, community, or school cohort) for aggregate counts. |
 | `seriousness` | MS  |     | CodeableConcept, **extensible** → ICRAdverseEventSeriousnessVS (the HL7 `adverse-event-seriousness` codes `Serious` / `Non-serious`, reused not minted) | The minor-versus-serious distinction that field forms collect. |
 | `extension[seriousCriteria]` | MS  | 0..* | CodeableConcept, **extensible** → ICRSeriousCriteriaVS | The reason **why** the event is serious — the WHO/CIOMS criteria: death, life-threatening, hospitalization, disability, congenital anomaly, medically important. |
 | `suspectEntity` | MS  |     |     | The suspected-cause branch. Its `causality` element is also MS. |
@@ -2031,7 +2043,7 @@ These design rules recur across the profiles. Hold the IG against these rules. �
 5. **Geospatial identity is multi-system, and GERS is preferred.** Location uses open identifier slicing. The Group+Location delivery-unit pattern keys households and communities to GERS IDs. Operational geography is a layer on top of the admin hierarchy. It is not a replacement for the admin hierarchy.
 6. **Real-time vs reconciled is one structure, filtered by lineage.** The documented default is: absent ⇒ realtime. The flag is `1..1` on both coverage profiles, because the distinction is most important there.
 7. **Task origin is first-class and coded.** The code separates pre-planned Tasks from field-registered Tasks. The element is `1..1`, and the binding is required. Discovery-mode field registration is a supported workflow. Its counts measure microplan completeness.
-8. **One Task per visit; person detail lives in registration and the delivery events.** Registration of the individuals in a household is a mainline workflow. It happens in the *data* layer. The household Group's `member` list holds the ICRPatients. One Immunization or MedicationAdministration per person hangs off `Task.output`. The IG does **not** mint one Task per person. A person-focused Task (`for = Patient`) has one purpose only: to chase a specific missed or zero-dose individual. Per-person *Tasks* would multiply Task volume approximately fivefold. They would add nothing that registration and the delivery events do not already carry. Per-person *records*, in contrast, are the goal.
+8. **One Task per visit; person detail lives in registration and the delivery events.** Registration of the individuals in a household is a mainline workflow. It happens in the *data* layer. The household Group's `member` list holds the ICRPatients. One Immunization or MedicationAdministration per person carries its own campaign link (`event-basedOn`) and joins its delivery unit through Group membership; `Task.output` closes the visit with a tally and may additionally reference the events. The IG does **not** mint one Task per person. A person-focused Task (`for = Patient`) has one purpose only: to chase a specific missed or zero-dose individual. Per-person *Tasks* would multiply Task volume approximately fivefold. They would add nothing that registration and the delivery events do not already carry. Per-person *records*, in contrast, are the goal.
 9. **Accountability is queryable.** `Task.owner` is a real reference to an ICRCareTeam. `MeasureReport.reporter` is required. Thus "who worked this area" and "who reported this figure" are both joins, not string comparisons.
 
 * * *
@@ -2156,6 +2168,7 @@ FHIR has no native campaign semantics. Thus 35 extensions carry these semantics 
 | LocationBoundaryGeoJson (`location-boundary-geojson`) | Location | Attachment, `contentType` fixed `application/geo+json` — the R4 mirror of the R5 standard boundary extension |
 | OverlaysAdminUnit (`overlays-admin-unit`) | Location | Reference(ICRLocation) — links operational geography to the admin unit(s) that it overlays; expected on supervisory/operational-area types (invariant `icr-loc-overlays`, warning → error at v1.0) |
 | LocationAncestors (`location-ancestors`) *(proposed, not yet in the IG)* | Location | complex: per-level `adm0…adm3+` code + Reference(ICRLocation); a server-maintained breadcrumb of the `partOf` chain |
+| Campaign (`event-basedOn`) — **standard HL7 extension, reused not minted** | Immunization, MedicationAdministration, SupplyDelivery | `Reference(ICRCampaign)` — the campaign (round) the event belongs to; supplies the `basedOn` element that these R4 Event resources lack, so per-round queries never depend on Task wiring (§6) |
 | RecordOrigin (`record-origin`) | Immunization, MedicationAdministration, SupplyDelivery, AdverseEvent | code, **required** → ICRRecordOriginVS |
 | PriorDoseStatus (`prior-dose-status`) *(forms-v1)* | Immunization, MedicationAdministration | code, **required** → ICRDoseHistoryVS — the zero-dose / previously-received / no-recall status of the antigen at this contact; it aggregates to the `dose-history` coverage stratifier |
 | SettlementType (`settlement-type`) *(forms-v1)* | Location | CodeableConcept, **extensible** → ICRSettlementTypeVS — the settlement / special-population classification (urban-slum, refugee-IDP, nomad-pastoralist, hard-to-reach…) for HTRA targeting & equity disaggregation |
@@ -2204,6 +2217,7 @@ graph LR
     R -- instantiatesCanonical --> P
     T -- basedOn --> R
     T -- output --> D
+    D -. "event-basedOn" .-> R
     D -- patient --> C
 ```
 
@@ -2252,10 +2266,10 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
-| 28  | `example-mcv-dose` | ICRImmunizationEvent | CVX `05`; patient → child; at the dwelling; lot `MRV-2026-0412`; manufacturer, performer, doseNumber 1; recordOrigin `campaign` |
-| 29  | `example-albendazole-administration` | ICRMedicationAdministration | ATC `P02CA03`; "1 tablet (400 mg), dose-pole band B"; directlyObserved true; recordOrigin campaign |
-| 30  | `example-itn-delivery` | ICRSupplyDelivery | 3 nets (UCUM `{Net}`), free-text LLIN, destination → dwelling; recordOrigin campaign |
-| 31  | `example-albendazole-supply` | ICRSupplyDelivery | **ATC-coded drug receipt**: 3,600 tablets (same code as #29), destination → settlement; stock-accountability (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓) |
+| 28  | `example-mcv-dose` | ICRImmunizationEvent | CVX `05`; patient → child; at the dwelling; lot `MRV-2026-0412`; manufacturer, performer, doseNumber 1; recordOrigin `campaign`; campaign (`event-basedOn`) → the Kambia round (#23) |
+| 29  | `example-albendazole-administration` | ICRMedicationAdministration | ATC `P02CA03`; "1 tablet (400 mg), dose-pole band B"; directlyObserved true; recordOrigin campaign; campaign (`event-basedOn`) → the STH MDA round (#50) |
+| 30  | `example-itn-delivery` | ICRSupplyDelivery | 3 nets (UCUM `{Net}`), free-text LLIN, destination → dwelling; recordOrigin campaign — carries **no** campaign link, showing that `event-basedOn` is optional |
+| 31  | `example-albendazole-supply` | ICRSupplyDelivery | **ATC-coded drug receipt**: 3,600 tablets (same code as #29), destination → settlement; campaign (`event-basedOn`) → the STH MDA round (#50); stock-accountability (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓) |
 | 32  | `example-aefi` | ICRAdverseEvent | **AEFI arm**: mild fever after MCV (#28); subject → child; suspectEntity → the dose; causality A (consistent); non-serious |
 | 33  | `example-mda-adverse-event` | ICRAdverseEvent | **MDA arm** (same profile): abdominal pain after albendazole (#29); causality C (coincidental) |
 | 34  | `example-aefi-serious` | ICRAdverseEvent | **Serious AEFI**: anaphylaxis after MCV; seriousness serious; serious-criteria life-threatening + hospitalization; causality A |

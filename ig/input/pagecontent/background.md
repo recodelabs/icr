@@ -47,9 +47,16 @@ campaign.
    `MedicationAdministration.subject`).
 3. **Task is the operational unit** — one per site-session or per household,
    community, or school-cohort visit;
-   delivery events hang off `Task.output`. Person-level detail lives in the
-   delivery events, not in extra Tasks: a polio team's household visit is ONE
-   Task whose output references one `Immunization` per child vaccinated. The
+   `Task.output` holds the visit-level result (the tally). Person-level detail
+   lives in the delivery events, not in extra Tasks — and a delivery event does
+   not depend on a Task: it stands alone on its patient, its `record-origin`
+   flag, and its own campaign link (the standard `event-basedOn` extension,
+   constrained to the ICR campaign). Individuals are usually not known in
+   advance, so the mainline close-out is a tally; where the visit workflow
+   captures the doses, `Task.output` may additionally reference one
+   `Immunization` per child vaccinated. Person-level rollups run through Group
+   membership (dose → patient → household/community/school cohort), not through
+   Task outputs. The
    deliberate exception is **person-targeted follow-up**: a specific missed or
    zero-dose child can spawn a Task whose `for` is that `Patient`. Tasks may be
    **pre-planned** from the microplan or **field-registered** on discovery (an
