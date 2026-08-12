@@ -1,10 +1,11 @@
 // Example instances — a coherent measles–rubella SIA scenario over a small location
 // hierarchy with GERS identifiers: national umbrella campaign + district round
-// (partOf pattern), a Type A fixed-post site-session task (pre-planned), a Type B
+// (partOf pattern), a fixed-post site-session task (pre-planned), a
 // house-to-house mop-up task (field-registered), the admin-vs-survey coverage pair
-// (never-merged lineages), plus an MDA treatment event (Type C) and an ITN delivery.
-// Population side: a household and a community delivery unit (the generalized
-// Group+Location pattern), target populations with computable geography
+// (never-merged lineages), plus a community-directed MDA treatment event and an
+// ITN delivery.
+// Population side: household, community, and school-cohort delivery units (the
+// generalized Group+Location pattern), target populations with computable geography
 // characteristics, and a supervisory area overlaying the admin hierarchy.
 
 // --- Location hierarchy: country → district → settlement → dwelling ----------
@@ -192,7 +193,7 @@ Usage: #example
 * policyRule.text = "UNICEF ICR person-data governance policy v1 (placeholder pending publication)"
 * provision.type = #permit
 
-// A community delivery unit (Type C): the same Group + Location pattern as the
+// A community delivery unit: the same Group + Location pattern as the
 // household, with the settlement as its Location — what a CDD's MDA register
 // entries and community-level Tasks act on.
 
@@ -463,7 +464,7 @@ Usage: #example
 * extension[socialMobilization].extension[channel][0].valueCodeableConcept = $CommunicationChannel#radio "Radio"
 * extension[socialMobilization].extension[channel][1].valueCodeableConcept = $CommunicationChannel#community-leaders "Community leaders"
 
-// --- The operational units: a Type A site-session and a Type B mop-up visit --
+// --- The operational units: a fixed-post site-session and a house-to-house mop-up visit --
 
 Instance: example-site-session-task
 InstanceOf: ICRCampaignTask
@@ -1071,6 +1072,56 @@ Usage: #example
 * period.end = "2026-09-18"
 * extension[targetGeography].valueReference = Reference(example-district)
 * extension[planningDenominator].valueReference = Reference(example-target-population-sac)
+
+// School-based delivery: the school-cohort delivery unit — the same Group +
+// Location pattern as the household and the community, with the school as its
+// Location. The descoped SAC round delivers praziquantel through schools; one
+// Task per school-session acts on the enrolled cohort.
+
+Instance: example-school
+InstanceOf: ICRLocation
+Title: "Example School — Rokupr Primary School"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* name = "Rokupr Primary School"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#bu "Building"
+* type = $LocationType#school "School"
+* partOf = Reference(example-settlement)
+* position.longitude = -12.9458
+* position.latitude = 9.0152
+* identifier[gers].system = $GERSId
+* identifier[gers].value = "08f2a3b4c5d6e7f8-building-school-example"
+
+Instance: example-school-cohort
+InstanceOf: ICRDeliveryUnit
+Title: "Example School Cohort — Rokupr Primary School"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* type = #person
+* actual = true
+* code = $GroupKind#school-cohort "School cohort"
+* name = "Rokupr Primary School enrolled cohort"
+* quantity = 260
+* extension[groupLocation].valueReference = Reference(example-school)
+
+Instance: example-school-mda-task
+InstanceOf: ICRCampaignTask
+Title: "School session — praziquantel MDA at Rokupr Primary School"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #completed
+* intent = #order
+* code.text = "School-based praziquantel administration, enrolled cohort"
+* basedOn = Reference(example-sch-descoped-round)
+* for = Reference(example-school-cohort)
+* location = Reference(example-school)
+* executionPeriod.start = "2026-09-09T09:00:00Z"
+* executionPeriod.end = "2026-09-09T13:00:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#school "School-based"
+* extension[taskOrigin].valueCode = #pre-planned
+* output.type.text = "Children treated (school session tally)"
+* output.valueUnsignedInt = 244
 
 // mCSD-style facility pairing: the Organization is the accountable entity
 // (registry codes, classification, ownership, reporting hierarchy); the

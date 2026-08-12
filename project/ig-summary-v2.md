@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-11T21:13:27Z
+last_modified: 2026-08-12T18:57:09Z
 tags:
   - icr
   - fhir
@@ -16,7 +16,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 11, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 12, 2026`
 
 > [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document.
 
@@ -49,7 +49,6 @@ This section is a quick reference for each abbreviation in this document. The ab
 | **RED** | Reaching Every District — a WHO microplanning approach |
 | **EYE** | Eliminate Yellow fever Epidemics — a WHO strategy |
 | **FIP** | Fully Immunized Person |
-| **Type A / B / C** | the campaign delivery-model typology — A = a session at a fixed or temporary post, B = house-to-house, C = community/MDA |
 
 **Vaccines, diseases & product codings**
 
@@ -148,11 +147,10 @@ The **Integrated Campaign Registry (ICR)** is a FHIR Implementation Guide. It gi
 
 The ICR is intentionally a **complement** to the WHO SMART Immunizations IG. The WHO IG models routine work only. A campaign dose and a routine dose can be in the same store. A single `record-origin` flag shows the type of each dose. The ICR positions itself as "the campaign SMART-Guidelines IG" (see §13.3).
 
-The IG covers the major campaign delivery models with one common typology. This document uses this typology in all sections:
+The IG covers the major campaign delivery models: fixed and temporary-post sessions (people come to a post), house-to-house delivery (workers go from door to door), community/MDA delivery (a team treats a full community, frequently at register level), and school-based delivery (a team treats the enrolled cohort of a school). Two coded concepts describe every model, and this document uses them in all sections:
 
-- **Type A** — fixed or temporary-post sessions. People come to a post.
-- **Type B** — house-to-house delivery. Workers go from door to door.
-- **Type C** — community / MDA delivery. A team treats a full community, frequently at register level.
+- **The delivery strategy** — *how* teams deliver: `fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`, `community-directed`, `outreach` (§9). It is mandatory on every protocol and Task.
+- **The delivery unit** — *what* a Task acts on. One rule sets its type: **a delivery unit with members is a Group; a delivery unit without members is a Location** (§5.1). Households, communities, and school cohorts have members and an associated location, so they are Groups. A structure under IRS, a church or market that hosts a temporary post, and an area target (settlement, ward, district) have no members, so they are Locations.
 ### 1.4 IG metadata
 These package-level settings set the identity of the IG. All settings become permanent after publication. Thus several settings have flags for UNICEF confirmation before v1.0 (see §13.4):
 
@@ -185,7 +183,7 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | **Extensions** | 37  | See §10 |
 | **CodeSystems** | 28  | See §9 |
 | **ValueSets** | 30  | Usually one per code system, plus purpose-built sets (§9) |
-| **Example instances** | 56  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), and (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports (§11) |
+| **Example instances** | 59  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task) (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
 File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `examples.fsh`.
@@ -204,7 +202,7 @@ graph TD
     CPU["ICRCampaign (umbrella)"]
     T["ICRCampaignTask<br/>(Task)<br/><i>operational unit of work</i>"]
     TP["ICRTargetPopulation<br/>(Group, actual=false)<br/><i>denominator w/ provenance</i>"]
-    HH["ICRDeliveryUnit<br/>(Group, actual=true)<br/><i>household or community</i>"]
+    HH["ICRDeliveryUnit<br/>(Group, actual=true)<br/><i>household / community / school cohort</i>"]
     PT["ICRPatient<br/>(Patient)<br/><i>registered individual</i>"]
     L["ICRLocation<br/><i>admin hierarchy + GERS identity</i>"]
     IMM["ICRImmunizationEvent"]
@@ -241,7 +239,7 @@ graph TD
 Read the IG as three layers that intersect:
 
 - **The operational layer** — `protocol → campaign → task → delivery events`. This layer is the chain of work. A reusable template (PlanDefinition) becomes one specific campaign or round (CarePlan). The campaign divides into units of work (Task). Each Task produces delivery events: doses, drug administrations, and deliveries.
-- **The identity layer** — `Patient` + `Group` + `Location`. The IG keeps the persons a campaign acts on separate from the places where they live and where work occurs. A **Group** identifies the persons. In ICR, a Group is a **household** (a Type-B house-to-house unit), a **community** (a Type-C MDA unit), or a **school cohort**. `ICRDeliveryUnit` models these groups and lists `ICRPatient` individuals; `ICRTargetPopulation` models the denominator cohorts. This separation keeps a location's identity stable when the group at that location changes, and keeps a group's identity stable when its location data changes.
+- **The identity layer** — `Patient` + `Group` + `Location`. The IG keeps the persons a campaign acts on separate from the places where they live and where work occurs. A **Group** identifies the persons. In ICR, a Group is a **household**, a **community**, or a **school cohort** — the delivery units that have members. `ICRDeliveryUnit` models these groups and lists `ICRPatient` individuals; `ICRTargetPopulation` models the denominator cohorts. This separation keeps a location's identity stable when the group at that location changes, and keeps a group's identity stable when its location data changes.
 - **The analytics layer** — `Measure` + `MeasureReport`. The coverage readout is adjacent to the other two layers. The system computes coverage from the other two layers. The IG keeps administrative coverage and survey coverage as separate records. The system never merges these records.
 ### 2.2 The key components
 **Campaign architecture (§4)**
@@ -249,12 +247,12 @@ Read the IG as three layers that intersect:
 - **ICRCampaignProtocol** *(PlanDefinition)* — the reusable, versioned **template** for a campaign type. It defines one time what a "measles–rubella SIA" is: products, age bands, activity sequence, and coverage goals. Thus each country and each round can instantiate the same template and stay comparable.
 - **ICRCampaign** *(CarePlan)* — **one specific campaign execution or round.** It is the core resource that represents campaigns. It **starts as a microplan and becomes an execution record** as Tasks complete. The same resource changes; the system does not replace it. A national "umbrella" campaign and its district "rounds" use the same profile. The `partOf` element links them.
 - **ICRCampaignActivity** *(ActivityDefinition)* — **a discrete work type** in a campaign, for example "administer MCV", "distribute ITNs", or "spray structures". A campaign can contain more than one activity. The activity holds the clinical and commodity content one time. Thousands of Tasks instantiate one activity.
-- **ICRCampaignTask** *(Task)* — **the unit of work that teams can assign and track.** There is one Task for each site-session (**Type A** — persons come to a fixed or temporary post). There is one Task for each household or community visit (**Type B** — workers go from house to house; **Type C** — the campaign treats a full community, frequently at register level, as in MDA). One profile holds all three delivery models.
+- **ICRCampaignTask** *(Task)* — **the unit of work that teams can assign and track.** There is one Task for each site-session (persons come to a fixed or temporary post). There is one Task for each household, community, or school visit (workers go to the unit). One profile holds every delivery model.
 - **ICRCareTeam** *(CareTeam)* — **the model for the delivery team and the supervisor.** It records who did the work and who is accountable for a reported number. Through the workload extension, it also records the area and the workload that the microplan assigned to the team. **ICRSupervisionReport** *(QuestionnaireResponse)* is the related structured record for supervision and QA.
 
 **Population & geography (§5)**
 
-- **ICRDeliveryUnit** *(Group,* `actual=true`*)* — **the actual group of persons a Task acts on**: a household, a community, or a school cohort.
+- **ICRDeliveryUnit** *(Group,* `actual=true`*)* — **the actual group of persons a Task acts on**: a household, a community, or a school cohort. A delivery unit without members (a structure, a temporary site, an area target) is a Location instead (§5.1).
 - **ICRTargetPopulation** *(Group,* `actual=false`*)* — **a denominator**: a conceptual cohort with a count and eligibility characteristics. It must also have source and date provenance; this requirement is important. Competing estimates for the same place stay side by side.
 - **ICRLocation** *(Location)* — **the place model.** It is the ICR resource with the most customization. It has a nested administrative hierarchy and an operational geography that is adjacent to the admin tree. It also has GeoJSON boundaries and a multi-system geospatial identity (GERS, P-codes, national and ISO codes).
 - **ICRPatient** *(Patient)* — **the registered individual**: a listed household or community member. The person has a stable identifier that applies across campaigns. Gender and birth date are mandatory because they control eligibility and disaggregation. A name is required. **ICRConsent** *(Consent)* is the related governance profile.
@@ -687,10 +685,10 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 
 | Instance | Intervention | Product | Dosage / rule |
 | --- | --- | --- | --- |
-| `example-mcv-activity` | Vaccinate (Type A/B) | CVX `05` measles virus vaccine | 0.5 mL subcutaneous, single dose |
-| `example-albendazole-activity` | Treat (Type C MDA) | ATC `P02CA03` albendazole | 400 mg single dose; tablet count by **dose-pole height band** |
-| `example-itn-activity` | Distribute (Type B→A) | LLIN (free-text pending GS1) | 1 net per 2 household members |
-| `example-irs-activity` | Spray (Type B) | Pirimiphos-methyl 300CS | per eligible structure — expressed as units per structure (for example, sachets/bottles per structure); `Task.output` records the per-house insecticide quantity |
+| `example-mcv-activity` | Vaccinate (fixed-post / house-to-house) | CVX `05` measles virus vaccine | 0.5 mL subcutaneous, single dose |
+| `example-albendazole-activity` | Treat (community-directed MDA) | ATC `P02CA03` albendazole | 400 mg single dose; tablet count by **dose-pole height band** |
+| `example-itn-activity` | Distribute (house-to-house registration, post distribution) | LLIN (free-text pending GS1) | 1 net per 2 household members |
+| `example-irs-activity` | Spray (house-to-house, structure-targeted) | Pirimiphos-methyl 300CS | per eligible structure — expressed as units per structure (for example, sachets/bottles per structure); `Task.output` records the per-house insecticide quantity |
 
 **Key observations.**
 
@@ -700,11 +698,11 @@ CampaignActivities are instantiated as ICRCampaignTask resources. The Activity d
 - **Delivery strategy: the protocol lists the options, the Task records the choice, the activity is an optional pin.** The protocol lists every strategy that the campaign uses (`1..*`; hybrid strategies are common). Each Task records the strategy actually used (`1..1`). Inheritance from the protocol is the default. The activity-level slot (`0..1`) exists only for activities with an intrinsic strategy — a mop-up activity is always house-to-house. A pin at the activity level prevents Task generation under the wrong mode.
 - **Vector-control work (traps, larviciding) is outside the v0.1 programme scope.** It has no delivery-event profile. Whether entomological surveillance enters ICR's future scope is an open decision (§13.4).
 ### 4.4 ICRCampaignTask — `Task`
-The ICRCampaignTask is the **operational unit of work**. You can assign it and you can track it. A Type A campaign uses one Task for each site-session. A Type B or Type C campaign uses one Task for each household visit or community visit. All three delivery models **use one and the same profile**. The *same* `ICRCampaignTask` serves a fixed-post session and a house-to-house visit.
+The ICRCampaignTask is the **operational unit of work**. You can assign it and you can track it. A fixed-post campaign uses one Task for each site-session. A house-to-house, community, or school-based campaign uses one Task for each household, community, or school-cohort visit. Every delivery model **uses one and the same profile**. The *same* `ICRCampaignTask` serves a fixed-post session and a house-to-house visit.
 
 Two things identify the delivery model: the target of the Task, and the mandatory coded delivery strategy. Teams can create Tasks before the round, from the microplan. Teams can also create Tasks in the field, when they find a new unit.
 
-**Four reference roles —** `for`**,** `basedOn`**,** `instantiatesCanonical`**,** `partOf`**.** `Task.for` carries the unit that the Task **targets**. The target can be a household, a community, or a person for follow-up. `Task.for` is R4's *beneficiary* element. It also powers the standard `Task?patient=` and `Task?subject=` searches. `for` is not redundant with ICRTargetPopulation. The denominator cohort is the campaign's subject; `for` is the concrete unit that this visit acts on.
+**Four reference roles —** `for`**,** `basedOn`**,** `instantiatesCanonical`**,** `partOf`**.** `Task.for` carries the unit that the Task **targets**. The target follows the delivery-unit rule (§5.1): a Group where the unit has members (a household, a community, a school cohort), a Location where it does not (a site, a structure, an area), or a person for follow-up. `Task.for` is R4's *beneficiary* element. It also powers the standard `Task?patient=` and `Task?subject=` searches. `for` is not redundant with ICRTargetPopulation. The denominator cohort is the campaign's subject; `for` is the concrete unit that this visit acts on.
 
 `basedOn` carries the **workflow lineage** (**1..1** — the campaign that this task executes). Tasks point at the campaign. Thus the system never updates the CarePlan when it creates tasks. On a follow-up revisit, `partOf` carries the first Task. `Task.focus` — R4's "request being actioned" element — stays **unconstrained** on purpose. Deployments that generate an order resource for each task can use `focus` freely.
 
@@ -721,7 +719,7 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 | `owner` | MS  |     | `Reference(ICRCareTeam)` only | The team that owns and performs the work. This is a real reference to an ICRCareTeam (§4.5), not a display string. Thus "who worked this" is a query. |
 | `executionPeriod` | MS  |     | Period | The period in which the team did the work. |
 | `code` | MS  | 1..1 | CodeableConcept | What the Task is. |
-| `for` | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit that the Task **targets**. For Type B/C, this is a household or community delivery-unit Group. For Type A, this is the site Location. For person-targeted follow-up, this is a Patient. |
+| `for` | MS  | 1..1 | `Reference(ICRDeliveryUnit \| ICRLocation \| Patient)` | The unit that the Task **targets**. A delivery unit with members is a delivery-unit Group (household, community, school cohort). A delivery unit without members is a Location (a fixed or temporary post site, a structure under IRS, an area target). For person-targeted follow-up, this is a Patient. |
 | `basedOn` | MS  | 1..1 | `Reference(ICRCampaign)` only | **The campaign that this task executes** — the required workflow-lineage link. Tasks point at the campaign, never the reverse. A round with ten thousand Tasks is never rewritten when the system creates the Tasks. |
 | `instantiatesCanonical` | MS  | 0..1 | `Canonical(ICRCampaignActivity)` only | **The activity that this task carries out** — the definition-to-execution link. It uses the same convention as CarePlan → Protocol. It makes per-activity queries structural in a multi-activity campaign. `code` stays the human-readable label. An ad-hoc task can omit it. |
 | `reasonCode` | MS  |     | CodeableConcept | The disease or programme that this Task serves. Use it to scope a Task to one disease, when one community Task covers several concurrent programmes. |
@@ -729,17 +727,17 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 | `output` | MS  |     |     | References to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts. |
 | `extension[deliveryStrategy]` | MS  | 1..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | The strategy that this Task runs under. It is mandatory, because it determines which other fields apply. |
 | `extension[taskOrigin]` | MS  | 1..1 | code, **required** → ICRTaskOriginVS (`pre-planned` \| `field-registered`) | Shows if the microplan pre-generated the Task, or if the team created it in the field on discovery. |
-| `extension[housesVisited]` |     | 0..1 | unsignedInt | (Type B) The houses that the team visited on the round. |
-| `extension[eligiblePresent]` |     | 0..1 | unsignedInt | (Type B) The eligible people who were present. |
-| `extension[eligibleAbsent]` |     | 0..1 | unsignedInt | (Type B) The eligible people who were absent. |
+| `extension[housesVisited]` |     | 0..1 | unsignedInt | (house-to-house) The houses that the team visited on the round. |
+| `extension[eligiblePresent]` |     | 0..1 | unsignedInt | (house-to-house) The eligible people who were present. |
+| `extension[eligibleAbsent]` |     | 0..1 | unsignedInt | (house-to-house) The eligible people who were absent. |
 | `extension[missedReason]` |     | 0..* | CodeableConcept, **extensible** → ICRMissedReasonVS | Why the team missed eligible people. It holds person-level reasons (absent, sleeping, refusal) and area-level reasons (insecurity, medication shortage, difficult access). |
 | `extension[noncomplianceReason]` |     | 0..* | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS | Why a household or person declined. |
 | `extension[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height or age, pregnant, breastfeeding, acute illness. This is distinct from *missed* (not reached) and *noncompliance* (declined), on purpose. |
-| `extension[fingerMarked]` |     | 0..1 | boolean | (Type B) The in-field "already covered" marker. |
+| `extension[fingerMarked]` |     | 0..1 | boolean | (house-to-house) The in-field "already covered" marker. |
 | `extension[revisitOutcome]` *(forms-v1)* |     | 0..1 | CodeableConcept, **extensible** → ICRRevisitOutcomeVS | The outcome of the revisit, on a **person-targeted follow-up** Task (`for` = the missed Patient, `partOf` = the first Task): `already-vaccinated` \| `vaccinated-on-revisit` \| `still-missing`. |
 | `extension[dataLineage]` |     | 0..1 | code, **required** → ICRDataLineageVS | Realtime or reconciled. |
 
-**Example.** `example-mopup-task` is the Type-B house-to-house visit. It shows the richer Task shape. It chains to a delivery event:
+**Example.** `example-mopup-task` is the house-to-house visit. It shows the richer Task shape. It chains to a delivery event:
 
 ```json
 {
@@ -828,11 +826,11 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 }
 ```
 
-Read the links as follows. `for` points at the **household delivery-unit Group** (§5.1). This is the Type-B target. A Type-A site-session Task instead has `for` = the fixed-post Location. `basedOn` carries the **workflow lineage** — the round CarePlan (§4.2). Thus the dose traces back to the campaign that ordered it.
+Read the links as follows. `for` points at the **household delivery-unit Group** (§5.1). A site-session Task instead has `for` = the fixed-post Location. `basedOn` carries the **workflow lineage** — the round CarePlan (§4.2). Thus the dose traces back to the campaign that ordered it.
 
 `location` is the place where the work occurred — the dwelling (§5.3). `owner` references the CareTeam that worked the visit (§4.5). `output` is the **whole Task→event mechanism**. It references the `Immunization` in §6.1. R4 Immunization has no `basedOn`, so the link runs in this direction.
 
-The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`. Here `task-origin` is `field-registered`, the discovery-mode pattern. This household was not in the microplan. The team created the household and its Task at the door. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason` `absent`, `finger-marked`) exist only for strategy B. They have no meaning on a fixed-post session.
+The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`. Here `task-origin` is `field-registered`, the discovery-mode pattern. This household was not in the microplan. The team created the household and its Task at the door. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason` `absent`, `finger-marked`) exist only for the house-to-house strategy. They have no meaning on a fixed-post session.
 
 **Key observations.**
 
@@ -842,7 +840,7 @@ The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`.
 - **Person-targeted Tasks serve follow-up only.** Sometimes a team must trace one specific missed or zero-dose person. Then the system creates a new Task. Its `for` is that person's `Patient`. Its `partOf` references the first Task — the Task that missed the person. Its `basedOn` is the campaign, as always.
   
   This is the only intended person-targeted Task. A Task per person for routine delivery would multiply Task volume approximately five times. It would record nothing that the Immunization records do not already carry.
-- **The count and reason extensions apply mainly to Type B.** Houses visited, eligible present/absent, and finger-marking have no meaning for a fixed-post tally. Thus these extensions are optional (`0..x`), and teams populate them only for house-to-house work. The reason axes are three, on purpose. `missed-reason` = not reached, and includes area-level causes such as insecurity. `noncompliance-reason` = reached but declined. `exclusion-reason` = reached and willing, but contraindicated.
+- **The count and reason extensions apply mainly to house-to-house work.** Houses visited, eligible present/absent, and finger-marking have no meaning for a fixed-post tally. Thus these extensions are optional (`0..x`), and teams populate them only for house-to-house work. The reason axes are three, on purpose. `missed-reason` = not reached, and includes area-level causes such as insecurity. `noncompliance-reason` = reached but declined. `exclusion-reason` = reached and willing, but contraindicated.
 - `task-origin` **is mandatory because the value is itself a measurement.** A team can find a household that the enumeration missed. The team then creates the delivery unit and its Task in the field (`field-registered`). The count of field-registered Tasks per area measures the gaps in the microplan's enumeration. This count informs the denominators for the next round.
 - `Task.output` **links the delivery events.** R4 `Immunization` has no `basedOn` element. Thus there is no reverse link from event to Task. The link runs from Task to event (§6).
 - **Disaggregation (recommended pattern).** The count extensions are single visit-level totals. Do not multiply them to show age or sex breakdowns. Disaggregate in one of two ways. (a) Emit one `Task.output` entry per stratum, with a coded `type` for the age band or sex. (b) Where person-level data exists, derive the breakdown from the individual Immunization / MedicationAdministration records. These records already carry age and sex.
@@ -1050,13 +1048,21 @@ This anchoring is a transform-layer concern. The extraction templates deliberate
 ## 5. Population & geography profiles
 These profiles model the persons a campaign acts on and the places where it acts. The split is intentional. The denominator (`ICRTargetPopulation`), the real group reached (`ICRDeliveryUnit`), the registered person (`ICRPatient`), and the place (`ICRLocation`) are separate first-class resources. `ICRConsent` is the governance companion.
 ### 5.1 ICRDeliveryUnit — `Group` (household / community / school cohort)
-**Purpose.** This profile models the **real group of persons** that a campaign Task acts on. The group can be a household (Type B, house-to-house), a community (Type C, MDA), or a school cohort (school-based delivery). A required `group-kind` code identifies the kind of delivery unit.
+**Purpose.** This profile models the **real group of persons** that a campaign Task acts on. The group can be a household (house-to-house delivery), a community (MDA), or a school cohort (school-based delivery). A required `group-kind` code identifies the kind of delivery unit. Households, communities, and school cohorts share one shape: they have **members**, and they have an associated **location**.
 
-The Group shows *who* the campaign acts on. The Location, through the `group-location` extension, shows *where the group lives or is based*. This is the dwelling for a household, the settlement for a community, and the school for a school cohort. {==The Type A delivery unit is a site. A site is a Location, not a Group.==}{>>We should consider making Type As also point to ICRDeliveryUnits (instead of Locations). I believe these fixed points are still established with the goal of serving specific communities, and it would simplify the structure if every delivery unit was of the same type.
+The Group shows *who* the campaign acts on. The Location, through the `group-location` extension, shows *where the group lives or is based*. This is the dwelling for a household, the settlement for a community, and the school for a school cohort.
+
+{==One rule sets a delivery unit's type: a delivery unit with members is a Group; a delivery unit without members is a Location.==}{>>We should consider making Type As also point to ICRDeliveryUnits (instead of Locations). I believe these fixed points are still established with the goal of serving specific communities, and it would simplify the structure if every delivery unit was of the same type.
 
 I believe this would also get ahead of some tension I'm sensing with school-based distributions. Currently these are Type A, so the delivery unit should be the school's Location. This contradicts what is said in the Purpose section here, which says that school-based deliveries would use ICRDeliveryUnits instead. So, the IG says Type A campaigns use Locations for delivery units, and that school-based distributions are Type A, but school-based distributions are supposed to act on ICRDeliveryUnits (like Types B and C).
 
-I haven't thought through the ramifications of using ICRDeliveryUnits for all 3 campaign types, there could be unintended consequences.<<}{id="c1" by="mckinnoj" at="2026-08-11T13:57:56.294Z"}
+I haven't thought through the ramifications of using ICRDeliveryUnits for all 3 campaign types, there could be unintended consequences.<<}{id="c1" by="mckinnoj" at="2026-08-11T13:57:56.294Z"} The no-members case covers three situations:
+
+- **The target is a structure.** An IRS campaign sprays a dwelling. Nobody is a member of a structure. The Task's `for` is the structure Location (§6.4).
+- **The target is a temporary service point.** A church or a market can host a fixed or temporary-post session. People are not members of that church, and the next campaign may use a different site. Thus the campaign does not register persons to it. The Task's `for` is the site Location.
+- **The target is an area.** A campaign can target a settlement, a ward, or a district without knowing where the people in it live. Persons are then registered to the area directly (`Patient.address`, §5.4), and the area rolls up through `Location.partOf` — a ward to its district (§5.3).
+
+The discriminator is the data, not the kind of place. An enumerated community register is a Group. An un-enumerated area target is a Location. The same real-world community can appear either way, depending on enumeration.
 
 **Properties.**
 
@@ -1069,7 +1075,7 @@ I haven't thought through the ramifications of using ICRDeliveryUnits for all 3 
 | `quantity` | MS  |     | unsignedInt | The captured or reported head count, for example the register or tally figure. Use it when the persons are not enumerated. It is the fallback mode. It can exist together with an enumerated `member` list. When both exist and disagree, `quantity` stays the reported figure. The mismatch is a data-quality signal, for example partial enumeration. Do not silently reconcile the two values. |
 | `extension[groupLocation]` | MS  | 1..1 | `Reference(ICRLocation)` | **The residence or base, not the service point**: the dwelling (household), the settlement or community point (community), or the school (school-cohort). |
 
-**Example.** `example-household` — the Type-B unit that a mop-up Task targets:
+**Example.** `example-household` — the household that a mop-up Task targets:
 
 ```json
 {
@@ -1170,8 +1176,8 @@ The system evaluates eligibility for each person against the protocol's `subject
 **Key observations.**
 
 - **The model separates the group (who) from the location (where).** The location's identity (its GERS building or place ID) then persists when the group composition changes. The group also persists when it moves to a new location.
-- **One profile serves both scales.** A household and a community follow the same modelling pattern at different scales. ICR therefore uses one profile with a coded `code` (group kind), not two near-identical profiles. Set `code` to `community` and point `group-location` at a settlement. The same structure then becomes a Type-C community delivery unit. The `school-cohort` value shows that the list can grow to other units as countries require, for example nomadic groups or camp populations.
-- **Person registration is a main capture mode, not an exception.** In community-and-household campaigns, the norm is to enumerate the persons in each household. `member` carries those persons, and each is an `ICRPatient` (§5.4). A person-level delivery event (§6) records what each person received and points back at that same person. `quantity` is the fallback for register-level capture, for example Type-C MDA or a round that counts without enumeration. The two modes can exist together.
+- **One profile serves both scales.** A household and a community follow the same modelling pattern at different scales. ICR therefore uses one profile with a coded `code` (group kind), not two near-identical profiles. Set `code` to `community` and point `group-location` at a settlement. The same structure then becomes a community delivery unit. Set `code` to `school-cohort` and point `group-location` at a school. The same structure then becomes a school-based delivery unit. The three-value list can grow to other units as countries require, for example nomadic groups or camp populations.
+- **Person registration is a main capture mode, not an exception.** In community-and-household campaigns, the norm is to enumerate the persons in each household. `member` carries those persons, and each is an `ICRPatient` (§5.4). A person-level delivery event (§6) records what each person received and points back at that same person. `quantity` is the fallback for register-level capture, for example community-directed MDA or a round that counts without enumeration. The two modes can exist together.
 - **A person does not have to be tied to a household.** `member.entity` sits on `ICRDeliveryUnit` for every `code` value. A `community`-coded delivery unit can therefore enumerate `ICRPatient`s directly, with no household between, for example a community-session register or an MDA round that lists persons but not dwellings. A person can also exist with **no Group at all**: `Immunization.patient` and `MedicationAdministration.subject` (§6) point straight at the person. A standalone person-level event at a community session is therefore fully valid without a delivery-unit roster. The same person is reachable in three ways: as a household member, as a community member, or as a bare event subject.
 - **Members are individual persons, never sub-Groups.** The community-to-household relation stays on the *where* axis. A household's dwelling is `partOf` the community's settlement Location (§5.3). The model does not nest a household Group inside a community Group.
 - `member.entity` **is restricted to** `Patient` **(profiled as ICRPatient).** FHIR has four person-shaped resources. **Patient** is any person who can receive a service. Despite the name, a healthy child who receives a measles dose is a Patient, and a household member who receives a net is a Patient. `Immunization.patient` accepts only a Patient. **RelatedPerson** is a caregiver defined relative to a patient. **Practitioner** is a worker, for example a CDD or a vaccinator. **Person** is an identity-linkage resource; it supports record linkage only and is not a care-record subject. Every enumerated household member is therefore a Patient. The restriction on `member.entity` excludes Practitioner and Device. It does not exclude RelatedPerson, because R4 `Group.member` never permitted RelatedPerson; R5 added RelatedPerson membership.
@@ -1745,7 +1751,7 @@ Aggregate vs individual records — the cross-cutting rule
 **Aggregate vs individual records — the rule.** Use an **individual record when you have a person.** Use an **aggregate count on** `Task.output` **when you do not.** Use `MeasureReport` for derived or stratified coverage (numerator, denominator, score). Use `group.stratifier` for a disaggregated cube. Never record coverage as a raw scalar tally. Concretely:
 
 - **MDA / drugs** — `ICRMedicationAdministration.subject` already allows an `ICRDeliveryUnit` Group. Thus a community-register aggregate is a fully consistent MedicationAdministration.
-- **Vaccines** — R4 `Immunization.patient` is `1..1 Reference(Patient)`. It cannot point at a Group. A vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention. Thus a Type-A vaccine **session tally** lives as an aggregate count on `Task.output` (for example, 412 doses). Create individual `Immunization` records only when person-level data exists.
+- **Vaccines** — R4 `Immunization.patient` is `1..1 Reference(Patient)`. It cannot point at a Group. A vaccine tally as a MedicationAdministration would break the vaccine = Immunization convention. Thus a fixed-post vaccine **session tally** lives as an aggregate count on `Task.output` (for example, 412 doses). Create individual `Immunization` records only when person-level data exists.
 - **Multi-dimensional tallies** — a disaggregated treatment cube (drug × sex × age band, plus dispositions) is a **stratified MeasureReport** (§7.3). That is the FHIR-native disaggregation mechanism. The per-visit scalar stays on `Task.output` and references the stratified report.
 
 **Key observations.**
@@ -2171,13 +2177,13 @@ FHIR has no native campaign semantics. Thus 35 extensions carry these semantics 
 
 * * *
 ## 11. The worked scenario
-The IG ships one coherent scenario: a **Sierra Leone measles–rubella SIA, 2026**. The scenario contains a national umbrella campaign. The **Kambia District June round** is a `partOf` child of that campaign. The round exercises fixed-post (Type A) tasks and house-to-house mop-up (Type B) tasks. The round also exercises the divergent admin-vs-survey coverage pair.
+The IG ships one coherent scenario: a **Sierra Leone measles–rubella SIA, 2026**. The scenario contains a national umbrella campaign. The **Kambia District June round** is a `partOf` child of that campaign. The round exercises fixed-post tasks and house-to-house mop-up tasks. The round also exercises the divergent admin-vs-survey coverage pair.
 
-The scenario adds a **community-directed MDA scenario** (Type C). The MDA scenario contains a drug supply, a community task, and a stratified treatment tally. The scenario also adds an ITN delivery, adverse events in both arms, and the team and supervision records.
+The scenario adds a **community-directed MDA scenario**. The MDA scenario contains a drug supply, a community task, and a stratified treatment tally. The scenario also adds an ITN delivery, adverse events in both arms, and the team and supervision records.
 
 The figures (48,250; 99% vs 76%) are an **illustrative composite**. The authors constructed the figures to exercise the profiles. The 99-vs-76 divergence follows the documented Cuamba, Mozambique case. The figures do not transcribe one specific published SIA.
 
-**How to find examples in the gallery (example-tags round).** Each example instance carries a scenario/provenance `meta.tag` from **ICRProjectTagCS**. The tag `mr-sia` marks the SIA worked scenario. The tag `mda` marks the Rokupr community-directed albendazole thread. The tag `gallery` marks standalone pieces from other campaign types. These pieces are the ITN delivery, the full IRS chain (protocol / denominator / round / structure-Task), and the SCH descoping trio.
+**How to find examples in the gallery (example-tags round).** Each example instance carries a scenario/provenance `meta.tag` from **ICRProjectTagCS**. The tag `mr-sia` marks the SIA worked scenario. The tag `mda` marks the Rokupr community-directed albendazole thread. The tag `gallery` marks standalone pieces from other campaign types. These pieces are the ITN delivery, the full IRS chain (protocol / denominator / round / structure-Task), the SCH descoping trio, and the school-based delivery trio (school / school cohort / school-session Task).
 
 The tag `espen` marks the six ESPEN MDA instruments (§4.8). The shared geography (country → settlement, plus the supervisory area) carries tags from both scenarios. The published IG site's example gallery filters on these tags.
 
@@ -2201,9 +2207,9 @@ graph LR
     D -- patient --> C
 ```
 
-**The 56 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
+**The 59 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
 
-The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56).
+The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task.
 
 *Locations, people & groups*
 
@@ -2220,7 +2226,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 9   | `example-sibling` | ICRPatient | A second enumerated child |
 | 10  | `example-household` | ICRDeliveryUnit | code `household`, quantity 6, member → child, groupLocation → dwelling |
 | 11  | `example-household-enumerated` | ICRDeliveryUnit | The same household, **fully enumerated**: three members, each an ICRPatient |
-| 12  | `example-community` | ICRDeliveryUnit | code `community` — "Rokupr community", quantity 3,480, groupLocation → settlement (the Type-C unit) |
+| 12  | `example-community` | ICRDeliveryUnit | code `community` — "Rokupr community", quantity 3,480, groupLocation → settlement (the community/MDA delivery unit) |
 | 13  | `example-consent` | ICRConsent | The head of household permits the system to hold and share the child's data |
 | 14  | `example-target-population` | ICRTargetPopulation | 48,250 children 9m–14y, Kambia; GRID3, 2026-01-15, isPlanningDenominator true; geography → district |
 | 15  | `example-target-population-enumerated` | ICRTargetPopulation | 51,800 children 9m–14y, Kambia; microcensus/enumeration, 2026-03-02, isPlanningDenominator **false** — the competing estimate |
@@ -2231,16 +2237,16 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | #   | Instance | Profile | Key content |
 | --- | --- | --- | --- |
 | 17  | `example-mcv-activity` | ICRCampaignActivity | "Administer MCV"; kind Task; CVX `05`; 0.5 mL subcutaneous |
-| 18  | `example-albendazole-activity` | ICRCampaignActivity | "Administer albendazole, 5–14y"; ATC `P02CA03`; tablet count by dose-pole band (Type C) |
-| 19  | `example-itn-activity` | ICRCampaignActivity | "Distribute LLINs, 1 net per 2 household members"; free-text product pending GS1 (Type B→A) |
-| 20  | `example-irs-activity` | ICRCampaignActivity | "Spray interior walls of eligible structures"; Pirimiphos-methyl 300CS (Type B) |
+| 18  | `example-albendazole-activity` | ICRCampaignActivity | "Administer albendazole, 5–14y"; ATC `P02CA03`; tablet count by dose-pole band (community-directed MDA) |
+| 19  | `example-itn-activity` | ICRCampaignActivity | "Distribute LLINs, 1 net per 2 household members"; free-text product pending GS1 (house-to-house registration, post distribution) |
+| 20  | `example-irs-activity` | ICRCampaignActivity | "Spray interior walls of eligible structures"; Pirimiphos-methyl 300CS (house-to-house, structure-targeted) |
 | 21  | `example-mr-sia-protocol` | ICRCampaignProtocol | v1.0.0; type `vaccination-sia`; two deliveryStrategy values; goal "≥95%…"; action → #17 |
 | 22  | `example-mr-sia-national` | ICRCampaign | the **umbrella**: instantiates #21, intent `plan`, subject & planningDenominator → #16 |
 | 23  | `example-mr-sia-2026` | ICRCampaign | the **round**: instantiates #21; intent `order`, partOf → #22; subject & planningDenominator → #14; round 1; targetGeography → district; social-mobilization (radio + community leaders) |
 | 24  | `example-careteam` | ICRCareTeam | "CDD team 7, Rokupr": vaccinator + CDD + supervisor roles, subject → the Kambia denominator; managingOrganization; oversees-area → #6; workload-target (3,200 pop / 640 households / 5 days) |
-| 25  | `example-site-session-task` | ICRCampaignTask | **Type A**: for → target population, location → fixed post; strategy fixed-post; taskOrigin `pre-planned`; dataLineage realtime; output session tally = 412 |
-| 26  | `example-mopup-task` | ICRCampaignTask | **Type B**: completed; for → household, location → dwelling; strategy house-to-house; taskOrigin `field-registered`; eligiblePresent 2 / absent 1; missedReason `absent`; fingerMarked true; owner → #24; output → #28 |
-| 27  | `example-mda-community-task` | ICRCampaignTask | **Type C community-directed**: for → community (#12), location → settlement; strategy `community-directed`; exclusionReasons (under-height-age, pregnant, breastfeeding), missedReason absent, noncomplianceReason no-felt-need; owner → #24; output: scalar tally 2,900 treated + → #35 |
+| 25  | `example-site-session-task` | ICRCampaignTask | **Fixed-post site session**: for → fixed post (a site Location — a delivery unit without members), location → fixed post; strategy fixed-post; taskOrigin `pre-planned`; dataLineage realtime; output session tally = 412 |
+| 26  | `example-mopup-task` | ICRCampaignTask | **House-to-house**: completed; for → household, location → dwelling; strategy house-to-house; taskOrigin `field-registered`; eligiblePresent 2 / absent 1; missedReason `absent`; fingerMarked true; owner → #24; output → #28 |
+| 27  | `example-mda-community-task` | ICRCampaignTask | **Community-directed**: for → community (#12), location → settlement; strategy `community-directed`; exclusionReasons (under-height-age, pregnant, breastfeeding), missedReason absent, noncomplianceReason no-felt-need; owner → #24; output: scalar tally 2,900 treated + → #35 |
 
 *Delivery events & safety*
 
@@ -2280,6 +2286,9 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 54  | `example-irs-task` *(v0.1.1)* | ICRCampaignTask | **Structure-targeted Task** (§6.4): `for` → the dwelling under spray; results on `Task.output`; the Task *is* the event |
 | 55  | `example-zero-dose-coverage` *(v0.1.1)* | ICRAdministrativeCoverage | Zero-dose reach 6%, stratified by `dose-history` — instantiates `icr-zero-dose-coverage` |
 | 56  | `example-readiness-coverage` *(v0.1.1)* | ICRAdministrativeCoverage | Readiness roll-up 83% (10/12 units), stratified by `readiness-domain` — instantiates `icr-campaign-readiness` |
+| 57  | `example-school` *(school trio)* | ICRLocation | "Rokupr Primary School", type `school`, partOf settlement, GPS, GERS building ID |
+| 58  | `example-school-cohort` *(school trio)* | ICRDeliveryUnit | code `school-cohort` — the enrolled cohort of Rokupr Primary School, quantity 260, groupLocation → #57 |
+| 59  | `example-school-mda-task` *(school trio)* | ICRCampaignTask | **School-based**: for → school cohort (#58), location → school (#57); strategy `school`; taskOrigin `pre-planned`; basedOn → the descoped SAC round (#44); output session tally = 244 treated |
 
 *Definitional artifacts (alongside the examples)*
 
@@ -2293,20 +2302,20 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 
 - The full Location chain, with GERS at each level (country → dwelling), plus a delivery site.
 - Operational geography that overlays the admin hierarchy and does not sit inside it.
-- The generalized delivery-unit pattern at both scales (household and community) and at both registration depths (count-only and fully enumerated).
+- The generalized delivery-unit pattern at all three scales (household, community, and school cohort) and at both registration depths (count-only and fully enumerated).
 - Competing denominators for the same geography (GRID3 vs enumeration, 7% apart, one planning flag), plus the cross-level contrast (district GRID3 vs national census projection).
 - The activity gallery across campaign types.
 - Protocol→activity→campaign wiring.
 - The umbrella/round `partOf` lifecycle (`plan` umbrella, `order` round).
-- All three Task shapes (Type A site session, Type B house-to-house, Type C community-directed) and both task origins.
-- A Type-B trail from end to end, down to the dose and its AEFI.
+- The Task shapes (fixed-post site session, house-to-house, community-directed, school-based, and the structure-targeted IRS Task) and both task origins.
+- A house-to-house trail from end to end, down to the dose and its AEFI.
 - The MDA thread from drug receipt, through the community task, to the stratified tally.
 - The never-merge rule, made visible by a 99-vs-76 coverage pair on the same round.
 
 **Scenario notes for a future pass.**
 
 - Partner review queued more scenario exercises. One: Tasks whose `for` is a Location at different levels (settlement, ward), to confirm granularity rollups. Two: a target-geography subset of wards that spans different districts/LGAs.
-- The Type-C thread is partly wired. The community task, the drug supply, and the stratified tally interlink. But a **CDTI protocol/CarePlan** is still missing. Also, the per-person albendazole administration (#29) is not yet tied to the community Task's output.
+- The community-directed MDA thread is partly wired. The community task, the drug supply, and the stratified tally interlink. But a **CDTI protocol/CarePlan** is still missing. Also, the per-person albendazole administration (#29) is not yet tied to the community Task's output.
 - GERS values use a placeholder format (`…-example`). Confirm the real GERS ID syntax before the pilots. Then the examples validate against the eventual identifier pattern.
 - The Measure canonicals resolve only after the IG is published. The IG Publisher can show warnings until then.
 
@@ -2315,7 +2324,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 The IG ships two narrative pages. The pages state the model's maturity clearly.
 
 - `index.md` gives the pitch: campaigns re-collect the same data, and ICR makes collection compound. The page gives the one-paragraph architecture. It states the status: v0.1, to be revised against real datasets and FHIR community review. It lists the deferred items.
-- `background.md` gives the Type A/B/C campaign-typology table and the twelve numbered design decisions, with the rejected alternatives for the keystone CarePlan choice. It defines the "campaign work vs routine encounters" boundary, with `record-origin` as the discriminator. It defines "operational vs administrative geography" through the location-type + `overlays-admin-unit` mechanism. It describes the "location identity lifecycle: GERS enrichment" flow: create unmatched, then asynchronous conflation, then backfill with versioning and Provenance. It covers the per-person follow-up exception and the open design questions for the FHIR community. It also covers the WHO IDHC toolkit relationship and the WHO SMART Guidelines relationship.
+- `background.md` gives the delivery-model overview — the coded delivery strategies plus the Group-vs-Location delivery-unit rule — and the twelve numbered design decisions, with the rejected alternatives for the keystone CarePlan choice. It defines the "campaign work vs routine encounters" boundary, with `record-origin` as the discriminator. It defines "operational vs administrative geography" through the location-type + `overlays-admin-unit` mechanism. It describes the "location identity lifecycle: GERS enrichment" flow: create unmatched, then asynchronous conflation, then backfill with versioning and Provenance. It covers the per-person follow-up exception and the open design questions for the FHIR community. It also covers the WHO IDHC toolkit relationship and the WHO SMART Guidelines relationship.
 
 The IG prints the open questions in its own pages and does not keep them only in working documents. This is a deliberate transparency choice for community review.
 
@@ -2399,7 +2408,7 @@ These decisions still need a project, UNICEF, or partner call. They come from th
 
 1. **Canonical URL ownership, package id, and dependency declaration** — confirm these with UNICEF. Confirm that UNICEF controls `icr.healthcampaigns.org`. Confirm that `unicef.fhir.icr` fits its naming convention. Confirm when to declare the formal `dependsOn smart.who.int.base`. (Publisher attribution is decided — UNICEF.)
 2. **GERS/P-code identifier system URIs** — decide whether ICR should mint them (engage Overture Maps). Decide a concrete slot for the **Overture release version**. Decide whether to widen `Location.partOf` to `Reference(Location)`, so ICR can coexist with existing national MFL/GIS registries.
-3. **Aggregate-vs-individual representation for Type-A tally campaigns** — document the official pattern: `Task.output` for aggregates, individual events, and MeasureReport for derived and stratified data only.
+3. **Aggregate-vs-individual representation for fixed-post tally campaigns** — document the official pattern: `Task.output` for aggregates, individual events, and MeasureReport for derived and stratified data only.
 4. **Closed code sets** — confirm that the required-bound sets are exhaustive (campaign/routine; realtime/reconciled; the four coverage sources). Decide on an `unknown` `task-origin` for historical imports. Confirm disease-agnostic campaign typing with the polio programme.
 5. **FR translations** — a francophone public-health reviewer must review them. Also state a localization policy.
 6. **Geography characteristic** — change `0..1 → 1..1` on ICRTargetPopulation after the pilots confirm that every estimate carries a Location.
