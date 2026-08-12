@@ -147,11 +147,9 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * identifier[isoSubdivision] ^short = "ISO 3166-2 subdivision code (first-level subdivisions) — FHIR-designated system URI"
 * extension contains
     LocationBoundaryGeoJson named boundary 0..1 MS and
-    DeliveryStrategy named deliveryStrategy 0..1 and
     OverlaysAdminUnit named overlaysAdminUnit 0..* and
     SettlementType named settlementType 0..1 MS
-* extension[boundary] ^short = "District polygon, settlement area, or catchment zone — the geometry Crosscut enriches and pushes back"
-* extension[deliveryStrategy] ^short = "For delivery sites (fixed/temporary posts): the strategy this site serves"
+* extension[boundary] ^short = "District polygon, settlement area, or catchment zone (GeoJSON)"
 * extension[overlaysAdminUnit] ^short = "For operational geography (supervisory/operational areas): the admin unit(s) this area overlays — linkable-but-distinct from the admin hierarchy (working doc §9)"
 * extension[settlementType] ^short = "Settlement / special-population type (urban-slum, refugee-IDP, nomad-pastoralist, security-compromised, hard-to-reach…) — vulnerability/equity attribute for HTRA targeting (v0.21.0)"
 

@@ -4,8 +4,8 @@
 Extension: DeliveryStrategy
 Id: delivery-strategy
 Title: "Delivery Strategy"
-Description: "How this activity/site/task reaches its target population. First-class and coded because a single campaign routinely mixes strategies, and the strategy governs which data elements exist (working doc §3)."
-Context: PlanDefinition, ActivityDefinition, Task, Location
+Description: "How this activity/task reaches its target population. First-class and coded because a single campaign routinely mixes strategies, and the strategy governs which data elements exist. The protocol lists the options (1..*), the Task records the choice (1..1), the activity is an optional pin — the strategy is campaign programme state and deliberately does NOT live on Location: per the georegistry rule a site's durable kind is Location.type (facility, temporary-post, school…), and which strategy a site serves in a given campaign belongs to that campaign's Tasks (working doc §3)."
+Context: PlanDefinition, ActivityDefinition, Task
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRDeliveryStrategyVS (required)

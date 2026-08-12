@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-12T20:25:35Z
+last_modified: 2026-08-12T20:51:35Z
 tags:
   - icr
   - fhir
@@ -183,7 +183,7 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | **Extensions** | 37  | See §10 |
 | **CodeSystems** | 28  | See §9 |
 | **ValueSets** | 30  | Usually one per code system, plus purpose-built sets (§9) |
-| **Example instances** | 59  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task) (§11) |
+| **Example instances** | 61  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task), a custom-national-identifier ward, and an LQAS lot assessment (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
 File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `examples.fsh`.
@@ -1336,7 +1336,6 @@ Each box on the solid `partOf` layer is an ICRLocation. Each one points to its s
 | `managingOrganization` | MS  | 0..1 | `Reference(ICRFacilityOrganization)` only | For facilities: the accountable facility Organization (the mCSD pairing, see below). Admin units and other non-facility places do not carry it. |
 | `identifier` | MS  |     | **sliced by** `system` (open): `gers` 0..1 MS, `pcode` 0..1 MS, `isoCountry` 0..1 MS (`urn:iso:std:iso:3166`), `isoSubdivision` 0..1 MS (`urn:iso:std:iso:3166:-2`) | Multi-system identity — **all slices are optional**. The country's own admin code rides the open list under the country's system URI, marked `use = official`. That mark makes the uniform join key (`identifier.where(use = 'official')`). Invariants: **at least 1 identifier of any system is required when** `type = admin-unit` (`icr-loc-admin-id`, error). The `official` mark is expected on admin units (`icr-loc-admin-official`, warning → error at v1.0). |
 | `extension[boundary]` (`location-boundary-geojson`) | MS  | 0..1 | Attachment, `contentType` fixed `application/geo+json` | The GeoJSON geometry (a Polygon/MultiPolygon shape, or a Point). |
-| `extension[deliveryStrategy]` |     | 0..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | For delivery sites (fixed/temporary posts): the strategy that this site serves. |
 | `extension[overlaysAdminUnit]` |     | 0..* | `Reference(ICRLocation)` | For operational geography: the admin unit(s) that this area overlays. **Expected when** `type ∈ {supervisory-area, operational-area}` (invariant `icr-loc-overlays`, **warning** in v0.x → error at v1.0). |
 | `extension[settlementType]` *(forms-v1)* | MS  | 0..1 | CodeableConcept, **extensible** → ICRSettlementTypeVS | The settlement / special-population classification (`urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`…). This is the recurring "type of settlement" axis on campaign monitoring forms. It is a vulnerability/equity attribute that drives HTRA targeting. |
 | `extension[locationAncestors]` *(proposed)* |     | 0..* | complex: per-level `adm0…adm3+` code + `Reference(ICRLocation)` | A **server-maintained** denormalized admin breadcrumb of the `partOf` chain. It permits fast hierarchy filters without deep recursion. This extension is proposed and is not yet in the IG. |
@@ -1406,7 +1405,7 @@ Each box on the solid `partOf` layer is an ICRLocation. Each one points to its s
 
 **Key observations.**
 
-- **Open identifier slicing lets multiple code systems coexist.** National location codes sit beside GERS, P-codes, and the formal ISO slices, without profile changes. They go under the country's own system URI, marked `use = official` when they are the authoritative code. The `gers` and `pcode` slices are `0..1`. Thus a newly created, unmatched location can exist with national codes only, and its GERS ID can be backfilled later. The enrichment lifecycle has three steps: create the location unmatched, run asynchronous conflation, then backfill the GERS ID with versioning and Provenance.
+- **Open identifier slicing lets multiple code systems coexist.** National location codes sit beside GERS, P-codes, and the formal ISO slices, without profile changes. They go under the country's own system URI, marked `use = official` when they are the authoritative code. The `gers` and `pcode` slices are `0..1`. Thus a newly created, unmatched location can exist with national codes only, and its GERS ID can be backfilled later. The shipped `example-ward` shows exactly this state: its only identifier is a national DHIS2 orgUnit UID under an MoH system URI, marked official, with no GERS or P-code yet. The enrichment lifecycle has three steps: create the location unmatched, run asynchronous conflation, then backfill the GERS ID with versioning and Provenance.
 - **Administrative units must carry an identifier — any identifier.** The `icr-loc-admin-id` invariant (**error**) requires at least one identifier from any system when `type = admin-unit`. Thus an administrative area cannot exist without a stable code. The companion `icr-loc-admin-official` invariant (**warning**, promoted to error at v1.0) expects the mark `use = official` on the country's authoritative code. This gives consumers one uniform query for *the* admin id, in each country system. Sites and dwellings do not carry these constraints.
 - **Operational geography is modelled separately from administrative geography.** `partOf` can express only one hierarchy. Thus a supervisory or operational area carries a location-type code. The `overlays-admin-unit` extension links it to the administrative units that it covers. The `icr-loc-overlays` invariant expects such an area to overlay at least one admin unit (**warning** in v0.x, promoted to error at v1.0). An area that overlays nothing cannot roll up to a reporting unit. The team regards this operational-overlay mechanism as the IG's strongest design feature.
 - **The Overture release version should be recorded alongside a GERS ID.** GERS IDs are stable. But Overture publishes the registry again on a release cadence, and an ID's attributes can change between releases. You can reproduce a stored ID only if you also record the release used for the match.
@@ -1981,7 +1980,7 @@ The two records report the same quantity. Only this flag separates them. A query
     },
     {
       "url": "https://icr.healthcampaigns.org/StructureDefinition/sample-design",
-      "valueString": "WHO 30×10 cluster survey, district-representative; card + caregiver recall"
+      "valueString": "WHO 30×10 cluster survey (n = 2,100), district-representative; evidence: vaccination card + caregiver recall; 76% (95% CI 72–80)"
     }
   ],
   "status": "complete",
@@ -1996,12 +1995,54 @@ The two records report the same quantity. Only this flag separates them. A query
   },
   "group": [
     {
+      "population": [
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "numerator",
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "display": "Numerator"
+              }
+            ]
+          },
+          "count": 1596
+        },
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "denominator",
+                "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                "display": "Denominator"
+              }
+            ]
+          },
+          "count": 2100
+        }
+      ],
       "measureScore": {
         "value": 76,
         "code": "%",
         "system": "http://unitsofmeasure.org",
         "unit": "%"
-      }
+      },
+      "stratifier": [
+        {
+          "code": [ { "coding": [ { "code": "sex", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs" } ] } ],
+          "stratum": [
+            { "value": { "text": "female" }, "measureScore": { "value": 78, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } },
+            { "value": { "text": "male" }, "measureScore": { "value": 74, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } }
+          ]
+        },
+        {
+          "code": [ { "coding": [ { "code": "age-band", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs" } ] } ],
+          "stratum": [
+            { "value": { "text": "9–59 months" }, "measureScore": { "value": 71, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } },
+            { "value": { "text": "5–14 years" }, "measureScore": { "value": 79, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } }
+          ]
+        }
+      ]
     }
   ]
 }
@@ -2009,7 +2050,9 @@ The two records report the same quantity. Only this flag separates them. A query
 
 Both reports measure the same quantity: coverage of the Kambia round. The two figures are **23 points apart**. This mirrors Cuamba's 99-vs-76 case.
 
-The administrative report shows its numerator and denominator: 47,766 / 48,250 = 99% against GRID3. Against the enumerated denominator of 51,800, the figure would read 92%. The survey report carries its `sample-design` *instead of* a denominator. Its denominator IS the sample. Both reports are `reconciled`, which means final close-out figures.
+The administrative report shows its numerator and denominator: 47,766 / 48,250 = 99% against GRID3. Against the enumerated denominator of 51,800, the figure would read 92%. The survey report's shape deliberately parallels the administrative report, but its counts mean something different: **its denominator IS the sample** — 1,596 found vaccinated of 2,100 children surveyed — and `sample-design` carries the method. The survey also disaggregates with the same stratifier vocabulary as the administrative reports (sex: 78% F / 74% M; age band: 71% at 9–59 months / 79% at 5–14 years). Both reports are `reconciled`, which means final close-out figures.
+
+**The second independent method — LQAS** (`example-lqas-coverage`, same round). LQAS is an **accept/reject decision rule per lot**, not a coverage estimate. Each lot — here a supervision area — samples 19 children, and the lot is rejected if more than 3 are unvaccinated. The report therefore counts **lots** (`coverage-unit = implementation-units`), the same pattern as geographic coverage (§7.3): 12 of 15 lots accepted = 80%, with the three rejected lots (each of which triggers mop-up) in a disposition stratifier and the decision rule in `sample-design`. `coverage-source = lqas`. Explicit pass/fail-plus-trigger semantics stay on the roadmap (§13.2); this example shows the shape available today.
 
 **Relevant terminology.** On administrative coverage, `coverage-source` is fixed to `administrative`. On survey coverage, it binds required to **ICRIndependentCoverageSourceVS** (`survey`, `lqas`, `rcm`). `dataLineage` binds required to **ICRDataLineageVS** (`realtime`, `reconciled`).
 ### 7.3 Stratified and geographic coverage
@@ -2024,7 +2067,7 @@ Two more shapes of the same administrative-coverage profile show how the IG hand
 
 **Key observations.**
 
-- **RCM, LQAS, and the cluster survey are three distinct methods. All three stay separate from** `administrative`**.** RCM (Rapid Convenience Monitoring) is a quick in-campaign check without probability sampling. Monitors check for a finger mark or a card at convenient locations, for example markets or a few houses. RCM produces a pass/fail result against a trigger, not a coverage rate. An example trigger: if more than 10% of checked children are unvaccinated, the area needs mop-up. LQAS (Lot Quality Assurance Sampling) is an accept/reject decision rule. The probability cluster survey is the only method of the three that yields a valid coverage estimate. The 76% figure comes from a cluster survey.
+- **RCM, LQAS, and the cluster survey are three distinct methods. All three stay separate from** `administrative`**.** RCM (Rapid Convenience Monitoring) is a quick in-campaign check without probability sampling. Monitors check for a finger mark or a card at convenient locations, for example markets or a few houses. RCM produces a pass/fail result against a trigger, not a coverage rate. An example trigger: if more than 10% of checked children are unvaccinated, the area needs mop-up. LQAS (Lot Quality Assurance Sampling) is an accept/reject decision rule — `example-lqas-coverage` shows its shape (lots as implementation units, rejected lots as a disposition stratifier). The probability cluster survey is the only method of the three that yields a valid coverage estimate. The 76% figure comes from a cluster survey. An RCM example is deliberately deferred until the pass/fail-plus-trigger semantics are defined (§13.2) — a fabricated rate would misrepresent the method.
 - **Administrative coverage carries the provenance of its denominator.** An administrative coverage figure is only as reliable as the denominator used to compute it.
 - **The Measure definitions align with existing ministry reporting obligations.** These obligations include WHO JAP, the ICG M&E minimum dataset, the ESPEN treatment-coverage schema, and WHO EPI. Thus a MeasureReport produced for ICR is also the figure that those channels expect.
 
@@ -2038,7 +2081,7 @@ Two more shapes of the same administrative-coverage profile show how the IG hand
 ## 8. The cross-cutting invariants (in depth)
 These design rules recur across the profiles. Hold the IG against these rules. §2.3 introduced them. This section gives the fuller statement.
 
-1. **Delivery strategy is first-class and coded.** The binding is required. The element is mandatory on Protocol (`1..*`) and Task (`1..1`). It is optional on Activity and on site Locations. Strategy is *the* discriminator, because strategy determines which data elements exist. For example, house-to-house tallies have no meaning at a fixed post.
+1. **Delivery strategy is first-class and coded.** The binding is required. The element is mandatory on Protocol (`1..*`) and Task (`1..1`), and optional on Activity (the pin for intrinsically-strategied activities). It does **not** live on Location: a site's durable kind is `Location.type` (facility, temporary-post, school…), and which strategy a site serves in a given campaign is programme state that belongs to that campaign's Tasks — the georegistry rule (§5.3). Strategy is *the* discriminator, because strategy determines which data elements exist. For example, house-to-house tallies have no meaning at a fixed post.
 2. **Record origin is mandatory on every delivery event** (`1..1`, required binding). The flag separates campaign-captured data from routine-immunization data. Thus coverage analytics never mix the two. The adverse-event profile carries the same flag.
 3. **Three lineages, never merged.** The lineages are *planned* (CarePlan/Group), *delivered* (Task/events → administrative coverage), and *independently measured* (survey coverage). Two structures enforce the rule: the fixed `#administrative` code on one coverage profile, and the exclusion ValueSet on the other.
 4. **Denominator source is required; date recommended (v0.1).** `denominator-source` is `1..1` on ICRTargetPopulation. The codes `govt-estimate` and `unknown` are low-precision escapes, so early estimates are not blocked. `estimate-date` stays `0..1 MS`. Competing estimates coexist. One flag marks the planning denominator.
@@ -2128,7 +2171,7 @@ FHIR has no native campaign semantics. Thus 35 extensions carry these semantics 
 
 | Extension (id) | Context | Type / binding | Cardinality where used |
 | --- | --- | --- | --- |
-| DeliveryStrategy (`delivery-strategy`) | PlanDefinition, ActivityDefinition, Task, Location | CodeableConcept, **required** → ICRDeliveryStrategyVS | Protocol 1..*, Activity 0..1, Task 1..1, Location 0..1 |
+| DeliveryStrategy (`delivery-strategy`) | PlanDefinition, ActivityDefinition, Task | CodeableConcept, **required** → ICRDeliveryStrategyVS | Protocol 1..*, Activity 0..1, Task 1..1 — deliberately not on Location (a site's kind is `Location.type`; the strategy a site serves is campaign state on Tasks) |
 | CampaignRound (`campaign-round`) | CarePlan | positiveInt | 0..1 |
 | TargetGeography (`target-geography`) | CarePlan | Reference(ICRLocation) | 0..* |
 | PlanningDenominator (`planning-denominator`) | CarePlan | Reference(ICRTargetPopulation) | 0..1 |
@@ -2223,7 +2266,7 @@ graph LR
     D -- patient --> C
 ```
 
-**The 59 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
+**The 61 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
 
 The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task.
 
@@ -2235,7 +2278,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 2   | `example-district` | ICRLocation | "Kambia District", admin-unit, partOf country; P-code `SL0201` + GERS division ID; GeoJSON boundary |
 | 3   | `example-settlement` | ICRLocation | "Rokupr", area, partOf district, GPS point, GERS place ID |
 | 4   | `example-dwelling` | ICRLocation | house, partOf settlement, GPS, GERS building ID |
-| 5   | `example-fixed-post` | ICRLocation | "Rokupr CHC — fixed vaccination post", site, partOf settlement, GERS building ID, deliveryStrategy `fixed-post` |
+| 5   | `example-fixed-post` | ICRLocation | "Rokupr CHC — fixed vaccination post", site, type `facility`, partOf settlement, GERS building ID |
 | 6   | `example-supervisory-area` | ICRLocation | "Kambia supervision zone 2", type supervisory-area — **not in the partOf chain**; overlaysAdminUnit → district |
 | 7   | `example-child` | ICRPatient | Aminata Kamara, f, b. 2023-04-12; national-ID identifier |
 | 8   | `example-head` | ICRPatient | The head of household; the identity record that links the household across campaigns |
@@ -2283,7 +2326,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 35  | `example-mda-treatment-tally` | ICRAdministrativeCoverage | the **stratified treatment cube**: 2,900 / 3,200 ≈ 91%; stratifiers sex (1,500 F / 1,400 M), age band (1,100 / 1,800), disposition (2,900 treated / 180 excluded / 95 absent / 25 refused); denominator-type at-risk; measure → icr-mda-treatment-coverage |
 | 36  | `example-geographic-coverage` | ICRAdministrativeCoverage | **implementation-unit coverage**: 188/200 villages ≈ 94%; coverage-unit implementation-units; disposition stratifier (insecurity 7, medication-shortage 5); measure → icr-geographic-coverage |
 | 37  | `example-admin-coverage` | ICRAdministrativeCoverage | numerator 47,766 / denominator 48,250, **measureScore 99%**; denominatorSource GRID3; dataLineage reconciled |
-| 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**; coverageSource survey; sampleDesign "WHO 30×10 cluster survey…"; dataLineage reconciled — the same quantity as #37, **23 points apart** |
+| 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**, sample counts 1,596 / 2,100 (the denominator IS the sample); stratifiers sex (78% F / 74% M) + age band (71% / 79%); coverageSource survey; sampleDesign "WHO 30×10 cluster survey (n = 2,100)…, 95% CI 72–80"; dataLineage reconciled — the same quantity as #37, **23 points apart** |
 | 39  | `example-supervision-report` | ICRCampaignFormResponse | Filled supervision form (the checklist is the form-type discriminator): DOC observed ✓, height chart ✓, ineligibles identified ✓, stock concordant ✗; basedOn → the MDA round (#50); subject → community; author → supervisor |
 | 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `for` → the missed child, `partOf` → the mop-up Task, `revisit-outcome` → already-vaccinated |
 | 41  | `example-readiness-report` *(forms-v1)* | ICRCampaignFormResponse | Pre-campaign readiness validation of Kambia supervision zone 2 against the readiness checklist (same profile as #39 — the Questionnaire is the discriminator): microplan ✓, HTRA ✓, supplies-on-time ✗, teams trained ✓; basedOn → the Kambia round (#23) |
@@ -2305,6 +2348,8 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 57  | `example-school` *(school trio)* | ICRLocation | "Rokupr Primary School", type `school`, partOf settlement, GPS, GERS building ID |
 | 58  | `example-school-cohort` *(school trio)* | ICRDeliveryUnit | code `school-cohort` — the enrolled cohort of Rokupr Primary School, quantity 260, groupLocation → #57 |
 | 59  | `example-school-mda-task` *(school trio)* | ICRCampaignTask | **School-based**: for → school cohort (#58), location → school (#57); strategy `school`; taskOrigin `pre-planned`; basedOn → the descoped SAC round (#44); output session tally = 244 treated |
+| 60  | `example-ward` | ICRLocation | **A country's own coding scheme**: "Kambia Ward 3 (Magbema)", admin-unit, partOf district — its only identifier is a national DHIS2 orgUnit UID under an MoH system URI, marked `use = official`; no GERS or P-code yet (enrichment-pending), and the `icr-loc-admin-id` invariant is satisfied by any-system identifiers |
+| 61  | `example-lqas-coverage` | ICRSurveyCoverage | **LQAS lot assessment** (same round as #37/#38): 12 of 15 lots accepted = 80%; coverage-unit implementation-units; disposition stratifier lists the 3 rejected lots (mop-up triggered); sampleDesign carries the 19-per-lot / reject-if->3 decision rule; coverageSource `lqas` |
 
 *Definitional artifacts (alongside the examples)*
 
