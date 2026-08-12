@@ -6,18 +6,29 @@ Implementation Guide — Campaign Data Model & Structure*). The essentials:
 #### Campaigns differ by delivery model, not disease
 
 The delivery strategy — not the disease — determines the level at which a single
-record is created and which entities even exist. The program scope collapses into
-three campaign types, plus routine immunization as the substrate:
+record is created and which entities even exist. The coded **delivery strategy**
+(`fixed-post`, `temporary-post`, `mobile`, `school`, `house-to-house`,
+`community-directed`, `outreach`) records *how* teams deliver; the **delivery
+unit** — the target of a Task — records *what* they act on. One rule decides the
+delivery unit's type:
 
-| Type | Delivery unit & level of record | Examples |
-|---|---|---|
-| **A. Fixed-post / outreach vaccine SIA** | Site → *site-session* | Measles–rubella, HPV, yellow fever PMVC, OCV, vitamin A |
-| **B. House-to-house rapid delivery** | Household → *household visit* | Polio, OCV mop-up, IRS, ITN registration |
-| **C. Community / MDA preventive chemotherapy** | Community → *treatment register entry* | LF, oncho, schisto, STH, trachoma |
+- **A delivery unit with members is a Group** (`ICRDeliveryUnit`): a household, a
+  community, or a school cohort — each has members and an associated Location (the
+  dwelling, the settlement, the school).
+- **A delivery unit without members is a Location**: a household *structure* in an
+  IRS campaign (nobody is a member of a structure); a church or market serving as a
+  temporary service point (people are not members of the site, and the next campaign
+  may use a different one); or an area target — a settlement, ward, or district that
+  persons are registered to directly when their dwellings are unknown (a ward rolls
+  up to its district via `Location.partOf`).
 
-Hybrids are the norm (an ITN campaign is B then A; measles SIAs add B-style mop-up) —
-which is exactly why **delivery strategy is a first-class coded attribute of the
-activity/task**, not of the campaign.
+The discriminator is the data, not the kind of place: an enumerated community
+register is a Group; an un-enumerated area target is a Location.
+
+Hybrids are the norm (an ITN campaign registers house-to-house and distributes at
+posts; measles SIAs add house-to-house mop-up) — which is exactly why **delivery
+strategy is a first-class coded attribute of the activity/task**, not of the
+campaign.
 
 #### The twelve design decisions
 
@@ -34,7 +45,8 @@ activity/task**, not of the campaign.
    their own period or reporting obligation. A person is never a CarePlan subject:
    individuals appear only in the delivery events (`Immunization.patient`,
    `MedicationAdministration.subject`).
-3. **Task is the operational unit** — one per site-session (A) or household (B);
+3. **Task is the operational unit** — one per site-session or per household,
+   community, or school-cohort visit;
    delivery events hang off `Task.output`. Person-level detail lives in the
    delivery events, not in extra Tasks: a polio team's household visit is ONE
    Task whose output references one `Immunization` per child vaccinated. The
@@ -47,10 +59,12 @@ activity/task**, not of the campaign.
 4. **Delivery strategy is a first-class coded attribute** of the activity/task.
 5. **Three lineages — planned / delivered / independently-measured — never merged.**
 6. **Denominator-first**, with provenance and date on every estimate and coverage figure.
-7. **Household / community = Group + Location** (the validated Ona household pattern,
-   generalized): one `ICRDeliveryUnit` profile serves the Type B household and the
-   Type C community, distinguished by the required `group-kind` code, each anchored
-   to its Location (dwelling or settlement).
+7. **Household / community / school cohort = Group + Location** (the validated Ona
+   household pattern, generalized): one `ICRDeliveryUnit` profile serves the
+   household, the community, and the school cohort,
+   distinguished by the required `group-kind` code, each anchored
+   to its Location (dwelling, settlement, or school). Delivery units without
+   members (structures, temporary sites, area targets) are Locations, not Groups.
 8. **Location is the most-customized resource** — multi-identifier with **GERS as the
    cross-campaign join key** alongside P-codes and national codes, GeoJSON boundaries,
    performance-tuned hierarchy.
@@ -103,7 +117,7 @@ Taken to the FHIR community during IG development: Task granularity at scale
 (village vs household); aggregate vs individual delivery records; deep `partOf`
 Location hierarchies (6+ levels) and mobile/web performance; coverage as
 MeasureReport vs Observation; denominator provenance representation; GeoJSON on R4
-Location; Task `for` by campaign type; population-scale access patterns (Bulk Data,
+Location; Task `for` by delivery model; population-scale access patterns (Bulk Data,
 Group-based cohort export); and the conformant record-linkage/deduplication pattern
 for cross-campaign household and location identity.
 

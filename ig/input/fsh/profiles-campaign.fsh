@@ -79,7 +79,7 @@ Profile: ICRCampaignTask
 Parent: Task
 Id: ICRCampaignTask
 Title: "ICR Campaign Task"
-Description: "The assignable, trackable operational unit of work — one Task per site-session (Type A, for = the site Location) or per household (Type B, for = the household Group). Every Task points at its campaign via basedOn (the CarePlan is never updated as tasks are created). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
+Description: "The assignable, trackable operational unit of work — one Task per site-session (for = the site Location) or per household, community, or school-cohort visit (for = the delivery-unit Group). Every Task points at its campaign via basedOn (the CarePlan is never updated as tasks are created). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
 * ^experimental = false
 * status MS
 * status ^short = "requested → in-progress → completed / failed"
@@ -92,7 +92,9 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * instantiatesCanonical MS
 * instantiatesCanonical only Canonical(ICRCampaignActivity)
 * instantiatesCanonical ^short = "The activity this task carries out — the structured definition-to-execution link (same convention as CarePlan → Protocol). Carries the work definition (product, dose, intervention code) so multi-activity campaigns stay queryable per activity; Task.code is only the human-readable label. Optional: an ad-hoc field task may have no single activity"
-// for: delivery-unit Group (B/C), site Location (A) — plus Patient as the
+// for: a delivery-unit Group when the unit has members (household, community,
+// school cohort); a Location when it does not (a fixed/temporary-post site, a
+// structure under IRS, an area target) — plus Patient as the
 // deliberate exception: person-targeted FOLLOW-UP tasks (a specific missed or
 // zero-dose child spawns a Task pointing at that child, working doc §4.4). The
 // norm remains one Task per visit/session with person-level detail in the
@@ -103,7 +105,7 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 // for deployments whose systems generate per-task order resources.
 * for 1..1 MS
 * for only Reference(ICRDeliveryUnit or ICRLocation or Patient)
-* for ^short = "What the task acts on: household/community delivery-unit Group (Type B/C — the norm) or site Location (Type A); a Patient only for person-targeted follow-up tasks"
+* for ^short = "What the task acts on: a delivery-unit Group where the unit has members (household, community, school cohort) or a Location where it does not (site, structure, area); a Patient only for person-targeted follow-up tasks"
 * reasonCode MS
 * reasonCode ^short = "The disease/programme this Task serves — scopes a Task to one disease where a community runs several concurrent programmes (per-village disease scoping in co-endemic MDA)"
 * owner MS

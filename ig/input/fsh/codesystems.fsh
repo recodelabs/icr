@@ -76,13 +76,13 @@ Description: "Whether a delivery event originated in a campaign or a routine fac
 CodeSystem: ICRGroupKindCS
 Id: icr-group-kind-cs
 Title: "ICR Group Kind"
-Description: "The kind of delivery-unit Group a campaign Task acts on. Households (Type B house-to-house) and communities (Type C MDA) share the same Group + Location pattern; this code distinguishes them (working doc §3.2, §7.5)."
+Description: "The kind of delivery-unit Group a campaign Task acts on. Households, communities, and school cohorts are groups: they have members and an associated Location, and share the same Group + Location pattern; this code distinguishes them. A delivery unit without members (a structure under IRS, a temporary service point, an area target) is a Location, not a Group (working doc §3.2, §7.5)."
 * ^caseSensitive = true
 * ^experimental = false
-* #household "Household" "The people of one dwelling — the Type B house-to-house delivery unit. Its Location is the dwelling."
+* #household "Household" "The people of one dwelling — the house-to-house delivery unit. Its Location is the dwelling."
 * #household ^designation[0].language = #fr
 * #household ^designation[0].value = "Ménage"
-* #community "Community" "The people of a settlement or community — the Type C community/MDA delivery unit. Its Location is the settlement or community point."
+* #community "Community" "The people of a settlement or community — the community/MDA delivery unit. Its Location is the settlement or community point."
 * #community ^designation[0].language = #fr
 * #community ^designation[0].value = "Communauté"
 * #school-cohort "School cohort" "The enrolled children of one school — the school-based delivery unit (HPV, school-based MDA/deworming). Its Location is the school. Also demonstrates that this system extends to further delivery-unit kinds (nomadic groups, camp populations) as country demand appears."

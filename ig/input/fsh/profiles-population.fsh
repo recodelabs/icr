@@ -36,8 +36,8 @@ Description: "A beneficiary — an individual registered in a campaign, a househ
 Profile: ICRDeliveryUnit
 Parent: Group
 Id: ICRDeliveryUnit
-Title: "ICR Delivery Unit (Household / Community)"
-Description: "The actual Group of people a campaign Task acts on — a household (Type B house-to-house), a community (Type C MDA), or a school cohort (school-based delivery), distinguished by the required group-kind code. The validated Group + Location pattern, generalized: the Group is who, the Location (group-location extension) is where it lives or is based — the dwelling for a household, the settlement or community point for a community, the school for a school cohort — with the Location carrying the Overture GERS ID for stable cross-campaign identity. Type A's delivery unit is a site, which is a Location, not a Group (working doc §3.2, §7.5, §9.1)."
+Title: "ICR Delivery Unit (Household / Community / School Cohort)"
+Description: "The actual Group of people a campaign Task acts on — a household (house-to-house delivery), a community (MDA), or a school cohort (school-based delivery), distinguished by the required group-kind code. Households, communities, and school cohorts are groups: they have members and an associated Location. The validated Group + Location pattern, generalized: the Group is who, the Location (group-location extension) is where it lives or is based — the dwelling for a household, the settlement or community point for a community, the school for a school cohort — with the Location carrying the Overture GERS ID for stable cross-campaign identity. A delivery unit without members is a Location, not a Group: a structure under IRS, a church or market serving as a temporary service point (people are not members of the site, and the next campaign may use a different one), or an area target (settlement, ward, district) that persons are registered to when their dwellings are unknown (working doc §3.2, §7.5, §9.1)."
 * ^experimental = false
 * type = #person
 * actual = true
