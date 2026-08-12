@@ -190,15 +190,29 @@ Description: "WHO ATC-coded preventive-chemotherapy medications. Binding: extens
 // --- espen-forms ----------------------------------------------------------------
 
 ValueSet: ICRNTDDiseaseVS
-Id: icr-ntd-disease-vs
+Id: icr-ntd-disease
 Title: "ICR NTD Disease"
 Description: "Diseases covered by an MDA campaign (espen-forms)."
 * ^experimental = false
 * include codes from system ICRNTDDiseaseCS
 
 ValueSet: ICRMDAMedicinePackageVS
-Id: icr-mda-medicine-package-vs
+Id: icr-mda-medicine-package
 Title: "ICR MDA Medicine Package"
 Description: "MDA medicine packages, single and combined (espen-forms)."
 * ^experimental = false
 * include codes from system ICRMDAMedicinePackageCS
+
+ValueSet: ICRFacilityTypeVS
+Id: icr-facility-type
+Title: "ICR Facility Type"
+Description: "National facility-classification tiers, on the facility Organization's type. Binding: extensible — countries add their national facility kinds."
+* ^experimental = false
+* include codes from system ICRFacilityTypeCS
+
+ValueSet: ICROwnershipVS
+Id: icr-ownership
+Title: "ICR Facility Ownership"
+Description: "Facility ownership / managing authority, on the facility Organization's type. Binding: extensible — countries add local ownership categories."
+* ^experimental = false
+* include codes from system ICROwnershipCS

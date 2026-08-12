@@ -38,7 +38,7 @@ Profile: ICRSupervisionReport
 Parent: QuestionnaireResponse
 Id: ICRSupervisionReport
 Title: "ICR Supervision Report"
-Description: "A STRUCTURED supervision-visit / QA record (ESPEN Forms 5 health-facility and 6 CDD-observation): a QuestionnaireResponse against the icr-mda-supervision-checklist Questionnaire, so each checklist answer (supplies present, DOC observed, height-chart used correctly, stock concordance, population informed, channels used…) links to a defined, coded question. Subject is the supervised area/community; author is the supervising ICRCareTeam. Replaces the v0.19 lightweight text-component Observation (working doc §17.3)."
+Description: "A STRUCTURED supervision-visit / QA record (ESPEN Forms 5 health-facility and 6 CDD-observation): a QuestionnaireResponse against the icr-mda-supervision-checklist Questionnaire, so each checklist answer (supplies present, DOC observed, height-chart used correctly, stock concordance, population informed, channels used…) links to a defined, coded question. Subject is the supervised area/community; author is the individual supervisor (Practitioner/PractitionerRole) or supervising Organization — R4 QuestionnaireResponse.author cannot reference a CareTeam. Replaces the v0.19 lightweight text-component Observation (working doc §17.3)."
 * ^experimental = false
 * questionnaire 1..1 MS
 * questionnaire ^short = "The supervision checklist this answers — icr-mda-supervision-checklist"

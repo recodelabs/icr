@@ -161,3 +161,6 @@ Usage: #definition
 * group.stratifier[0].code = $CoverageStratifier#geography "Geography"
 * group.stratifier[0].criteria.language = #text/cql
 * group.stratifier[0].criteria.expression = "Admin level of the reporting unit"
+* group.stratifier[1].code = $CoverageStratifier#readiness-domain "Readiness domain"
+* group.stratifier[1].criteria.language = #text/cql
+* group.stratifier[1].criteria.expression = "Readiness checklist domain (microplan | cold-chain | social-mobilization | trainings)"

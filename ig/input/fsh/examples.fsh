@@ -19,6 +19,9 @@ Usage: #example
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
 * type = $LocationType#admin-unit "Administrative unit"
+* identifier[isoCountry].use = #official
+* identifier[isoCountry].system = $ISO3166
+* identifier[isoCountry].value = "SL"
 * identifier[pcode].system = $PCode
 * identifier[pcode].value = "SL"
 * identifier[gers].system = $GERSId
@@ -35,10 +38,13 @@ Usage: #example
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#jdn "Jurisdiction"
 * type = $LocationType#admin-unit "Administrative unit"
 * partOf = Reference(example-country)
+* identifier[pcode].use = #official
 * identifier[pcode].system = $PCode
 * identifier[pcode].value = "SL0201"
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-division-example"
+* extension[boundary].valueAttachment.contentType = #application/geo+json
+* extension[boundary].valueAttachment.data = "eyJ0eXBlIjoiUG9seWdvbiIsImNvb3JkaW5hdGVzIjpbW1stMTMuMDUsOC45NV0sWy0xMi44NSw4Ljk1XSxbLTEyLjg1LDkuMTVdLFstMTMuMDUsOS4xNV0sWy0xMy4wNSw4Ljk1XV1dfQ=="
 
 Instance: example-settlement
 InstanceOf: ICRLocation
@@ -239,6 +245,29 @@ Usage: #example
 * extension[estimateDate].valueDate = "2026-03-02"
 * extension[isPlanningDenominator].valueBoolean = false
 
+// The calculated/aggregated case (working-doc §5.2 c10): a district figure summed
+// from ward microplanning estimates. is-calculated marks it as NON-independent —
+// it corroborates nothing about its inputs and goes stale when any ward revises.
+// It sits beside the independent GRID3 and enumeration estimates for the same
+// district: three competing estimates, each with its provenance.
+
+Instance: example-target-population-ward-sum
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 9m–14y, Kambia District (sum of ward microplan estimates, calculated)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years, Kambia District (sum of ward microplanning estimates — calculated, not independently sourced)"
+* quantity = 50120
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[estimateDate].valueDate = "2026-03-10"
+* extension[isPlanningDenominator].valueBoolean = false
+* extension[isCalculated].valueBoolean = true
+
 Instance: example-target-population-national
 InstanceOf: ICRTargetPopulation
 Title: "Example Target Population — children 9m–14y, Sierra Leone (national)"
@@ -308,6 +337,77 @@ Usage: #example
 * code.text = "Spray"
 * productCodeableConcept.text = "Pirimiphos-methyl 300CS (IRS insecticide)"
 
+// IRS gallery completed into a runnable chain (ig-compare §9 item 7): protocol →
+// denominator → round → structure-targeted Task. For structure-applied work the
+// Task IS the event (§6.4) — spray results ride Task.output; no delivery-event
+// resource hangs off it.
+
+Instance: example-irs-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "IRS protocol — annual indoor residual spraying"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #active
+* version = "1.0.0"
+* title = "Indoor residual spraying, all eligible structures, annual round"
+* type = $CampaignType#irs
+* goal.description.text = "≥85% of targeted structures sprayed"
+* action.title = "Spray eligible structures (Pirimiphos-methyl 300CS)"
+* action.definitionCanonical = Canonical(example-irs-activity)
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+
+Instance: example-target-population-irs
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — population protected, Rokupr IRS"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* type = #person
+* actual = false
+* name = "Population protected by IRS, Rokupr settlement (resident population of targeted structures)"
+* quantity = 4100
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-settlement)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#govt-estimate "Government estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-04-01"
+* extension[isPlanningDenominator].valueBoolean = true
+
+Instance: example-irs-round
+InstanceOf: ICRCampaign
+Title: "IRS Rokupr — 2026 annual round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* instantiatesCanonical = Canonical(example-irs-protocol)
+* status = #completed
+* intent = #order
+* title = "IRS, Rokupr settlement, 2026 annual round"
+* category = $CampaignType#irs
+* subject = Reference(example-target-population-irs)
+* period.start = "2026-05-04"
+* period.end = "2026-05-15"
+* extension[targetGeography].valueReference = Reference(example-settlement)
+* extension[planningDenominator].valueReference = Reference(example-target-population-irs)
+
+Instance: example-irs-task
+InstanceOf: ICRCampaignTask
+Title: "IRS structure visit — Rokupr block 4, house 12"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #completed
+* intent = #order
+* code.text = "Spray structure — Pirimiphos-methyl 300CS"
+* basedOn = Reference(example-irs-round)
+* instantiatesCanonical = Canonical(example-irs-activity)
+* for = Reference(example-dwelling)
+* location = Reference(example-dwelling)
+* executionPeriod.start = "2026-05-06T10:15:00Z"
+* executionPeriod.end = "2026-05-06T10:40:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[taskOrigin].valueCode = #pre-planned
+* output[0].type.text = "Structure sprayed — rooms treated"
+* output[0].valueUnsignedInt = 4
+
 Instance: example-mr-sia-protocol
 InstanceOf: ICRCampaignProtocol
 Title: "Measles–Rubella SIA Protocol"
@@ -354,6 +454,7 @@ Usage: #example
 * subject = Reference(example-target-population)
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
+* careTeam = Reference(example-careteam)
 * partOf = Reference(example-mr-sia-national)
 * extension[campaignRound].valuePositiveInt = 1
 * extension[targetGeography].valueReference = Reference(example-district)
@@ -372,8 +473,9 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "Fixed-post vaccination session"
-* focus = Reference(example-fixed-post)
-* for = Reference(example-target-population)
+* basedOn = Reference(example-mr-sia-2026)
+* instantiatesCanonical = Canonical(example-mcv-activity)
+* for = Reference(example-fixed-post)
 * location = Reference(example-fixed-post)
 * executionPeriod.start = "2026-06-17T08:00:00Z"
 * executionPeriod.end = "2026-06-17T17:00:00Z"
@@ -391,7 +493,8 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "House-to-house mop-up: vaccinate children missed at fixed posts"
-* focus = Reference(example-household)
+* basedOn = Reference(example-mr-sia-2026)
+* instantiatesCanonical = Canonical(example-mcv-activity)
 * for = Reference(example-household)
 * owner = Reference(example-careteam)
 * location = Reference(example-dwelling)
@@ -467,6 +570,7 @@ Usage: #example
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
 * reporter.display = "Kambia District Health Management Team"
+* extension[reporterTeam].valueReference = Reference(example-careteam)
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].count = 47766
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
@@ -501,6 +605,56 @@ Usage: #example
 //   • the disaggregated treatment tally as a STRATIFIED MeasureReport (rec 1 / §2.1)
 //     — sex × age-band stratifiers are how the drug×sex×age cube lands when there
 //     is no person to attach a MedicationAdministration to.
+// The campaign frame (protocol → round) gives the community Task its basedOn
+// target — every Task points at its campaign; the CarePlan never lists tasks.
+
+Instance: example-sth-mda-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "STH MDA protocol — albendazole, community-directed"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* status = #active
+* version = "1.0.0"
+* title = "Soil-transmitted helminthiasis MDA (albendazole), community-directed distribution"
+* type = $CampaignType#mda "Mass drug administration"
+* goal.description.text = "≥75% epidemiological coverage of the at-risk population"
+* action.title = "Administer albendazole 400 mg single dose, community-directed"
+* action.definitionCanonical = Canonical(example-albendazole-activity)
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#community-directed "Community-directed distribution"
+
+Instance: example-target-population-sth
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — at-risk population, Rokupr community (STH MDA)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* type = #person
+* actual = false
+* name = "At-risk population, Rokupr community (STH MDA 2026 planning denominator)"
+* quantity = 3200
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-settlement)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-01-20"
+* extension[isPlanningDenominator].valueBoolean = true
+
+Instance: example-mda-round
+InstanceOf: ICRCampaign
+Title: "STH MDA, Rokupr community — February 2026 round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* instantiatesCanonical = Canonical(example-sth-mda-protocol)
+* status = #completed
+* intent = #order
+* title = "STH MDA (albendazole), Rokupr community, February 2026"
+* category = $CampaignType#mda "Mass drug administration"
+* subject = Reference(example-target-population-sth)
+* period.start = "2026-02-08"
+* period.end = "2026-02-12"
+* extension[targetGeography].valueReference = Reference(example-settlement)
+* extension[planningDenominator].valueReference = Reference(example-target-population-sth)
+* extension[dataLineage].valueCode = #reconciled
 
 Instance: example-albendazole-supply
 InstanceOf: ICRSupplyDelivery
@@ -531,7 +685,8 @@ Usage: #example
 // instantiate additional disease-specific activities/Tasks, so disease varies by
 // village without overloading Campaign.addresses.
 * reasonCode.text = "Soil-transmitted helminthiasis (STH)"
-* focus = Reference(example-community)
+* basedOn = Reference(example-mda-round)
+* instantiatesCanonical = Canonical(example-albendazole-activity)
 * for = Reference(example-community)
 * owner = Reference(example-careteam)
 * location = Reference(example-settlement)
@@ -756,7 +911,8 @@ Usage: #example
 * status = #completed
 * intent = #order
 * code.text = "Revisit missed child from mop-up visit"
-* focus = Reference(example-child)
+* basedOn = Reference(example-mr-sia-2026)
+* for = Reference(example-child)
 * partOf = Reference(example-mopup-task)
 * owner = Reference(example-careteam)
 * location = Reference(example-dwelling)
@@ -810,6 +966,66 @@ Usage: #example
 // deviations (population or geography) never require a protocol change; a
 // durable eligibility change would be a new protocol version (working doc §4.2).
 
+// The two forms-v1 Measures instantiated (ig-compare §9 item 7): worked
+// MeasureReports for zero-dose reach and pre-campaign readiness.
+
+Instance: example-zero-dose-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Zero-dose reach — Kambia MR SIA, June 2026 round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-zero-dose-coverage"
+* period.start = "2026-06-15"
+* period.end = "2026-06-26"
+* reporter.display = "Kambia District Health Management Team"
+* extension[reporterTeam].valueReference = Reference(example-careteam)
+* extension[coverageSource].valueCode = #administrative
+* extension[dataLineage].valueCode = #reconciled
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 2866
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 47766
+* group.measureScore = 6 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#dose-history "Dose history / zero-dose status"
+* group.stratifier[0].stratum[0].value.text = "zero-dose"
+* group.stratifier[0].stratum[0].measureScore = 6 '%' "%"
+* group.stratifier[0].stratum[1].value.text = "previously-received"
+* group.stratifier[0].stratum[1].measureScore = 91 '%' "%"
+* group.stratifier[0].stratum[2].value.text = "no-recall"
+* group.stratifier[0].stratum[2].measureScore = 3 '%' "%"
+
+Instance: example-readiness-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Campaign readiness roll-up — Kambia, pre-campaign validation"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-campaign-readiness"
+* period.start = "2026-06-01"
+* period.end = "2026-06-12"
+* reporter.display = "Kambia District Health Management Team"
+* extension[reporterTeam].valueReference = Reference(example-careteam)
+* extension[coverageSource].valueCode = #administrative
+* extension[coverageUnit].valueCode = #implementation-units
+* extension[dataLineage].valueCode = #realtime
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 10
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 12
+* group.measureScore = 83 '%' "%"
+* group.stratifier[0].code = $CoverageStratifier#readiness-domain "Readiness domain"
+* group.stratifier[0].stratum[0].value.text = "microplan"
+* group.stratifier[0].stratum[0].measureScore = 100 '%' "%"
+* group.stratifier[0].stratum[1].value.text = "cold-chain"
+* group.stratifier[0].stratum[1].measureScore = 83 '%' "%"
+* group.stratifier[0].stratum[2].value.text = "social-mobilization"
+* group.stratifier[0].stratum[2].measureScore = 75 '%' "%"
+* group.stratifier[0].stratum[3].value.text = "trainings"
+* group.stratifier[0].stratum[3].measureScore = 83 '%' "%"
+
 Instance: example-sch-mda-protocol
 InstanceOf: ICRCampaignProtocol
 Title: "Schistosomiasis MDA protocol — national policy: everyone 2+"
@@ -855,3 +1071,41 @@ Usage: #example
 * period.end = "2026-09-18"
 * extension[targetGeography].valueReference = Reference(example-district)
 * extension[planningDenominator].valueReference = Reference(example-target-population-sac)
+
+// mCSD-style facility pairing: the Organization is the accountable entity
+// (registry codes, classification, ownership, reporting hierarchy); the
+// Location is the physical place, linked via managingOrganization.
+
+Instance: example-facility-org
+InstanceOf: ICRFacilityOrganization
+Title: "Example Facility Organization — Rokupr CHC"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* active = true
+* name = "Rokupr Community Health Centre"
+* type[+].coding = $OrgType#prov "Healthcare Provider"
+* type[+].coding = $FacilityType#primary "Primary care facility"
+* type[=].text = "Community Health Centre"
+* type[+].coding = $Ownership#public "Public"
+* identifier[+].system = $RegistryId
+* identifier[=].value = "SL-MFL-0421"
+
+Instance: example-facility
+InstanceOf: ICRLocation
+Title: "Example Facility — Rokupr CHC (place)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* name = "Rokupr Community Health Centre"
+* status = #active
+* physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#si "Site"
+* type[+] = $LocationType#facility "Health facility"
+// Duplicated classification (Organization.type stays authoritative):
+* type[+].coding = $FacilityType#primary "Primary care facility"
+* type[=].text = "Community Health Centre"
+* type[+].coding = $Ownership#public "Public"
+* partOf = Reference(example-settlement)
+* managingOrganization = Reference(example-facility-org)
+* position.longitude = -12.9465
+* position.latitude = 9.0140
+* identifier[gers].system = $GERSId
+* identifier[gers].value = "08f2a3b4c5d6e7f8-place-chc-example"

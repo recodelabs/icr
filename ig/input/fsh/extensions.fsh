@@ -153,6 +153,14 @@ Context: Group
 * ^experimental = false
 * value[x] only boolean
 
+Extension: IsCalculated
+Id: is-calculated
+Title: "Is Calculated"
+Description: "True when this estimate was computed by aggregating other estimates — ward figures summed to a district, or a share apportioned from a parent figure — rather than sourced independently; denominator-source then describes the method of the underlying inputs. A calculated figure is not independent evidence for its inputs (comparing it against them is not corroboration) and goes stale when any input is revised. Absent = not known to be calculated. A future derived-from reference list may carry the actual input estimates; its presence would imply this flag (reviewer proposal, working doc §5.2 c10)."
+Context: Group
+* ^experimental = false
+* value[x] only boolean
+
 Extension: EstimateConfidence
 Id: estimate-confidence
 Title: "Estimate Confidence"
@@ -226,7 +234,7 @@ Context: MeasureReport
 Extension: DosePoleBand
 Id: dose-pole-band
 Title: "Dose-pole Band"
-Description: "The measured dose-pole height band that determined the tablet count for a PC-NTD treatment — makes the height-band → dose logic machine-readable rather than buried in dosage.text. Bands are drug-specific; coded extensibly (espen-v3 minor-issue)."
+Description: "The measured dose-pole height band that determined the tablet count for a PC-NTD treatment — makes the height-band → dose logic machine-readable rather than buried in dosage.text. Bands are drug-specific and carried as text or local codings; deliberately unbound — no universal band ValueSet exists (espen-v3 minor-issue)."
 Context: MedicationAdministration, ActivityDefinition
 * ^experimental = false
 * value[x] only CodeableConcept
@@ -241,12 +249,18 @@ Context: CareTeam
 
 // --- v0.20.0 additions (espen-v4 round) ---------------------------------------
 
+Invariant: icr-stock-ledger
+Description: "Stock ledger identity: received = used + remaining + notUsable + returned (absent parts count as zero). Warning severity — a reconciliation gap is a data-quality signal worth surfacing, not always a recording error."
+Severity: #warning
+Expression: "extension('received').exists() and extension('used').exists() and extension('remaining').exists() implies extension('received').value.ofType(Quantity).value = extension('used').value.ofType(Quantity).value + extension('remaining').value.ofType(Quantity).value + iif(extension('notUsable').exists(), extension('notUsable').value.ofType(Quantity).value, 0) + iif(extension('returned').exists(), extension('returned').value.ofType(Quantity).value, 0)"
+
 Extension: StockAccountability
 Id: stock-accountability
 Title: "Stock Accountability"
 Description: "Vial/commodity accountability and wastage on a supply event — received / used / remaining / not-usable (expired/damaged) / returned, plus physical-vs-theoretical concordance and (vaccines) the VVM stage. Reusable for vaccines, drugs and ITNs; the ESPEN supervision Form 5 stock block (espen-v4 / §17.2 C2)."
 Context: SupplyDelivery
 * ^experimental = false
+* obeys icr-stock-ledger
 * extension contains
     received 0..1 MS and
     used 0..1 MS and
@@ -328,11 +342,21 @@ Context: Immunization, MedicationAdministration
 Extension: RevisitOutcome
 Id: revisit-outcome
 Title: "Revisit Outcome"
-Description: "Outcome of a follow-up revisit to a previously-missed household/person (already-vaccinated | vaccinated-on-revisit | still-missing) — the 'outcome of the revisit' of the missed-children recording forms. Set on the person-targeted follow-up Task (Task.for = Patient, Task.focus = the originating Task that missed them) (forms-v1 / jul3-form-analysis §Aggregate #4)."
+Description: "Outcome of a follow-up revisit to a previously-missed household/person (already-vaccinated | vaccinated-on-revisit | still-missing) — the 'outcome of the revisit' of the missed-children recording forms. Set on the person-targeted follow-up Task (Task.for = the missed Patient, Task.partOf = the originating Task that missed them) (forms-v1 / jul3-form-analysis §Aggregate #4)."
 Context: Task
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRRevisitOutcomeVS (extensible)
+
+// --- v0.1.1 additions (ig-compare fix round) -----------------------------------
+
+Extension: ReporterTeam
+Id: reporter-team
+Title: "Reporter Team"
+Description: "The ICRCareTeam whose figures this MeasureReport rolls up. R4 MeasureReport.reporter cannot reference a CareTeam (legal targets: Practitioner | PractitionerRole | Location | Organization), so reporter carries the accountable supervisor or organization, and this extension carries the team join — 'which team's numbers are these' stays a single hop (ig-compare §9 item 1)."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only Reference(ICRCareTeam)
 
 Extension: SettlementType
 Id: settlement-type

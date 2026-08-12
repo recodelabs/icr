@@ -39,7 +39,7 @@ activity/task**, not of the campaign.
    delivery events, not in extra Tasks: a polio team's household visit is ONE
    Task whose output references one `Immunization` per child vaccinated. The
    deliberate exception is **person-targeted follow-up**: a specific missed or
-   zero-dose child can spawn a Task whose `focus` is that `Patient`. Tasks may be
+   zero-dose child can spawn a Task whose `for` is that `Patient`. Tasks may be
    **pre-planned** from the microplan or **field-registered** on discovery (an
    unenumerated household found mid-sweep); the required `task-origin` code
    records which — and field-registered counts per area measure how incomplete
@@ -58,8 +58,9 @@ activity/task**, not of the campaign.
 10. **Every delivery event is flagged campaign vs routine** (`record-origin`).
 11. **Provenance on everything ingested** — lineage is a model feature, not an ETL
     afterthought.
-12. **ViewDefinitions ship in the IG** — the analytics layer is as portable as the
-    data model (planned for the next draft).
+12. **ViewDefinitions are planned, not yet shipped** — SQL-on-FHIR view definitions
+    will make the analytics layer as portable as the data model (targeted for the
+    next draft; none ship in v0.1).
 
 #### Campaign work vs routine encounters
 
@@ -102,7 +103,7 @@ Taken to the FHIR community during IG development: Task granularity at scale
 (village vs household); aggregate vs individual delivery records; deep `partOf`
 Location hierarchies (6+ levels) and mobile/web performance; coverage as
 MeasureReport vs Observation; denominator provenance representation; GeoJSON on R4
-Location; Task `focus` by campaign type; population-scale access patterns (Bulk Data,
+Location; Task `for` by campaign type; population-scale access patterns (Bulk Data,
 Group-based cohort export); and the conformant record-linkage/deduplication pattern
 for cross-campaign household and location identity.
 

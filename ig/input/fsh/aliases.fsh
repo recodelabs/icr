@@ -13,6 +13,9 @@ Alias: $IMMZAdverseEventCausality = http://smart.who.int/immunizations/CodeSyste
 // ICR identifier system URIs (provisional — to be confirmed before v1.0)
 Alias: $GERSId = https://icr.healthcampaigns.org/identifiers/overture-gers
 Alias: $PCode = https://icr.healthcampaigns.org/identifiers/pcode
+// FHIR-designated ISO 3166 system URIs (not ICR-minted): 3166-1 country / 3166-2 subdivision
+Alias: $ISO3166 = urn:iso:std:iso:3166
+Alias: $ISO3166v2 = urn:iso:std:iso:3166:-2
 Alias: $NationalId = https://icr.healthcampaigns.org/identifiers/national-id
 Alias: $RegistryId = https://icr.healthcampaigns.org/identifiers/registry-id
 
@@ -34,12 +37,15 @@ Alias: $CoverageStratifier = https://icr.healthcampaigns.org/CodeSystem/icr-cove
 Alias: $DenominatorType = https://icr.healthcampaigns.org/CodeSystem/icr-denominator-type-cs
 Alias: $CoverageUnit = https://icr.healthcampaigns.org/CodeSystem/icr-coverage-unit-cs
 Alias: $AdverseEventCausality = https://icr.healthcampaigns.org/CodeSystem/icr-adverse-event-causality-cs
-Alias: $TeamRole = https://icr.healthcampaigns.org/CodeSystem/icr-team-role
+Alias: $TeamRole = https://icr.healthcampaigns.org/CodeSystem/icr-team-role-cs
 Alias: $CommunicationChannel = https://icr.healthcampaigns.org/CodeSystem/icr-communication-channel-cs
 Alias: $SeriousCriteria = https://icr.healthcampaigns.org/CodeSystem/icr-serious-criteria-cs
 Alias: $DoseHistory = https://icr.healthcampaigns.org/CodeSystem/icr-dose-history-cs
 Alias: $RevisitOutcome = https://icr.healthcampaigns.org/CodeSystem/icr-revisit-outcome-cs
 Alias: $SettlementType = https://icr.healthcampaigns.org/CodeSystem/icr-settlement-type-cs
+Alias: $FacilityType = https://icr.healthcampaigns.org/CodeSystem/icr-facility-type-cs
+Alias: $Ownership = https://icr.healthcampaigns.org/CodeSystem/icr-ownership-cs
+Alias: $OrgType = http://terminology.hl7.org/CodeSystem/organization-type
 
 // --- SDC (Structured Data Capture 4.0.0) — template-based extraction (espen-forms) ---
 Alias: $SDCTemplateExtract = http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract
