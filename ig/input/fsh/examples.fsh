@@ -526,6 +526,7 @@ Usage: #example
 * manufacturer.display = "Serum Institute of India"
 * performer.actor.display = "Mop-up team 4, Rokupr"
 * protocolApplied.doseNumberPositiveInt = 1
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
 * extension[recordOrigin].valueCode = #campaign
 * extension[priorDoseStatus].valueCode = #zero-dose
 
@@ -539,6 +540,7 @@ Usage: #example
 * subject = Reference(example-child)
 * effectiveDateTime = "2026-02-10T11:00:00Z"
 * dosage.text = "1 tablet (400 mg), dose-pole band B"
+* extension[campaign].valueReference = Reference(example-mda-round)
 * extension[recordOrigin].valueCode = #campaign
 * extension[directlyObserved].valueBoolean = true
 * extension[dosePoleBand].valueCodeableConcept.text = "Dose-pole band B (height 110–124 cm → 1 tablet)"
@@ -666,6 +668,7 @@ Usage: #example
 * suppliedItem.quantity = 3600 '{tbl}' "tablets"
 * suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
 * destination = Reference(example-settlement)
+* extension[campaign].valueReference = Reference(example-mda-round)
 * extension[recordOrigin].valueCode = #campaign
 * extension[stockAccountability].extension[received].valueQuantity = 3600 '{tbl}' "tablets"
 * extension[stockAccountability].extension[used].valueQuantity = 3080 '{tbl}' "tablets"

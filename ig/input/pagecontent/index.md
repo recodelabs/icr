@@ -35,13 +35,16 @@ the same community-validated approach used for households (`Group` + `Location`)
 (`PlanDefinition`) is the reusable campaign protocol; [ICRCampaign](StructureDefinition-ICRCampaign.html)
 (`CarePlan`) is a specific execution that begins as a microplan and evolves into the
 execution record; [ICRCampaignTask](StructureDefinition-ICRCampaignTask.html) (`Task`)
-is the operational unit — one per site-session or per household — carrying the coded
-**delivery strategy** and house-to-house data elements natively; delivery events hang
-off `Task.output` as [ICRImmunizationEvent](StructureDefinition-ICRImmunizationEvent.html),
-[ICRMedicationAdministration](StructureDefinition-ICRMedicationAdministration.html), or
-[ICRSupplyDelivery](StructureDefinition-ICRSupplyDelivery.html), each permanently
-flagged **campaign vs routine** (`record-origin`). [ICRDeliveryUnit](StructureDefinition-ICRDeliveryUnit.html)
-(`Group` — a household or a community, the generalized Group + Location pattern) and
+is the operational unit — one per site-session or per household, community, or
+school-cohort visit — carrying the coded
+**delivery strategy** and house-to-house data elements natively; the delivery events —
+[ICRImmunizationEvent](StructureDefinition-ICRImmunizationEvent.html),
+[ICRMedicationAdministration](StructureDefinition-ICRMedicationAdministration.html), and
+[ICRSupplyDelivery](StructureDefinition-ICRSupplyDelivery.html) — each carry their own
+campaign link (the standard `event-basedOn` extension) and are permanently
+flagged **campaign vs routine** (`record-origin`), with `Task.output` holding the
+visit-level tally and optional event references. [ICRDeliveryUnit](StructureDefinition-ICRDeliveryUnit.html)
+(`Group` — a household, a community, or a school cohort, the generalized Group + Location pattern) and
 [ICRTargetPopulation](StructureDefinition-ICRTargetPopulation.html) (`Group`) carry
 people and denominators — every estimate with **source, date provenance, and a
 computable geographic scope** — and
@@ -60,17 +63,19 @@ graph TD
   PD -->|action| AD["ICRCampaignActivity (ActivityDefinition)"]
   CP -->|operational unit| TASK["ICRCampaignTask (Task)"]
   AD -->|instantiated as| TASK
-  TASK -->|Task.output| IMM["ICRImmunizationEvent"]
-  TASK -->|Task.output| MA["ICRMedicationAdministration"]
-  TASK -->|Task.output| SD["ICRSupplyDelivery"]
-  TASK -->|acts on| DU["ICRDeliveryUnit (Group: household or community)"]
+  TASK -->|"Task.output (tally / optional refs)"| IMM["ICRImmunizationEvent"]
+  TASK -->|"Task.output (tally / optional refs)"| MA["ICRMedicationAdministration"]
+  TASK -->|"Task.output (tally / optional refs)"| SD["ICRSupplyDelivery"]
+  IMM -.->|"event-basedOn ext"| CP
+  MA -.->|"event-basedOn ext"| CP
+  TASK -->|acts on| DU["ICRDeliveryUnit (Group: household / community / school cohort)"]
   DU -->|located at| LOC["ICRLocation (GERS join key)"]
   TP["ICRTargetPopulation (denominator)"] -.->|denominator| CP
   CP --> AC["ICRAdministrativeCoverage"]
   CP --> SC["ICRSurveyCoverage"]
 ```
 
-<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, and defines its discrete work types once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate; the Tasks carry the operational work and hang delivery events off `Task.output`; denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
+<sub>CarePlan is the keystone: a reusable protocol instantiates each campaign execution, and defines its discrete work types once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate; the Tasks carry the operational work and close with a visit-level tally on `Task.output` (optionally referencing events captured in the visit workflow); each delivery event carries its own campaign link via the standard `event-basedOn` extension; denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
 
 #### Status
 

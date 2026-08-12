@@ -1,6 +1,6 @@
 // Population & geography profiles (working doc §7.5–§7.7, §9).
 // Delivery unit = Group + Location (the validated Ona pattern, generalized from
-// household to household-or-community); target population = conceptual Group with
+// household to household / community / school cohort); target population = conceptual Group with
 // denominator provenance and a computable geography characteristic; Location is the
 // most-customized resource — multi-identifier with GERS as the cross-campaign join key.
 
@@ -8,7 +8,7 @@ Profile: ICRPatient
 Parent: Patient
 Id: ICRPatient
 Title: "ICR Patient (Beneficiary / Registered Individual)"
-Description: "A beneficiary — an individual registered in a campaign, a household or community member, and the subject of every person-level delivery event. This is the WHO IDHC 'beneficiary list' master registry entry; the resource is FHIR Patient by necessity, but human-facing text (forms, reports, training material) should say 'beneficiary' or 'individual', never 'patient'. Person registration is a mainline capture mode in community-and-household campaigns, not an exception. Base R4 Patient aligned to WHO IMMZ.Patient (required gender/birthDate; MS name/phone/address), with a sliced cross-campaign identifier (national ID preferred, registry-assigned ID as fallback) so the same individual is rejoinable across rounds. A beneficiary need not belong to any Group: they may be a household member, a community member, or simply the subject of a standalone event. The caregiver is a RelatedPerson (WHO IMMZ.Caregiver), not an ICRPatient (working doc §6.4)."
+Description: "A beneficiary — an individual registered in a campaign, a household, community, or school-cohort member, and the subject of every person-level delivery event. This is the WHO IDHC 'beneficiary list' master registry entry; the resource is FHIR Patient by necessity, but human-facing text (forms, reports, training material) should say 'beneficiary' or 'individual', never 'patient'. Person registration is a mainline capture mode in community-and-household campaigns, not an exception. Base R4 Patient aligned to WHO IMMZ.Patient (required gender/birthDate; MS name/phone/address), with a sliced cross-campaign identifier (national ID preferred, registry-assigned ID as fallback) so the same individual is rejoinable across rounds. A beneficiary need not belong to any Group: they may be a household, community, or school-cohort member, or simply the subject of a standalone event. The caregiver is a RelatedPerson (WHO IMMZ.Caregiver), not an ICRPatient (working doc §6.4)."
 * ^experimental = false
 * identifier 1..* MS
 * identifier ^slicing.discriminator.type = #value
