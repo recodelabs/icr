@@ -985,7 +985,7 @@ Two elements reference the team: `ICRCampaign.careTeam` (the campaign roster) an
 - **The supervisor role is central.** A supervisor is a delivery actor. The supervisor is also frequently the person who reports the results. `Task.owner` is a real `Reference(ICRCareTeam)`. Thus "who did this visit" is a query. Both coverage profiles require `MeasureReport.reporter` (`1..1`). With the `oversees-area` extension, "who reported this figure, and which area do they cover" is answerable end to end.
 - **The CareTeam carries the microplan's workload assignment.** The `workload-target` extension records the team's assigned area(s), plus the expected population, households, and days. This is the team-level content of a microplan. The microplan as a whole is the campaign CarePlan at `intent = plan`. A standalone microplan resource remains a candidate for a later round (§13.2).
 ### 4.6 ICRCampaignFormResponse — `QuestionnaireResponse` (the filled campaign form)
-**Purpose.** This profile is **the one generic shape for every structured form submission in a campaign**. A campaign produces many kinds of filled forms: supervision visits, quality-assurance checks, pre-campaign readiness validations, monitoring checks, and country-authored instruments. ICR does **not** mint a profile for each kind. One profile carries them all, and **the canonical `Questionnaire` that a response answers is the form-type discriminator**. "All supervision reports" is a query on the questionnaire canonical. Analytics key on the form's coded `linkId`s. A new form type costs a Questionnaire, never a new profile.
+**Purpose.** This profile is **the one generic shape for every structured form submission in a campaign**. A campaign produces many kinds of filled forms: supervision visits, quality-assurance checks, pre-campaign readiness validations, monitoring checks, and country-authored instruments. ICR does **not** mint a profile for each kind. One profile carries them all, and **the canonical** `Questionnaire` **that a response answers is the form-type discriminator**. "All supervision reports" is a query on the questionnaire canonical. Analytics key on the form's coded `linkId`s. A new form type costs a Questionnaire, never a new profile.
 
 **Properties.**
 
@@ -1822,7 +1822,11 @@ In addition to the data source, coverage carries two more coded axes:
 
 - `denominator-type` — **total population vs at-risk/eligible population**. Division by the total population gives *programme* coverage. Division by the at-risk population gives *epidemiological* coverage. NTD programmes report both figures. Thus the axis is explicit, not implied by context.
 - `coverage-unit` — **people vs implementation units**. Most coverage counts people. *Geographic* coverage counts areas or units. The unit can be a village, a ward, an LGA, or another unit that the report declares. For example, 188 of 200 villages treated is approximately 94%. The term is generic. It is **not** the formally defined NTD Implementation Unit. An IU-level report is only one choice of unit. The §13.4 list includes a proposal to rename the code before v1 locks it, for example to `operational-units`. The profile is the same; the report declares a different unit.
-### 7.1 ICRAdministrativeCoverage — `MeasureReport`
+### {==7.1 ICRAdministrativeCoverage — `MeasureReport`==}{>>This seems to be missing an explicit link back to the ICRCampaign--I don't see an element that makes this connection here or in the actual structure definition, and ICRCampaign doesn't have a pointer either.
+Claude says that there is only an implicit join via measure, period, reporter, and geography stratifier. I haven't confirmed this works, and even if it did that's a bit of an unintuitive connection.
+
+Recommend adding an element `campaign` that points to ICRCampaign.<<}{id="c7" by="mckinnoj" at="2026-08-16T10:16:09.674Z"}
+
 **Purpose.** This profile holds coverage computed from the campaign's **own** tally and delivery data. The numerator is divided by the planning denominator. The figure is only as good as its denominator. Thus the report carries the provenance of the denominator.
 
 **Properties.**
@@ -1842,7 +1846,7 @@ In addition to the data source, coverage carries two more coded axes:
 | `extension[denominatorType]` | MS  | 0..1 | code, **required** → ICRDenominatorTypeVS | Total population vs at-risk population (programme coverage vs epidemiological coverage). |
 | `extension[coverageUnit]` | MS  | 0..1 | code, **required** → ICRCoverageUnitVS | People vs implementation units (geographic coverage). If the element is absent, the unit is people. |
 | `extension[dataLineage]` | MS  | 1..1 | code, **required** → ICRDataLineageVS | Realtime vs reconciled. The element is required here, because the distinction is most important on coverage. |
-### 7.2 ICRSurveyCoverage — `MeasureReport`
+### {==7.2 ICRSurveyCoverage — `MeasureReport`==}{>>This appears to be missing the link back to ICRCampaign similar to ICRAdministrativeCoverage, and has the same recommended solution.<<}{id="c8" by="mckinnoj" at="2026-08-16T10:22:16.436Z"}
 **Purpose.** This profile holds coverage measured **independently** of the campaign's own data. Examples are a post-campaign cluster survey, LQAS, or RCM. The denominator of a survey *is* its sample. Thus the profile carries `sample-design` instead of a denominator source.
 
 **Properties.**
@@ -2029,17 +2033,75 @@ The two records report the same quantity. Only this flag separates them. A query
       },
       "stratifier": [
         {
-          "code": [ { "coding": [ { "code": "sex", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs" } ] } ],
+          "code": [
+            {
+              "coding": [
+                {
+                  "code": "sex",
+                  "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs"
+                }
+              ]
+            }
+          ],
           "stratum": [
-            { "value": { "text": "female" }, "measureScore": { "value": 78, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } },
-            { "value": { "text": "male" }, "measureScore": { "value": 74, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } }
+            {
+              "value": {
+                "text": "female"
+              },
+              "measureScore": {
+                "value": 78,
+                "code": "%",
+                "system": "http://unitsofmeasure.org",
+                "unit": "%"
+              }
+            },
+            {
+              "value": {
+                "text": "male"
+              },
+              "measureScore": {
+                "value": 74,
+                "code": "%",
+                "system": "http://unitsofmeasure.org",
+                "unit": "%"
+              }
+            }
           ]
         },
         {
-          "code": [ { "coding": [ { "code": "age-band", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs" } ] } ],
+          "code": [
+            {
+              "coding": [
+                {
+                  "code": "age-band",
+                  "system": "https://icr.healthcampaigns.org/CodeSystem/icr-coverage-stratifier-cs"
+                }
+              ]
+            }
+          ],
           "stratum": [
-            { "value": { "text": "9–59 months" }, "measureScore": { "value": 71, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } },
-            { "value": { "text": "5–14 years" }, "measureScore": { "value": 79, "code": "%", "system": "http://unitsofmeasure.org", "unit": "%" } }
+            {
+              "value": {
+                "text": "9–59 months"
+              },
+              "measureScore": {
+                "value": 71,
+                "code": "%",
+                "system": "http://unitsofmeasure.org",
+                "unit": "%"
+              }
+            },
+            {
+              "value": {
+                "text": "5–14 years"
+              },
+              "measureScore": {
+                "value": 79,
+                "code": "%",
+                "system": "http://unitsofmeasure.org",
+                "unit": "%"
+              }
+            }
           ]
         }
       ]
