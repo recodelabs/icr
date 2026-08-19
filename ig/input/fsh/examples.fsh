@@ -320,6 +320,7 @@ Usage: #example
 * kind = #Task
 * title = "Administer measles-containing vaccine, 9 months–14 years"
 * code.text = "Vaccinate"
+* topic = $CampaignType#vaccination-sia "Vaccination campaign (SIA)"
 * productCodeableConcept = $CVX#05 "measles virus vaccine"
 * dosage.text = "0.5 mL subcutaneous, single dose"
 
@@ -327,6 +328,11 @@ Usage: #example
 // carries the clinical/commodity content once; thousands of Tasks instantiate it.
 // Note none of them name a concrete target: WHAT lives here, the thing acted on
 // (this household, this structure) is each Task's focus.
+// Activities are a shared CATALOG, not children of a protocol: any protocol may
+// reference any activity via action.definitionCanonical. topic tags the menu by
+// campaign type (advisory filtering only). Eligibility (the 5–14 age band) is
+// deliberately NOT here — base ActivityDefinition has no eligibility element;
+// it lives on the protocol's subject (see example-sth-eligible-population).
 
 Instance: example-albendazole-activity
 InstanceOf: ICRCampaignActivity
@@ -337,6 +343,7 @@ Usage: #example
 * kind = #Task
 * title = "Administer albendazole to school-age children 5–14 years (STH preventive chemotherapy)"
 * code.text = "Treat"
+* topic = $CampaignType#mda "Mass drug administration (NTD preventive chemotherapy)"
 * productCodeableConcept = $ATC#P02CA03 "albendazole"
 * dosage.text = "400 mg single dose; tablet count determined by dose-pole height band"
 
@@ -349,6 +356,7 @@ Usage: #example
 * kind = #Task
 * title = "Distribute long-lasting insecticidal nets, 1 net per 2 household members"
 * code.text = "Distribute"
+* topic = $CampaignType#itn-distribution "ITN mass distribution"
 * productCodeableConcept.text = "Long-lasting insecticidal net (LLIN)"
 
 Instance: example-irs-activity
@@ -360,6 +368,7 @@ Usage: #example
 * kind = #Task
 * title = "Spray interior walls of eligible structures (indoor residual spraying)"
 * code.text = "Spray"
+* topic = $CampaignType#irs "Indoor residual spraying"
 * productCodeableConcept.text = "Pirimiphos-methyl 300CS (IRS insecticide)"
 
 // IRS gallery completed into a runnable chain (ig-compare §9 item 7): protocol →
@@ -691,6 +700,26 @@ Usage: #example
 // The campaign frame (protocol → round) gives the community Task its basedOn
 // target — every Task points at its campaign; the CarePlan never lists tasks.
 
+// Protocol-level eligibility: the age restriction lives on the PROTOCOL, not the
+// ActivityDefinition (which has no eligibility element in base R4). subject carries
+// a definitional Group — actual=false, no count, no geography — whose age-band
+// characteristic is a computable valueRange, so downstream systems can evaluate
+// "who is this protocol for" without parsing title text. Note this is definitional,
+// not enforcement: point-of-delivery enforcement is form logic / dose pole, and an
+// out-of-band administration stays recordable as a protocol deviation.
+Instance: example-sth-eligible-population
+InstanceOf: Group
+Title: "STH MDA eligible population — school-age children 5–14 years (definitional)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* type = #person
+* actual = false
+* name = "School-age children 5–14 years (STH MDA protocol eligibility)"
+* characteristic[0].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[0].valueRange.low = 5 'a' "years"
+* characteristic[0].valueRange.high = 14 'a' "years"
+* characteristic[0].exclude = false
+
 Instance: example-sth-mda-protocol
 InstanceOf: ICRCampaignProtocol
 Title: "STH MDA protocol — albendazole, community-directed"
@@ -700,6 +729,7 @@ Usage: #example
 * version = "1.0.0"
 * title = "Soil-transmitted helminthiasis MDA (albendazole), community-directed distribution"
 * type = $CampaignType#mda "Mass drug administration"
+* subjectReference = Reference(example-sth-eligible-population)
 * goal.description.text = "≥75% epidemiological coverage of the at-risk population"
 * action.title = "Administer albendazole 400 mg single dose, community-directed"
 * action.definitionCanonical = Canonical(example-albendazole-activity)
@@ -717,6 +747,12 @@ Usage: #example
 * characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
 * characteristic[geography].valueReference = Reference(example-settlement)
 * characteristic[geography].exclude = false
+// The concrete denominator mirrors the protocol's definitional age band
+// (example-sth-eligible-population) — same characteristic, same computable range.
+* characteristic[1].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[1].valueRange.low = 5 'a' "years"
+* characteristic[1].valueRange.high = 14 'a' "years"
+* characteristic[1].exclude = false
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
 * extension[denominatorType].valueCode = #at-risk
 * extension[estimateDate].valueDate = "2026-01-20"

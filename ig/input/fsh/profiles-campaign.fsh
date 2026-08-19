@@ -14,7 +14,7 @@ Description: "The reusable, version-controlled template for a campaign type — 
 * type 1..1 MS
 * type from ICRCampaignTypeVS (required)
 * subject[x] MS
-* subject[x] ^short = "Target population definition (age band, eligibility)"
+* subject[x] ^short = "Target population definition (age band, eligibility) — the protocol's eligibility restriction lives HERE, not on the ActivityDefinition: a definitional Group (actual=false, no count) with computable characteristics (e.g. age-band valueRange)"
 * goal MS
 * goal ^short = "Coverage targets / thresholds (e.g. ≥95% admin coverage; ≥65% epidemiological coverage for LF)"
 * action MS
@@ -63,12 +63,15 @@ Profile: ICRCampaignActivity
 Parent: ActivityDefinition
 Id: ICRCampaignActivity
 Title: "ICR Campaign Activity"
-Description: "A discrete work type within a campaign — 'administer albendazole to children 5–14', 'distribute ITNs to households' — instantiated as ICRCampaignTask resources (working doc §7.3)."
+Description: "A discrete work type within a campaign — 'administer albendazole to children 5–14', 'distribute ITNs to households' — instantiated as ICRCampaignTask resources (working doc §7.3). Activities form a shared catalog, not children of any one protocol: the reference runs PlanDefinition.action.definitionCanonical → ActivityDefinition, so the same activity is reusable across any number of protocols. topic tags the catalog by campaign type for menu filtering; the tag is advisory and never restricts which protocols may reference the activity. Eligibility criteria (age bands etc.) also do not live here — base ActivityDefinition has no eligibility element; they belong on the protocol (ICRCampaignProtocol.subject)."
 * ^experimental = false
 * status MS
 * kind = #Task
 * code 1..1 MS
 * code ^short = "The intervention: vaccinate / treat / distribute / spray"
+* topic MS
+* topic from ICRCampaignTypeVS (extensible)
+* topic ^short = "Catalog tag: campaign type(s) this activity is typically used in — advisory menu filtering only, never a restriction on which protocols may reference it"
 * product[x] MS
 * product[x] ^short = "Vaccine (CVX) / drug (ATC) / commodity (GS1)"
 * dosage MS
