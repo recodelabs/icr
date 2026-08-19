@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-12T20:51:35Z
+last_modified: 2026-08-19T16:11:35Z
 tags:
   - icr
   - fhir
@@ -16,7 +16,9 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 12, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026`
+
+{>>Content update pass (Aug 19): the overlays-admin-unit extension is removed from the IG (PR #43). Operational geography now lives in the single partOf tree as typed non-admin nodes, attached at the lowest admin unit that fully contains them (district; region/state when spanning districts). Updated: principle 5 (§2), §5.3 purpose + diagram + partOf/extension rows + key observation, §7.6 geography characteristic, §10 extension registry (35→34), §11 example table + scenario list, §12 background.md summary, §13 validated-patterns note. Note: ig-summary.md (the source doc) still describes the old overlay mechanism.<<}{id="c9" by="claude" at="2026-08-19T16:11:35.000Z"}
 
 > [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document.
 
@@ -280,7 +282,7 @@ Each delivery event and the adverse event carry a mandatory `record-origin` flag
 2. **Record origin is mandatory on every delivery event** (`1..1`) — this flag separates data captured in a campaign from data captured by routine immunization programmes. Thus coverage calculations never mix the two.
 3. **Three views of coverage, kept separate and never merged.** A campaign produces three different counts of the persons it reached. The planned count is the target population, the denominator. The administrative count is what the campaign's own records show (administrative coverage). The survey count is what an independent survey measured later (survey coverage). ICR stores these counts as three separate records and never merges them, because the counts frequently disagree in reality. For example, a campaign tally can report 99% coverage while a post-campaign survey reports 76%.
 4. **Denominator provenance is required on every estimate** — a source code travels with each denominator, even a low-precision code such as `govt-estimate` or `unknown`. The estimate date is recommended. Competing estimates coexist. A flag marks one estimate as the planning denominator.
-5. **Geospatial identity is multi-system, GERS-preferred** — locations can carry multiple identifiers. Operational geography overlays the admin hierarchy; it does not replace the admin hierarchy.
+5. **Geospatial identity is multi-system, GERS-preferred** — locations can carry multiple identifiers. Operational geography lives in the same single `partOf` tree as the admin hierarchy. Its `type` code — not its tree position — is what separates it from the admin units.
 ### 2.4 Aliases & identifier systems
 The IG defines aliases (short names) for the external systems and the internal systems that it references:
 
@@ -1218,7 +1220,7 @@ In practice, a campaign that ran a March enumeration would usually **re-baseline
 | `actual` |     |     | fixed `false` | A conceptual cohort — a denominator, not a roster of real persons. |
 | `quantity` | MS  | 1..1 | unsignedInt | The denominator count. |
 | `characteristic` | MS  |     |     | Age band, sex, eligibility rule, geography; **sliced** (pattern on `code`, open). |
-| `characteristic[geography]` | MS  | 0..1 | `value[x]` → `Reference(ICRLocation)`; `code` fixed `geography`; `exclude` fixed `false` | The **computable** scope link. It joins the estimate to the location hierarchy by reference, not by name parsing. The link can point at any level: country, district, ward, or settlement. It can also point at an operational area. An operational area typically overlays a *group* of settlements or wards; it does not sit below any one of them. |
+| `characteristic[geography]` | MS  | 0..1 | `value[x]` → `Reference(ICRLocation)`; `code` fixed `geography`; `exclude` fixed `false` | The **computable** scope link. It joins the estimate to the location hierarchy by reference, not by name parsing. The link can point at any level: country, district, ward, or settlement. It can also point at an operational area, which sits in the same tree under the lowest admin unit that fully contains it. |
 | `extension[denominatorSource]` | MS  | 1..1 | CodeableConcept, **extensible** → ICRDenominatorSourceVS | **Required as of v0.1** — every estimate declares its source. The low-precision escape codes `govt-estimate` and `unknown` cover early placeholders and historical imports. |
 | `extension[denominatorType]` | MS  | 0..1 | code, **required** → ICRDenominatorTypeVS (`total-population` \| `at-risk`) | States whether this denominator is the total population or the at-risk (eligible) population. This axis separates programme coverage from epidemiological coverage (§7). |
 | `extension[estimateDate]` | MS  | 0..1 | date | The date of the estimate. Denominators lose accuracy quickly, in 1–3 years. |
@@ -1300,11 +1302,11 @@ In practice, a campaign that ran a March enumeration would usually **re-baseline
 - The question of a mandatory `denominator-source` is decided (v0.1): yes — `1..1`, with the `govt-estimate` and `unknown` escapes. `estimate-date` stays recommended.
 - Two additions are proposed for a later round. One is a **population-estimation-method** plus a **source-raster version/date**, so that two `worldpop` estimates become distinguishable. The other is a **population-vulnerability / equity** characteristic (§13.2).
 ### 5.3 ICRLocation — `Location`
-**Purpose.** This profile is the place model. It is the most-customized ICR resource. It models a nested administrative hierarchy with 6 or more levels. It also models operational geography. Operational geography is linkable to admin units but is distinct from them.
+**Purpose.** This profile is the place model. It is the most-customized ICR resource. It models a nested administrative hierarchy with 6 or more levels. It also models operational geography. Operational geography lives in the same tree as the admin units. Its `type` code is what separates it from them.
 
 The profile carries GeoJSON boundaries. It carries geospatial identity in more than one system. GERS IDs are the preferred cross-campaign join key. P-codes, national codes, and ISO codes are coequal aliases.
 
-**The two hierarchies, side by side.** The `partOf` chain is the **administrative** tree. Each location in the tree has one parent. Operational geography sits **beside** the tree. It is its own Location and is *not* in the `partOf` chain. The `overlays-admin-unit` extension links it to the admin unit(s) that it covers:
+**One tree, typed nodes.** The `partOf` chain is a single **containment** tree. Each location has one parent: the one location that fully contains it. The admin hierarchy is not a separate structure — it is the subset of locations with `type = admin-unit`. Operational areas, settlements, and facilities sit in the same tree as typed non-admin nodes. Administrative rollups filter on `type = admin-unit` and skip the other nodes:
 
 ```mermaid
 graph TD
@@ -1312,16 +1314,16 @@ graph TD
     D["Kambia District<br/>(district · admin-unit)"]
     S["Rokupr<br/>(settlement)"]
     H["dwelling<br/>(house)"]
-    Z["Kambia supervision zone 2<br/>(supervisory-area)<br/><i>not in the partOf tree</i>"]
+    Z["Kambia supervision zone 2<br/>(supervisory-area)"]
     D -- "partOf" --> C
     S -- "partOf" --> D
     H -- "partOf" --> S
-    Z -. "overlays-admin-unit" .-> D
+    Z -- "partOf" --> D
 ```
 
-Each box on the solid `partOf` layer is an ICRLocation. Each one points to its single parent. The chain is country → district → settlement → dwelling, with 6 or more levels in practice.
+Each box is an ICRLocation. Each one points to its single parent. The chain is country → district → settlement → dwelling, with 6 or more levels in practice.
 
-"Kambia supervision zone 2" is the operational exception. A supervisory zone can cover parts of several wards. Thus it cannot have one parent, and it hangs off *nothing* in the admin tree. Instead, it carries a dashed `overlays-admin-unit` pointer to the district that it reports into. This link is what makes operational geography linkable but distinct.
+"Kambia supervision zone 2" shows the rule for operational geography. It is its own first-class Location, with its own identity and its own boundary. It attaches at the **lowest admin unit that fully contains it** — here, the district. A large zone that spans two districts attaches at the region or state level instead. This rule keeps one unambiguous hierarchy, and it matches the DHIS2 orgUnit tree. The trade-off is deliberate: a cross-district zone loses district-level attribution, so where district reporting matters, draw operational areas within district boundaries.
 
 **Properties.**
 
@@ -1329,14 +1331,13 @@ Each box on the solid `partOf` layer is an ICRLocation. Each one points to its s
 | --- | --- | --- | --- | --- |
 | `name` | MS  |     | string | The name of the location. |
 | `status` | MS  |     | code | The active or inactive status. |
-| `partOf` | MS  |     | `Reference(ICRLocation)` only | The administrative parent — country → region → district → ward → settlement. |
+| `partOf` | MS  |     | `Reference(ICRLocation)` only | The single containment parent — the one location that fully contains this one. Admin units chain upward (country → region → district → ward). Settlements, facilities, and operational areas attach at the lowest admin unit that fully contains them. |
 | `physicalType` | MS  |     | CodeableConcept | The base-FHIR shape — jurisdiction / site / building / household. |
 | `type` | MS  |     | CodeableConcept, **extensible** → ICRLocationTypeVS | The ICR location type — `admin-unit`, `settlement`, `facility`, `school`, `community-distribution-point`, `temporary-post`, `household`, `supervisory-area`, `operational-area`. Base `type` is `0..*`, so one place can carry several types. Example: a school that serves as a distribution point carries both `school` and `community-distribution-point`. As an alternative, model a campaign-lifecycle service point as its own `temporary-post` Location at the same GPS point. |
 | `position` | MS  |     |     | The GPS point (longitude/latitude/altitude). |
 | `managingOrganization` | MS  | 0..1 | `Reference(ICRFacilityOrganization)` only | For facilities: the accountable facility Organization (the mCSD pairing, see below). Admin units and other non-facility places do not carry it. |
 | `identifier` | MS  |     | **sliced by** `system` (open): `gers` 0..1 MS, `pcode` 0..1 MS, `isoCountry` 0..1 MS (`urn:iso:std:iso:3166`), `isoSubdivision` 0..1 MS (`urn:iso:std:iso:3166:-2`) | Multi-system identity — **all slices are optional**. The country's own admin code rides the open list under the country's system URI, marked `use = official`. That mark makes the uniform join key (`identifier.where(use = 'official')`). Invariants: **at least 1 identifier of any system is required when** `type = admin-unit` (`icr-loc-admin-id`, error). The `official` mark is expected on admin units (`icr-loc-admin-official`, warning → error at v1.0). |
 | `extension[boundary]` (`location-boundary-geojson`) | MS  | 0..1 | Attachment, `contentType` fixed `application/geo+json` | The GeoJSON geometry (a Polygon/MultiPolygon shape, or a Point). |
-| `extension[overlaysAdminUnit]` |     | 0..* | `Reference(ICRLocation)` | For operational geography: the admin unit(s) that this area overlays. **Expected when** `type ∈ {supervisory-area, operational-area}` (invariant `icr-loc-overlays`, **warning** in v0.x → error at v1.0). |
 | `extension[settlementType]` *(forms-v1)* | MS  | 0..1 | CodeableConcept, **extensible** → ICRSettlementTypeVS | The settlement / special-population classification (`urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`…). This is the recurring "type of settlement" axis on campaign monitoring forms. It is a vulnerability/equity attribute that drives HTRA targeting. |
 | `extension[locationAncestors]` *(proposed)* |     | 0..* | complex: per-level `adm0…adm3+` code + `Reference(ICRLocation)` | A **server-maintained** denormalized admin breadcrumb of the `partOf` chain. It permits fast hierarchy filters without deep recursion. This extension is proposed and is not yet in the IG. |
 
@@ -1407,7 +1408,7 @@ Each box on the solid `partOf` layer is an ICRLocation. Each one points to its s
 
 - **Open identifier slicing lets multiple code systems coexist.** National location codes sit beside GERS, P-codes, and the formal ISO slices, without profile changes. They go under the country's own system URI, marked `use = official` when they are the authoritative code. The `gers` and `pcode` slices are `0..1`. Thus a newly created, unmatched location can exist with national codes only, and its GERS ID can be backfilled later. The shipped `example-ward` shows exactly this state: its only identifier is a national DHIS2 orgUnit UID under an MoH system URI, marked official, with no GERS or P-code yet. The enrichment lifecycle has three steps: create the location unmatched, run asynchronous conflation, then backfill the GERS ID with versioning and Provenance.
 - **Administrative units must carry an identifier — any identifier.** The `icr-loc-admin-id` invariant (**error**) requires at least one identifier from any system when `type = admin-unit`. Thus an administrative area cannot exist without a stable code. The companion `icr-loc-admin-official` invariant (**warning**, promoted to error at v1.0) expects the mark `use = official` on the country's authoritative code. This gives consumers one uniform query for *the* admin id, in each country system. Sites and dwellings do not carry these constraints.
-- **Operational geography is modelled separately from administrative geography.** `partOf` can express only one hierarchy. Thus a supervisory or operational area carries a location-type code. The `overlays-admin-unit` extension links it to the administrative units that it covers. The `icr-loc-overlays` invariant expects such an area to overlay at least one admin unit (**warning** in v0.x, promoted to error at v1.0). An area that overlays nothing cannot roll up to a reporting unit. The team regards this operational-overlay mechanism as the IG's strongest design feature.
+- **Operational geography is typed, not separate.** The admin hierarchy is the subset of locations with `type = admin-unit`. A supervisory or operational area is a first-class Location of a different type in the same `partOf` tree. It attaches at the lowest admin unit that fully contains it — its district, or the region/state when it spans districts. Administrative rollups filter on `type = admin-unit`, exactly as they already skip settlements and facilities. This replaces the earlier `overlays-admin-unit` extension mechanism (removed Aug 2026): one unambiguous DHIS2-compatible tree, at the accepted cost that a cross-district area loses district-level attribution. Where district reporting matters, draw operational areas within district boundaries.
 - **The Overture release version should be recorded alongside a GERS ID.** GERS IDs are stable. But Overture publishes the registry again on a release cadence, and an ID's attributes can change between releases. You can reproduce a stored ID only if you also record the release used for the match.
 - **Scope is limited to identity, hierarchy, and geometry.** Contextual metadata about a Location stays out of the IG. External systems link it by location ID. Examples: accessibility/travel-time (derived and volatile), georegistry match-status (redundant — the presence or absence of a GERS ID already shows the match state), endemicity, and the NTD TAS/impact-survey gate (programme state on its own cadence). The one candidate for inclusion is a `structure`/footprint location-type. That type is identity, not context.
 
@@ -2227,7 +2228,7 @@ The data type follows the same pattern. Pure discriminators use a bare `code`. C
 
 * * *
 ## 10. Extensions
-FHIR has no native campaign semantics. Thus 35 extensions carry these semantics on the profiled core resources. The extensions group into four families. The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`.
+FHIR has no native campaign semantics. Thus 34 extensions carry these semantics on the profiled core resources. The extensions group into four families. The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`. (Aug 2026: `overlays-admin-unit` was removed — operational areas now attach to the `partOf` tree directly, see §5.3.)
 
 **Campaign mechanics**
 
@@ -2273,7 +2274,6 @@ FHIR has no native campaign semantics. Thus 35 extensions carry these semantics 
 | Extension (id) | Context | Type / binding |
 | --- | --- | --- |
 | LocationBoundaryGeoJson (`location-boundary-geojson`) | Location | Attachment, `contentType` fixed `application/geo+json` — the R4 mirror of the R5 standard boundary extension |
-| OverlaysAdminUnit (`overlays-admin-unit`) | Location | Reference(ICRLocation) — links operational geography to the admin unit(s) that it overlays; expected on supervisory/operational-area types (invariant `icr-loc-overlays`, warning → error at v1.0) |
 | LocationAncestors (`location-ancestors`) *(proposed, not yet in the IG)* | Location | complex: per-level `adm0…adm3+` code + Reference(ICRLocation); a server-maintained breadcrumb of the `partOf` chain |
 | Campaign (`event-basedOn`) — **standard HL7 extension, reused not minted** | Immunization, MedicationAdministration, SupplyDelivery | `Reference(ICRCampaign)` — the campaign (round) the event belongs to; supplies the `basedOn` element that these R4 Event resources lack, so per-round queries never depend on Task wiring (§6) |
 | RecordOrigin (`record-origin`) | Immunization, MedicationAdministration, SupplyDelivery, AdverseEvent | code, **required** → ICRRecordOriginVS |
@@ -2341,7 +2341,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 3   | `example-settlement` | ICRLocation | "Rokupr", area, partOf district, GPS point, GERS place ID |
 | 4   | `example-dwelling` | ICRLocation | house, partOf settlement, GPS, GERS building ID |
 | 5   | `example-fixed-post` | ICRLocation | "Rokupr CHC — fixed vaccination post", site, type `facility`, partOf settlement, GERS building ID |
-| 6   | `example-supervisory-area` | ICRLocation | "Kambia supervision zone 2", type supervisory-area — **not in the partOf chain**; overlaysAdminUnit → district |
+| 6   | `example-supervisory-area` | ICRLocation | "Kambia supervision zone 2", type supervisory-area — a typed non-admin node in the tree; partOf → district |
 | 7   | `example-child` | ICRPatient | Aminata Kamara, f, b. 2023-04-12; national-ID identifier |
 | 8   | `example-head` | ICRPatient | The head of household; the identity record that links the household across campaigns |
 | 9   | `example-sibling` | ICRPatient | A second enumerated child |
@@ -2424,7 +2424,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 **What the scenario demonstrates.** The scenario demonstrates these patterns:
 
 - The full Location chain, with GERS at each level (country → dwelling), plus a delivery site.
-- Operational geography that overlays the admin hierarchy and does not sit inside it.
+- Operational geography as a typed non-admin node in the same `partOf` tree, attached at the lowest admin unit that fully contains it.
 - The generalized delivery-unit pattern at all three scales (household, community, and school cohort) and at both registration depths (count-only and fully enumerated).
 - Competing denominators for the same geography (GRID3 vs enumeration, 7% apart, one planning flag), plus the cross-level contrast (district GRID3 vs national census projection).
 - The activity gallery across campaign types.
@@ -2447,7 +2447,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 The IG ships two narrative pages. The pages state the model's maturity clearly.
 
 - `index.md` gives the pitch: campaigns re-collect the same data, and ICR makes collection compound. The page gives the one-paragraph architecture. It states the status: v0.1, to be revised against real datasets and FHIR community review. It lists the deferred items.
-- `background.md` gives the delivery-model overview — the coded delivery strategies plus the Group-vs-Location delivery-unit rule — and the twelve numbered design decisions, with the rejected alternatives for the keystone CarePlan choice. It defines the "campaign work vs routine encounters" boundary, with `record-origin` as the discriminator. It defines "operational vs administrative geography" through the location-type + `overlays-admin-unit` mechanism. It describes the "location identity lifecycle: GERS enrichment" flow: create unmatched, then asynchronous conflation, then backfill with versioning and Provenance. It covers the per-person follow-up exception and the open design questions for the FHIR community. It also covers the WHO IDHC toolkit relationship and the WHO SMART Guidelines relationship.
+- `background.md` gives the delivery-model overview — the coded delivery strategies plus the Group-vs-Location delivery-unit rule — and the twelve numbered design decisions, with the rejected alternatives for the keystone CarePlan choice. It defines the "campaign work vs routine encounters" boundary, with `record-origin` as the discriminator. It defines "operational vs administrative geography" through the single containment tree with `type` as the discriminator: operational areas attach at the lowest admin unit that fully contains them. It describes the "location identity lifecycle: GERS enrichment" flow: create unmatched, then asynchronous conflation, then backfill with versioning and Provenance. It covers the per-person follow-up exception and the open design questions for the FHIR community. It also covers the WHO IDHC toolkit relationship and the WHO SMART Guidelines relationship.
 
 The IG prints the open questions in its own pages and does not keep them only in working documents. This is a deliberate transparency choice for community review.
 
@@ -2499,7 +2499,7 @@ Several of the highest-priority findings are now built: the intervention-neutral
 - The in-process-vs-end-process monitoring-timing axis.
 - The disease-agnostic-typing sign-off with the polio programme. The reviewer confirmed the current design: disease stays in `addresses` + product code, with no data-model change.
 
-**Validated — not up for redesign.** The field evidence validated these patterns: the plan→order lifecycle; one-Task-per-visit with per-person delivery events; the `record-origin` firewall; denominator-with-provenance; the three never-merged coverage lineages; realtime-vs-reconciled; the coded delivery strategy; GERS-preferred multi-system identity; the MDA model (ATC, Group subjects, directly-observed consumption); and integrated multi-intervention campaigns on a shared denominator. **Operational geography that overlays the admin hierarchy is the standout. Every GIS and operational source validates it.**
+**Validated — not up for redesign.** The field evidence validated these patterns: the plan→order lifecycle; one-Task-per-visit with per-person delivery events; the `record-origin` firewall; denominator-with-provenance; the three never-merged coverage lineages; realtime-vs-reconciled; the coded delivery strategy; GERS-preferred multi-system identity; the MDA model (ATC, Group subjects, directly-observed consumption); and integrated multi-intervention campaigns on a shared denominator. **Operational geography as first-class, typed locations distinct from admin units is the standout. Every GIS and operational source validates the need.** (The mechanism changed in Aug 2026: from the `overlays-admin-unit` extension to typed nodes in the single `partOf` tree.)
 
 **Priority proposals:**
 
