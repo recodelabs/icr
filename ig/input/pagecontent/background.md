@@ -99,11 +99,19 @@ analyzable.
 #### Operational vs administrative geography
 
 Polio operational boundaries often differ from routine-immunization catchments (the
-Nigeria lesson). `Location.partOf` can express only one hierarchy, so operational
-geography (supervisory areas, operational zones) is modeled as **linkable-but-distinct**:
-coded location types (`supervisory-area`, `operational-area`) plus the
-**`overlays-admin-unit`** extension linking an operational area to the admin unit(s)
-it covers.
+Nigeria lesson). The ICR keeps **one containment tree**: every Location — admin unit,
+settlement, facility, or operational area — has a single `partOf` parent that fully
+contains it. What separates official administrative units from operational geography
+is the **`type` code, not tree position**: administrative rollups, official-identifier
+rules, and DHIS2 pushes key on `type = admin-unit` and skip typed operational nodes
+(`supervisory-area`, `operational-area`), exactly as they already skip settlements and
+facilities. An operational area is its own first-class shape (own identity, own
+GeoJSON boundary) that attaches at the **lowest admin unit fully containing it** — a
+supervision zone inside one district is `partOf` that district; a zone spanning two
+districts attaches at the region/state level instead. This trades district-level
+attribution of cross-boundary areas for a single, unambiguous, DHIS2-compatible
+hierarchy; where district reporting matters, operational areas should be drawn within
+district boundaries.
 
 #### Location identity lifecycle: GERS enrichment
 

@@ -6,7 +6,8 @@
 // ITN delivery.
 // Population side: household, community, and school-cohort delivery units (the
 // generalized Group+Location pattern), target populations with computable geography
-// characteristics, and a supervisory area overlaying the admin hierarchy.
+// characteristics, and a supervisory area attached to the admin tree as a typed
+// non-admin node.
 
 // --- Location hierarchy: country → district → settlement → dwelling ----------
 
@@ -113,9 +114,11 @@ Usage: #example
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-building-chc-example"
 
-// Operational geography: a supervisory area is NOT in the admin partOf chain — it
-// overlays the admin units it covers via the overlays-admin-unit extension
-// (linkable-but-distinct, working doc §9 identity principle 3).
+// Operational geography lives in the same single partOf tree, distinguished by
+// type — not tree position. A supervisory area attaches at the lowest admin unit
+// that fully contains it (here: the district; a zone spanning districts would
+// attach at region/state level). Admin rollups filter on type = admin-unit and
+// skip it (working doc §9).
 
 Instance: example-supervisory-area
 InstanceOf: ICRLocation
@@ -127,7 +130,7 @@ Usage: #example
 * status = #active
 * physicalType.coding = http://terminology.hl7.org/CodeSystem/location-physical-type#area "Area"
 * type = $LocationType#supervisory-area "Supervisory area"
-* extension[overlaysAdminUnit].valueReference = Reference(example-district)
+* partOf = Reference(example-district)
 
 // --- Population: a household, a community, and the planning denominators -----
 

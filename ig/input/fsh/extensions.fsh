@@ -178,14 +178,6 @@ Context: Location
 * value[x] only Attachment
 * valueAttachment.contentType = #"application/geo+json"
 
-Extension: OverlaysAdminUnit
-Id: overlays-admin-unit
-Title: "Overlays Admin Unit"
-Description: "Links an operational-geography Location (supervisory area, operational area) to the administrative unit(s) it overlays. Operational ≠ administrative geography: partOf can only express one hierarchy, so this extension is what makes operational areas linkable-but-distinct rather than just distinct (working doc §9, identity principle 3)."
-Context: Location
-* ^experimental = false
-* value[x] only Reference(ICRLocation)
-
 Extension: DirectlyObservedConsumption
 Id: directly-observed-consumption
 Title: "Directly Observed Consumption"
