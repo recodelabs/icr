@@ -67,9 +67,10 @@ Description: "Reasons a present, age-eligible person was clinically excluded fro
 ValueSet: ICRSuppliedItemVS
 Id: icr-supplied-item
 Title: "ICR Supplied Item"
-Description: "Coded products distributed via ICRSupplyDelivery. Binding: extensible. Drug commodities (MDA receipts/distribution) use WHO ATC; physical commodities (ITNs, IRS consumables, vitamin A) use GS1 GTIN where a local binding exists, otherwise text. Added v0.18.0 (espen.md rec 3) so a drug receipt → administration → reconciliation share one ATC code."
+Description: "Coded products carried by the supply profiles (ICRSupplyDistribution, ICRSupplyMovement). Binding: extensible. Drug commodities (MDA receipts/distribution, vitamin A) use WHO ATC — added v0.18.0 (espen.md rec 3) so a drug receipt → administration → reconciliation share one ATC code. Physical commodities use the ICR commodity class (llin, irs-insecticide, rdt) as the analytics-stable coding, optionally alongside a GS1 GTIN coding for the specific product (GTINs are per-manufacturer and cannot be enumerated here); text as fallback (supply-split round)."
 * ^experimental = false
 * include codes from system $ATC
+* include codes from system ICRCommodityClassCS
 
 ValueSet: ICRDenominatorSourceVS
 Id: icr-denominator-source

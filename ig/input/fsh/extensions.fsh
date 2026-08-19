@@ -366,3 +366,19 @@ Context: Location
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRSettlementTypeVS (extensible)
+
+Extension: DistributionRecipient
+Id: distribution-recipient
+Title: "Distribution Recipient"
+Description: "Who received a distributed commodity — the delivery-unit Group (household, community, school cohort) or a registered person. R4 SupplyDelivery.patient targets only Patient, but ICR's usual recipient is the household; this extension supplies the Group join that per-capita coverage (e.g. 1 net per 2 household members: quantity ÷ Group.quantity) computes against (supply-split round)."
+Context: SupplyDelivery
+* ^experimental = false
+* value[x] only Reference(ICRDeliveryUnit or ICRPatient)
+
+Extension: IssuedToTeam
+Id: issued-to-team
+Title: "Issued To Team"
+Description: "The CareTeam a supply movement was issued to. R4 SupplyDelivery.receiver targets only individual practitioners — the same gap (and same fix) as MeasureReport.reporter → reporter-team. One issuance per team per day, with its stock-accountability ledger, is the field-team daily-stock pattern (supply-split round)."
+Context: SupplyDelivery
+* ^experimental = false
+* value[x] only Reference(ICRCareTeam)
