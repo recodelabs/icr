@@ -64,3 +64,4 @@ Alias: $ProjectTag = https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-
 Alias: $LocationStatus = https://icr.healthcampaigns.org/CodeSystem/icr-location-status-cs
 Alias: $EndemicityStatus = https://icr.healthcampaigns.org/CodeSystem/icr-endemicity-status-cs
 Alias: $CommodityClass = https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs
+Alias: $TaskOutputType = https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs

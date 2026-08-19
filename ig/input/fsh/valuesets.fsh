@@ -231,3 +231,10 @@ Title: "ICR Endemicity Status"
 Description: "The JRSM-aligned endemicity ladder. Binding: extensible (not required) on ICRLocationStatus.valueCodeableConcept, because future non-endemicity property codes carry their own value vocabularies."
 * ^experimental = false
 * include codes from system ICREndemicityStatusCS
+
+ValueSet: ICRTaskOutputTypeVS
+Id: icr-task-output-type
+Title: "ICR Task Output Type"
+Description: "The standard Task.output axes. Binding: extensible on ICRCampaignTask.output.type, so campaign-specific output types (e.g. 'rooms treated' under IRS) stay legal as custom codes or text."
+* ^experimental = false
+* include codes from system ICRTaskOutputTypeCS
