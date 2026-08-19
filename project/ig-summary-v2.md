@@ -18,7 +18,7 @@ comments: true
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
 `Simplified English edition · Derived from ig-summary.md · Aug 19, 2026`
 
-{>>Content update pass (Aug 19): the overlays-admin-unit extension is removed from the IG (PR #43). Operational geography now lives in the single partOf tree as typed non-admin nodes, attached at the lowest admin unit that fully contains them (district; region/state when spanning districts). Updated: principle 5 (§2), §5.3 purpose + diagram + partOf/extension rows + key observation, §7.6 geography characteristic, §10 extension registry (35→34), §11 example table + scenario list, §12 background.md summary, §13 validated-patterns note. Note: ig-summary.md (the source doc) still describes the old overlay mechanism.<<}{id="c9" by="claude" at="2026-08-19T16:11:35.000Z"}
+⁠
 
 > [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document.
 
