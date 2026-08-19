@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-19T18:12:03Z
+last_modified: 2026-08-19T18:47:37Z
 tags:
   - icr
   - fhir
@@ -213,6 +213,7 @@ graph TD
     AC["ICRAdministrativeCoverage<br/>(MeasureReport)"]
     SC["ICRSurveyCoverage<br/>(MeasureReport)"]
     CT["ICRCareTeam<br/>(CareTeam)<br/><i>vaccinator/CDD + supervisor</i>"]
+    LS["ICRLocationStatus<br/>(Observation)<br/><i>endemicity & other place assertions</i>"]
 
     PD -- "action" --> AD
     CP -- "instantiatesCanonical 1..1" --> PD
@@ -236,6 +237,7 @@ graph TD
     MED -. "subject (person)" .-> PT
     HH -- "group-location ext" --> L
     L -- "partOf" --> L
+    LS -. "subject" .-> L
     CP -. "planning-denominator ext" .-> TP
     CP -. "target-geography ext" .-> L
     AC -. "never merged" .- SC
@@ -261,6 +263,7 @@ Read the IG as three layers that intersect:
 - **ICRTargetPopulation** *(Group,* `actual=false`*)* — **a denominator**: a conceptual cohort with a count and eligibility characteristics. It must also have source and date provenance; this requirement is important. Competing estimates for the same place stay side by side.
 - **ICRLocation** *(Location)* — **the place model.** It is the ICR resource with the most customization. It has a nested administrative hierarchy and an operational geography that is adjacent to the admin tree. It also has GeoJSON boundaries and a multi-system geospatial identity (GERS, P-codes, national and ISO codes).
 - **ICRPatient** *(Patient)* — **the registered individual**: a listed household, community, or school-cohort member. The person has a stable identifier that applies across campaigns. Gender and birth date are mandatory because they control eligibility and disaggregation. A name is required. **ICRConsent** *(Consent)* is the related governance profile.
+- **ICRLocationStatus** *(Observation)* — **a time-varying property assertion about a place**, joined to the Location rather than stored inside it: endemicity per disease (the JRSM district table as data), with future axes such as access status. Pre-coordinated property codes; provenance on every assertion (§5.6).
 
 **Delivery events & safety (§6)**
 
@@ -1527,6 +1530,48 @@ The **sliced** `identifier` is the cross-round join key. Here it is a national I
 `example-consent` shows the head of household (`example-head`). The head permits the storage and sharing of the child's (`example-child`) data.
 
 **Key observation.** This profile is a scaffold, not a finished governance design. The policy text is a placeholder. The real decisions (what minimal data crosses a border, retention periods, withdrawal) are still open (§13.4). But the shipped profile makes the obligation visible. It gives implementers a conformant place to record consent from day one.
+### 5.6 ICRLocationStatus — `Observation` (location-scoped property assertions)
+**Purpose.** A **time-varying, provenance-carrying property assertion about a place**. The first use is **endemicity**: "Kambia District is LF-endemic, under MDA" — the district-level endemicity table that JRSM reporting relies on, as data. The same profile serves future location properties: access/security status, elimination milestones.
+
+**Why an Observation joined to the Location, not a field inside it.** Endemicity is revisable epidemiological state — mapping surveys, TAS results, and JRSM updates change it, and different sources can disagree. That is the denominator epistemology (§5.2) applied to classifications: assertions coexist, and each one carries who asserted it, when, by what method, and from what evidence. The georegistry rule (§5.3) says Location carries durable identity only. So the assertion is a separate resource that points **at** the place — the same direction-of-reference discipline as Tasks and delivery events pointing at their campaign.
+
+**Where a place property lives — the decision rule.**
+
+| What you assert about a place | Where it lives |
+| --- | --- |
+| Durable identity — type, name, codes, geometry, hierarchy | `Location` itself (incl. `settlement-type`) |
+| A population count scoped to it | ICRTargetPopulation (§5.2) |
+| A computed rate or count for a campaign | MeasureReport (§7) |
+| Campaign programme state (strategy, work) | CarePlan / Task (§4) |
+| **Time-varying classification of the place itself** | **ICRLocationStatus (this profile)** |
+
+**Properties.**
+
+| Element | Flags | Card. | Type / Binding | Description |
+| --- | --- | --- | --- | --- |
+| `status` | MS  |     | code | `final`; a newer final or amended assertion supersedes. Consumers read the latest per (subject, code). |
+| `code` | MS  | 1..1 | CodeableConcept, **extensible** → ICRLocationStatusVS | **The property asserted — pre-coordinated per disease** (`lf-endemicity`, `oncho-endemicity`, `schisto-endemicity`, `sth-endemicity`, `trachoma-endemicity`). The pre-coordination matches the shape of the JRSM/ESPEN tables (one column per disease) and keeps the money query a single code. A new location property is a **new code, not a new profile**. |
+| `subject` | MS  | 1..1 | `Reference(ICRLocation)` only | The place this assertion is about — `subject`, not `focus`, because the observation is fundamentally about the place. Typically the district (implementation unit). The assertion applies to the location's **whole `partOf` subtree** unless a lower-level assertion overrides it. |
+| `value[x]` | MS  |     | CodeableConcept only, **extensible** → ICREndemicityStatusVS | The classification. For the endemicity codes, the JRSM ladder: `endemic-mda-not-started` / `endemic-under-mda` / `post-mda-surveillance` / `elimination-validated` / `non-endemic` / `unknown`. The binding is extensible because future property codes bring their own value vocabularies. |
+| `effective[x]` | MS  |     | dateTime / Period | When the classification was assessed or holds from. Open-ended: current until superseded. |
+| `performer` | MS  |     | Reference | Who asserted it — the MoH NTD programme, a mapping-survey team, an ESPEN/JRSM extract. |
+| `method` | MS  |     | CodeableConcept | How it was determined — mapping survey, TAS, sentinel site, administrative report. |
+| `derivedFrom` | MS  |     | Reference | The evidentiary trail — the mapping-survey form response or source document. |
+
+**The canonical query.** "Which districts in this country are LF-endemic?":
+
+```
+Observation?code=lf-endemicity&value-concept=endemic-under-mda&subject:Location.partOf=Location/example-country
+```
+
+**Examples.** `example-lf-endemicity` (Kambia: LF endemic, under MDA — with mapping-survey provenance) and `example-oncho-endemicity` (Kambia: oncho non-endemic). Two assertions on the same district give the **co-endemicity** read.
+
+**Key observations.**
+
+- **The subtree rule must be stated, and is.** JRSM asserts endemicity at district (IU) level. An assertion covers the location's whole subtree unless a lower-level assertion overrides it — the profile documents this so two consumers cannot disagree about a ward.
+- **One profile, many properties — but per use-case, not per property.** The profile split follows the question a record answers (the same discipline as ICRDeliveryUnit vs ICRTargetPopulation, or admin vs survey coverage). A per-property profile (`ICREndemicityObservation`, …) would be the anti-pattern; the pre-coordinated CodeSystem carries that axis. A genuinely different Observation use (a cohort assertion on a Group, the dose-pole height measurement on a person) gets its own profile when it arrives.
+- **Not for counts.** A rate or count about a place ("94% of villages treated", "rounds of MDA completed") stays a MeasureReport (§7). This profile carries *classifications*.
+- **Tooling caveat.** `Observation?subject=Location/x` is universally supported; the chained form (`subject:Location.partOf=…`) needs verification against the deployed FHIR store (Google Healthcare API chaining support is narrower than HAPI's). The JAP/JRSM exports run off the SQL-on-FHIR warehouse, where this is a plain join.
 
 * * *
 ## 6. Delivery-event & safety profiles
@@ -2337,9 +2382,9 @@ graph LR
     D -- patient --> C
 ```
 
-**The 62 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
+**The 64 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
 
-The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task. The **Aug 19 rounds** (PRs #44/#45) add `example-sth-eligible-population` (row 62) — the definitional 5–14y eligibility Group on the STH protocol's `subject` — give the four activities their `topic` catalog tags, and wire the coverage reports to their campaigns through the new `campaign` extension.
+The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task. The **Aug 19 rounds** (PRs #44/#45) add `example-sth-eligible-population` (row 62) — the definitional 5–14y eligibility Group on the STH protocol's `subject` — give the four activities their `topic` catalog tags, and wire the coverage reports to their campaigns through the new `campaign` extension. The **location-status round** adds the endemicity pair (rows 63–64): the JRSM district endemicity table as ICRLocationStatus Observations on the Kambia district (§5.6).
 
 *Locations, people & groups*
 
@@ -2422,6 +2467,8 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 60  | `example-ward` | ICRLocation | **A country's own coding scheme**: "Kambia Ward 3 (Magbema)", admin-unit, partOf district — its only identifier is a national DHIS2 orgUnit UID under an MoH system URI, marked `use = official`; no GERS or P-code yet (enrichment-pending), and the `icr-loc-admin-id` invariant is satisfied by any-system identifiers |
 | 61  | `example-lqas-coverage` | ICRSurveyCoverage | **LQAS lot assessment** (same round as #37/#38): 12 of 15 lots accepted = 80%; coverage-unit implementation-units; disposition stratifier lists the 3 rejected lots (mop-up triggered); sampleDesign carries the 19-per-lot / reject-if->3 decision rule; coverageSource `lqas`; campaign ext → #23 |
 | 62  | `example-sth-eligible-population` *(protocol-eligibility)* | Group (definitional) | **The protocol's eligibility restriction as data**: school-age children 5–14 — `actual=false`, no count, no geography, a computable age-band `valueRange` (5–14 years); the STH MDA protocol's (#48) `subject`. The concrete round denominator (#49) mirrors the same band. |
+| 63  | `example-lf-endemicity` *(location-status)* | ICRLocationStatus | **The JRSM endemicity table as data**: Kambia District is LF-**endemic, under MDA** — subject → the district (#2), effective Jan 2026, performer the MoH NTD programme, method the 2019 mapping survey, derivedFrom the survey report |
+| 64  | `example-oncho-endemicity` *(location-status)* | ICRLocationStatus | Kambia District is oncho-**non-endemic** — the second assertion on the same district: the **co-endemicity** read is two Observations, one per disease |
 
 *Definitional artifacts (alongside the examples)*
 
