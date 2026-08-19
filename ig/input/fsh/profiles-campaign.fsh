@@ -78,6 +78,11 @@ Description: "A discrete work type within a campaign — 'administer albendazole
 * dosage ^short = "Where applicable; dose-pole logic references an Observation"
 * extension contains DeliveryStrategy named deliveryStrategy 0..1 MS
 
+Invariant: icr-task-h2h-outputs
+Description: "House-to-house tally outputs (houses-visited, eligible-present, eligible-absent, children-already-marked) belong on house-to-house tasks — strategy determines which data elements exist (§8 principle 1), now machine-checkable. Warning severity: a mismatch is a data-quality signal, not always a recording error."
+Severity: #warning
+Expression: "extension('https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy').value.ofType(CodeableConcept).coding.exists(code = 'house-to-house') or output.type.coding.where(code = 'houses-visited' or code = 'eligible-present' or code = 'eligible-absent' or code = 'children-already-marked').empty()"
+
 Profile: ICRCampaignTask
 Parent: Task
 Id: ICRCampaignTask
@@ -118,18 +123,59 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * location only Reference(ICRLocation)
 * location ^short = "Where the work happens: settlement, school, post, or dwelling"
 * executionPeriod MS
+// Everything the visit PRODUCED rides Task.output as coded entries (task-outputs
+// round — the former tally extensions are retired). Parameters of the work
+// (deliveryStrategy, taskOrigin) stay extensions: known at creation, they
+// describe the Task; results are outputs. A new tally axis is a new
+// ICRTaskOutputTypeCS code, not a new extension.
 * output MS
-* output ^short = "Delivery results: references to Immunization / MedicationAdministration / SupplyDelivery, or aggregate counts"
+* output ^short = "Everything the visit produced, as coded entries: the scalar tally (treated-count), the house-to-house axes (houses-visited, eligible-present/absent, children-already-marked), reason codes (missed/refusal/exclusion), revisit outcome, and references to delivery events and the stratified coverage report"
+* output ^slicing.discriminator.type = #pattern
+* output ^slicing.discriminator.path = "type"
+* output ^slicing.rules = #open
+* output.type from ICRTaskOutputTypeVS (extensible)
+* output contains
+    treatedCount 0..1 and
+    housesVisited 0..1 and
+    eligiblePresent 0..1 and
+    eligibleAbsent 0..1 and
+    childrenAlreadyMarked 0..1 and
+    missedReason 0..* and
+    noncomplianceReason 0..* and
+    exclusionReason 0..* and
+    revisitOutcome 0..1
+* output[treatedCount].type = $TaskOutputType#treated-count
+* output[treatedCount].value[x] only unsignedInt
+* output[housesVisited].type = $TaskOutputType#houses-visited
+* output[housesVisited].value[x] only unsignedInt
+* output[housesVisited] ^short = "(house-to-house, area/team-day granularity) Houses visited"
+* output[eligiblePresent].type = $TaskOutputType#eligible-present
+* output[eligiblePresent].value[x] only unsignedInt
+* output[eligiblePresent] ^short = "(house-to-house) Eligible persons present — program-neutral: under-5s for polio, household members for ITN registration, the eligible band for MDA"
+* output[eligibleAbsent].type = $TaskOutputType#eligible-absent
+* output[eligibleAbsent].value[x] only unsignedInt
+* output[eligibleAbsent] ^short = "(house-to-house) Eligible persons absent — feeds same-day mop-up lists"
+* output[childrenAlreadyMarked].type = $TaskOutputType#children-already-marked
+* output[childrenAlreadyMarked].value[x] only unsignedInt
+* output[childrenAlreadyMarked] ^short = "(house-to-house) Children found already finger-marked on arrival — a count, since a visit sees several children (replaces the retired boolean finger-marked extension)"
+* output[missedReason].type = $TaskOutputType#missed-reason
+* output[missedReason].value[x] only CodeableConcept
+* output[missedReason].valueCodeableConcept from ICRMissedReasonVS (extensible)
+* output[missedReason] ^short = "Why eligible person(s) were missed — person-level (absent, sleeping) and area-level (insecurity, shortage, access) causes"
+* output[noncomplianceReason].type = $TaskOutputType#noncompliance-reason
+* output[noncomplianceReason].value[x] only CodeableConcept
+* output[noncomplianceReason].valueCodeableConcept from ICRNoncomplianceReasonVS (extensible)
+* output[noncomplianceReason] ^short = "Why the household/caregiver refused (WHO IDHC 'intervention refusal')"
+* output[exclusionReason].type = $TaskOutputType#exclusion-reason
+* output[exclusionReason].value[x] only CodeableConcept
+* output[exclusionReason].valueCodeableConcept from ICRExclusionReasonVS (extensible)
+* output[exclusionReason] ^short = "Why a present, age-eligible person was clinically excluded this round (under-height/age, pregnant, breastfeeding)"
+* output[revisitOutcome].type = $TaskOutputType#revisit-outcome
+* output[revisitOutcome].value[x] only CodeableConcept
+* output[revisitOutcome].valueCodeableConcept from ICRRevisitOutcomeVS (extensible)
+* output[revisitOutcome] ^short = "On a person-targeted follow-up Task: already-vaccinated | vaccinated-on-revisit | still-missing"
+* obeys icr-task-h2h-outputs
 * extension contains
     DeliveryStrategy named deliveryStrategy 1..1 MS and
     TaskOrigin named taskOrigin 1..1 MS and
-    HousesVisited named housesVisited 0..1 and
-    EligiblePresent named eligiblePresent 0..1 and
-    EligibleAbsent named eligibleAbsent 0..1 and
-    MissedReason named missedReason 0..* and
-    NoncomplianceReason named noncomplianceReason 0..* and
-    ExclusionReason named exclusionReason 0..* and
-    FingerMarked named fingerMarked 0..1 and
-    RealtimeVsReconciled named dataLineage 0..1 and
-    RevisitOutcome named revisitOutcome 0..1
-* extension[revisitOutcome] ^short = "On a person-targeted follow-up Task: outcome of the revisit — already-vaccinated | vaccinated-on-revisit | still-missing (v0.21.0)"
+    RealtimeVsReconciled named dataLineage 0..1

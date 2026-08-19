@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-19T19:07:01Z
+last_modified: 2026-08-19T19:46:49Z
 tags:
   - icr
   - fhir
@@ -737,18 +737,22 @@ This split keeps two questions separate: "what did we act on" and "where did thi
 | `instantiatesCanonical` | MS  | 0..1 | `Canonical(ICRCampaignActivity)` only | **The activity that this task carries out** — the definition-to-execution link. It uses the same convention as CarePlan → Protocol. It makes per-activity queries structural in a multi-activity campaign. `code` stays the human-readable label. An ad-hoc task can omit it. |
 | `reasonCode` | MS  |     | CodeableConcept | The disease or programme that this Task serves. Use it to scope a Task to one disease, when one community Task covers several concurrent programmes. |
 | `location` | MS  | 1..1 | `Reference(ICRLocation)` only | The place where the work occurred. The place is a different axis from the target in `for`. Example: a household visit has `for` = the household Group and `location` = the dwelling. A person-targeted follow-up has `for` = the Patient. Communities (Groups of people) and settlements (places) stay separate concepts. |
-| `output` | MS  |     |     | **The visit-level result.** The mainline content is aggregate counts — the tally that closes the visit ("household visited, 3 vaccinated"; a session's 412 doses). Where the visit workflow captures the doses, `output` may additionally reference the Immunization / MedicationAdministration / SupplyDelivery events. Events do not require this reference: each event carries its own campaign link (§6). |
-| `extension[deliveryStrategy]` | MS  | 1..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | The strategy that this Task runs under. It is mandatory, because it determines which other fields apply. |
+| `output` | MS  |     | entries typed by code, **extensible** → ICRTaskOutputTypeVS | **Everything the visit produced, in one place** (task-outputs round). Each entry is a coded type + a value. The standard axes are named slices; custom types (e.g. "rooms treated" under IRS) stay legal as free codes or text. |
+| `output[treatedCount]` |     | 0..1 | unsignedInt | The scalar result tally that closes the visit ("3 vaccinated"; a session's 412 doses). |
+| `output[housesVisited]` |     | 0..1 | unsignedInt | (house-to-house, area/team-day granularity) The houses that the team visited. |
+| `output[eligiblePresent]` |     | 0..1 | unsignedInt | (house-to-house) The eligible people who were present. |
+| `output[eligibleAbsent]` |     | 0..1 | unsignedInt | (house-to-house) The eligible people who were absent. |
+| `output[childrenAlreadyMarked]` |     | 0..1 | unsignedInt | (house-to-house) Children found **already finger-marked** on arrival — a *count*, because a visit sees several children. Replaces the retired boolean `finger-marked` extension, which could not say "two of four". |
+| `output[missedReason]` |     | 0..* | CodeableConcept, **extensible** → ICRMissedReasonVS | Why the team missed eligible people. It holds person-level reasons (absent, sleeping, refusal) and area-level reasons (insecurity, medication shortage, difficult access). |
+| `output[noncomplianceReason]` |     | 0..* | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS | Why a household or person declined. |
+| `output[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height or age, pregnant, breastfeeding, acute illness. This is distinct from *missed* (not reached) and *noncompliance* (declined), on purpose. |
+| `output[revisitOutcome]` |     | 0..1 | CodeableConcept, **extensible** → ICRRevisitOutcomeVS | The outcome of the revisit, on a **person-targeted follow-up** Task (`for` = the missed Patient, `partOf` = the first Task): `already-vaccinated` \| `vaccinated-on-revisit` \| `still-missing`. |
+| `output` (references) |     |     | `delivery-event` / `coverage-report` codes | Where the visit workflow captured the doses, `output` may additionally reference the Immunization / MedicationAdministration / supply events (`delivery-event`) and the stratified MeasureReport (`coverage-report`). Events do not require this reference: each event carries its own campaign link (§6). |
+| `extension[deliveryStrategy]` | MS  | 1..1 | CodeableConcept, **required** → ICRDeliveryStrategyVS | The strategy that this Task runs under. It is mandatory, because it determines which other fields apply — enforced for the house-to-house output axes by the `icr-task-h2h-outputs` invariant (warning). |
 | `extension[taskOrigin]` | MS  | 1..1 | code, **required** → ICRTaskOriginVS (`pre-planned` \| `field-registered`) | Shows if the microplan pre-generated the Task, or if the team created it in the field on discovery. |
-| `extension[housesVisited]` |     | 0..1 | unsignedInt | (house-to-house) The houses that the team visited on the round. |
-| `extension[eligiblePresent]` |     | 0..1 | unsignedInt | (house-to-house) The eligible people who were present. |
-| `extension[eligibleAbsent]` |     | 0..1 | unsignedInt | (house-to-house) The eligible people who were absent. |
-| `extension[missedReason]` |     | 0..* | CodeableConcept, **extensible** → ICRMissedReasonVS | Why the team missed eligible people. It holds person-level reasons (absent, sleeping, refusal) and area-level reasons (insecurity, medication shortage, difficult access). |
-| `extension[noncomplianceReason]` |     | 0..* | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS | Why a household or person declined. |
-| `extension[exclusionReason]` |     | 0..* | CodeableConcept, **extensible** → ICRExclusionReasonVS | **Present but contraindicated** — under height or age, pregnant, breastfeeding, acute illness. This is distinct from *missed* (not reached) and *noncompliance* (declined), on purpose. |
-| `extension[fingerMarked]` |     | 0..1 | boolean | (house-to-house) The in-field "already covered" marker. |
-| `extension[revisitOutcome]` *(forms-v1)* |     | 0..1 | CodeableConcept, **extensible** → ICRRevisitOutcomeVS | The outcome of the revisit, on a **person-targeted follow-up** Task (`for` = the missed Patient, `partOf` = the first Task): `already-vaccinated` \| `vaccinated-on-revisit` \| `still-missing`. |
 | `extension[dataLineage]` |     | 0..1 | code, **required** → ICRDataLineageVS | Realtime or reconciled. |
+
+**Parameters vs results — the rule of the task-outputs round.** The Task keeps only two kinds of data field. *Parameters of the work* — known when the Task is created (`deliveryStrategy`, `taskOrigin`) — are extensions. *Results of doing the visit* — everything the team learned or produced — are coded `output` entries. The former tally extensions (`houses-visited`, `eligible-present`, `eligible-absent`, `finger-marked`, the three reason codes, `revisit-outcome`) are retired. A new tally axis is now a new `ICRTaskOutputTypeCS` code, not a new extension — the same extensibility move as the commodity classes and location-status properties.
 
 **Example.** `example-mopup-task` is the house-to-house visit. It shows the richer Task shape. It chains to a delivery event:
 
@@ -777,30 +781,6 @@ This split keeps two questions separate: "what did we act on" and "where did thi
     {
       "url": "https://icr.healthcampaigns.org/StructureDefinition/task-origin",
       "valueCode": "field-registered"
-    },
-    {
-      "url": "https://icr.healthcampaigns.org/StructureDefinition/eligible-present",
-      "valueUnsignedInt": 2
-    },
-    {
-      "url": "https://icr.healthcampaigns.org/StructureDefinition/eligible-absent",
-      "valueUnsignedInt": 1
-    },
-    {
-      "url": "https://icr.healthcampaigns.org/StructureDefinition/missed-reason",
-      "valueCodeableConcept": {
-        "coding": [
-          {
-            "code": "absent",
-            "system": "https://icr.healthcampaigns.org/CodeSystem/icr-missed-reason-cs",
-            "display": "Absent"
-          }
-        ]
-      }
-    },
-    {
-      "url": "https://icr.healthcampaigns.org/StructureDefinition/finger-marked",
-      "valueBoolean": true
     }
   ],
   "status": "completed",
@@ -828,9 +808,23 @@ This split keeps two questions separate: "what did we act on" and "where did thi
   },
   "output": [
     {
-      "type": {
-        "text": "Immunization delivered"
-      },
+      "type": { "coding": [{ "code": "eligible-present", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs" }] },
+      "valueUnsignedInt": 2
+    },
+    {
+      "type": { "coding": [{ "code": "eligible-absent", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs" }] },
+      "valueUnsignedInt": 1
+    },
+    {
+      "type": { "coding": [{ "code": "missed-reason", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs" }] },
+      "valueCodeableConcept": { "coding": [{ "code": "absent", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-missed-reason-cs" }] }
+    },
+    {
+      "type": { "coding": [{ "code": "children-already-marked", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs" }] },
+      "valueUnsignedInt": 1
+    },
+    {
+      "type": { "coding": [{ "code": "delivery-event", "system": "https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs" }] },
       "valueReference": {
         "reference": "Immunization/example-mcv-dose"
       }
@@ -843,7 +837,7 @@ Read the links as follows. `for` points at the **household delivery-unit Group**
 
 `location` is the place where the work occurred — the dwelling (§5.3). `owner` references the CareTeam that worked the visit (§4.5). `output` here references the `Immunization` in §6.1, because this mop-up visit captured the dose inside the visit workflow. That reference is the optional tightening, not the required mechanism — the dose also carries its own campaign link (the `campaign` extension, §6), so it is attributable to the round without the Task.
 
-The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`. Here `task-origin` is `field-registered`, the discovery-mode pattern. This household was not in the microplan. The team created the household and its Task at the door. The house-to-house tally extensions (`eligible-present` 2 / `eligible-absent` 1, `missed-reason` `absent`, `finger-marked`) exist only for the house-to-house strategy. They have no meaning on a fixed-post session.
+The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`. Here `task-origin` is `field-registered`, the discovery-mode pattern. This household was not in the microplan. The team created the household and its Task at the door. **Everything the visit produced is in `output`**: the house-to-house tally axes (`eligible-present` 2 / `eligible-absent` 1, `missed-reason` `absent`, `children-already-marked` 1) plus the reference to the captured dose. These axes exist only for the house-to-house strategy — they have no meaning on a fixed-post session, and the `icr-task-h2h-outputs` invariant flags a mismatch as a warning.
 
 **Key observations.**
 
@@ -853,10 +847,10 @@ The mandatory coded extensions are `delivery-strategy` (1..1) and `task-origin`.
 - **Person-targeted Tasks serve follow-up only.** Sometimes a team must trace one specific missed or zero-dose person. Then the system creates a new Task. Its `for` is that person's `Patient`. Its `partOf` references the first Task — the Task that missed the person. Its `basedOn` is the campaign, as always.
   
   This is the only intended person-targeted Task. A Task per person for routine delivery would multiply Task volume approximately five times. It would record nothing that the Immunization records do not already carry.
-- **The count and reason extensions apply mainly to house-to-house work.** Houses visited, eligible present/absent, and finger-marking have no meaning for a fixed-post tally. Thus these extensions are optional (`0..x`), and teams populate them only for house-to-house work. The reason axes are three, on purpose. `missed-reason` = not reached, and includes area-level causes such as insecurity. `noncompliance-reason` = reached but declined. `exclusion-reason` = reached and willing, but contraindicated.
+- **The house-to-house output axes apply only to house-to-house work.** Houses visited, eligible present/absent, and already-marked counts have no meaning for a fixed-post tally. Thus these outputs are optional (`0..x`), teams populate them only for house-to-house work, and the `icr-task-h2h-outputs` invariant (warning severity) makes the rule machine-checkable. The reason axes are three, on purpose. `missed-reason` = not reached, and includes area-level causes such as insecurity. `noncompliance-reason` = reached but declined. `exclusion-reason` = reached and willing, but contraindicated.
 - `task-origin` **is mandatory because the value is itself a measurement.** A team can find a household that the enumeration missed. The team then creates the delivery unit and its Task in the field (`field-registered`). The count of field-registered Tasks per area measures the gaps in the microplan's enumeration. This count informs the denominators for the next round.
 - `Task.output` **may reference the delivery events; the events' campaign link does not depend on it.** R4 `Immunization` has no `basedOn` element, so the delivery-event profiles carry the local `campaign` extension → `Reference(ICRCampaign)` (§6). The Task-to-event reference remains available for deployments that capture events inside the visit workflow, and it is the natural shape for the person-targeted follow-up Task. When both the tally and person-level events exist and disagree, that is a data-quality signal — the same rule as `Group.quantity` versus the enumerated `member` list (§5.1). Do not silently reconcile the two.
-- **Disaggregation (recommended pattern).** The count extensions are single visit-level totals. Do not multiply them to show age or sex breakdowns. Disaggregate in one of two ways. (a) Emit one `Task.output` entry per stratum, with a coded `type` for the age band or sex. (b) Where person-level data exists, derive the breakdown from the individual Immunization / MedicationAdministration records. These records already carry age and sex.
+- **Disaggregation (recommended pattern).** The count outputs are single visit-level totals. Do not multiply them to show age or sex breakdowns. Disaggregate in one of two ways. (a) Emit one `Task.output` entry per stratum, with a coded `type` for the age band or sex. (b) Where person-level data exists, derive the breakdown from the individual Immunization / MedicationAdministration records. These records already carry age and sex.
   
   The same rule applies to reasons. Task-level `missed-reason` / `noncompliance-reason` aggregate over the whole visit. Thus per-person reasons require person-level records. For multi-dimensional aggregate tallies (drug × sex × age band), the canonical home is a stratified MeasureReport (§7.3).
 
@@ -2249,7 +2243,7 @@ These design rules recur across the profiles. Hold the IG against these rules. �
 
 Local and national codes connect through ConceptMap (deferred). This is standard IG practice. WHO's SMART Immunizations IG does the same with its `IMMZ.*` codes. No ICR code system duplicates a standard system. All ICR code systems are `caseSensitive` and not experimental.
 
-**The 28 CodeSystems.** The forms-v1 round (§13.2) added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, and `ICRSettlementTypeCS`. The espen-forms round (§4.8) added `ICRNTDDiseaseCS` and `ICRMDAMedicinePackageCS`. The rounds also extended several existing systems. The table below marks these changes.
+**The 32 CodeSystems.** The forms-v1 round (§13.2) added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, and `ICRSettlementTypeCS`. The espen-forms round (§4.8) added `ICRNTDDiseaseCS` and `ICRMDAMedicinePackageCS`. The Aug 19 rounds added `ICRLocationStatusCS` + `ICREndemicityStatusCS` (§5.6), `ICRCommodityClassCS` (§6.3), and `ICRTaskOutputTypeCS` (§4.4). The rounds also extended several existing systems. The table below marks these changes.
 
 | CodeSystem | Codes | FR? | Bound on (strength) |
 | --- | --- | --- | --- |
@@ -2317,7 +2311,7 @@ The data type follows the same pattern. Pure discriminators use a bare `code`. C
 
 * * *
 ## 10. Extensions
-FHIR has no native campaign semantics. Thus 34 extensions carry these semantics on the profiled core resources. The extensions group into four families. The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`. (Aug 2026: `overlays-admin-unit` was removed — operational areas now attach to the `partOf` tree directly, see §5.3.)
+FHIR has no native campaign semantics. Thus 31 extensions carry these semantics on the profiled core resources. The extensions group into four families. The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`. (Aug 2026: `overlays-admin-unit` was removed — operational areas now attach to the `partOf` tree directly, see §5.3. The Aug 19 rounds added `campaign`, `distribution-recipient`, and `issued-to-team`, and the **task-outputs round retired the eight Task tally/reason extensions** — those axes are now coded `Task.output` entries, §4.4.)
 
 **Campaign mechanics**
 
@@ -2333,18 +2327,7 @@ FHIR has no native campaign semantics. Thus 34 extensions carry these semantics 
 | WorkloadTarget (`workload-target`) | CareTeam | complex: `targetArea` (Reference(ICRLocation) 0..*) + `targetPopulation`/`targetHouseholds`/`targetDays` (unsignedInt) — the microplan team workload | CareTeam 0..1 |
 | OverseesArea (`oversees-area`) | CareTeam | Reference(ICRLocation) — the supervisory/operational area(s) that a team's supervisor covers (§4.5) | 0..* |
 
-**Task field data** (all on Task)
-
-| Extension (id) | Type / binding |
-| --- | --- |
-| HousesVisited (`houses-visited`) | unsignedInt |
-| EligiblePresent (`eligible-present`) | unsignedInt |
-| EligibleAbsent (`eligible-absent`) | unsignedInt |
-| MissedReason (`missed-reason`) | CodeableConcept, **extensible** → ICRMissedReasonVS — not reached (person-level and area-level reasons) |
-| NoncomplianceReason (`noncompliance-reason`) | CodeableConcept, **extensible** → ICRNoncomplianceReasonVS — reached but declined |
-| ExclusionReason (`exclusion-reason`) | CodeableConcept, **extensible** → ICRExclusionReasonVS — *present but contraindicated* (under height/age, pregnant, breastfeeding, acute illness); 0..* |
-| FingerMarked (`finger-marked`) | boolean — the in-field "already covered" flag |
-| RevisitOutcome (`revisit-outcome`) *(forms-v1)* | CodeableConcept, **extensible** → ICRRevisitOutcomeVS — the outcome of a person-targeted follow-up revisit (already-vaccinated / vaccinated-on-revisit / still-missing) |
+**Task field data** — *retired as extensions (task-outputs round)*. The former Task tally/reason extensions (`houses-visited`, `eligible-present`, `eligible-absent`, `finger-marked`, `missed-reason`, `noncompliance-reason`, `exclusion-reason`, `revisit-outcome`) are now **coded `Task.output` entries** typed by ICRTaskOutputTypeCS (§4.4) — parameters of the work stay extensions; results of the visit are outputs. The reason value sets (ICRMissedReasonVS, ICRNoncomplianceReasonVS, ICRExclusionReasonVS, ICRRevisitOutcomeVS) live on, binding the corresponding output values. `finger-marked` (boolean) became the `children-already-marked` *count*.
 
 **Population & denominator provenance**
 
@@ -2421,7 +2404,7 @@ graph LR
 
 **The 65 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
 
-The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task. The **Aug 19 rounds** (PRs #44/#45) add `example-sth-eligible-population` (row 62) — the definitional 5–14y eligibility Group on the STH protocol's `subject` — give the four activities their `topic` catalog tags, and wire the coverage reports to their campaigns through the new `campaign` extension. The **location-status round** adds the endemicity pair (rows 63–64): the JRSM district endemicity table as ICRLocationStatus Observations on the Kambia district (§5.6). The **supply-split round** retires ICRSupplyDelivery in favour of ICRSupplyDistribution (coverage-bearing, rows 30) and ICRSupplyMovement (stock-bearing, rows 31 and 65 — the team-issuance chain), and gives physical commodities class codes (§6.3).
+The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task. The **Aug 19 rounds** (PRs #44/#45) add `example-sth-eligible-population` (row 62) — the definitional 5–14y eligibility Group on the STH protocol's `subject` — give the four activities their `topic` catalog tags, and wire the coverage reports to their campaigns through the new `campaign` extension. The **location-status round** adds the endemicity pair (rows 63–64): the JRSM district endemicity table as ICRLocationStatus Observations on the Kambia district (§5.6). The **supply-split round** retires ICRSupplyDelivery in favour of ICRSupplyDistribution (coverage-bearing, rows 30) and ICRSupplyMovement (stock-bearing, rows 31 and 65 — the team-issuance chain), and gives physical commodities class codes (§6.3). The **task-outputs round** retires the eight Task tally/reason extensions: everything a visit produced is now a coded `Task.output` entry (ICRTaskOutputTypeCS, §4.4), and `finger-marked` became the children-already-marked count.
 
 *Locations, people & groups*
 
@@ -2457,8 +2440,8 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 23  | `example-mr-sia-2026` | ICRCampaign | the **round**: instantiates #21; intent `order`, partOf → #22; subject & planningDenominator → #14; round 1; targetGeography → district; social-mobilization (radio + community leaders) |
 | 24  | `example-careteam` | ICRCareTeam | "CDD team 7, Rokupr": vaccinator + CDD + supervisor roles, subject → the Kambia denominator; managingOrganization; oversees-area → #6; workload-target (3,200 pop / 640 households / 5 days) |
 | 25  | `example-site-session-task` | ICRCampaignTask | **Fixed-post site session**: for → fixed post (a site Location — a delivery unit without members), location → fixed post; strategy fixed-post; taskOrigin `pre-planned`; dataLineage realtime; output session tally = 412 |
-| 26  | `example-mopup-task` | ICRCampaignTask | **House-to-house**: completed; for → household, location → dwelling; strategy house-to-house; taskOrigin `field-registered`; eligiblePresent 2 / absent 1; missedReason `absent`; fingerMarked true; owner → #24; output → #28 |
-| 27  | `example-mda-community-task` | ICRCampaignTask | **Community-directed**: for → community (#12), location → settlement; strategy `community-directed`; exclusionReasons (under-height-age, pregnant, breastfeeding), missedReason absent, noncomplianceReason no-felt-need; owner → #24; output: scalar tally 2,900 treated + → #35 |
+| 26  | `example-mopup-task` | ICRCampaignTask | **House-to-house**: completed; for → household, location → dwelling; strategy house-to-house; taskOrigin `field-registered`; owner → #24; **coded outputs**: eligible-present 2 / eligible-absent 1 / missed-reason `absent` / children-already-marked 1 / delivery-event → #28 |
+| 27  | `example-mda-community-task` | ICRCampaignTask | **Community-directed**: for → community (#12), location → settlement; strategy `community-directed`; owner → #24; **coded outputs**: treated-count 2,900, exclusion-reasons (under-height-age, pregnant, breastfeeding), missed-reason absent, noncompliance-reason no-felt-need, coverage-report → #35 |
 
 *Delivery events & safety*
 
@@ -2481,7 +2464,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 37  | `example-admin-coverage` | ICRAdministrativeCoverage | numerator 47,766 / denominator 48,250, **measureScore 99%**; denominatorSource GRID3; dataLineage reconciled; campaign ext → the Kambia round (#23) |
 | 38  | `example-survey-coverage` | ICRSurveyCoverage | post-campaign (Jul 6–12), **measureScore 76%**, sample counts 1,596 / 2,100 (the denominator IS the sample); stratifiers sex (78% F / 74% M) + age band (71% / 79%); coverageSource survey; sampleDesign "WHO 30×10 cluster survey (n = 2,100)…, 95% CI 72–80"; dataLineage reconciled; campaign ext → the Kambia round (#23) — the same quantity as #37, **23 points apart** |
 | 39  | `example-supervision-report` | ICRCampaignFormResponse | Filled supervision form (the checklist is the form-type discriminator): DOC observed ✓, height chart ✓, ineligibles identified ✓, stock concordant ✗; basedOn → the MDA round (#50); subject → community; author → supervisor |
-| 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `for` → the missed child, `partOf` → the mop-up Task, `revisit-outcome` → already-vaccinated |
+| 40  | `example-followup-task` *(forms-v1)* | ICRCampaignTask | Person-targeted follow-up revisit: `for` → the missed child, `partOf` → the mop-up Task, revisit-outcome output → already-vaccinated |
 | 41  | `example-readiness-report` *(forms-v1)* | ICRCampaignFormResponse | Pre-campaign readiness validation of Kambia supervision zone 2 against the readiness checklist (same profile as #39 — the Questionnaire is the discriminator): microplan ✓, HTRA ✓, supplies-on-time ✗, teams trained ✓; basedOn → the Kambia round (#23) |
 | 42  | `example-sch-mda-protocol` *(v0.1)* | ICRCampaignProtocol | **Descoping trio**: SCH MDA standard target — everyone 2+ (the protocol's `subject` template) |
 | 43  | `example-target-population-sac` *(v0.1)* | ICRTargetPopulation | The narrower school-aged-children denominator that the round targets (supply shortfall) |
@@ -2500,7 +2483,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 56  | `example-readiness-coverage` *(v0.1.1)* | ICRAdministrativeCoverage | Readiness roll-up 83% (10/12 units), stratified by `readiness-domain` — instantiates `icr-campaign-readiness`; campaign ext → #23 |
 | 57  | `example-school` *(school trio)* | ICRLocation | "Rokupr Primary School", type `school`, partOf settlement, GPS, GERS building ID |
 | 58  | `example-school-cohort` *(school trio)* | ICRDeliveryUnit | code `school-cohort` — the enrolled cohort of Rokupr Primary School, quantity 260, groupLocation → #57 |
-| 59  | `example-school-mda-task` *(school trio)* | ICRCampaignTask | **School-based**: for → school cohort (#58), location → school (#57); strategy `school`; taskOrigin `pre-planned`; basedOn → the descoped SAC round (#44); output session tally = 244 treated |
+| 59  | `example-school-mda-task` *(school trio)* | ICRCampaignTask | **School-based**: for → school cohort (#58), location → school (#57); strategy `school`; taskOrigin `pre-planned`; basedOn → the descoped SAC round (#44); treated-count output = 244 |
 | 60  | `example-ward` | ICRLocation | **A country's own coding scheme**: "Kambia Ward 3 (Magbema)", admin-unit, partOf district — its only identifier is a national DHIS2 orgUnit UID under an MoH system URI, marked `use = official`; no GERS or P-code yet (enrichment-pending), and the `icr-loc-admin-id` invariant is satisfied by any-system identifiers |
 | 61  | `example-lqas-coverage` | ICRSurveyCoverage | **LQAS lot assessment** (same round as #37/#38): 12 of 15 lots accepted = 80%; coverage-unit implementation-units; disposition stratifier lists the 3 rejected lots (mop-up triggered); sampleDesign carries the 19-per-lot / reject-if->3 decision rule; coverageSource `lqas`; campaign ext → #23 |
 | 62  | `example-sth-eligible-population` *(protocol-eligibility)* | Group (definitional) | **The protocol's eligibility restriction as data**: school-age children 5–14 — `actual=false`, no count, no geography, a computable age-band `valueRange` (5–14 years); the STH MDA protocol's (#48) `subject`. The concrete round denominator (#49) mirrors the same band. |

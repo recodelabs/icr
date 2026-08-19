@@ -60,57 +60,6 @@ Context: CarePlan, Task, MeasureReport
 * value[x] only code
 * value[x] from ICRDataLineageVS (required)
 
-Extension: HousesVisited
-Id: houses-visited
-Title: "Houses Visited"
-Description: "Number of houses visited — aggregate output of a house-to-house task."
-Context: Task
-* ^experimental = false
-* value[x] only unsignedInt
-
-Extension: EligiblePresent
-Id: eligible-present
-Title: "Eligible Persons Present"
-Description: "Number of eligible persons — per the campaign protocol's target definition — present at the visit(s). Program-neutral by design: children under 5 for polio, household members for ITN registration, the eligible age band for MDA or vitamin A."
-Context: Task
-* ^experimental = false
-* value[x] only unsignedInt
-
-Extension: EligibleAbsent
-Id: eligible-absent
-Title: "Eligible Persons Absent"
-Description: "Number of eligible persons absent at the visit(s) — feeds same-day mop-up lists. Program-neutral counterpart of eligible-present."
-Context: Task
-* ^experimental = false
-* value[x] only unsignedInt
-
-Extension: MissedReason
-Id: missed-reason
-Title: "Missed Reason"
-Description: "Why eligible person(s) were missed at this visit. House-to-house campaigns produce this natively (working doc §3.1)."
-Context: Task
-* ^experimental = false
-* value[x] only CodeableConcept
-* value[x] from ICRMissedReasonVS (extensible)
-
-Extension: NoncomplianceReason
-Id: noncompliance-reason
-Title: "Refusal Reason"
-Description: "Why the household/caregiver refused the intervention (WHO IDHC: 'intervention refusal') — drives social mobilization and mop-up targeting."
-Context: Task
-* ^experimental = false
-* value[x] only CodeableConcept
-* value[x] from ICRNoncomplianceReasonVS (extensible)
-
-Extension: ExclusionReason
-Id: exclusion-reason
-Title: "Exclusion Reason"
-Description: "Why a present, age-eligible person was clinically excluded from the intervention this round (under dose-pole height/age, pregnant, breastfeeding, acutely ill). Distinct from missed (not reached) and refusal (declined): the person was there and age-eligible but contraindicated. MDA treatment forms tally these per drug (espen.md rec 2 / §17.4)."
-Context: Task
-* ^experimental = false
-* value[x] only CodeableConcept
-* value[x] from ICRExclusionReasonVS (extensible)
-
 Extension: TaskOrigin
 Id: task-origin
 Title: "Task Origin"
@@ -119,14 +68,6 @@ Context: Task
 * ^experimental = false
 * value[x] only code
 * value[x] from ICRTaskOriginVS (required)
-
-Extension: FingerMarked
-Id: finger-marked
-Title: "Finger Marked"
-Description: "Whether the child was finger-marked — the in-field 'already covered' flag of house-to-house campaigns."
-Context: Task
-* ^experimental = false
-* value[x] only boolean
 
 Extension: GroupLocation
 Id: group-location
@@ -338,15 +279,6 @@ Context: Immunization, MedicationAdministration
 * ^experimental = false
 * value[x] only code
 * value[x] from ICRDoseHistoryVS (required)
-
-Extension: RevisitOutcome
-Id: revisit-outcome
-Title: "Revisit Outcome"
-Description: "Outcome of a follow-up revisit to a previously-missed household/person (already-vaccinated | vaccinated-on-revisit | still-missing) — the 'outcome of the revisit' of the missed-children recording forms. Set on the person-targeted follow-up Task (Task.for = the missed Patient, Task.partOf = the originating Task that missed them) (forms-v1 / jul3-form-analysis §Aggregate #4)."
-Context: Task
-* ^experimental = false
-* value[x] only CodeableConcept
-* value[x] from ICRRevisitOutcomeVS (extensible)
 
 // --- v0.1.1 additions (ig-compare fix round) -----------------------------------
 

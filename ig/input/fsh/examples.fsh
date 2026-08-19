@@ -536,12 +536,19 @@ Usage: #example
 * executionPeriod.end = "2026-06-24T09:50:00Z"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
 * extension[taskOrigin].valueCode = #field-registered
-* extension[eligiblePresent].valueUnsignedInt = 2
-* extension[eligibleAbsent].valueUnsignedInt = 1
-* extension[missedReason].valueCodeableConcept = $MissedReason#absent "Absent"
-* extension[fingerMarked].valueBoolean = true
-* output.type.text = "Immunization delivered"
-* output.valueReference = Reference(example-mcv-dose)
+// Everything the visit produced is a coded output (task-outputs round): the
+// house-to-house tally axes, the reason, and the reference to the dose captured
+// inside the visit workflow.
+* output[0].type = $TaskOutputType#eligible-present "Eligible persons present"
+* output[0].valueUnsignedInt = 2
+* output[1].type = $TaskOutputType#eligible-absent "Eligible persons absent"
+* output[1].valueUnsignedInt = 1
+* output[2].type = $TaskOutputType#missed-reason "Missed reason"
+* output[2].valueCodeableConcept = $MissedReason#absent "Absent"
+* output[3].type = $TaskOutputType#children-already-marked "Children already finger-marked"
+* output[3].valueUnsignedInt = 1
+* output[4].type = $TaskOutputType#delivery-event "Delivery event reference"
+* output[4].valueReference = Reference(example-mcv-dose)
 
 // --- Delivery events ----------------------------------------------------------
 
@@ -846,15 +853,20 @@ Usage: #example
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#community-directed "Community-directed distribution"
 * extension[taskOrigin].valueCode = #pre-planned
 * extension[dataLineage].valueCode = #reconciled
-* extension[exclusionReason][0].valueCodeableConcept = $ExclusionReason#under-height-age "Below dose-pole minimum (height/age)"
-* extension[exclusionReason][1].valueCodeableConcept = $ExclusionReason#pregnant "Pregnant"
-* extension[exclusionReason][2].valueCodeableConcept = $ExclusionReason#breastfeeding "Breastfeeding / lactating"
-* extension[missedReason].valueCodeableConcept = $MissedReason#absent "Absent"
-* extension[noncomplianceReason].valueCodeableConcept = $NoncomplianceReason#no-felt-need "No felt need"
-* output[0].type.text = "Persons treated with albendazole (community tally)"
+* output[0].type = $TaskOutputType#treated-count "Persons treated / vaccinated (scalar tally)"
 * output[0].valueUnsignedInt = 2900
-* output[1].type.text = "Disaggregated treatment coverage report"
-* output[1].valueReference = Reference(example-mda-treatment-tally)
+* output[1].type = $TaskOutputType#exclusion-reason "Exclusion reason"
+* output[1].valueCodeableConcept = $ExclusionReason#under-height-age "Below dose-pole minimum (height/age)"
+* output[2].type = $TaskOutputType#exclusion-reason "Exclusion reason"
+* output[2].valueCodeableConcept = $ExclusionReason#pregnant "Pregnant"
+* output[3].type = $TaskOutputType#exclusion-reason "Exclusion reason"
+* output[3].valueCodeableConcept = $ExclusionReason#breastfeeding "Breastfeeding / lactating"
+* output[4].type = $TaskOutputType#missed-reason "Missed reason"
+* output[4].valueCodeableConcept = $MissedReason#absent "Absent"
+* output[5].type = $TaskOutputType#noncompliance-reason "Refusal reason"
+* output[5].valueCodeableConcept = $NoncomplianceReason#no-felt-need "No felt need"
+* output[6].type = $TaskOutputType#coverage-report "Coverage report reference"
+* output[6].valueReference = Reference(example-mda-treatment-tally)
 
 Instance: example-mda-treatment-tally
 InstanceOf: ICRAdministrativeCoverage
@@ -1078,7 +1090,8 @@ Usage: #example
 * executionPeriod.end = "2026-06-25T10:10:00Z"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
 * extension[taskOrigin].valueCode = #pre-planned
-* extension[revisitOutcome].valueCodeableConcept = $RevisitOutcome#already-vaccinated "Already vaccinated"
+* output.type = $TaskOutputType#revisit-outcome "Revisit outcome"
+* output.valueCodeableConcept = $RevisitOutcome#already-vaccinated "Already vaccinated"
 
 // Pre-campaign readiness validation of the Kambia round at ward/operational level
 // (UNICEF Preparedness Validation form): the SAME ICRCampaignFormResponse profile
@@ -1281,7 +1294,7 @@ Usage: #example
 * executionPeriod.end = "2026-09-09T13:00:00Z"
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#school "School-based"
 * extension[taskOrigin].valueCode = #pre-planned
-* output.type.text = "Children treated (school session tally)"
+* output.type = $TaskOutputType#treated-count "Persons treated / vaccinated (scalar tally)"
 * output.valueUnsignedInt = 244
 
 // mCSD-style facility pairing: the Organization is the accountable entity

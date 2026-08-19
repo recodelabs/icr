@@ -488,3 +488,21 @@ Description: "Analytics-stable classes for physical campaign commodities. GS1 GT
 * #llin "Long-lasting insecticidal net (LLIN)" "An insecticide-treated bed net for malaria prevention."
 * #irs-insecticide "IRS insecticide" "Insecticide consumable for indoor residual spraying (e.g. Pirimiphos-methyl 300CS)."
 * #rdt "Rapid diagnostic test" "A rapid diagnostic test kit (e.g. malaria RDT)."
+
+CodeSystem: ICRTaskOutputTypeCS
+Id: icr-task-output-type-cs
+Title: "ICR Task Output Type"
+Description: "The standard axes of what a campaign visit produced — the coded vocabulary of Task.output.type (task-outputs round). Parameters of the work (delivery strategy, task origin) stay Task extensions; RESULTS of executing the visit are coded outputs. A new tally axis is a new code here, not a new extension. The house-to-house axes (houses-visited, eligible-present, eligible-absent, children-already-marked) have no meaning at a fixed post — strategy determines which outputs exist (icr-task-h2h-outputs)."
+* ^caseSensitive = true
+* ^experimental = false
+* #treated-count "Persons treated / vaccinated (scalar tally)" "The visit's scalar result tally: persons treated or vaccinated."
+* #houses-visited "Houses visited" "Number of houses visited — house-to-house tasks at area/team-day granularity."
+* #eligible-present "Eligible persons present" "Number of eligible persons (per the protocol's target definition) present at the visit(s). Program-neutral."
+* #eligible-absent "Eligible persons absent" "Number of eligible persons absent at the visit(s) — feeds same-day mop-up lists."
+* #children-already-marked "Children already finger-marked" "Number of children found already finger-marked (already covered this round) on arrival — house-to-house campaigns."
+* #missed-reason "Missed reason" "Why eligible person(s) were missed at this visit — person-level (absent, sleeping) and area-level (insecurity, shortage, access) causes."
+* #noncompliance-reason "Refusal reason" "Why the household/caregiver refused the intervention (WHO IDHC 'intervention refusal') — drives social mobilization and mop-up targeting."
+* #exclusion-reason "Exclusion reason" "Why a present, age-eligible person was clinically excluded this round (under dose-pole height/age, pregnant, breastfeeding, acutely ill)."
+* #revisit-outcome "Revisit outcome" "Outcome of a person-targeted follow-up revisit: already-vaccinated | vaccinated-on-revisit | still-missing."
+* #delivery-event "Delivery event reference" "Reference to an Immunization / MedicationAdministration / supply event captured inside the visit workflow."
+* #coverage-report "Coverage report reference" "Reference to the stratified MeasureReport that disaggregates this visit's tally."
