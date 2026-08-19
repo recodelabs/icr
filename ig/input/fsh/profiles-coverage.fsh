@@ -22,12 +22,14 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * group.stratifier.code from ICRCoverageStratifierVS (extensible)
 * group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — extensible binding to ICRCoverageStratifierVS, so custom country axes stay legal (v0.19.0)"
 * extension contains
+    Campaign named campaign 0..1 MS and
     ReporterTeam named reporterTeam 0..1 MS and
     CoverageSource named coverageSource 1..1 MS and
     DenominatorSource named denominatorSource 0..1 MS and
     DenominatorType named denominatorType 0..1 MS and
     CoverageUnit named coverageUnit 0..1 MS and
     RealtimeVsReconciled named dataLineage 1..1 MS
+* extension[campaign] ^short = "The campaign (round) this coverage figure reports against — the direct MeasureReport→ICRCampaign join (same extension as the delivery events). Expected on every campaign coverage report; only transiently absent on form-extracted reports before ingestion enrichment assigns the round"
 * extension[coverageSource].valueCode = #administrative
 * extension[denominatorType] ^short = "total-population vs at-risk/eligible (programme vs epidemiological coverage)"
 * extension[coverageUnit] ^short = "people vs implementation-units (geographic coverage); absent ⇒ people"
@@ -51,12 +53,14 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
 * group.stratifier.code from ICRCoverageStratifierVS (extensible)
 * group.stratifier ^short = "Disaggregation by the standard axes (ICRCoverageStratifierVS, extensible) the Measure declares (v0.19.0)"
 * extension contains
+    Campaign named campaign 0..1 MS and
     ReporterTeam named reporterTeam 0..1 MS and
     CoverageSource named coverageSource 1..1 MS and
     SampleDesign named sampleDesign 0..1 MS and
     DenominatorType named denominatorType 0..1 MS and
     CoverageUnit named coverageUnit 0..1 MS and
     RealtimeVsReconciled named dataLineage 1..1 MS
+* extension[campaign] ^short = "The campaign (round) this survey/LQAS measurement assesses — the direct MeasureReport→ICRCampaign join (same extension as the delivery events)"
 * extension[coverageSource].value[x] from ICRIndependentCoverageSourceVS (required)
 * extension[sampleDesign] ^short = "Method / sample design of the independent measurement (e.g. WHO 30×10 cluster survey)"
 * extension[dataLineage] ^short = "Required on coverage reports: preliminary survey results (realtime) vs final results (reconciled)"
