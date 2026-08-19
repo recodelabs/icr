@@ -606,6 +606,7 @@ Usage: #example
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
 * reporter.display = "Kambia District Health Management Team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
 * extension[reporterTeam].valueReference = Reference(example-careteam)
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].count = 47766
@@ -627,6 +628,7 @@ Usage: #example
 * period.start = "2026-07-06"
 * period.end = "2026-07-12"
 * reporter.display = "Independent post-campaign coverage survey team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
 // The populations are SAMPLE counts (found vaccinated / children surveyed) —
 // a survey's denominator IS its sample, unlike the admin report's population
 // denominator. Shape deliberately parallels example-admin-coverage (same round).
@@ -668,6 +670,7 @@ Usage: #example
 * period.start = "2026-06-29"
 * period.end = "2026-07-03"
 * reporter.display = "Kambia District LQAS monitoring team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].count = 12
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
@@ -836,6 +839,7 @@ Usage: #example
 * period.start = "2026-02-08"
 * period.end = "2026-02-12"
 * reporter.display = "Rokupr health-area CDD supervisor"
+* extension[campaign].valueReference = Reference(example-mda-round)
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].count = 2900
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
@@ -896,6 +900,10 @@ Usage: #example
 * period.start = "2026-02-08"
 * period.end = "2026-02-26"
 * reporter.display = "Kambia District NTD supervisor"
+// No campaign link here on purpose: this district-scope figure reports against a
+// Kambia-district MDA round whose CarePlan is not modeled in the example set
+// (example-mda-round is the Rokupr community round) — also demonstrates the
+// link's 0..1 cardinality.
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].count = 188
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
@@ -1104,6 +1112,7 @@ Usage: #example
 * period.start = "2026-06-15"
 * period.end = "2026-06-26"
 * reporter.display = "Kambia District Health Management Team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
 * extension[reporterTeam].valueReference = Reference(example-careteam)
 * extension[coverageSource].valueCode = #administrative
 * extension[dataLineage].valueCode = #reconciled
@@ -1131,6 +1140,7 @@ Usage: #example
 * period.start = "2026-06-01"
 * period.end = "2026-06-12"
 * reporter.display = "Kambia District Health Management Team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
 * extension[reporterTeam].valueReference = Reference(example-careteam)
 * extension[coverageSource].valueCode = #administrative
 * extension[coverageUnit].valueCode = #implementation-units

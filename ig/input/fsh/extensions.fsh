@@ -19,6 +19,14 @@ Context: Immunization, MedicationAdministration, SupplyDelivery, AdverseEvent
 * value[x] only code
 * value[x] from ICRRecordOriginVS (required)
 
+Extension: Campaign
+Id: campaign
+Title: "Campaign"
+Description: "The campaign round — the ICRCampaign CarePlan — this record belongs to. The uniform record→campaign join: delivery events (Immunization, MedicationAdministration, SupplyDelivery) and coverage reports (MeasureReport) all point AT their campaign, in the same direction as Task.basedOn — the CarePlan itself is never rewritten as records accumulate. Replaces the core event-basedOn extension previously used on the delivery profiles: its R4 context is Condition-only, so every use on a delivery resource was context-invalid, and MeasureReport needs the same link (a coverage report otherwise has no computable path back to its campaign)."
+Context: Immunization, MedicationAdministration, SupplyDelivery, MeasureReport
+* ^experimental = false
+* value[x] only Reference(ICRCampaign)
+
 Extension: CampaignRound
 Id: campaign-round
 Title: "Campaign Round"

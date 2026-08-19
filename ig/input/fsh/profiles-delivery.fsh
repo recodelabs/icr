@@ -1,11 +1,14 @@
 // Delivery-event profiles (working doc §7.8).
 // Every delivery event carries the required record-origin extension (campaign vs
-// routine — working doc §4.4) and its own campaign link: the standard HL7
-// event-basedOn extension, constrained to Reference(ICRCampaign). R4 Immunization
-// has no basedOn element, so the extension supplies it — a delivery event stands
-// alone (patient + campaign + record-origin) and per-round queries never depend
-// on Task wiring. Task.output carries the visit-level result (the tally) and may
-// additionally reference events captured inside the visit workflow.
+// routine — working doc §4.4) and its own campaign link: the local Campaign
+// extension, Reference(ICRCampaign). (Formerly the HL7 event-basedOn extension,
+// but its R4 context is Condition-only, so that use was context-invalid; the
+// local extension also serves MeasureReport, giving one uniform record→campaign
+// join.) R4 Immunization has no basedOn element, so the extension supplies it —
+// a delivery event stands alone (patient + campaign + record-origin) and
+// per-round queries never depend on Task wiring. Task.output carries the
+// visit-level result (the tally) and may additionally reference events captured
+// inside the visit workflow.
 
 Profile: ICRImmunizationEvent
 Parent: Immunization
@@ -28,11 +31,10 @@ Description: "A vaccination delivery event: CVX-coded, with lot accountability a
 * protocolApplied MS
 * protocolApplied ^short = "Dose number / series — supports multi-dose campaigns (OCV) and routine integration"
 * extension contains
-    $eventBasedOn named campaign 0..1 MS and
+    Campaign named campaign 0..1 MS and
     RecordOrigin named recordOrigin 1..1 MS and
     PriorDoseStatus named priorDoseStatus 0..1 MS
-* extension[campaign].value[x] only Reference(ICRCampaign)
-* extension[campaign] ^short = "The campaign (round) this dose belongs to — the standard event-basedOn extension supplies Immunization's missing basedOn, so 'all doses in this round' is a direct query, independent of Task wiring"
+* extension[campaign] ^short = "The campaign (round) this dose belongs to — supplies Immunization's missing basedOn, so 'all doses in this round' is a direct query, independent of Task wiring"
 * extension[priorDoseStatus] ^short = "Prior-dose (zero-dose) status of the antigen at this contact — zero-dose | previously-received | no-recall (v0.21.0)"
 
 Profile: ICRMedicationAdministration
@@ -54,13 +56,12 @@ Description: "An MDA treatment event: ATC-coded preventive chemotherapy with dir
 * supportingInformation MS
 * supportingInformation ^short = "e.g. the dose-pole Observation the dosage was derived from"
 * extension contains
-    $eventBasedOn named campaign 0..1 MS and
+    Campaign named campaign 0..1 MS and
     RecordOrigin named recordOrigin 1..1 MS and
     DirectlyObservedConsumption named directlyObserved 0..1 MS and
     DosePoleBand named dosePoleBand 0..1 MS and
     PriorDoseStatus named priorDoseStatus 0..1 MS
-* extension[campaign].value[x] only Reference(ICRCampaign)
-* extension[campaign] ^short = "The campaign (round) this treatment belongs to — the standard event-basedOn extension; per-round queries stay independent of Task wiring"
+* extension[campaign] ^short = "The campaign (round) this treatment belongs to; per-round queries stay independent of Task wiring"
 * extension[dosePoleBand] ^short = "The measured dose-pole height band that set the tablet count (machine-readable height-band → dose, v0.19.0)"
 * extension[priorDoseStatus] ^short = "Prior-dose (zero-dose) status at this contact — zero-dose | previously-received | no-recall (v0.21.0)"
 
@@ -79,9 +80,8 @@ Description: "A commodity distribution event — ITNs, IRS consumables, vitamin 
 * destination MS
 * destination ^short = "Where the commodity went (post, household)"
 * extension contains
-    $eventBasedOn named campaign 0..1 MS and
+    Campaign named campaign 0..1 MS and
     RecordOrigin named recordOrigin 1..1 MS and
     StockAccountability named stockAccountability 0..1 MS
-* extension[campaign].value[x] only Reference(ICRCampaign)
-* extension[campaign] ^short = "The campaign (round) this delivery belongs to — the standard event-basedOn extension; per-round queries stay independent of Task wiring"
+* extension[campaign] ^short = "The campaign (round) this delivery belongs to; per-round queries stay independent of Task wiring"
 * extension[stockAccountability] ^short = "Vial/commodity accountability & wastage — received/used/remaining/not-usable/returned, concordance, VVM (v0.20.0)"
