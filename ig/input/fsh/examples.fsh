@@ -1293,3 +1293,38 @@ Usage: #example
 * position.latitude = 9.0140
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-place-chc-example"
+
+// --- Location-status assertions (location-status round) -----------------------
+// The JRSM district endemicity table as data: one Observation per district ×
+// disease, subject = the Location — never a field inside Location (georegistry
+// rule; endemicity is revisable epidemiological state with provenance, exactly
+// the denominator epistemology). Two assertions on the same district give the
+// co-endemicity read. An assertion covers the district's whole subtree unless
+// a lower-level assertion overrides it.
+
+Instance: example-lf-endemicity
+InstanceOf: ICRLocationStatus
+Title: "LF endemicity — Kambia District (endemic, under MDA)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #final
+* code = $LocationStatus#lf-endemicity "Lymphatic filariasis endemicity"
+* subject = Reference(example-district)
+* valueCodeableConcept = $EndemicityStatus#endemic-under-mda "Endemic, under MDA"
+* effectiveDateTime = "2026-01-15"
+* performer.display = "MoH NTD Programme — JRSM 2026 submission"
+* method.text = "District-level LF mapping survey (2019), reconfirmed through annual JRSM reporting"
+* derivedFrom.display = "LF mapping survey report, Kambia District, 2019"
+
+Instance: example-oncho-endemicity
+InstanceOf: ICRLocationStatus
+Title: "Onchocerciasis endemicity — Kambia District (non-endemic)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #final
+* code = $LocationStatus#oncho-endemicity "Onchocerciasis endemicity"
+* subject = Reference(example-district)
+* valueCodeableConcept = $EndemicityStatus#non-endemic "Non-endemic"
+* effectiveDateTime = "2026-01-15"
+* performer.display = "MoH NTD Programme — JRSM 2026 submission"
+* method.text = "Epidemiological mapping (REMO); no active transmission foci"

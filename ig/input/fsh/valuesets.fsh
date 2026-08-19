@@ -216,3 +216,17 @@ Title: "ICR Facility Ownership"
 Description: "Facility ownership / managing authority, on the facility Organization's type. Binding: extensible — countries add local ownership categories."
 * ^experimental = false
 * include codes from system ICROwnershipCS
+
+ValueSet: ICRLocationStatusVS
+Id: icr-location-status
+Title: "ICR Location Status"
+Description: "Location-scoped property codes. Binding: extensible on ICRLocationStatus.code, so country-specific location properties stay legal."
+* ^experimental = false
+* include codes from system ICRLocationStatusCS
+
+ValueSet: ICREndemicityStatusVS
+Id: icr-endemicity-status
+Title: "ICR Endemicity Status"
+Description: "The JRSM-aligned endemicity ladder. Binding: extensible (not required) on ICRLocationStatus.valueCodeableConcept, because future non-endemicity property codes carry their own value vocabularies."
+* ^experimental = false
+* include codes from system ICREndemicityStatusCS

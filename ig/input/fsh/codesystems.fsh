@@ -453,3 +453,28 @@ Description: "Ownership / managing-authority classification for the facility Org
 * #unknown "Unknown ownership" "The national registry does not record or know the owner — the low-precision escape."
 * #unknown ^designation[0].language = #fr
 * #unknown ^designation[0].value = "Propriété inconnue"
+
+CodeSystem: ICRLocationStatusCS
+Id: icr-location-status-cs
+Title: "ICR Location Status"
+Description: "Pre-coordinated property codes for location-scoped status assertions (ICRLocationStatus): WHAT is being asserted about a place. One code per property × disease — the same pre-coordination pattern as the campaign-type and stratifier vocabularies — so 'which districts are LF-endemic' is a single-code query. A new location property is a new code here, not a new profile."
+* ^caseSensitive = true
+* ^experimental = false
+* #lf-endemicity "Lymphatic filariasis endemicity" "Endemicity status of the location for lymphatic filariasis."
+* #oncho-endemicity "Onchocerciasis endemicity" "Endemicity status of the location for onchocerciasis."
+* #schisto-endemicity "Schistosomiasis endemicity" "Endemicity status of the location for schistosomiasis."
+* #sth-endemicity "Soil-transmitted helminthiasis endemicity" "Endemicity status of the location for the soil-transmitted helminthiases."
+* #trachoma-endemicity "Trachoma endemicity" "Endemicity status of the location for trachoma."
+
+CodeSystem: ICREndemicityStatusCS
+Id: icr-endemicity-status-cs
+Title: "ICR Endemicity Status"
+Description: "The endemicity classification ladder for a location, aligned with the WHO JRSM district-level endemicity categories — the value side of the ICRLocationStatus endemicity property codes."
+* ^caseSensitive = true
+* ^experimental = false
+* #endemic-mda-not-started "Endemic, MDA not started" "The disease is endemic in this location and preventive chemotherapy has not yet begun."
+* #endemic-under-mda "Endemic, under MDA" "The disease is endemic and the location is under active preventive-chemotherapy rounds."
+* #post-mda-surveillance "Under post-MDA surveillance" "MDA has stopped after meeting stopping criteria; the location is under post-treatment surveillance (e.g. TAS for LF)."
+* #elimination-validated "Elimination validated" "WHO has validated or verified elimination (of transmission, or as a public-health problem) for this disease in the geography covering this location."
+* #non-endemic "Non-endemic" "The disease is not endemic in this location."
+* #unknown "Unknown (mapping required)" "Endemicity has not been determined; mapping is required."

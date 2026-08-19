@@ -164,3 +164,30 @@ Description: "The accountable facility entity — the mCSD-style pairing partner
 * partOf ^short = "Administrative reporting hierarchy: facility → LGA/district health office → state/national agency. Reporting structure, not geography — it need not mirror the Location partOf chain."
 * telecom MS
 * telecom ^short = "Facility contact (phone, email) — contact data belongs to the entity"
+
+Profile: ICRLocationStatus
+Parent: Observation
+Id: ICRLocationStatus
+Title: "ICR Location Status"
+Description: "A time-varying, provenance-carrying property assertion about a place — endemicity ('this district is LF-endemic, under MDA') first, with future axes such as access/security status or elimination milestones. The location-scoped analogue of the denominator discipline (working doc §7.6): assertions are revisable, sources can disagree, and every assertion carries who asserted it, when, by what method, and from what evidence. That is why it is an Observation JOINED to the Location rather than a field inside it — per the georegistry rule, Location carries durable identity only; revisable epidemiological state lives beside it. Semantics: an assertion applies to the location's entire partOf subtree unless a lower-level assertion overrides it, and consumers read the newest final/amended assertion per (subject, code). Properties are pre-coordinated codes (ICRLocationStatusVS): a new location property is a new code, not a new profile. Counts and rates are NOT this profile — they stay MeasureReport; durable identity classifications (settlement-type) stay on Location."
+* ^experimental = false
+* status MS
+* status ^short = "final; a newer final or amended assertion supersedes — read the latest per (subject, code)"
+* code 1..1 MS
+* code from ICRLocationStatusVS (extensible)
+* code ^short = "The property asserted — pre-coordinated per disease (lf-endemicity, oncho-endemicity, …); 'which districts are LF-endemic' is a single-code query"
+* subject 1..1 MS
+* subject only Reference(ICRLocation)
+* subject ^short = "The place this assertion is about (subject, not focus — the observation is fundamentally about the place). Typically the district / implementation unit; applies to its subtree unless overridden below"
+* value[x] only CodeableConcept
+* value[x] MS
+* valueCodeableConcept from ICREndemicityStatusVS (extensible)
+* value[x] ^short = "The classification — the JRSM ladder for the endemicity codes; future property codes bring their own vocabularies (hence extensible)"
+* effective[x] MS
+* effective[x] ^short = "When the classification was assessed / holds from — open-ended: current until superseded"
+* performer MS
+* performer ^short = "Who asserted it: the MoH NTD programme, a mapping-survey team, an ESPEN/JRSM extract"
+* method MS
+* method ^short = "How it was determined: mapping survey, TAS, sentinel site, administrative report"
+* derivedFrom MS
+* derivedFrom ^short = "The evidentiary trail — the mapping-survey form response or source document"
