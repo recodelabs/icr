@@ -100,23 +100,18 @@ Description: "An administrative unit should mark its authoritative country code 
 Severity: #warning
 Expression: "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs' and code = 'admin-unit').exists() implies identifier.where(use = 'official').exists()"
 
-Invariant: icr-loc-overlays
-Description: "A supervisory or operational area should declare the administrative unit(s) it overlays via the overlays-admin-unit extension — an area that overlays nothing cannot roll up into administrative reporting. Warning in v0.x; expected to be promoted to error at v1.0."
-Severity: #warning
-Expression: "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs' and (code = 'supervisory-area' or code = 'operational-area')).exists() implies extension('https://icr.healthcampaigns.org/StructureDefinition/overlays-admin-unit').exists()"
-
 Profile: ICRLocation
 Parent: Location
 Id: ICRLocation
 Title: "ICR Location"
-Description: "The most-customized ICR resource — the ICR's georegistry layer, covering the WHO IDHC administrative boundary, health facility and school master lists: nested administrative hierarchy (6+ levels in campaign countries), operational geography linkable-but-distinct from admin units, GeoJSON boundaries, and multi-system geospatial identity — Overture Maps GERS IDs (building / place / division) as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases. Per the IDHC georegistry rule, this layer holds only identify/classify/locate/contact data; programmatic data references it but never lives in it (working doc §7.7, §9)."
+Description: "The most-customized ICR resource — the ICR's georegistry layer, covering the WHO IDHC administrative boundary, health facility and school master lists: a single partOf containment tree (6+ levels in campaign countries) holding admin units and operational geography alike, distinguished by type — not tree position; GeoJSON boundaries; and multi-system geospatial identity — Overture Maps GERS IDs (building / place / division) as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases. Per the IDHC georegistry rule, this layer holds only identify/classify/locate/contact data; programmatic data references it but never lives in it (working doc §7.7, §9)."
 * ^experimental = false
-* obeys icr-loc-admin-id and icr-loc-admin-official and icr-loc-overlays
+* obeys icr-loc-admin-id and icr-loc-admin-official
 * name MS
 * status MS
 * partOf only Reference(ICRLocation)
 * partOf MS
-* partOf ^short = "Nested admin hierarchy: country → region → district → ward → settlement"
+* partOf ^short = "Single containment tree: the one parent that fully contains this Location. Admin units chain upward (country → region → district → ward); settlements, facilities, and operational areas attach at the lowest admin unit that fully contains them — a supervisory area inside one district is partOf that district; one spanning districts attaches at region/state level"
 * physicalType MS
 * physicalType ^short = "jurisdiction / site / building / household"
 * type MS
@@ -147,10 +142,8 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * identifier[isoSubdivision] ^short = "ISO 3166-2 subdivision code (first-level subdivisions) — FHIR-designated system URI"
 * extension contains
     LocationBoundaryGeoJson named boundary 0..1 MS and
-    OverlaysAdminUnit named overlaysAdminUnit 0..* and
     SettlementType named settlementType 0..1 MS
 * extension[boundary] ^short = "District polygon, settlement area, or catchment zone (GeoJSON)"
-* extension[overlaysAdminUnit] ^short = "For operational geography (supervisory/operational areas): the admin unit(s) this area overlays — linkable-but-distinct from the admin hierarchy (working doc §9)"
 * extension[settlementType] ^short = "Settlement / special-population type (urban-slum, refugee-IDP, nomad-pastoralist, security-compromised, hard-to-reach…) — vulnerability/equity attribute for HTRA targeting (v0.21.0)"
 
 Profile: ICRFacilityOrganization

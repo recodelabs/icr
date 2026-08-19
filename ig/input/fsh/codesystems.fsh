@@ -105,7 +105,7 @@ Description: "Whether a campaign Task was generated in advance from the micropla
 CodeSystem: ICRLocationTypeCS
 Id: icr-location-type-cs
 Title: "ICR Location Type"
-Description: "Campaign-relevant location types, including operational geography (supervisory and operational areas) as linkable-but-distinct from the administrative hierarchy (working doc §9)."
+Description: "Campaign-relevant location types. Type — not tree position — is what distinguishes official administrative units from operational geography: every Location lives in the single partOf containment tree, and administrative rollups filter on type = admin-unit (working doc §9)."
 * ^caseSensitive = true
 * ^experimental = false
 * #admin-unit "Administrative unit" "A unit of the administrative hierarchy: country, region, district, ward."
@@ -115,8 +115,8 @@ Description: "Campaign-relevant location types, including operational geography 
 * #community-distribution-point "Community distribution point" "A community focal point used for distribution (market, place of worship, transit point)."
 * #temporary-post "Temporary post" "A temporary or outreach vaccination/delivery post."
 * #household "Household dwelling" "The physical dwelling of a household."
-* #supervisory-area "Supervisory area" "An operational supervision area — a group of settlements or sites under one supervisor; overlays (but is distinct from) the admin hierarchy."
-* #operational-area "Operational area" "An operational planning area that does not match an admin unit (e.g. polio operational boundaries differing from RI catchments)."
+* #supervisory-area "Supervisory area" "An operational supervision area — a group of settlements or sites under one supervisor. Not an admin unit: it attaches via partOf at the lowest admin unit that fully contains it (its district; region/state if it spans districts)."
+* #operational-area "Operational area" "An operational planning area that does not match an admin unit (e.g. polio operational boundaries differing from RI catchments). Not an admin unit: it attaches via partOf at the lowest admin unit that fully contains it."
 
 CodeSystem: ICRGroupCharacteristicCS
 Id: icr-group-characteristic-cs
