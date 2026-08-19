@@ -478,3 +478,13 @@ Description: "The endemicity classification ladder for a location, aligned with 
 * #elimination-validated "Elimination validated" "WHO has validated or verified elimination (of transmission, or as a public-health problem) for this disease in the geography covering this location."
 * #non-endemic "Non-endemic" "The disease is not endemic in this location."
 * #unknown "Unknown (mapping required)" "Endemicity has not been determined; mapping is required."
+
+CodeSystem: ICRCommodityClassCS
+Id: icr-commodity-class-cs
+Title: "ICR Commodity Class"
+Description: "Analytics-stable classes for physical campaign commodities. GS1 GTINs identify a specific manufacturer's product and cannot be enumerated in a value set; the class code is what measures count ('how many nets'), while a GTIN coding may sit alongside it in the same CodeableConcept ('which net'). Drug commodities do not live here — they stay WHO ATC (supply-split round)."
+* ^caseSensitive = true
+* ^experimental = false
+* #llin "Long-lasting insecticidal net (LLIN)" "An insecticide-treated bed net for malaria prevention."
+* #irs-insecticide "IRS insecticide" "Insecticide consumable for indoor residual spraying (e.g. Pirimiphos-methyl 300CS)."
+* #rdt "Rapid diagnostic test" "A rapid diagnostic test kit (e.g. malaria RDT)."

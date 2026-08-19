@@ -578,15 +578,19 @@ Usage: #example
 * extension[directlyObserved].valueBoolean = true
 * extension[dosePoleBand].valueCodeableConcept.text = "Dose-pole band B (height 110–124 cm → 1 tablet)"
 
+// Last-mile distribution vs node-to-node movement are separate profiles
+// (supply-split round): this one is the coverage-bearing DISTRIBUTION — the
+// recipient household Group is the per-capita join (3 nets ÷ Group.quantity).
 Instance: example-itn-delivery
-InstanceOf: ICRSupplyDelivery
-Title: "ITN delivery to household"
+InstanceOf: ICRSupplyDistribution
+Title: "ITN distribution to household"
 Usage: #example
 * meta.tag[+] = $ProjectTag#gallery "Gallery"
 * status = #completed
 * suppliedItem.quantity = 3 '{Net}' "nets"
-* suppliedItem.itemCodeableConcept.text = "Long-lasting insecticidal net (LLIN)"
+* suppliedItem.itemCodeableConcept = $CommodityClass#llin "Long-lasting insecticidal net (LLIN)"
 * destination = Reference(example-dwelling)
+* extension[recipient].valueReference = Reference(example-household)
 * extension[recordOrigin].valueCode = #campaign
 
 // --- Coverage: the admin-vs-survey pair (never-merged lineages) ---------------
@@ -778,8 +782,11 @@ Usage: #example
 * extension[planningDenominator].valueReference = Reference(example-target-population-sth)
 * extension[dataLineage].valueCode = #reconciled
 
+// The stock-bearing MOVEMENT side of the supply split: receipt at the community
+// staging point, with the full accountability ledger. The onward issue to the
+// CDD team below chains back here via partOf.
 Instance: example-albendazole-supply
-InstanceOf: ICRSupplyDelivery
+InstanceOf: ICRSupplyMovement
 Title: "Albendazole receipt — Rokupr community (ATC-coded drug supply)"
 Usage: #example
 * meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
@@ -793,6 +800,27 @@ Usage: #example
 * extension[stockAccountability].extension[used].valueQuantity = 3080 '{tbl}' "tablets"
 * extension[stockAccountability].extension[remaining].valueQuantity = 500 '{tbl}' "tablets"
 * extension[stockAccountability].extension[notUsable].valueQuantity = 20 '{tbl}' "tablets"
+* extension[stockAccountability].extension[concordant].valueBoolean = true
+
+// Field-team daily stock: one issuance per team per day, ledger closes the day.
+// partOf → the community receipt makes the chain explicit and queryable.
+Instance: example-team-issuance
+InstanceOf: ICRSupplyMovement
+Title: "Albendazole issue — CDD team 7, day 1 (field-team daily stock)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* status = #completed
+* suppliedItem.quantity = 400 '{tbl}' "tablets"
+* suppliedItem.itemCodeableConcept = $ATC#P02CA03 "albendazole"
+* destination = Reference(example-settlement)
+* partOf = Reference(example-albendazole-supply)
+* extension[campaign].valueReference = Reference(example-mda-round)
+* extension[recordOrigin].valueCode = #campaign
+* extension[issuedToTeam].valueReference = Reference(example-careteam)
+* extension[stockAccountability].extension[received].valueQuantity = 400 '{tbl}' "tablets"
+* extension[stockAccountability].extension[used].valueQuantity = 360 '{tbl}' "tablets"
+* extension[stockAccountability].extension[remaining].valueQuantity = 38 '{tbl}' "tablets"
+* extension[stockAccountability].extension[notUsable].valueQuantity = 2 '{tbl}' "tablets"
 * extension[stockAccountability].extension[concordant].valueBoolean = true
 
 Instance: example-mda-community-task

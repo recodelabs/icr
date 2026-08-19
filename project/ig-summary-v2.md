@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-19T18:47:37Z
+last_modified: 2026-08-19T19:07:01Z
 tags:
   - icr
   - fhir
@@ -176,7 +176,7 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | --- | --- | --- |
 | **Profiles — campaign architecture** | 4   | ICRCampaignProtocol (PlanDefinition), ICRCampaign (CarePlan), ICRCampaignActivity (ActivityDefinition), ICRCampaignTask (Task) |
 | **Profiles — population & geography** | 5   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location), ICRFacilityOrganization (Organization — the accountable facility entity, mCSD pairing) |
-| **Profiles — delivery events** | 3   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDelivery (SupplyDelivery) |
+| **Profiles — delivery events** | 4   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDistribution + ICRSupplyMovement (SupplyDelivery — the supply split, §6.3) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
 | **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRCampaignFormResponse (QuestionnaireResponse — the filled campaign form: supervision, readiness, monitoring…) |
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
@@ -209,7 +209,7 @@ graph TD
     L["ICRLocation<br/><i>admin hierarchy + GERS identity</i>"]
     IMM["ICRImmunizationEvent"]
     MED["ICRMedicationAdministration"]
-    SUP["ICRSupplyDelivery"]
+    SUP["ICRSupplyDistribution /<br/>ICRSupplyMovement"]
     AC["ICRAdministrativeCoverage<br/>(MeasureReport)"]
     SC["ICRSurveyCoverage<br/>(MeasureReport)"]
     CT["ICRCareTeam<br/>(CareTeam)<br/><i>vaccinator/CDD + supervisor</i>"]
@@ -269,7 +269,8 @@ Read the IG as three layers that intersect:
 
 - **ICRImmunizationEvent** *(Immunization)* — **a vaccine dose** given in a campaign.
 - **ICRMedicationAdministration** *(MedicationAdministration)* — **a drug administration** (MDA), for example albendazole. It includes the dose-pole pattern and the directly-observed-consumption pattern.
-- **ICRSupplyDelivery** *(SupplyDelivery)* — **a commodity delivery** (bed-nets, drug stock). It has a stock-accountability extension for wastage and reconciliation.
+- **ICRSupplyDistribution** *(SupplyDelivery)* — **last-mile distribution to the people it serves** (bed-nets to a household). The coverage-bearing supply event: its recipient household join is what per-capita net coverage computes against.
+- **ICRSupplyMovement** *(SupplyDelivery)* — **a commodity movement between supply-chain nodes** (receipt at a facility, issue to a team). The stock-bearing supply event: it carries the stock-accountability ledger for wastage and reconciliation, chains via `partOf`, and never counts toward coverage.
 - **ICRAdverseEvent** *(AdverseEvent)* — an **intervention-neutral safety event**. One profile serves AEFI (after a vaccine dose) and MDA pharmacovigilance (after a drug).
 
 Each delivery event and the adverse event carry a mandatory `record-origin` flag (campaign vs routine). Each delivery event also carries its own **campaign link** — the local `campaign` extension, `Reference(ICRCampaign)`. (Earlier drafts reused the HL7 `event-basedOn` extension; R4 declares that extension's context on other resource types, so the IG now mints its own — §6.) A delivery event therefore stands alone: patient + campaign + origin. "All doses in this round" is a direct query and never depends on Task wiring.
@@ -1039,14 +1040,14 @@ The six instruments are in `ig/input/fsh/questionnaires-espen.fsh`. `espen-mda-l
 | Form | Extracts to | Notes |
 | --- | --- | --- |
 | 1 location | `ICRLocation` + 5 `ICRTargetPopulation` Groups | Population totals: total / eligible / 1–4 / 5–14 / 15+. Each Group's geography characteristic references the co-extracted Location through allocate-id. |
-| 2 receipt | `ICRSupplyDelivery` per drug (8 templates) | Item-level and ATC-coded. Only the answered drug totals extract. |
+| 2 receipt | `ICRSupplyMovement` (facility receipt) per drug (8 templates) | Item-level and ATC-coded. Only the answered drug totals extract. |
 | 3 treatment | `ICRDeliveryUnit` community Group (allocate-id) + `ICRMedicationAdministration` per drug (8, Group-subject) + `ICRAdministrativeCoverage` MeasureReport (8, per drug) | *(espen-remap)* The community Group and the per-drug Group-subject treatment events are the *what happened*. The MeasureReport is the *how many*. It has `measure = icr-mda-treatment-coverage` and sex × age-band × disposition stratifiers. This is the same cube as `example-mda-treatment-tally` (§7.3). |
 | 4 case mgmt | **None — by design** *(espen-remap)* | A distributed total is not a custody transfer, so it mints no SupplyDelivery. The counts stay on the QR. The ingestion pipeline folds them into the Form 2 receipt's stock-accountability (`received`/`used`/`remaining`). Extraction cannot express this cross-form merge. Side-effect and other-NTD counts stay on the QR. |
 | 5 & 6 supervision | **None — by design** | The QuestionnaireResponse *is* the record (`ICRCampaignFormResponse`, §4.6). |
 
 **The no-extraction rule for the supervision pair is a design decision, not a gap.** Per §4.6, a supervision `QuestionnaireResponse` is itself the record of a visit. There is no downstream resource to mint. Thus Forms 5 and 6 have no templates. Also, the system cannot mint person-level `ICRAdverseEvent`s from Form 4's aggregate side-effect counts. Thus those counts stay on the response.
 
-**The espen-remap adjustment (2026-07-07).** The original round extracted Form 4's per-drug distributed totals as standalone "distributed" `ICRSupplyDelivery` resources. That misstated the semantics. A SupplyDelivery is a **custody transfer** of stock, for example to a facility, a distribution point, or a household that receives nets. Tablets that community members swallow are **treatment**.
+**The espen-remap adjustment (2026-07-07).** The original round extracted Form 4's per-drug distributed totals as standalone "distributed" SupplyDelivery resources. That misstated the semantics. A SupplyDelivery is a **custody transfer** of stock, for example to a facility, a distribution point, or a household that receives nets. Tablets that community members swallow are **treatment**.
 
 The remap makes two changes. (a) It drops Form 4's SupplyDelivery templates. The distributed totals stay on the QR, and the ingestion pipeline folds them into the Form 2 receipt's stock-accountability ledger. (b) It adds two artifacts to Form 3: an `ICRDeliveryUnit` community Group, and one **Group-subject** `ICRMedicationAdministration` for each treated drug. This is the register-level treatment pattern that §6.2 was designed for. It also gives `ICRAdverseEvent.suspectEntity` a treatment event to reference for MDA pharmacovigilance.
 
@@ -1755,23 +1756,43 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
 **Open questions.**
 
 - A later round can add three items: a `stockpile-source` axis (ICG / national / Gavi), a `dosing-regimen` axis, and a fuller typed band→dose table for the dose pole (§13.2).
-### 6.3 ICRSupplyDelivery — `SupplyDelivery`
-**Purpose.** A **commodity delivery** — for example, bed-nets handed to a household, or drug stock delivered to a distribution point. It carries a stock-accountability record for wastage and reconciliation.
+### 6.3 Supply events — ICRSupplyDistribution & ICRSupplyMovement (`SupplyDelivery`)
+**Purpose.** Supply events are **two profiles on one resource** (the supply split). The former single profile mixed two roles, and a coverage calculation could not tell them apart — 500 nets *moved* to a post plus 250 nets *handed over* would double-count. The split makes the Measures safe: distributions feed **coverage**; movements feed **stock and wastage** only.
 
-**Properties.**
+- **ICRSupplyDistribution** — last-mile distribution **to the people it serves**: bed-nets to a household, consumables to a community. It names the recipient delivery unit, and per-capita coverage (1 net per 2 household members) is a direct join: quantity ÷ the recipient Group's `quantity`. It deliberately carries **no** stock ledger — a distribution is not a stock event.
+- **ICRSupplyMovement** — a movement **between supply-chain nodes**: receipt at a facility, issue to a distribution post or a field team, return of unused stock. It carries the stock-accountability ledger and chains upstream via `partOf` (central store → district → post → team), so the supply chain is an explicit, queryable sequence.
+
+**The doctrine — which resource records what.** Is the event about a **thing changing hands**? → a supply event (distribution or movement). About an **act performed on a place**? → the Task is the event (IRS, §6.4 — insecticide sprayed onto a structure is *consumed in the act*, not distributed to anyone: its accounting rides the movement ledger, never a distribution record). About a **drug going into a person**? → always MedicationAdministration (§6.2) — pharma never downgrades to supply.
+
+**Properties — ICRSupplyDistribution.**
 
 | Element | Flags | Card. | Type / Binding | Description |
 | --- | --- | --- | --- | --- |
 | `status` | MS  |     |     | Status. |
-| `suppliedItem` | MS  |     | BackboneElement | The commodity delivered. |
-| `suppliedItem.quantity` | MS  |     | SimpleQuantity | The quantity delivered (for example, 3 nets, UCUM `{Net}`; 3,600 tablets). |
-| `suppliedItem.item[x]` | MS  |     | CodeableConcept / Reference — the CodeableConcept form binds **extensible** → ICRSuppliedItemVS | The commodity. Use **WHO ATC** for drug commodities — the same code as the matching administration. Use GS1 GTIN or free text for physical commodities. |
-| `destination` | MS  |     | Reference (base R4 targets; not narrowed to ICRLocation) | The place that received the commodity (post, household, settlement). |
-| `extension[campaign]` | MS  | 0..1 | `Reference(ICRCampaign)` — the local `campaign` extension (§6) | The campaign (round) this delivery belongs to. |
-| `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | It keeps campaign data separate from routine-programme data. |
-| `extension[stockAccountability]` | MS  | 0..1 | complex: `received` / `used` / `remaining` / `notUsable` / `returned` (Quantity) + `concordant` (boolean) + `vvmStage` (integer) | The wastage and stock-reconciliation record. It works for vaccines (vials, VVM stage), drugs (tablets), and ITNs. `used` = the quantity consumed **at that node** (doses given, nets handed over). An onward issue to another warehouse or post is its **own** SupplyDelivery, with the next node as `destination`. `returned` = stock sent back up. A node's ledger reconciles as received = used + remaining + notUsable + returned. The `icr-stock-ledger` invariant (v0.1.1) enforces this as a **warning**. `vvmStage` is the one sub-extension without MS. |
+| `suppliedItem` / `.quantity` / `.item[x]` | MS  |     | item binds **extensible** → ICRSuppliedItemVS | The commodity and quantity. Drugs → **WHO ATC**; physical commodities → the **ICR commodity class** (`llin`, `rdt`, …), optionally alongside a GS1 GTIN coding for the specific product; text as fallback. |
+| `patient` | MS  |     | `Reference(Patient)` | The registered person receiving it, **where person-level registration exists**. R4 restricts this field to a single person — it cannot name a household. |
+| `extension[recipient]` | MS  | 0..1 | `Reference(ICRDeliveryUnit \| ICRPatient)` | **Who received it** — usually the household/community Group. This is the direct join per-capita coverage computes against. |
+| `destination` | MS  |     | Reference | The place of the handover (dwelling, distribution post, school). |
+| `extension[campaign]` | MS  | 0..1 | `Reference(ICRCampaign)` | The campaign (round) this distribution belongs to. |
+| `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | Campaign vs routine. |
 
-**Example.** `example-itn-delivery` — 3 nets delivered to a dwelling:
+**Properties — ICRSupplyMovement.**
+
+| Element | Flags | Card. | Type / Binding | Description |
+| --- | --- | --- | --- | --- |
+| `status` | MS  |     |     | Status. |
+| `suppliedItem` / `.quantity` / `.item[x]` | MS  |     | item binds **extensible** → ICRSuppliedItemVS | The commodity and quantity — same coding rules as the distribution profile, so a drug receipt shares its ATC code with the matching administration. |
+| `destination` | MS  |     | Reference | The receiving node (facility, staging post, settlement). |
+| `supplier` | MS  |     | Reference | The sending party, where recorded. |
+| `partOf` | MS  |     | `Reference(ICRSupplyMovement)` only | **The upstream movement this one draws from** — the explicit supply chain. |
+| `extension[issuedToTeam]` | MS  | 0..1 | `Reference(ICRCareTeam)` | The team this movement was issued to. R4 `receiver` targets only individual practitioners — the same gap-and-fix as MeasureReport's `reporter-team`. **One issuance per team per day, plus its ledger, is the field-team daily-stock pattern.** |
+| `extension[campaign]` | MS  | 0..1 | `Reference(ICRCampaign)` | The campaign (round) this movement belongs to. |
+| `extension[recordOrigin]` | MS  | 1..1 | code, **required** → ICRRecordOriginVS | Campaign vs routine. |
+| `extension[stockAccountability]` | MS  | 0..1 | complex: `received` / `used` / `remaining` / `notUsable` / `returned` (Quantity) + `concordant` (boolean) + `vvmStage` (integer) | The wastage and stock-reconciliation record. It works for vaccines (vials, VVM stage), drugs (tablets), and ITNs. `used` = the quantity consumed **at that node**. `returned` = stock sent back up. A node's ledger reconciles as received = used + remaining + notUsable + returned. The `icr-stock-ledger` invariant (v0.1.1) enforces this as a **warning**. `vvmStage` is the one sub-extension without MS. |
+
+**v1 supply-chain scope.** Campaign-tied events only: receipts, issues (including to teams), stock on hand, wastage, returns. Routine inter-warehouse restocking outside campaigns is out of scope (OpenLMIS territory). R5 `DeviceDispense` (richer dispense semantics if an ITN qualifies as a device) goes on the R5 migration list with the boundary extension and native `basedOn`.
+
+**Example.** `example-itn-delivery` — 3 nets distributed to a household:
 
 ```json
 {
@@ -1779,10 +1800,16 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
   "id": "example-itn-delivery",
   "meta": {
     "profile": [
-      "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+      "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDistribution"
     ]
   },
   "extension": [
+    {
+      "url": "https://icr.healthcampaigns.org/StructureDefinition/distribution-recipient",
+      "valueReference": {
+        "reference": "Group/example-household"
+      }
+    },
     {
       "url": "https://icr.healthcampaigns.org/StructureDefinition/record-origin",
       "valueCode": "campaign"
@@ -1797,7 +1824,13 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
       "unit": "nets"
     },
     "itemCodeableConcept": {
-      "text": "Long-lasting insecticidal net (LLIN)"
+      "coding": [
+        {
+          "code": "llin",
+          "system": "https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs",
+          "display": "Long-lasting insecticidal net (LLIN)"
+        }
+      ]
     }
   },
   "destination": {
@@ -1806,7 +1839,9 @@ This section holds the record of each delivery: a vaccine dose, a drug administr
 }
 ```
 
-A second example, `example-albendazole-supply`, shows the drug-stock side. A settlement received 3,600 tablets. `suppliedItem.item` carries the **ATC** code `P02CA03`, the same code as the matching administration (§6.2). Thus receipt, administration, and reconciliation share one drug code. The example also carries a `stock-accountability` record (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓).
+The recipient household Group is the per-capita join: 3 nets against the household's `Group.quantity` of members.
+
+Two movement examples show the stock side. `example-albendazole-supply` is the **receipt**: the settlement received 3,600 ATC-coded tablets (`P02CA03`, the same code as the matching administration, §6.2 — receipt, administration, and reconciliation share one drug code) with a full `stock-accountability` ledger (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓). `example-team-issuance` is the **issue to a field team**: 400 tablets to CDD team 7 on day 1, `partOf` → the receipt (the explicit chain), `issuedToTeam` → the CareTeam, and its own day-ledger (received 400 / used 360 / remaining 38 / not usable 2).
 
 Aggregate vs individual records — the cross-cutting rule
 
@@ -1825,7 +1860,7 @@ Aggregate vs individual records — the cross-cutting rule
 
 **Open questions.**
 
-- **No GS1 binding or alias exists yet** for physical commodities. The ITN example uses free text. A binding for a GS1 GTIN system is a known commodity-profile gap.
+- **GS1 GTIN handling is convention, not structure.** Physical commodities now have an analytics-stable class code (ICRCommodityClassCS), and a GTIN coding may sit alongside it in the same `itemCodeableConcept` — but the IG has no GS1 system alias or worked GTIN example yet. Add one when a real product barcode enters the data.
 ### 6.4 Structure-applied interventions — IRS and the "treat a place" gap
 **The problem.** Indoor Residual Spraying (IRS) is applied to a **structure**, not a person. Larviciding and bed-net hanging are the same. These interventions do **not** fit `ICRMedicationAdministration`. That profile's `subject` is a `Patient` or an ICRDeliveryUnit *Group of people*. `MedicationAdministration` means "a medication given to a subject who receives it." A sprayed house does not receive a medication as a subject. Thus that profile is the wrong model for these interventions.
 
@@ -2251,7 +2286,7 @@ Local and national codes connect through ConceptMap (deferred). This is standard
 
 - **ICRIndependentCoverageSourceVS** — contains `survey`, `lqas`, `rcm` only. It *excludes* `administrative`. It is the binding on ICRSurveyCoverage. This small VS makes the rule "never merge the lineages" structurally enforceable.
 - **ICRMDAMedicationVS** — contains all of ATC (the extensible binding on MDA medication). It lists the typical PC-NTD codes (albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01, azithromycin J01FA10, DEC P02CB02). A subtree restriction is deferred until the team reviews the country formularies.
-- **ICRSuppliedItemVS** — also contains all of ATC. It is the extensible binding on `ICRSupplyDelivery.suppliedItem.item`. Thus a drug receipt carries the same ATC code as its administration. GS1 GTIN and text remain valid for physical commodities.
+- **ICRSuppliedItemVS** — contains all of ATC **plus the ICR commodity classes** (`llin`, `irs-insecticide`, `rdt` — ICRCommodityClassCS). It is the extensible binding on `suppliedItem.item` in both supply profiles. Drugs keep ATC, so a receipt carries the same code as its administration; physical commodities get an analytics-stable class code, optionally alongside a GS1 GTIN coding for the specific product (GTINs are per-manufacturer and cannot be enumerated in a value set); text remains the fallback.
 - **ICRAdverseEventSeriousnessVS** — reuses the HL7 `adverse-event-seriousness` CodeSystem (`Serious` / `Non-serious`). ICR did not mint a new CodeSystem because a standard one exists.
 - **ICRExclusionReasonVS / ICRCommunicationChannelVS / ICRSeriousCriteriaVS** — whole-system sets over their CodeSystems. The table above lists them with their bindings.
 
@@ -2335,7 +2370,9 @@ FHIR has no native campaign semantics. Thus 34 extensions carry these semantics 
 | SettlementType (`settlement-type`) *(forms-v1)* | Location | CodeableConcept, **extensible** → ICRSettlementTypeVS — the settlement / special-population classification (urban-slum, refugee-IDP, nomad-pastoralist, hard-to-reach…) for HTRA targeting & equity disaggregation |
 | DirectlyObservedConsumption (`directly-observed-consumption`) | MedicationAdministration | boolean |
 | DosePoleBand (`dose-pole-band`) | MedicationAdministration, ActivityDefinition | CodeableConcept — the measured height band that set the tablet count |
-| StockAccountability (`stock-accountability`) | SupplyDelivery | complex: received/used/remaining/notUsable/returned (Quantity) + concordant (boolean) + vvmStage (integer) — wastage & stock reconciliation |
+| StockAccountability (`stock-accountability`) | SupplyDelivery | complex: received/used/remaining/notUsable/returned (Quantity) + concordant (boolean) + vvmStage (integer) — wastage & stock reconciliation (movement profile only) |
+| DistributionRecipient (`distribution-recipient`) *(supply-split)* | SupplyDelivery | `Reference(ICRDeliveryUnit \| ICRPatient)` — who received a distributed commodity; R4 `patient` cannot target a Group, and the household join is what per-capita coverage computes against |
+| IssuedToTeam (`issued-to-team`) *(supply-split)* | SupplyDelivery | `Reference(ICRCareTeam)` — the team a movement was issued to; R4 `receiver` targets only individual practitioners (same gap-and-fix as reporter-team) |
 | SeriousCriteria (`serious-criteria`) | AdverseEvent | CodeableConcept, **extensible** → ICRSeriousCriteriaVS — why an adverse event is serious (WHO/CIOMS) |
 | CoverageSource (`coverage-source`) | MeasureReport | code, **required** → ICRCoverageSourceVS |
 | CoverageUnit (`coverage-unit`) | MeasureReport | code, **required** → ICRCoverageUnitVS — people \| implementation-units; absent ⇒ people |
@@ -2382,9 +2419,9 @@ graph LR
     D -- patient --> C
 ```
 
-**The 64 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
+**The 65 example instances.** forms-v1 added `example-followup-task` and `example-readiness-report`. forms-v1 also gave `example-settlement` a `settlement-type` and gave `example-mcv-dose` a `prior-dose-status`. v0.1 adds the supply-driven **descoping trio**. The trio contains `example-sch-mda-protocol` (SCH MDA, standard target: everyone 2+), `example-target-population-sac` (the narrower school-aged-children denominator that the round targets), and `example-sch-descoped-round` (the round whose `subject` is the SAC denominator).
 
-The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task. The **Aug 19 rounds** (PRs #44/#45) add `example-sth-eligible-population` (row 62) — the definitional 5–14y eligibility Group on the STH protocol's `subject` — give the four activities their `topic` catalog tags, and wire the coverage reports to their campaigns through the new `campaign` extension. The **location-status round** adds the endemicity pair (rows 63–64): the JRSM district endemicity table as ICRLocationStatus Observations on the Kambia district (§5.6).
+The trio shows the "planned per protocol" versus "targeted this round" comparison. Compare the round's subject with the protocol's `subject` template to see the deviation. **v0.1.1** adds the mCSD facility pair, the calculated ward-sum denominator, the STH-MDA campaign frame, the full IRS chain, and the zero-dose/readiness MeasureReports (rows 45–56). The **school-based delivery trio** (rows 57–59) hangs off the descoped SAC round: the school Location, the school-cohort delivery unit, and the school-session Task. The **Aug 19 rounds** (PRs #44/#45) add `example-sth-eligible-population` (row 62) — the definitional 5–14y eligibility Group on the STH protocol's `subject` — give the four activities their `topic` catalog tags, and wire the coverage reports to their campaigns through the new `campaign` extension. The **location-status round** adds the endemicity pair (rows 63–64): the JRSM district endemicity table as ICRLocationStatus Observations on the Kambia district (§5.6). The **supply-split round** retires ICRSupplyDelivery in favour of ICRSupplyDistribution (coverage-bearing, rows 30) and ICRSupplyMovement (stock-bearing, rows 31 and 65 — the team-issuance chain), and gives physical commodities class codes (§6.3).
 
 *Locations, people & groups*
 
@@ -2429,8 +2466,8 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | --- | --- | --- | --- |
 | 28  | `example-mcv-dose` | ICRImmunizationEvent | CVX `05`; patient → child; at the dwelling; lot `MRV-2026-0412`; manufacturer, performer, doseNumber 1; recordOrigin `campaign`; campaign ext → the Kambia round (#23) |
 | 29  | `example-albendazole-administration` | ICRMedicationAdministration | ATC `P02CA03`; "1 tablet (400 mg), dose-pole band B"; directlyObserved true; recordOrigin campaign; campaign ext → the STH MDA round (#50) |
-| 30  | `example-itn-delivery` | ICRSupplyDelivery | 3 nets (UCUM `{Net}`), free-text LLIN, destination → dwelling; recordOrigin campaign — carries **no** campaign link, showing that the `campaign` extension is optional (0..1) |
-| 31  | `example-albendazole-supply` | ICRSupplyDelivery | **ATC-coded drug receipt**: 3,600 tablets (same code as #29), destination → settlement; campaign ext → the STH MDA round (#50); stock-accountability (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓) |
+| 30  | `example-itn-delivery` | ICRSupplyDistribution | **The coverage-bearing distribution**: 3 nets (UCUM `{Net}`), class-coded `llin`, recipient → the household (#10 — 3 nets ÷ 6 members), destination → dwelling; recordOrigin campaign — carries **no** campaign link, showing that the `campaign` extension is optional (0..1) |
+| 31  | `example-albendazole-supply` | ICRSupplyMovement | **The stock-bearing receipt**: 3,600 ATC-coded tablets (same code as #29), destination → settlement; campaign ext → the STH MDA round (#50); stock-accountability (received 3,600 / used 3,080 / remaining 500 / not usable 20 / concordant ✓) |
 | 32  | `example-aefi` | ICRAdverseEvent | **AEFI arm**: mild fever after MCV (#28); subject → child; suspectEntity → the dose; causality A (consistent); non-serious |
 | 33  | `example-mda-adverse-event` | ICRAdverseEvent | **MDA arm** (same profile): abdominal pain after albendazole (#29); causality C (coincidental) |
 | 34  | `example-aefi-serious` | ICRAdverseEvent | **Serious AEFI**: anaphylaxis after MCV; seriousness serious; serious-criteria life-threatening + hospitalization; causality A |
@@ -2469,6 +2506,7 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 62  | `example-sth-eligible-population` *(protocol-eligibility)* | Group (definitional) | **The protocol's eligibility restriction as data**: school-age children 5–14 — `actual=false`, no count, no geography, a computable age-band `valueRange` (5–14 years); the STH MDA protocol's (#48) `subject`. The concrete round denominator (#49) mirrors the same band. |
 | 63  | `example-lf-endemicity` *(location-status)* | ICRLocationStatus | **The JRSM endemicity table as data**: Kambia District is LF-**endemic, under MDA** — subject → the district (#2), effective Jan 2026, performer the MoH NTD programme, method the 2019 mapping survey, derivedFrom the survey report |
 | 64  | `example-oncho-endemicity` *(location-status)* | ICRLocationStatus | Kambia District is oncho-**non-endemic** — the second assertion on the same district: the **co-endemicity** read is two Observations, one per disease |
+| 65  | `example-team-issuance` *(supply-split)* | ICRSupplyMovement | **Field-team daily stock**: 400 tablets issued to CDD team 7 (#24) on day 1 — `partOf` → the receipt (#31, the explicit chain), `issuedToTeam` → the CareTeam, own day-ledger (received 400 / used 360 / remaining 38 / not usable 2 / concordant ✓) |
 
 *Definitional artifacts (alongside the examples)*
 
@@ -2543,7 +2581,7 @@ Several of the highest-priority findings are now built: the intervention-neutral
 **espen-forms (built).** A third field-evidence pass converted the six **ESPEN MDA demo XLSForms** (`forms/espen mda/`). The result is a set of complete, source-faithful FHIR `Questionnaire` example instruments (`espen-mda-*`, §4.8). These instruments coexist with the canonical condensed checklists and do not replace them:
 
 - **Six example instruments** in `ig/input/fsh/questionnaires-espen.fsh`: location registration, drug receipt, treatment tally, case management, and the HF + CDD supervision pair. The `linkId`s are verbatim from the XLSForms. `relevant` maps to `enableWhen`. `calculate` maps to hidden SDC `calculatedExpression`.
-- **SDC template-based extraction** — the IG's first real dependency (`hl7.fhir.uv.sdc` 4.0.0). `templateExtract` mints `ICRLocation` + `ICRTargetPopulation` Groups (Form 1) and per-drug `ICRSupplyDelivery` receipts (Form 2). Per the espen-remap adjustment (§4.8), it also mints an `ICRDeliveryUnit` community Group with per-drug Group-subject `ICRMedicationAdministration` treatment events, plus the per-drug `ICRAdministrativeCoverage` MeasureReports on `icr-mda-treatment-coverage` (Form 3). Form 4 extracts nothing: distributed totals are not custody transfers. The pipeline folds them into the receipt's stock-accountability.
+- **SDC template-based extraction** — the IG's first real dependency (`hl7.fhir.uv.sdc` 4.0.0). `templateExtract` mints `ICRLocation` + `ICRTargetPopulation` Groups (Form 1) and per-drug `ICRSupplyMovement` receipts (Form 2). Per the espen-remap adjustment (§4.8), it also mints an `ICRDeliveryUnit` community Group with per-drug Group-subject `ICRMedicationAdministration` treatment events, plus the per-drug `ICRAdministrativeCoverage` MeasureReports on `icr-mda-treatment-coverage` (Form 3). Form 4 extracts nothing: distributed totals are not custody transfers. The pipeline folds them into the receipt's stock-accountability.
 - **No extraction for the supervision pair, by design.** Per §4.6, the `QuestionnaireResponse` *is* the record (an `ICRCampaignFormResponse`). Form 4's aggregate side-effect counts also stay on the response. The IG mints no person-level `ICRAdverseEvent` from aggregates.
 - **New terminology** — `ICRNTDDiseaseCS` (disease scope) and `ICRMDAMedicinePackageCS` (medicine package), plus an `#age-band` code on `ICRGroupCharacteristicCS` (§9). The supervision answer lists reuse `ICRMissedReasonCS` / `ICRCommunicationChannelCS`.
 - **Demonstrates the "countries extend the IG" story** from end to end: a filled national form becomes ICR-profiled resources.

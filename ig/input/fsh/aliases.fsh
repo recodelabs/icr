@@ -63,3 +63,4 @@ Alias: $MedicinePackage = https://icr.healthcampaigns.org/CodeSystem/icr-mda-med
 Alias: $ProjectTag = https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs
 Alias: $LocationStatus = https://icr.healthcampaigns.org/CodeSystem/icr-location-status-cs
 Alias: $EndemicityStatus = https://icr.healthcampaigns.org/CodeSystem/icr-endemicity-status-cs
+Alias: $CommodityClass = https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs

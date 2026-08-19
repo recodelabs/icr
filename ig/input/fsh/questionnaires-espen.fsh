@@ -263,7 +263,7 @@ Usage: #inline
 * characteristic[1].exclude = false
 
 // --- Form 2: MDA Medicine Receipt (health facility receipt of medicines) ------
-// Extraction: one ICRSupplyDelivery per answered per-drug total, template-based
+// Extraction: one ICRSupplyMovement (facility receipt) per answered per-drug total, template-based
 // (item-level templateExtract on each of the 8 drug items).
 
 Instance: espen-mda-drug-receipt
@@ -275,7 +275,7 @@ Usage: #example
 * name = "EspenMDADrugReceipt"
 * status = #active
 * experimental = false
-* description = "ESPEN MDA demo Form 2 (medicine receipt at health facility): disease and medicine-package scope, per-medicine received totals. Template-based extraction: one ICRSupplyDelivery per answered medicine total (espen-forms)."
+* description = "ESPEN MDA demo Form 2 (medicine receipt at health facility): disease and medicine-package scope, per-medicine received totals. Template-based extraction: one ICRSupplyMovement (facility receipt) per answered medicine total (espen-forms)."
 * subjectType = #Location
 // registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
 // resolve against the Location hierarchy / CareTeam registry at capture time
@@ -434,7 +434,7 @@ Instance: EspenSDReceiptPzq
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-pzq"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -451,7 +451,7 @@ Instance: EspenSDReceiptAlb
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-alb"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -468,7 +468,7 @@ Instance: EspenSDReceiptMeb
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-meb"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -485,7 +485,7 @@ Instance: EspenSDReceiptIvm
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-ivm"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -502,7 +502,7 @@ Instance: EspenSDReceiptDec
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-dec"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -519,7 +519,7 @@ Instance: EspenSDReceiptAzmSusp
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-azm-susp"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -537,7 +537,7 @@ Instance: EspenSDReceiptAzmTab
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-azm-tab"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -555,7 +555,7 @@ Instance: EspenSDReceiptTetra
 InstanceOf: SupplyDelivery
 Usage: #inline
 * id = "sd-receipt-tetra"
-* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyDelivery"
+* meta.profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRSupplyMovement"
 * status = #completed
 * extension[0].url = "https://icr.healthcampaigns.org/StructureDefinition/record-origin"
 * extension[0].valueCode = #campaign
@@ -2139,7 +2139,7 @@ Usage: #example
 * name = "EspenMDACaseManagement"
 * status = #active
 * experimental = false
-* description = "ESPEN MDA demo Form 4 (medicine use and case management): per-drug distributed totals, side-effect counts, other-NTD case counts. No template-based extraction (espen-remap): a distributed total is not a custody transfer, so it does not mint a SupplyDelivery — the treatment events are Form 3's Group-subject ICRMedicationAdministrations, and the distributed counts are folded into the stock-accountability extension on the Form 2 receipt ICRSupplyDelivery by the ingestion pipeline (a cross-form merge extraction cannot express). Side-effect and other-NTD counts remain on the QuestionnaireResponse: person-level ICRAdverseEvent records cannot be minted from aggregate counts."
+* description = "ESPEN MDA demo Form 4 (medicine use and case management): per-drug distributed totals, side-effect counts, other-NTD case counts. No template-based extraction (espen-remap): a distributed total is not a custody transfer, so it does not mint a SupplyDelivery — the treatment events are Form 3's Group-subject ICRMedicationAdministrations, and the distributed counts are folded into the stock-accountability extension on the Form 2 receipt ICRSupplyMovement by the ingestion pipeline (a cross-form merge extraction cannot express). Side-effect and other-NTD counts remain on the QuestionnaireResponse: person-level ICRAdverseEvent records cannot be minted from aggregate counts."
 * subjectType = #Location
 // registry cascade: choices are deployment entity data (bind::db_*) — in ICR these
 // resolve against the Location hierarchy / CareTeam registry at capture time
