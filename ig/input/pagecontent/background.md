@@ -50,8 +50,8 @@ campaign.
    `Task.output` holds the visit-level result (the tally). Person-level detail
    lives in the delivery events, not in extra Tasks — and a delivery event does
    not depend on a Task: it stands alone on its patient, its `record-origin`
-   flag, and its own campaign link (the standard `event-basedOn` extension,
-   constrained to the ICR campaign). Individuals are usually not known in
+   flag, and its own campaign link (the local `campaign` extension,
+   `Reference(ICRCampaign)`). Individuals are usually not known in
    advance, so the mainline close-out is a tally; where the visit workflow
    captures the doses, `Task.output` may additionally reference one
    `Immunization` per child vaccinated. Person-level rollups run through Group
