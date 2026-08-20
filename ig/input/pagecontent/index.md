@@ -60,10 +60,10 @@ survey coverage are **separate, never-merged lineages**
 
 ```mermaid
 graph TD
-  PD["ICRCampaignProtocol (PlanDefinition)"] -->|"action.definitionCanonical"| AD["ICRCampaignActivity (ActivityDefinition)"]
-  CP["ICRCampaign (CarePlan)"] -->|instantiatesCanonical| PD
-  TASK["ICRCampaignTask (Task)"] -->|"basedOn 1..1"| CP
-  TASK -->|instantiatesCanonical| AD
+  PD["ICRCampaignProtocol (PlanDefinition)"] -->|"CarePlan.instantiatesCanonical ▲"| CP["ICRCampaign (CarePlan)"]
+  PD -->|"action.definitionCanonical"| AD["ICRCampaignActivity (ActivityDefinition)"]
+  CP -->|"Task.basedOn 1..1 ▲"| TASK["ICRCampaignTask (Task)"]
+  AD -->|"Task.instantiatesCanonical ▲"| TASK
   TASK -->|"for (unit with members)"| DU["ICRDeliveryUnit (Group: household / community / school cohort)"]
   TASK -->|"for (no members: site / structure / area)"| LOC["ICRLocation (GERS join key)"]
   DU -->|group-location| LOC
@@ -71,12 +71,12 @@ graph TD
   TASK -->|"output: coded tallies + optional event refs"| EV["Delivery events: ICRImmunizationEvent · ICRMedicationAdministration · ICRSupplyDistribution / ICRSupplyMovement"]
   EV -.->|"campaign extension"| CP
   EV -->|"patient / subject"| PT
-  CP -.->|"subject (planning denominator)"| TP["ICRTargetPopulation (denominator)"]
-  AC["ICRAdministrativeCoverage"] -.->|"campaign extension"| CP
-  SC["ICRSurveyCoverage"] -.->|"campaign extension"| CP
+  TP["ICRTargetPopulation (denominator)"] -.->|"CarePlan.subject ▲"| CP
+  CP -.->|"campaign extension ▲"| AC["ICRAdministrativeCoverage"]
+  CP -.->|"campaign extension ▲"| SC["ICRSurveyCoverage"]
 ```
 
-<sub>Arrows follow **reference direction**, and the direction is the design: everything points *at* the campaign (`Task.basedOn`, the delivery events' and coverage reports' `campaign` extension), so the CarePlan is never rewritten as tasks and records accumulate. CarePlan is the keystone: each execution points at its reusable protocol (`instantiatesCanonical`), whose discrete work types are defined once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate. A Task acts on a delivery unit — a **Group** where the unit has members (household, community, school cohort), a **Location** where it does not (a site, a structure under IRS, an area target) — and closes with coded visit results on `Task.output`, optionally referencing events captured in the visit workflow. Each delivery event stands alone: it points at its [ICRPatient](StructureDefinition-ICRPatient.html) (or a delivery-unit Group for register-level capture) and carries its own campaign link, so per-round queries never depend on Task wiring; person-level rollups run through Group membership. Denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
+<sub>The diagram flows top-down from definition to delivery for readability; **each edge label names the FHIR element that carries the reference, and ▲ marks edges whose reference runs against the drawn arrow** — `Task.basedOn` points at the campaign, `CarePlan.instantiatesCanonical` at the protocol, and the delivery events' and coverage reports' `campaign` extension at the round. That direction is the design: everything points *at* the campaign, so the CarePlan is never rewritten as tasks and records accumulate. CarePlan is the keystone: each execution points at its reusable protocol, whose discrete work types are defined once as [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) definitions that thousands of Tasks instantiate. A Task acts on a delivery unit — a **Group** where the unit has members (household, community, school cohort), a **Location** where it does not (a site, a structure under IRS, an area target) — and closes with coded visit results on `Task.output`, optionally referencing events captured in the visit workflow. Each delivery event stands alone: it points at its [ICRPatient](StructureDefinition-ICRPatient.html) (or a delivery-unit Group for register-level capture) and carries its own campaign link, so per-round queries never depend on Task wiring; person-level rollups run through Group membership. Denominators and geography flow in from the Group/Location model, and the two coverage lineages stay separate.</sub>
 
 #### Status
 
