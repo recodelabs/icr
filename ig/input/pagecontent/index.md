@@ -72,8 +72,11 @@ graph TD
   EV -.->|"campaign extension"| CP
   EV -->|"patient / subject"| PT
   TP["ICRTargetPopulation (denominator)"] -.->|"CarePlan.subject ▲"| CP
+  CP -->|careTeam| CT["ICRCareTeam (team + supervisor)"]
+  TASK -->|owner| CT
   CP -.->|"campaign extension ▲"| AC["ICRAdministrativeCoverage"]
   CP -.->|"campaign extension ▲"| SC["ICRSurveyCoverage"]
+  AC -.->|"reporter-team ext"| CT
 ```
 
 <sub>Edge labels name the FHIR element that carries the reference; ▲ marks edges whose reference runs against the drawn arrow — everything points *at* the campaign, so the CarePlan is never rewritten as tasks and records accumulate.</sub>

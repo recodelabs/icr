@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-19T19:46:49Z
+last_modified: 2026-08-20T10:42:34Z
 tags:
   - icr
   - fhir
@@ -430,11 +430,42 @@ These profiles model the structure of a campaign. The protocol is the template (
 ### 4.2 ICRCampaign — `CarePlan`
 An ICRCampaign is one **specific campaign execution.** It starts as a microplan (`intent = plan`). As Tasks complete and coverage accumulates against it, the same resource becomes the record of the campaign implementation. One resource supports each phase of the campaign. Rounds are sibling ICRCampaigns under a national "umbrella" campaign, linked through `partOf`. Every execution points back at the one versioned protocol.
 
+**One campaign, as a hub.** Every key component either hangs off the round or points at it. The campaign references its definition side (protocol, umbrella, denominator, geography, team); the operational and analytical records — tasks, delivery events, supply movements, coverage reports — all point **at** the campaign, so the CarePlan is never rewritten as they accumulate:
+
+```mermaid
+graph TD
+  T["ICRCampaignTask(s)<br/>one per visit / session"] -->|"basedOn 1..1"| CP["ICRCampaign — the round<br/>(CarePlan)"]
+  EV["Delivery events<br/>Immunization · MedicationAdministration<br/>SupplyDistribution"] -.->|"campaign ext"| CP
+  SUP["ICRSupplyMovement(s)<br/>receipts · team issues · returns"] -.->|"campaign ext"| CP
+  AC["ICRAdministrativeCoverage"] -.->|"campaign ext"| CP
+  SC["ICRSurveyCoverage"] -.->|"campaign ext"| CP
+  FR["ICRCampaignFormResponse<br/>supervision · readiness"] -->|basedOn| CP
+  CP -->|instantiatesCanonical| PD["ICRCampaignProtocol<br/>(the reusable template)"]
+  CP -->|partOf| U["Umbrella ICRCampaign"]
+  CP -->|"subject + planning-denominator ext"| TP["ICRTargetPopulation<br/>(planning denominator)"]
+  CP -->|"target-geography ext"| GEO["ICRLocation<br/>(target geography)"]
+  CP -->|careTeam| CT["ICRCareTeam<br/>(delivery team + supervisor)"]
+  T -->|owner| CT
+```
+
 > [!note] What "round" means in ICR A **round** is a child ICRCampaign execution (`partOf` the umbrella). It has its own period and its own reporting obligation — the Kambia June round versus the Port Loko July round. The `campaign-round` extension carries only the ordinal (round 1, round 2). Use it for repeated passes of the same campaign — a two-round OCV campaign, or NIDs round 2. "Round" is *not* the count of campaigns run on one campaign model. To get that count, query the executions of a protocol.
 
 **Lifecycle — in plain terms.** One CarePlan has two stages. First it is the **plan** — a microplan with `intent = plan` and `status = draft`. Then it becomes the **record of what actually happened** as teams do the work. `intent` changes to `order`, and `status` moves `draft → active → completed`. Tasks and coverage accumulate against that same resource.
 
-`mermaid graph LR PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/>versioned recipe"] U["Umbrella ICRCampaign<br/>intent: plan · status: active<br/>subject: national denominator"] R1["Kambia round<br/>intent: order · status: completed<br/>subject: district denominator"] R2["Port Loko round<br/>intent: order · status: active"] T["ICRCampaignTask(s)<br/>→ delivery events"] PD -- "instantiatesCanonical 1..1" --> U PD -- "instantiatesCanonical 1..1" --> R1 PD -- "instantiatesCanonical 1..1" --> R2 R1 -- "partOf" --> U R2 -- "partOf" --> U T -- "basedOn 1..1" --> R1 T -- "basedOn 1..1" --> R2`
+```mermaid
+graph LR
+  PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/>versioned recipe"]
+  U["Umbrella ICRCampaign<br/>intent: plan · status: active<br/>subject: national denominator"]
+  R1["Kambia round<br/>intent: order · status: completed<br/>subject: district denominator"]
+  R2["Port Loko round<br/>intent: order · status: active"]
+  T["ICRCampaignTask(s)<br/>→ delivery events"]
+  U -- "instantiatesCanonical 1..1" --> PD
+  R1 -- "instantiatesCanonical 1..1" --> PD
+  R2 -- "instantiatesCanonical 1..1" --> PD
+  R1 -- "partOf" --> U
+  R2 -- "partOf" --> U
+  T -- "basedOn 1..1" --> R1
+```
 
 The campaign umbrella represents the microplan and stays at `intent = plan`. It is the planning shell. It holds the national denominator and binds the rounds together. Each round moves from `plan` to `order` as it executes. Every box points at the **same** protocol. Thus "all MR SIA rounds, anywhere" is one query.
 
