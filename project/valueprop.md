@@ -10,14 +10,14 @@ tags:
 ---
 
 # ICR — Value Proposition
-<sub>`v0.3.0 · Last modified Sep 1, 2026 at 4:06 PM EDT`</sub>
+`v0.3.0 · Last modified Sep 1, 2026 at 4:06 PM EDT`
 
-{>>v0.3.0: restored the v0.1.0 technical vocabulary (denominators, provenance, FHIR, microplan, IG) after v0.2.0 over-simplified it. Kept the c1 and c2 fixes. Also removed rhetorical shorthand of the "X is the pivot" kind: "first-class record" in §4, "everything after inherits the map" in §5, "the IG is the contract" in §7.5.<<}{id="c3" by="claude" at="2026-09-01T20:06:49.000Z"}
+⁠
 
 > [!note] **Purpose.** This is the source document for how we explain the value of the Integrated Campaign Registry (ICR) to different stakeholders. It is written to be cut into a website, a deck, or a one-pager later. The framing is fixed here; each audience section chooses what to emphasize. Technical detail lives in [[ig-summary-v2]] and the published IG at [icr.healthcampaigns.org](https://icr.healthcampaigns.org). Slide-ready bullets from an earlier pass are in [[preso]].
 
 * * *
-## 1. In one sentence
+## 1. Summary
 **Campaign data compounds instead of being re-collected.**
 
 Every health campaign already does the expensive work: it maps the places, counts the people, trains the teams, delivers the intervention, and records the result. Today that work is spent once and archived. With the ICR, every round contributes to a shared, standards-based registry that the next campaign, the next programme, and the routine health system can all draw on. The value of the data grows with every round instead of resetting to zero.
@@ -178,6 +178,12 @@ Framing devices to reuse across formats:
 
 * * *
 ## 10. Open items
-- [ ] Two or three real numbers: enumeration cost per round, microplanning days, campaigns per year in a typical country. Placeholders until we have them.
-- [ ] Decide the primary demo (§9) and align every audience story to it.
-- [ ] Pick the first output format: audience-switching web page on healthcampaigns.org, with decks exported from it.
+- [ ] 
+  
+  Two or three real numbers: enumeration cost per round, microplanning days, campaigns per year in a typical country. Placeholders until we have them.
+- [ ] 
+  
+  Decide the primary demo (§9) and align every audience story to it.
+- [ ] 
+  
+  Pick the first output format: audience-switching web page on healthcampaigns.org, with decks exported from it.
