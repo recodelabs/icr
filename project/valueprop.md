@@ -74,7 +74,7 @@ Two further consequences fall out of these and deserve a mention in most version
 
 * * *
 ## 5. Beyond campaigns
-The registry is built on HL7 FHIR, and that choice matters for one reason above all others: **the location is the pivot.**
+The registry is built on HL7 FHIR, and that choice matters for one reason above all others: {==**the location is the pivot.**==}{>>What the hell does this mean? Avoid jargon.<<}{id="c2" by="mberg" at="2026-09-01T20:00:47.362Z"}
 
 Once a village, a facility, a school, or a household exists as a FHIR resource with a stable identifier, it is the same object that routine immunization, nutrition, HIV, surveillance, supply chain, and civil registration would use. Campaigns are the first thing that populates those objects, because campaigns are the only programme that visits every place. Everything after inherits the map.
 
