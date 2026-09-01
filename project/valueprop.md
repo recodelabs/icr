@@ -69,7 +69,7 @@ Seven pillars. Each audience section in §7 picks the ones that matter to it.
 | **Campaign visibility** | An official registry of what is planned where, viewable as a map and a calendar | Every campaign is a record with geography, dates, and status, from microplan through completion |
 | **Validated aggregates** | The district figure can be traced to the events beneath it | Delivery events roll up to coverage reports; administrative and survey coverage are never merged |
 | **Effectiveness over time** | Coverage trend, cost per person reached, and data-quality trend per place and per campaign type | Rounds of the same protocol are directly comparable records, within a country and, where countries share the standard, across them |
-| **Campaign-to-routine bridge** | Same facilities, same places, same denominators; one flag separates campaign doses from routine doses | Aligned with the WHO SMART Immunizations guideline; campaign and routine records coexist in one store without contaminating each other's statistics |
+| **Campaign-to-routine bridge** | Same facilities, same places, same denominators; one flag separates campaign doses from routine doses | {==Aligned with the WHO SMART Immunizations guideline; campaign and routine records coexist in one store without contaminating each other's statistics==}{>>Bigger then that is built on FHIR data model that entire health system data model should be built on.<<}{id="c6" by="mberg" at="2026-09-01T20:23:25.008Z"} |
 
 Two further consequences fall out of these and deserve a mention in most versions of the pitch.
 
