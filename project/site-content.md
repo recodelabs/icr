@@ -10,28 +10,24 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.1.0 · Last modified Sep 1, 2026 at 4:58 PM EDT`</sub>
+`v0.1.0 · Last modified Sep 1, 2026 at 4:58 PM EDT`
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
 * * *
 ## Top bar
-
 - Brand: **Integrated Campaign Registry**
-- Brand suffix: UNICEF · Ona · Crosscut
+- Brand suffix: UNICEF
 - Nav links: Why campaigns · Compounding · Benefits · Who it's for · Implementation guide ↗
 
 * * *
 ## Hero
-
 **Headline:** Campaign data *compounds* instead of being re‑collected.
 
 > The word "compounds" is set in green.
 
 **Subhead:** Every health campaign already maps the places, counts the people, trains the teams, and records the result. Today that work is used once and filed away. The ICR makes each round a contribution to a shared registry that the next campaign, the next programme, and the routine health system can all use.
-
 ### Map
-
 - Corner label: Synthetic data · Illustrative country
 - Panel heading (under the round label): What the registry knows
 - Slider tick labels: 2022 · 2023 · 2024 · 2025 · 2026
@@ -84,36 +80,26 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 
 * * *
 ## Why campaigns first
-
 **Eyebrow:** Why campaigns first
 
 **Heading:** Public health has many data problems. We start with campaigns for four reasons.
 
 **Lede:** Starting with campaigns is not a narrowing of ambition. It is the fastest way to build the map of places and people that every other programme needs, paid for by activities that are already happening.
-
 ### Cards
+**Campaigns are funded** Measles and polio rounds, mass drug administration, bed‑net distribution, indoor residual spraying, and vitamin A each arrive with a budget and a deadline. No new funding line is needed to make the first contribution.
 
-**Campaigns are funded**
-Measles and polio rounds, mass drug administration, bed‑net distribution, indoor residual spraying, and vitamin A each arrive with a budget and a deadline. No new funding line is needed to make the first contribution.
+**Campaigns repeat** The same protocol runs again next year, in the same districts, often with the same teams. Repetition is what makes reuse valuable and what makes comparison possible.
 
-**Campaigns repeat**
-The same protocol runs again next year, in the same districts, often with the same teams. Repetition is what makes reuse valuable and what makes comparison possible.
+**Campaigns go everywhere** A house‑to‑house team walks to the hamlet that no facility register has ever listed. Campaigns are the only health activity that visits every place, including the ones routine services do not reach.
 
-**Campaigns go everywhere**
-A house‑to‑house team walks to the hamlet that no facility register has ever listed. Campaigns are the only health activity that visits every place, including the ones routine services do not reach.
-
-**Campaigns find the missing**
-The zero‑dose child, the unlisted settlement, the household behind the river. Campaign teams find them every round. The question is whether that is captured and shared, or written on a tally sheet and lost.
+**Campaigns find the missing** The zero‑dose child, the unlisted settlement, the household behind the river. Campaign teams find them every round. The question is whether that is captured and shared, or written on a tally sheet and lost.
 
 * * *
 ## How value compounds
-
 **Eyebrow:** How value compounds
 
 **Heading:** Each round contributes to a shared registry. Five kinds of record get richer every time.
-
 ### Table
-
 Column heads: Record · After round 1 · After round 5
 
 | Record | After round 1 | After round 5 |
@@ -123,33 +109,23 @@ Column heads: Record · After round 1 · After round 5
 | People and households | A register from this round | Households and school cohorts known across rounds, so follow‑up and revisits can be targeted |
 | Teams | A list of names | Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed |
 | Outcomes | One coverage figure | A trend line per place per campaign type, with administrative and survey coverage kept as separate lineages |
-
 ### Three properties
+**Any resolution is a valid contribution** The registry stores household‑level delivery events and district‑level outcome reports in the same model. A current round contributes village and household detail. A past round contributes its reported coverage and denominator by district. The model records which is which.
 
-**Any resolution is a valid contribution**
-The registry stores household‑level delivery events and district‑level outcome reports in the same model. A current round contributes village and household detail. A past round contributes its reported coverage and denominator by district. The model records which is which.
+**Historical data can be loaded now** The registry does not have to start empty. Outcome‑level records from rounds already run can be loaded from existing reports, so a country has a multi‑year picture before it runs a single ICR‑native round. Retrofitted data carries its original quality, and the provenance fields say so.
 
-**Historical data can be loaded now**
-The registry does not have to start empty. Outcome‑level records from rounds already run can be loaded from existing reports, so a country has a multi‑year picture before it runs a single ICR‑native round. Retrofitted data carries its original quality, and the provenance fields say so.
-
-**Resolution improves over time**
-Old rounds are aggregate‑only. Current rounds are village‑level. Future rounds are household‑level. The same registry holds all three, and the picture sharpens with each round.
-
+**Resolution improves over time** Old rounds are aggregate‑only. Current rounds are village‑level. Future rounds are household‑level. The same registry holds all three, and the picture sharpens with each round.
 ### Callout
-
 **The benefit is not all in the next round.** The contribution is made in this round with this round's budget, and two of the benefits below, common places and denominator triangulation, pay off during the current round. Where a country runs several campaigns a year, the next round is months away, not years.
 
 * * *
 ## What compounding unlocks
-
 **Eyebrow:** What compounding unlocks
 
 **Heading:** Seven benefits.
 
 **Lede:** Each audience below picks the ones that matter to it.
-
 ### Table
-
 Column heads: Benefit · The claim · What makes it true
 
 | Benefit | The claim | What makes it true |
@@ -161,18 +137,13 @@ Column heads: Benefit · The claim · What makes it true
 | Validated aggregates | The district figure can be traced to the events beneath it. | Delivery events roll up to coverage reports; administrative and survey coverage are never merged. |
 | Effectiveness over time | Coverage trend, cost per person reached, and data‑quality trend per place and per campaign type. | Rounds of the same protocol are directly comparable within a country and, where countries share the standard, across them. |
 | Campaign‑to‑routine bridge | Same facilities, same places, same denominators; one flag separates campaign doses from routine doses. | Aligned with the WHO SMART Immunizations guideline; campaign and routine records coexist in one store without contaminating each other's statistics. |
-
 ### Two consequences
+**Co‑delivery and integration** Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.
 
-**Co‑delivery and integration**
-Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.
-
-**Equity targeting**
-Historic per‑place coverage is the input for finding never‑reached settlements and zero‑dose children. Same records, different question. The IG already defines a zero‑dose coverage measure.
+**Equity targeting** Historic per‑place coverage is the input for finding never‑reached settlements and zero‑dose children. Same records, different question. The IG already defines a zero‑dose coverage measure.
 
 * * *
 ## Beyond campaigns
-
 **Eyebrow:** Beyond campaigns
 
 **Heading:** A place recorded by a campaign is the same place for every other programme.
@@ -185,37 +156,26 @@ The immunization case makes it concrete. A country that runs a measles campaign 
 
 * * *
 ## Why it is safe to adopt
-
 **Eyebrow:** Why it is safe to adopt
 
 **Heading:** An open standard and a reference solution, not a product.
-
 ### List
+**Open standard** The core is a FHIR R4 Implementation Guide, published by UNICEF under Apache 2.0. Every ICR profile is valid plain FHIR, so any FHIR system can read the data as its base type.
 
-**Open standard**
-The core is a FHIR R4 Implementation Guide, published by UNICEF under Apache 2.0. Every ICR profile is valid plain FHIR, so any FHIR system can read the data as its base type.
+**Aligned with WHO** Designed as the campaign complement to the WHO SMART Immunizations guideline, using the same toolchain and the same routine‑immunization vocabulary where it overlaps.
 
-**Aligned with WHO**
-Designed as the campaign complement to the WHO SMART Immunizations guideline, using the same toolchain and the same routine‑immunization vocabulary where it overlaps.
+**Country‑owned** The FHIR store is the country's. Tools connect to it; none of them owns it. Data can be replicated into whatever platforms the country already runs.
 
-**Country‑owned**
-The FHIR store is the country's. Tools connect to it; none of them owns it. Data can be replicated into whatever platforms the country already runs.
+**Reference solution, not a platform** Interchangeable open‑source components for collection, transformation, storage, data quality, geospatial planning, warehouse, and reporting. Any component can be swapped. The common data model in the middle holds them together, not a vendor.
 
-**Reference solution, not a platform**
-Interchangeable open‑source components for collection, transformation, storage, data quality, geospatial planning, warehouse, and reporting. Any component can be swapped. The common data model in the middle holds them together, not a vendor.
+**Feeds DHIS2, does not replace it** National reporting continues in DHIS2. The registry supplies validated, place‑linked figures rather than competing for the reporting role.
 
-**Feeds DHIS2, does not replace it**
-National reporting continues in DHIS2. The registry supplies validated, place‑linked figures rather than competing for the reporting role.
+**A better path to analytics** Building a warehouse from a FHIR store is a single, standard transformation. Mapping every collection tool into a warehouse separately is the work countries are already struggling with.
 
-**A better path to analytics**
-Building a warehouse from a FHIR store is a single, standard transformation. Mapping every collection tool into a warehouse separately is the work countries are already struggling with.
-
-**Person‑level data is optional and governed**
-The model works at aggregate, register, and individual level. Where individuals are recorded, a consent profile governs their use.
+**Person‑level data is optional and governed** The model works at aggregate, register, and individual level. Where individuals are recorded, a consent profile governs their use.
 
 * * *
 ## Who it is for
-
 **Eyebrow:** Who it is for
 
 **Heading:** Same registry, different reasons to care.
@@ -223,37 +183,27 @@ The model works at aggregate, register, and individual level. Where individuals 
 **Lede:** Pick your seat.
 
 **Tabs:** Donors and global partners · National programmes · District planners · Implementers · Technology partners
-
 ### Donors and global partners
-
 - Who: Gavi, GPEI, the END Fund, foundations, WHO and UNICEF headquarters.
 - They care about: Cost per round, comparability across countries, equity outcomes, and not funding the same enumeration five times.
 - Lead with: Skip the pre‑census · Effectiveness over time · Equity targeting · Validated aggregates
 - The story: The same two thousand villages received measles, polio, and lymphatic filariasis interventions within eighteen months and were enumerated three times. With the registry, the first campaign's enumeration is the second campaign's starting point, and the third campaign's coverage can be compared with the first.
-
 ### National programmes
-
 - Who: EPI managers, NTD programme managers, health information system leads, planning directorates.
 - They care about: Ownership, denominators they can defend, and knowing what is happening in their own country.
 - Lead with: Campaign visibility · Denominators you can defend · Campaign‑to‑routine bridge · Common places
 - The story: The national campaign calendar as a live map built from the registry, rather than a spreadsheet one person maintains. Two programmes discover they are planning the same districts a month apart, and combine.
-
 ### District planners
-
 - Who: District health teams, campaign coordinators, microplanning workshops.
 - They care about: Time. Weeks spent cleaning location lists, re‑enumerating, and re‑assigning teams.
 - Lead with: Common places · Skip the pre‑census · Visibility of what is coming to the district
 - The story: The next round starts from the last one. The settlement list, the posts used, the teams and their areas, and last round's per‑settlement coverage are the first page of the new microplan instead of the output of a three‑week exercise. The hamlet found last time is already on the list.
-
 ### Implementers
-
 - Who: NGOs, campaign contractors, ESPEN and similar programmes.
 - They care about: Not rebuilding forms, location lists, and pipelines for every client and every country.
 - Lead with: Common places · Common model · Validated aggregates
 - The story: One form set and one integration pipeline that works in the next country because the target model is the same. The location list arrives from the registry instead of being built from scratch.
-
 ### Technology partners
-
 - Who: Data collection, GIS, warehouse, and reporting tool builders.
 - They care about: Integration surface and not being locked out.
 - Lead with: Common model · Common places · Reference solution, not platform
@@ -261,7 +211,6 @@ The model works at aggregate, register, and individual level. Where individuals 
 
 * * *
 ## Objections
-
 **Eyebrow:** Objections
 
 **Heading:** The questions we get asked, answered.
@@ -278,6 +227,5 @@ The model works at aggregate, register, and individual level. Where individuals 
 
 * * *
 ## Footer
-
 - Left: Integrated Campaign Registry · UNICEF with Ona and Crosscut · FHIR R4 · Apache 2.0
 - Right: Implementation guide · Contact
