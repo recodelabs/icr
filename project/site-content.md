@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.7.1
-last_modified: 2026-09-02T22:20:00Z
+version: 0.7.2
+last_modified: 2026-09-02T22:35:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.7.1 · Last modified Sep 2, 2026 at 6:20 PM EDT`</sub>
+<sub>`v0.7.2 · Last modified Sep 2, 2026 at 6:35 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -140,11 +140,6 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 | Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
 | Effectiveness over time | The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
 | Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care. |
-
-### Two consequences
-**Co‑delivery and integration** Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.
-
-**Equity targeting** Historic per‑place coverage is the input for finding never‑reached settlements and zero‑dose children. Same records, different question. The IG already defines a zero‑dose coverage measure.
 
 * * *
 ## Beyond campaigns
