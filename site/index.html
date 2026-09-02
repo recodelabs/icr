@@ -260,6 +260,9 @@ footer a{color:var(--ink-2)}
       <svg id="lens" data-mode="campaign" viewBox="0 0 1000 480" role="img" aria-label="A settlement map that stays the same while the programme overlay changes">
         <defs>
           <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--campaign)" stroke-width="1.2" opacity=".55"/></pattern>
+          <clipPath id="clipOutline"><path d="M60,60 L420,40 L700,90 L940,70 L960,300 L820,440 L520,460 L260,420 L80,330 Z"/></clipPath>
+          <clipPath id="clipHalfA"><polygon id="halfA" points=""/></clipPath>
+          <clipPath id="clipHalfB"><polygon id="halfB" points=""/></clipPath>
         </defs>
         <!-- base layer: boundaries -->
         <g class="base">
@@ -304,11 +307,13 @@ footer a{color:var(--ink-2)}
         <!-- routine overlay -->
         <g class="routine-layer">
           <!-- catchment around health centre -->
-          <path d="M430,90 L700,95 L720,280 L560,360 L420,250 Z" fill="var(--routine)" fill-opacity=".08" stroke="var(--routine)" stroke-width="1.5"/>
-          <text x="600" y="150" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CATCHMENT · HEALTH CENTRE</text>
-          <path d="M120,220 L420,250 L300,420 L100,330 Z" fill="var(--routine)" fill-opacity=".08" stroke="var(--routine)" stroke-width="1.5"/>
-          <text x="118" y="322" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CATCHMENT · HEALTH POST</text>
-                  </g>
+          <g clip-path="url(#clipOutline)">
+            <g clip-path="url(#clipHalfA)"><path id="catchA" d="" fill="var(--routine)" fill-opacity=".08" stroke="var(--routine)" stroke-width="1.5" stroke-linejoin="round"/></g>
+            <g clip-path="url(#clipHalfB)"><path id="catchB" d="" fill="var(--routine)" fill-opacity=".08" stroke="var(--routine)" stroke-width="1.5" stroke-linejoin="round"/></g>
+          </g>
+          <text id="catchAL" x="0" y="0" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CATCHMENT · HEALTH CENTRE</text>
+          <text id="catchBL" x="0" y="0" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CATCHMENT · HEALTH POST</text>
+        </g>
 
         <!-- highlighted household in both -->
         <g transform="translate(180,260)">
@@ -543,6 +548,22 @@ tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) re
     const zones=[[130,95,330,120],[220,125,330,150],[510,105,600,130],[780,165,860,190],[320,345,420,370],[630,365,720,390],[590,135,800,160],[110,310,320,330],[320,425,520,450]];
     if(zones.some(([x1,y1,x2,y2])=>x>x1-6&&x<x2+6&&y>y1-6&&y<y2+6)) continue;
     pts.push([x,y]); }
+  // catchments: nearest facility, padded convex hull that follows the houses
+  const FAC={A:[560,210],B:[300,300]}; const groups={A:[FAC.A],B:[FAC.B]};
+  pts.concat([[180,260]]).forEach(pt=>{ const dA=Math.hypot(pt[0]-FAC.A[0],pt[1]-FAC.A[1]), dB=Math.hypot(pt[0]-FAC.B[0],pt[1]-FAC.B[1]); groups[dA<dB?'A':'B'].push(pt); });
+  function hull(P){ P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); const L=[]; for(const q of P){ while(L.length>=2&&cr(L[L.length-2],L[L.length-1],q)<=0) L.pop(); L.push(q);} const U=[]; for(const q of P.slice().reverse()){ while(U.length>=2&&cr(U[U.length-2],U[U.length-1],q)<=0) U.pop(); U.push(q);} return L.slice(0,-1).concat(U.slice(0,-1)); }
+  function pad(H,d){ const cx=H.reduce((s,p)=>s+p[0],0)/H.length, cy=H.reduce((s,p)=>s+p[1],0)/H.length; return H.map(([x,y])=>{ const vx=x-cx, vy=y-cy, n=Math.hypot(vx,vy)||1; return [x+vx/n*d, y+vy/n*d]; }); }
+  function smooth(H){ // closed Catmull-Rom → cubic Bézier
+    const n=H.length; let d=`M${H[0][0].toFixed(1)},${H[0][1].toFixed(1)}`;
+    for(let i=0;i<n;i++){ const p0=H[(i-1+n)%n],p1=H[i],p2=H[(i+1)%n],p3=H[(i+2)%n];
+      const c1=[p1[0]+(p2[0]-p0[0])/9,p1[1]+(p2[1]-p0[1])/9], c2=[p2[0]-(p3[0]-p1[0])/9,p2[1]-(p3[1]-p1[1])/9];
+      d+=` C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`; }
+    return d+' Z'; }
+  { const mx=(FAC.A[0]+FAC.B[0])/2, my=(FAC.A[1]+FAC.B[1])/2; let dx=FAC.A[0]-FAC.B[0], dy=FAC.A[1]-FAC.B[1]; const n=Math.hypot(dx,dy); dx/=n; dy/=n; const px=-dy, py=dx, L=3000;
+    const half=(sgn)=>[[mx+px*L,my+py*L],[mx-px*L,my-py*L],[mx-px*L+sgn*dx*L,my-py*L+sgn*dy*L],[mx+px*L+sgn*dx*L,my+py*L+sgn*dy*L]].map(q=>q.map(v=>v.toFixed(0)).join(',')).join(' ');
+    document.getElementById('halfA').setAttribute('points',half(1)); document.getElementById('halfB').setAttribute('points',half(-1)); }
+  for(const k of ['A','B']){ const H=pad(hull(groups[k]),18); document.getElementById('catch'+k).setAttribute('d',smooth(H));
+    const top=H.reduce((m,p)=>p[1]<m[1]?p:m); const lab=document.getElementById('catch'+k+'L'); lab.setAttribute('x',Math.max(110,Math.min(top[0]-70,700))); lab.setAttribute('y',top[1]-8); }
   pts.forEach(([x,y])=>{ const q=document.createElementNS(NS,'rect'); q.setAttribute('x',x-4); q.setAttribute('y',y-4); q.setAttribute('width',8); q.setAttribute('height',8); q.setAttribute('fill','#fff'); q.setAttribute('stroke','var(--ink-2)'); q.setAttribute('stroke-width','1'); g.appendChild(q); });
 })();
 document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
