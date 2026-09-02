@@ -135,8 +135,8 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 | Benefit | Description |
 | --- | --- |
 | Common places | Once common source of locations across tools. Stable place ids and admin boundaries, linked to health data in FHIR, load straight into field data collection tools like ODK, DHIS2, etc. to ensure collected can contribute to building a "living map". |
-| Better denominators | Census, WorldPop, administrative, and last‑round figures sit side by side, each with its source recorded. The planning denominator becomes a documented choice rather than whichever number was to hand. |
-| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The result is an official view of what is planned where, as a map and a calendar, that any programme can consult. |
+| Better denominators | The ICR makes it easy to compare census, WorldPop, administrative and last-round figures side by side. This empowers campaign teams with choice when selecting planning denominators. |
+| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR creates a centralized view of what is planned where that any programme can consult. |
 | Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
 | Validated aggregates | Delivery events roll up to the coverage report, so a district figure can be traced to the visits beneath it. Administrative and survey coverage are stored as separate figures and never merged. |
 | Effectiveness over time | Rounds of the same protocol are directly comparable records, so coverage trend, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
