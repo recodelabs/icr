@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.7.0 · Last modified Sep 2, 2026 at 5:50 PM EDT`</sub>
+`v0.7.0 · Last modified Sep 2, 2026 at 5:50 PM EDT`
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -113,7 +113,6 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 | People and households | No register yet | Last round's household register, ready for revisits | Household members including number of children and women of reproductive age known enabling further targeting and linkages to routine service delivery. |
 | Teams | A list of names | Last round's teams and the areas each one covered | Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed |
 | Coverage | No baseline for these places | One coverage figure per place, from last round | A trend line per place per campaign type, with administrative and survey coverage kept separate |
-
 ### Key properties
 **Block heading (shown on page):** Key properties
 
@@ -124,25 +123,24 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 **Sourced** Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.
 
 **Persistent** Places, households, and teams keep the same identifier from one round to the next.
+
 * * *
 ## What compounding unlocks
 **Eyebrow:** What compounding unlocks
 
 **Heading:** Key ICR benefits.
-
 ### Table
 Column heads: Benefit · Description (claim and what makes it true, merged)
 
 | Benefit | Description |
 | --- | --- |
-| Common places | One georegistry seeds every tool. Stable place IDs and boundaries in FHIR load straight into ODK, DHIS2, Crosscut, or anything else, with no re‑cleaning between rounds or between programmes. |
-| Denominators you can defend | Census, WorldPop, administrative, and last‑round figures sit side by side, each with its source recorded. The planning denominator becomes a documented choice rather than whichever number was to hand. |
+| Common places | Once common source of locations across tools. Stable place ids and admin boundaries, linked to health data in FHIR, load straight into field data collection tools like ODK, DHIS2, etc. to ensure collected can contribute to building a "living map". |
+| Better denominators | Census, WorldPop, administrative, and last‑round figures sit side by side, each with its source recorded. The planning denominator becomes a documented choice rather than whichever number was to hand. |
 | Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The result is an official view of what is planned where, as a map and a calendar, that any programme can consult. |
 | Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
 | Validated aggregates | Delivery events roll up to the coverage report, so a district figure can be traced to the visits beneath it. Administrative and survey coverage are stored as separate figures and never merged. |
 | Effectiveness over time | Rounds of the same protocol are directly comparable records, so coverage trend, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
 | Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. Aligned with the WHO SMART Immunizations guideline, so neither contaminates the other's statistics. |
-
 ### Two consequences
 **Co‑delivery and integration** Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.
 
