@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.2.0
-last_modified: 2026-09-02T13:10:00Z
+version: 0.2.1
+last_modified: 2026-09-02T17:52:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.2.0 · Last modified Sep 2, 2026 at 9:10 AM EDT`</sub>
+<sub>`v0.2.1 · Last modified Sep 2, 2026 at 1:52 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -30,7 +30,7 @@ tags:
 
 **Browser tab title:** Integrated Campaign Registry — Ensuring every campaign builds on the last
 
-**Subhead:** Health campaigns are expensive but essential to reaching the hard-to-reach. The ICR makes sure their data is reused and validated, so the investment compounds and every round that follows is cheaper and more efficient.
+**Subhead:** Health campaigns are expensive but essential to reaching the hard-to-reach. The ICR makes sure their data is reused and validated, so the investment compounds and every round that follows is cheaper and more effective.
 ### Map
 - Corner label: Synthetic data · Illustrative country
 - Panel heading (under the round label): What the registry knows
