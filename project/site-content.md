@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.10.0
-last_modified: 2026-09-03T02:00:00Z
+version: 0.10.1
+last_modified: 2026-09-03T02:15:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.10.0 · Last modified Sep 2, 2026 at 10:00 PM EDT`</sub>
+<sub>`v0.10.1 · Last modified Sep 2, 2026 at 10:15 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -185,7 +185,9 @@ Two hand‑drawn images, switched by the toggle (`site/img/lens-campaign.jpg`, `
 
 **Heading:** Same registry, different reasons to care.
 
-> Five stacked rows, each with an illustration on the left (`site/img/aud-<name>.jpg`, click opens `aud-<name>-full.png`) and the text on the right. Names: donor · national · district · implementer · tech.
+**Tabs:** Donors and global partners · National programmes · District planners · Implementers · Technology partners
+
+> One panel per tab, with an illustration on the left (`site/img/aud-<name>.jpg`, click opens `aud-<name>-full.png`) and the text on the right. Names: donor · national · district · implementer · tech.
 ### Donors and global partners
 - Who: Gavi, GPEI, the END Fund, foundations, WHO and UNICEF headquarters.
 - They care about: Cost per round, comparability across countries, equity outcomes, and not funding the same enumeration five times.
