@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.2.1
-last_modified: 2026-09-02T17:52:00Z
+version: 0.3.0
+last_modified: 2026-09-02T18:05:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.2.1 · Last modified Sep 2, 2026 at 1:52 PM EDT`</sub>
+<sub>`v0.3.0 · Last modified Sep 2, 2026 at 2:05 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -86,9 +86,9 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 ## Why campaigns first
 **Eyebrow:** Why campaigns first
 
-**Heading:** Public health has many data problems. We start with campaigns for four reasons.
+**Heading:** Whether health services come through routine delivery or a campaign, the aim is the same: reach everyone, equitably.
 
-**Lede:** Starting with campaigns is not a narrowing of ambition. It is the fastest way to build the map of places and people that every other programme needs, paid for by activities that are already happening.
+**Lede:** The hard part is everything that makes that possible: knowing where people are, how many there are, whether they were reached, and who is still missing. Campaigns are the activity best placed to find out.
 ### Cards
 **Campaigns are funded** Measles and polio rounds, mass drug administration, bed‑net distribution, indoor residual spraying, and vitamin A each arrive with a budget and a deadline. No new funding line is needed to make the first contribution.
 
