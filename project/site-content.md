@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.5.2
-last_modified: 2026-09-02T20:00:00Z
+version: 0.6.0
+last_modified: 2026-09-02T20:20:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.5.2 · Last modified Sep 2, 2026 at 4:00 PM EDT`</sub>
+<sub>`v0.6.0 · Last modified Sep 2, 2026 at 4:20 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -114,12 +114,14 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 | Teams | A list of names | Last round's teams and the areas each one covered | Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed |
 | Coverage | No baseline for these places | One coverage figure per place, from last round | A trend line per place per campaign type, with administrative and survey coverage kept separate |
 
-### Three properties
-**Any resolution is a valid contribution** The registry stores household‑level delivery events and district‑level outcome reports in the same model. A current round contributes village and household detail. A past round contributes its reported coverage and denominator by district. The model records which is which.
+### Data properties
+**Resolution‑agnostic** Household, village, or district: the model holds all three and records which is which.
 
-**Historical data can be loaded now** The registry does not have to start empty. Outcome‑level records from rounds already run can be loaded from existing reports, so a country has a multi‑year picture before it runs a single ICR‑native round. Retrofitted data carries its original quality, and the provenance fields say so.
+**Backfillable** Existing reports load as they are, so the registry has years of history before its first native round.
 
-**Resolution improves over time** Old rounds are aggregate‑only. Current rounds are village‑level. Future rounds are household‑level. The same registry holds all three, and the picture sharpens with each round.
+**Sourced** Every population figure and coverage result carries its origin, so a census projection and a field headcount are never confused.
+
+**Persistent** Places, households, and teams keep the same identifier from one round to the next. That is what lets round two start where round one finished.
 ### Callout
 **The benefit is not all in the next round.** The contribution is made in this round with this round's budget, and two of the benefits below, common places and denominator triangulation, pay off during the current round. Where a country runs several campaigns a year, the next round is months away, not years.
 
