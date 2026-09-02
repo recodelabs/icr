@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.8.3
-last_modified: 2026-09-03T01:05:00Z
+version: 0.9.0
+last_modified: 2026-09-03T01:20:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.8.3 · Last modified Sep 2, 2026 at 9:05 PM EDT`</sub>
+<sub>`v0.9.0 · Last modified Sep 2, 2026 at 9:20 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -149,14 +149,10 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 
 **Lede:** Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.
 
-### Map (option 2 from site/diagrams.html; placeholder until a real map replaces it)
+### Map
+Two hand‑drawn images, switched by the toggle (`site/img/lens-campaign.jpg`, `site/img/lens-routine.jpg`). Text inside the images is not editable here.
+
 - Toggle: Campaign · Routine
-- Ward labels: Kiri ward · Nako ward · Sabu ward · Gora ward · Mosi ward
-- Facilities: Health centre · Health post · Primary school · Church
-- Campaign overlay labels: Temporary post (×2) · House‑to‑house sweep · Team 4
-- Routine overlay labels: Catchment · Health centre · Catchment · Health post (catchments are drawn around the households nearest each facility)
-- Highlighted household: HH‑0412
-- Legend: Base layer: boundaries, facilities, households (never changes) · Campaign overlay · Routine overlay · The same household in both
 
 * * *
 ## Why it is safe to adopt
