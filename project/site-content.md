@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.9.0
-last_modified: 2026-09-03T01:20:00Z
+version: 0.9.1
+last_modified: 2026-09-03T01:40:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.9.0 · Last modified Sep 2, 2026 at 9:20 PM EDT`</sub>
+<sub>`v0.9.1 · Last modified Sep 2, 2026 at 9:40 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -129,6 +129,11 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 **Eyebrow:** What compounding unlocks
 
 **Heading:** Key ICR benefits.
+
+### Illustration
+"What the ICR unlocks" hand‑drawn overview (`site/img/unlocks.jpg`, click opens the original `site/img/unlocks-full.png` in a new tab).
+
+- Caption: Click the image to open the full-size original.
 ### Table
 Column heads: Benefit · Description (claim and what makes it true, merged)
 
