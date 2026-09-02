@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.3.0
-last_modified: 2026-09-02T18:05:00Z
+version: 0.4.0
+last_modified: 2026-09-02T18:15:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.3.0 · Last modified Sep 2, 2026 at 2:05 PM EDT`</sub>
+<sub>`v0.4.0 · Last modified Sep 2, 2026 at 2:15 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -90,13 +90,13 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 
 **Lede:** The hard part is everything that makes that possible: knowing where people are, how many there are, whether they were reached, and who is still missing. Campaigns are the activity best placed to find out.
 ### Cards
-**Campaigns are funded** Measles and polio rounds, mass drug administration, bed‑net distribution, indoor residual spraying, and vitamin A each arrive with a budget and a deadline. No new funding line is needed to make the first contribution.
+**Campaigns are funded** Campaigns represent a significant investment by governments and donors to ensure services reach those who need them. That funding also carries smaller programmes along: an MDA round can share the teams and logistics of a polio round. The cost of mapping the places and delivering the services is already paid; capturing what was learned costs almost nothing more, and losing it is a waste.
 
 **Campaigns repeat** The same protocol runs again next year, in the same districts, often with the same teams. Repetition is what makes reuse valuable and what makes comparison possible.
 
-**Campaigns go everywhere** A house‑to‑house team walks to the hamlet that no facility register has ever listed. Campaigns are the only health activity that visits every place, including the ones routine services do not reach.
+**Campaigns go everywhere and find the missing** Campaigns reach places routine services do not cover. Every village, hamlet, or household visited is a chance to find people who may have been missed.
 
-**Campaigns find the missing** The zero‑dose child, the unlisted settlement, the household behind the river. Campaign teams find them every round. The question is whether that is captured and shared, or written on a tally sheet and lost.
+**Campaigns count** Once to set the target, once to see whether it was met, with monitoring in between to check the count. No other health activity attempts to produce a denominator and a validated result for so many places in so short a time.
 
 * * *
 ## How value compounds
