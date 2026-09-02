@@ -80,7 +80,7 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 
 /* compounding rows */
 .grow{border-top:1px solid var(--rule);margin-top:8px}
-.grow .r{display:grid;grid-template-columns:170px 1fr 1fr;gap:28px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:start}
+.grow .r{display:grid;grid-template-columns:150px 1fr 1fr 1.3fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:start}
 .grow .r .h{font-family:var(--display);font-weight:600;font-size:18px}
 .grow .r .c{font-size:16.5px;color:var(--ink-2)}
 .grow .r .c.later{color:var(--ink)}
@@ -132,6 +132,7 @@ footer a{color:var(--ink-2)}
   .mapwrap{grid-template-columns:1fr}
   .panel{border-left:0;border-top:1px solid var(--rule)}
   .grow .r,.benefits .b,.benefits .head,.obj .o{grid-template-columns:1fr;gap:6px}
+  .grow .r .c::before{content:attr(data-col);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
   .grow .head{display:none}
   .aud{grid-template-columns:1fr}
   .bar nav{display:none}
@@ -184,7 +185,7 @@ footer a{color:var(--ink-2)}
     <div class="cards">
       <div class="card"><h3>Campaigns are funded</h3><p>Campaigns represent a significant investment by governments and donors to ensure services reach those who need them. That funding also carries smaller programmes along: an MDA round can share the teams and logistics of a polio round. The cost of mapping the places and delivering the services is already paid; capturing what was learned costs almost nothing more, and losing it is a waste.</p></div>
       <div class="card"><h3>Campaigns repeat</h3><p>The same protocol runs again next year, in the same districts, often with the same teams. Repetition is what makes reuse valuable and what makes comparison possible.</p></div>
-      <div class="card"><h3>Campaigns go everywhere and find the missing</h3><p>Campaigns reach places routine services do not cover. Every village, hamlet, or household visited is a chance to find people who may have been missed.</p></div>
+      <div class="card"><h3>Campaigns have broad reach</h3><p>Campaigns reach places routine services do not cover. Every village, hamlet, or household visited is a chance to find people who may have been missed.</p></div>
       <div class="card"><h3>Campaigns count</h3><p>Once to set the target, once to see whether it was met, with monitoring in between to check the count. No other health activity attempts to produce a denominator and a validated result for so many places in so short a time.</p></div>
     </div>
   </div>
@@ -195,12 +196,12 @@ footer a{color:var(--ink-2)}
     <div class="eyebrow">How value compounds</div>
     <h2>Each round contributes to a shared registry. Five kinds of record get richer every time.</h2>
     <div class="grow">
-      <div class="r head"><div>Record</div><div>After round 1</div><div>After round 5</div></div>
-      <div class="r"><div class="h">Places</div><div class="c">A district list and some GPS points</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus the posts and structures used in each round</div></div>
-      <div class="r"><div class="h">Denominators</div><div class="c">One estimate from the census projection</div><div class="c later">Census, WorldPop, previous‑round enumeration, and administrative figures side by side, each with its source recorded</div></div>
-      <div class="r"><div class="h">People and households</div><div class="c">A register from this round</div><div class="c later">Households and school cohorts known across rounds, so follow‑up and revisits can be targeted</div></div>
-      <div class="r"><div class="h">Teams</div><div class="c">A list of names</div><div class="c later">Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed</div></div>
-      <div class="r"><div class="h">Outcomes</div><div class="c">One coverage figure</div><div class="c later">A trend line per place per campaign type, with administrative and survey coverage kept as separate lineages</div></div>
+      <div class="r head"><div>Record</div><div>Start of round 1</div><div>Start of round 2</div><div>Start of round 5</div></div>
+      <div class="r"><div class="h">Places</div><div class="c">A list of settlement names, some with GPS points, some without</div><div class="c">Every settlement visited last round, each with a GPS point and a stable ID</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus the sites each round used: the schools and churches that served as vaccination posts, the houses that were sprayed</div></div>
+      <div class="r"><div class="h">Denominators</div><div class="c">One estimate from the census projection</div><div class="c">The census projection and last round's headcount, side by side</div><div class="c later">Census, WorldPop, previous‑round enumeration, and administrative figures side by side, each with its source recorded</div></div>
+      <div class="r"><div class="h">People and households</div><div class="c">No register yet</div><div class="c">Last round's household register, ready for revisits</div><div class="c later">Households and school cohorts known across rounds, so follow‑up and revisits can be targeted</div></div>
+      <div class="r"><div class="h">Teams</div><div class="c">A list of names</div><div class="c">Last round's teams and the areas each one covered</div><div class="c later">Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed</div></div>
+      <div class="r"><div class="h">Coverage</div><div class="c">No baseline for these places</div><div class="c">One coverage figure per place, from last round</div><div class="c later">A trend line per place per campaign type, with administrative and survey coverage kept as separate lineages</div></div>
     </div>
     <div class="props">
       <div><h3>Any resolution is a valid contribution</h3><p>The registry stores household‑level delivery events and district‑level outcome reports in the same model. A current round contributes village and household detail. A past round contributes its reported coverage and denominator by district. The model records which is which.</p></div>
