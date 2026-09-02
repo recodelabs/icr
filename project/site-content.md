@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.6.3
-last_modified: 2026-09-02T21:10:00Z
+version: 0.6.4
+last_modified: 2026-09-02T21:15:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.6.3 · Last modified Sep 2, 2026 at 5:10 PM EDT`</sub>
+<sub>`v0.6.4 · Last modified Sep 2, 2026 at 5:15 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -117,7 +117,7 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 ### Key properties
 **Block heading (shown on page):** Key properties
 
-**Resolution‑agnostic** Household, village, or district: the model holds all three and records which is which.
+**Resolution‑agnostic** Household, village, or district: the ICR data model is designed to store however the data is captured.
 
 **Backfillable** The ICR is designed to take in past campaign data, so it can serve as the system of record for every round a country has run, not just the ones ahead.
 
