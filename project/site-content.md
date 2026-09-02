@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.5.1
-last_modified: 2026-09-02T19:40:00Z
+version: 0.5.2
+last_modified: 2026-09-02T20:00:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.5.1 · Last modified Sep 2, 2026 at 3:40 PM EDT`</sub>
+<sub>`v0.5.2 · Last modified Sep 2, 2026 at 4:00 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -102,7 +102,7 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 ## How value compounds
 **Eyebrow:** How value compounds
 
-**Heading:** Each round contributes to a shared registry. Five kinds of record get richer every time.
+**Heading:** Every round contributes to shared registries.
 ### Table
 Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 
