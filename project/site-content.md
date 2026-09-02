@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.8.2
-last_modified: 2026-09-03T00:40:00Z
+version: 0.8.3
+last_modified: 2026-09-03T01:05:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.8.2 · Last modified Sep 2, 2026 at 8:40 PM EDT`</sub>
+<sub>`v0.8.3 · Last modified Sep 2, 2026 at 9:05 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -145,9 +145,9 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 ## Beyond campaigns
 **Eyebrow:** Beyond campaigns
 
-**Heading:** Two programmes, one map. Flip the lens and nothing underneath moves.
+**Heading:** ICR bridges campaigns to routine care.
 
-**Lede:** The household a campaign team visits is the household a health worker visits on a routine round. The school that serves as a vaccination post sits in the catchment of the same health centre. The ICR records each place once, so every programme works from the same map.
+**Lede:** Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.
 
 ### Map (option 2 from site/diagrams.html; placeholder until a real map replaces it)
 - Toggle: Campaign · Routine
