@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.1.0
-last_modified: 2026-09-01T20:58:00Z
+version: 0.2.0
+last_modified: 2026-09-02T13:10:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-`v0.1.0 · Last modified Sep 1, 2026 at 4:58 PM EDT`
+<sub>`v0.2.0 · Last modified Sep 2, 2026 at 9:10 AM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -22,13 +22,15 @@ tags:
 
 * * *
 ## Hero
-**Headline:** Integrated Campaign Registry - Ensuring every campaign builds on the last.
+**Kicker (small line above the headline):** Integrated Campaign Registry
 
-> The word "compounds" is set in green.
+**Headline:** Ensuring every campaign *builds on the last.*
 
-**Subhead:** Health campaigns represent a significant invesement to
+> The phrase "builds on the last" is set in green.
 
-Health campaigns are expensive but essential to reaching the hard-to-reach. The ICR makes sure their data is reused and validated, so the investment compounds and every round that follows is cheaper and more efficient.
+**Browser tab title:** Integrated Campaign Registry — Ensuring every campaign builds on the last
+
+**Subhead:** Health campaigns are expensive but essential to reaching the hard-to-reach. The ICR makes sure their data is reused and validated, so the investment compounds and every round that follows is cheaper and more efficient.
 ### Map
 - Corner label: Synthetic data · Illustrative country
 - Panel heading (under the round label): What the registry knows
