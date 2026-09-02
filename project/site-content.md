@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.7.2
-last_modified: 2026-09-02T22:35:00Z
+version: 0.7.3
+last_modified: 2026-09-02T22:45:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.7.2 · Last modified Sep 2, 2026 at 6:35 PM EDT`</sub>
+<sub>`v0.7.3 · Last modified Sep 2, 2026 at 6:45 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -136,7 +136,7 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 | --- | --- |
 | Common places | One common source of locations across tools. Stable place IDs and administrative boundaries, linked to health data in FHIR, load straight into field data collection tools such as ODK and DHIS2, so that what each round collects adds to a living map. |
 | Better denominators | The ICR makes it easy to compare census, WorldPop, administrative, and last‑round figures side by side, so campaign teams choose their planning denominator with the alternatives in view. |
-| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. |
+| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult, and can surface two campaigns hitting the same wards within weeks of each other, which is the integrated‑campaign argument in its most concrete form. |
 | Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
 | Effectiveness over time | The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
 | Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care. |
