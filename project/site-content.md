@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.6.4
-last_modified: 2026-09-02T21:15:00Z
+version: 0.6.5
+last_modified: 2026-09-02T21:30:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.6.4 · Last modified Sep 2, 2026 at 5:15 PM EDT`</sub>
+<sub>`v0.6.5 · Last modified Sep 2, 2026 at 5:30 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -123,10 +123,7 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 
 **Sourced** Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.
 
-**Persistent** Places, households, and teams keep the same identifier from one round to the next. That is what lets round two start where round one finished.
-### Callout
-**The benefit is not all in the next round.** The contribution is made in this round with this round's budget, and two of the benefits below, common places and denominator triangulation, pay off during the current round. Where a country runs several campaigns a year, the next round is months away, not years.
-
+**Persistent** Places, households, and teams keep the same identifier from one round to the next.
 * * *
 ## What compounding unlocks
 **Eyebrow:** What compounding unlocks
