@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.6.5
-last_modified: 2026-09-02T21:30:00Z
+version: 0.7.0
+last_modified: 2026-09-02T21:50:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.6.5 · Last modified Sep 2, 2026 at 5:30 PM EDT`</sub>
+<sub>`v0.7.0 · Last modified Sep 2, 2026 at 5:50 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -128,21 +128,21 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 ## What compounding unlocks
 **Eyebrow:** What compounding unlocks
 
-**Heading:** Seven benefits.
+**Heading:** Key ICR benefits.
 
-**Lede:** Each audience below picks the ones that matter to it.
 ### Table
-Column heads: Benefit · The claim · What makes it true
+Column heads: Benefit · Description (claim and what makes it true, merged)
 
-| Benefit | The claim | What makes it true |
-| --- | --- | --- |
-| Common places | One georegistry seeds every tool, turnkey. | Stable place IDs and boundaries in FHIR, exportable to ODK, DHIS2, Crosscut, and any other tool without re‑cleaning. |
-| Denominators you can defend | Census, WorldPop, administrative, and last‑round figures side by side, each with its source. | Target populations carry provenance; the planning denominator is a recorded choice, not an accident. |
-| Skip the pre‑census | Reuse last round's registers, posts, and teams; target instead of re‑enumerate. | Households, delivery units, and care teams persist across rounds. |
-| Campaign visibility | An official registry of what is planned where, viewable as a map and a calendar. | Every campaign is a record with geography, dates, and status, from microplan through completion. |
-| Validated aggregates | The district figure can be traced to the events beneath it. | Delivery events roll up to coverage reports; administrative and survey coverage are never merged. |
-| Effectiveness over time | Coverage trend, cost per person reached, and data‑quality trend per place and per campaign type. | Rounds of the same protocol are directly comparable within a country and, where countries share the standard, across them. |
-| Campaign‑to‑routine bridge | Same facilities, same places, same denominators; one flag separates campaign doses from routine doses. | Aligned with the WHO SMART Immunizations guideline; campaign and routine records coexist in one store without contaminating each other's statistics. |
+| Benefit | Description |
+| --- | --- |
+| Common places | One georegistry seeds every tool. Stable place IDs and boundaries in FHIR load straight into ODK, DHIS2, Crosscut, or anything else, with no re‑cleaning between rounds or between programmes. |
+| Denominators you can defend | Census, WorldPop, administrative, and last‑round figures sit side by side, each with its source recorded. The planning denominator becomes a documented choice rather than whichever number was to hand. |
+| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The result is an official view of what is planned where, as a map and a calendar, that any programme can consult. |
+| Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
+| Validated aggregates | Delivery events roll up to the coverage report, so a district figure can be traced to the visits beneath it. Administrative and survey coverage are stored as separate figures and never merged. |
+| Effectiveness over time | Rounds of the same protocol are directly comparable records, so coverage trend, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
+| Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. Aligned with the WHO SMART Immunizations guideline, so neither contaminates the other's statistics. |
+
 ### Two consequences
 **Co‑delivery and integration** Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.
 

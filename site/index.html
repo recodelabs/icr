@@ -94,11 +94,11 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 
 /* benefits */
 .benefits{border-top:1px solid var(--rule)}
-.benefits .b{display:grid;grid-template-columns:260px 1fr 1fr;gap:28px;padding:22px 0;border-bottom:1px solid var(--rule)}
+.benefits .b{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:22px 0;border-bottom:1px solid var(--rule)}
 .benefits .b .h{font-family:var(--display);font-weight:600;font-size:19px}
 .benefits .b .claim{font-size:17px}
 .benefits .b .why{font-size:15.5px;color:var(--ink-2)}
-.benefits .head{display:grid;grid-template-columns:260px 1fr 1fr;gap:28px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 0}
+.benefits .head{display:grid;grid-template-columns:260px 1fr;gap:28px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 0}
 
 /* list */
 .list{list-style:none;padding:0;margin:0;max-width:72ch}
@@ -218,17 +218,15 @@ footer a{color:var(--ink-2)}
 <section id="unlock">
   <div class="wrap">
     <div class="eyebrow">What compounding unlocks</div>
-    <h2>Seven benefits.</h2>
-    <p class="lede">Each audience below picks the ones that matter to it.</p>
-    <div class="benefits">
-      <div class="head"><div>Benefit</div><div>The claim</div><div>What makes it true</div></div>
-      <div class="b"><div class="h">Common places</div><div class="claim">One georegistry seeds every tool, turnkey.</div><div class="why">Stable place IDs and boundaries in FHIR, exportable to ODK, DHIS2, Crosscut, and any other tool without re‑cleaning.</div></div>
-      <div class="b"><div class="h">Denominators you can defend</div><div class="claim">Census, WorldPop, administrative, and last‑round figures side by side, each with its source.</div><div class="why">Target populations carry provenance; the planning denominator is a recorded choice, not an accident.</div></div>
-      <div class="b"><div class="h">Skip the pre‑census</div><div class="claim">Reuse last round's registers, posts, and teams; target instead of re‑enumerate.</div><div class="why">Households, delivery units, and care teams persist across rounds.</div></div>
-      <div class="b"><div class="h">Campaign visibility</div><div class="claim">An official registry of what is planned where, viewable as a map and a calendar.</div><div class="why">Every campaign is a record with geography, dates, and status, from microplan through completion.</div></div>
-      <div class="b"><div class="h">Validated aggregates</div><div class="claim">The district figure can be traced to the events beneath it.</div><div class="why">Delivery events roll up to coverage reports; administrative and survey coverage are never merged.</div></div>
-      <div class="b"><div class="h">Effectiveness over time</div><div class="claim">Coverage trend, cost per person reached, and data‑quality trend per place and per campaign type.</div><div class="why">Rounds of the same protocol are directly comparable within a country and, where countries share the standard, across them.</div></div>
-      <div class="b"><div class="h">Campaign‑to‑routine bridge</div><div class="claim">Same facilities, same places, same denominators; one flag separates campaign doses from routine doses.</div><div class="why">Aligned with the WHO SMART Immunizations guideline; campaign and routine records coexist in one store without contaminating each other's statistics.</div></div>
+    <h2>Key ICR benefits.</h2>
+    <div class="benefits" style="margin-top:2rem">
+      <div class="b"><div class="h">Common places</div><div class="claim">One georegistry seeds every tool. Stable place IDs and boundaries in FHIR load straight into ODK, DHIS2, Crosscut, or anything else, with no re‑cleaning between rounds or between programmes.</div></div>
+      <div class="b"><div class="h">Denominators you can defend</div><div class="claim">Census, WorldPop, administrative, and last‑round figures sit side by side, each with its source recorded. The planning denominator becomes a documented choice rather than whichever number was to hand.</div></div>
+      <div class="b"><div class="h">Campaign visibility</div><div class="claim">Every campaign is a record with geography, dates, and status, from microplan to completion. The result is an official view of what is planned where, as a map and a calendar, that any programme can consult.</div></div>
+      <div class="b"><div class="h">Skip the pre‑census</div><div class="claim">Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again.</div></div>
+      <div class="b"><div class="h">Validated aggregates</div><div class="claim">Delivery events roll up to the coverage report, so a district figure can be traced to the visits beneath it. Administrative and survey coverage are stored as separate figures and never merged.</div></div>
+      <div class="b"><div class="h">Effectiveness over time</div><div class="claim">Rounds of the same protocol are directly comparable records, so coverage trend, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard.</div></div>
+      <div class="b"><div class="h">Campaign‑to‑routine bridge</div><div class="claim">Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. Aligned with the WHO SMART Immunizations guideline, so neither contaminates the other's statistics.</div></div>
     </div>
     <div class="props">
       <div><h3>Co‑delivery and integration</h3><p>Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.</p></div>
