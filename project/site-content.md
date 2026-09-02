@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.5.0
-last_modified: 2026-09-02T19:05:00Z
+version: 0.5.1
+last_modified: 2026-09-02T19:40:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.5.0 · Last modified Sep 2, 2026 at 3:05 PM EDT`</sub>
+<sub>`v0.5.1 · Last modified Sep 2, 2026 at 3:40 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -108,11 +108,11 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 
 | Record | Start of round 1 | Start of round 2 | Start of round 5 |
 | --- | --- | --- | --- |
-| Places | A list of settlement names, some with GPS points, some without | Every settlement visited last round, each with a GPS point and a stable ID | A verified settlement map with stable IDs and boundaries, plus the sites each round used: the schools and churches that served as vaccination posts, the houses that were sprayed |
+| Places | A list of settlement names, some with GPS points, some without | Every settlement visited last round, each with a GPS point and verified name. | A verified settlement map with stable IDs and boundaries, plus points of interest eg. the schools and churches that served as vaccination posts, etc. |
 | Denominators | One estimate from the census projection | The census projection and last round's headcount, side by side | Census, WorldPop, previous‑round enumeration, and administrative figures side by side, each with its source recorded |
-| People and households | No register yet | Last round's household register, ready for revisits | Households and school cohorts known across rounds, so follow‑up and revisits can be targeted |
+| People and households | No register yet | Last round's household register, ready for revisits | Household members including number of children and women of reproductive age known enabling further targeting and linkages to routine service delivery. |
 | Teams | A list of names | Last round's teams and the areas each one covered | Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed |
-| Coverage | No baseline for these places | One coverage figure per place, from last round | A trend line per place per campaign type, with administrative and survey coverage kept as separate lineages |
+| Coverage | No baseline for these places | One coverage figure per place, from last round | A trend line per place per campaign type, with administrative and survey coverage kept separate |
 
 ### Three properties
 **Any resolution is a valid contribution** The registry stores household‑level delivery events and district‑level outcome reports in the same model. A current round contributes village and household detail. A past round contributes its reported coverage and denominator by district. The model records which is which.
