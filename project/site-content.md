@@ -22,11 +22,13 @@ tags:
 
 * * *
 ## Hero
-**Headline:** Campaign data *compounds* instead of being re‑collected.
+**Headline:** Integrated Campaign Registry - Every campaign builds on the last.
 
 > The word "compounds" is set in green.
 
-**Subhead:** Every health campaign already maps the places, counts the people, trains the teams, and records the result. Today that work is used once and filed away. The ICR makes each round a contribution to a shared registry that the next campaign, the next programme, and the routine health system can all use.
+**Subhead:** Health campaigns represent a significant invesement to
+
+Every health campaign already maps the places, counts the people, trains the teams, and records the result. Today that work is used once and filed away. The ICR makes each round a contribution to a shared registry that the next campaign, the next programme, and the routine health system can all use.
 ### Map
 - Corner label: Synthetic data · Illustrative country
 - Panel heading (under the round label): What the registry knows
