@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.6.0
-last_modified: 2026-09-02T20:20:00Z
+version: 0.6.1
+last_modified: 2026-09-02T20:35:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.6.0 · Last modified Sep 2, 2026 at 4:20 PM EDT`</sub>
+<sub>`v0.6.1 · Last modified Sep 2, 2026 at 4:35 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -114,7 +114,9 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 | Teams | A list of names | Last round's teams and the areas each one covered | Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed |
 | Coverage | No baseline for these places | One coverage figure per place, from last round | A trend line per place per campaign type, with administrative and survey coverage kept separate |
 
-### Data properties
+### Key properties
+**Block heading (shown on page):** Key properties
+
 **Resolution‑agnostic** Household, village, or district: the model holds all three and records which is which.
 
 **Backfillable** Existing reports load as they are, so the registry has years of history before its first native round.
