@@ -113,18 +113,16 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .list li span{color:var(--ink-2)}
 
 /* audiences */
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px}
-.tabs button{font-family:var(--display);font-size:15px;font-weight:600;background:transparent;border:1px solid var(--rule);color:var(--ink-2);padding:9px 14px;border-radius:999px;cursor:pointer}
-.tabs button[aria-selected=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
-.aud{display:none;grid-template-columns:1fr 1fr;gap:40px}
-.aud.on{display:grid}
-.aud .who{font-style:italic;color:var(--ink-2);margin-bottom:1.2rem}
-.aud dl{margin:0}
+.auds{margin-top:2.5rem;border-top:1px solid var(--rule)}
+.aud{display:grid;grid-template-columns:240px 1fr;gap:40px;padding:40px 0;border-bottom:1px solid var(--rule);align-items:start}
+.aud-img{display:block;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#F6F2E8}
+.aud-img img{width:100%;height:auto;display:block}
+.aud-img:hover{border-color:var(--ink-3)}
+.aud-body h3{font-size:24px;margin-bottom:.3rem}
+.aud .who{font-style:italic;color:var(--ink-2);margin-bottom:1rem}
+.aud dl{margin:0;max-width:72ch}
 .aud dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:14px}
 .aud dd{margin:4px 0 0;font-size:17px}
-.aud .story{background:#fff;border:1px solid var(--rule);padding:22px 24px;border-radius:6px}
-.aud .story dt{margin-top:0}
-
 /* objections */
 .obj{border-top:1px solid var(--rule)}
 .obj .o{display:grid;grid-template-columns:1fr 1.4fr;gap:28px;padding:18px 0;border-bottom:1px solid var(--rule)}
@@ -142,7 +140,8 @@ footer a{color:var(--ink-2)}
   .grow .r,.benefits .b,.benefits .head,.obj .o{grid-template-columns:1fr;gap:6px}
   .grow .r .c::before{content:attr(data-col);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
   .grow .head{display:none}
-  .aud{grid-template-columns:1fr}
+  .aud{grid-template-columns:1fr;gap:18px}
+  .aud-img{max-width:280px}
   .bar nav{display:none}
 }
 @media (prefers-reduced-motion:reduce){.district{transition:none}}
@@ -215,7 +214,7 @@ footer a{color:var(--ink-2)}
 <section id="compound">
   <div class="wrap">
     <div class="eyebrow">How value compounds</div>
-    <h2>Every round contributes to shared registries.</h2>
+    <h2>Every campaign round contributes to shared registries</h2>
     <div class="grow">
       <div class="r head"><div>Record</div><div>Start of round 1</div><div>Start of round 2</div><div>Start of round 5</div></div>
       <div class="r"><div class="h">Places</div><div class="c">A list of settlement names, some with GPS points, some without</div><div class="c">Every settlement visited last round, each with a GPS point and verified name.</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus points of interest eg. the schools and churches that served as vaccination posts, etc.</div></div>
@@ -237,7 +236,7 @@ footer a{color:var(--ink-2)}
 <section id="unlock">
   <div class="wrap">
     <div class="eyebrow">What compounding unlocks</div>
-    <h2>Key ICR benefits.</h2>
+    <h2>Key ICR benefits</h2>
     <figure class="unlocks">
       <a href="img/unlocks-full.png" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
         <img src="img/unlocks.jpg" alt="Hand-drawn overview titled 'What the ICR unlocks': a living map at the centre, surrounded by six benefits: common places, better denominators, campaign visibility, skip the pre-census, effectiveness over time, and the campaign-to-routine bridge" width="1200" height="676" loading="lazy">
@@ -293,44 +292,57 @@ footer a{color:var(--ink-2)}
   <div class="wrap">
     <div class="eyebrow">Who it is for</div>
     <h2>Same registry, different reasons to care.</h2>
-    <p class="lede">Pick your seat.</p>
-    <div class="tabs" role="tablist" id="tabs">
-      <button role="tab" aria-selected="true" data-t="donor">Donors and global partners</button>
-      <button role="tab" aria-selected="false" data-t="moh">National programmes</button>
-      <button role="tab" aria-selected="false" data-t="district">District planners</button>
-      <button role="tab" aria-selected="false" data-t="impl">Implementers</button>
-      <button role="tab" aria-selected="false" data-t="tech">Technology partners</button>
-    </div>
-
-    <div class="aud on" data-a="donor">
-      <div><p class="who">Gavi, GPEI, the END Fund, foundations, WHO and UNICEF headquarters.</p>
+    <div class="auds">
+    <article class="aud" id="aud-donor">
+      <a class="aud-img" href="img/aud-donor-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-donor.jpg" alt="Illustration for donors and global partners" width="600" height="600" loading="lazy"></a>
+      <div class="aud-body">
+        <h3>Donors and global partners</h3>
+        <p class="who">Gavi, GPEI, the END Fund, foundations, WHO and UNICEF headquarters.</p>
         <dl><dt>They care about</dt><dd>Cost per round, comparability across countries, equity outcomes, and not funding the same enumeration five times.</dd>
-        <dt>Lead with</dt><dd>Skip the pre‑census · Effectiveness over time · Equity targeting · Validated aggregates</dd></dl></div>
-      <div class="story"><dl><dt>The story</dt><dd>The same two thousand villages received measles, polio, and lymphatic filariasis interventions within eighteen months and were enumerated three times. With the registry, the first campaign's enumeration is the second campaign's starting point, and the third campaign's coverage can be compared with the first.</dd></dl></div>
-    </div>
-    <div class="aud" data-a="moh">
-      <div><p class="who">EPI managers, NTD programme managers, health information system leads, planning directorates.</p>
+        <dt>Lead with</dt><dd>Skip the pre‑census · Effectiveness over time · Equity targeting · Validated aggregates</dd>
+        <dt>The story</dt><dd>The same two thousand villages received measles, polio, and lymphatic filariasis interventions within eighteen months and were enumerated three times. With the registry, the first campaign's enumeration is the second campaign's starting point, and the third campaign's coverage can be compared with the first.</dd></dl>
+      </div>
+    </article>
+    <article class="aud" id="aud-national">
+      <a class="aud-img" href="img/aud-national-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-national.jpg" alt="Illustration for national programmes" width="600" height="600" loading="lazy"></a>
+      <div class="aud-body">
+        <h3>National programmes</h3>
+        <p class="who">EPI managers, NTD programme managers, health information system leads, planning directorates.</p>
         <dl><dt>They care about</dt><dd>Ownership, denominators they can defend, and knowing what is happening in their own country.</dd>
-        <dt>Lead with</dt><dd>Campaign visibility · Denominators you can defend · Campaign‑to‑routine bridge · Common places</dd></dl></div>
-      <div class="story"><dl><dt>The story</dt><dd>The national campaign calendar as a live map built from the registry, rather than a spreadsheet one person maintains. Two programmes discover they are planning the same districts a month apart, and combine.</dd></dl></div>
-    </div>
-    <div class="aud" data-a="district">
-      <div><p class="who">District health teams, campaign coordinators, microplanning workshops.</p>
+        <dt>Lead with</dt><dd>Campaign visibility · Denominators you can defend · Campaign‑to‑routine bridge · Common places</dd>
+        <dt>The story</dt><dd>The national campaign calendar as a live map built from the registry, rather than a spreadsheet one person maintains. Two programmes discover they are planning the same districts a month apart, and combine.</dd></dl>
+      </div>
+    </article>
+    <article class="aud" id="aud-district">
+      <a class="aud-img" href="img/aud-district-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-district.jpg" alt="Illustration for district planners" width="600" height="600" loading="lazy"></a>
+      <div class="aud-body">
+        <h3>District planners</h3>
+        <p class="who">District health teams, campaign coordinators, microplanning workshops.</p>
         <dl><dt>They care about</dt><dd>Time. Weeks spent cleaning location lists, re‑enumerating, and re‑assigning teams.</dd>
-        <dt>Lead with</dt><dd>Common places · Skip the pre‑census · Visibility of what is coming to the district</dd></dl></div>
-      <div class="story"><dl><dt>The story</dt><dd>The next round starts from the last one. The settlement list, the posts used, the teams and their areas, and last round's per‑settlement coverage are the first page of the new microplan instead of the output of a three‑week exercise. The hamlet found last time is already on the list.</dd></dl></div>
-    </div>
-    <div class="aud" data-a="impl">
-      <div><p class="who">NGOs, campaign contractors, ESPEN and similar programmes.</p>
+        <dt>Lead with</dt><dd>Common places · Skip the pre‑census · Visibility of what is coming to the district</dd>
+        <dt>The story</dt><dd>The next round starts from the last one. The settlement list, the posts used, the teams and their areas, and last round's per‑settlement coverage are the first page of the new microplan instead of the output of a three‑week exercise. The hamlet found last time is already on the list.</dd></dl>
+      </div>
+    </article>
+    <article class="aud" id="aud-implementer">
+      <a class="aud-img" href="img/aud-implementer-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-implementer.jpg" alt="Illustration for implementers" width="600" height="600" loading="lazy"></a>
+      <div class="aud-body">
+        <h3>Implementers</h3>
+        <p class="who">NGOs, campaign contractors, ESPEN and similar programmes.</p>
         <dl><dt>They care about</dt><dd>Not rebuilding forms, location lists, and pipelines for every client and every country.</dd>
-        <dt>Lead with</dt><dd>Common places · Common model · Validated aggregates</dd></dl></div>
-      <div class="story"><dl><dt>The story</dt><dd>One form set and one integration pipeline that works in the next country because the target model is the same. The location list arrives from the registry instead of being built from scratch.</dd></dl></div>
-    </div>
-    <div class="aud" data-a="tech">
-      <div><p class="who">Data collection, GIS, warehouse, and reporting tool builders.</p>
+        <dt>Lead with</dt><dd>Common places · Common model · Validated aggregates</dd>
+        <dt>The story</dt><dd>One form set and one integration pipeline that works in the next country because the target model is the same. The location list arrives from the registry instead of being built from scratch.</dd></dl>
+      </div>
+    </article>
+    <article class="aud" id="aud-tech">
+      <a class="aud-img" href="img/aud-tech-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-tech.jpg" alt="Illustration for technology partners" width="600" height="600" loading="lazy"></a>
+      <div class="aud-body">
+        <h3>Technology partners</h3>
+        <p class="who">Data collection, GIS, warehouse, and reporting tool builders.</p>
         <dl><dt>They care about</dt><dd>Integration surface and not being locked out.</dd>
-        <dt>Lead with</dt><dd>Common model · Common places · Reference solution, not platform</dd></dl></div>
-      <div class="story"><dl><dt>The story</dt><dd>Implement one profile set and interoperate with every other component in the reference solution. The IG defines the interface. <a href="https://icr.healthcampaigns.org">Read the implementation guide ↗</a></dd></dl></div>
+        <dt>Lead with</dt><dd>Common model · Common places · Reference solution, not platform</dd>
+        <dt>The story</dt><dd>Implement one profile set and interoperate with every other component in the reference solution. The IG defines the interface. <a href="https://icr.healthcampaigns.org">Read the implementation guide ↗</a></dd></dl>
+      </div>
+    </article>
     </div>
   </div>
 </section>
@@ -468,12 +480,6 @@ polys.forEach(p=>{
     const r=canvas.getBoundingClientRect(); let x=e.clientX-r.left+14, y=e.clientY-r.top+14; if(x+270>r.width) x-=290; tip.style.left=x+'px'; tip.style.top=y+'px'; tip.classList.add('on'); });
   p.addEventListener('mouseleave',()=>tip.classList.remove('on'));
 });
-
-// audience tabs
-const tabs=document.getElementById('tabs');
-tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
-  tabs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b));
-  document.querySelectorAll('.aud').forEach(a=>a.classList.toggle('on',a.dataset.a===b.dataset.t)); });
 
 // beyond-campaigns lens toggle
 document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
