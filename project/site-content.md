@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.7.5
-last_modified: 2026-09-02T23:40:00Z
+version: 0.8.0
+last_modified: 2026-09-03T00:05:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.7.5 · Last modified Sep 2, 2026 at 7:40 PM EDT`</sub>
+<sub>`v0.8.0 · Last modified Sep 2, 2026 at 8:05 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -145,13 +145,19 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 ## Beyond campaigns
 **Eyebrow:** Beyond campaigns
 
-**Heading:** A place recorded by a campaign is the same place for every other programme.
+**Heading:** Two programmes, one map. Flip the lens and nothing underneath moves.
 
-**Lede:** The registry is built on HL7 FHIR, and FHIR Location, Organization, Patient, and Group resources are not campaign‑specific.
+**Lede:** The household a campaign team visits is the household a health worker visits on a routine round. The school that serves as a vaccination post sits in the catchment of the same health centre. The ICR records each place once, so every programme works from the same map.
 
-Once a village, a facility, a school, or a household exists as a FHIR resource with a stable identifier, it is the same resource that routine immunization, nutrition, HIV, surveillance, supply chain, and civil registration systems can reference. Campaigns are the first programme to create those resources, because campaigns are the only programme that visits every place. Every programme that follows starts from the same location and population records.
-
-The immunization case makes it concrete. A country that runs a measles campaign and then wants to strengthen routine immunization in the same districts already has, in the registry, the facilities that will deliver routine doses, the community denominators, and the households with children. The transition from campaign mode to routine mode is a change of flag, not a change of system.
+### Map (option 2 from site/diagrams.html; placeholder until a real map replaces it)
+- Toggle: Campaign · Routine
+- Ward labels: Kiri ward · Nako ward · Sabu ward · Gora ward · Mosi ward
+- Facilities: Health centre · Health post · Primary school · Church
+- Campaign overlay labels: Temporary post (×2) · House‑to‑house sweep · Team 4
+- Routine overlay labels: Catchment · Health centre · Catchment · Health post · CHW routine visits · Monthly
+- Highlighted household: HH‑0412
+- Legend: Base layer: boundaries, facilities, households (never changes) · Campaign overlay · Routine overlay · The same household in both
+- Small caption under the map: Illustrative map with synthetic data.
 
 * * *
 ## Why it is safe to adopt

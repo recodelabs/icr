@@ -11,6 +11,7 @@
   --paper:#F7F8F5; --paper-2:#EEF1EB; --ink:#17211C; --ink-2:#4A554F; --ink-3:#8A948E; --rule:#D5DAD3;
   --reg:#2F6B4F; --reg-2:#DDE9E0;
   --measles:#D9822B; --polio:#6D5BD0; --mda:#1F8A8A; --nets:#2F6FD6; --vita:#C2477A;
+  --routine:#2F6FD6; --campaign:#D9822B;
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --body:"Source Serif 4",Georgia,serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -140,6 +141,22 @@ footer a{color:var(--ink-2)}
   .bar nav{display:none}
 }
 @media (prefers-reduced-motion:reduce){.district{transition:none}}
+/* beyond-campaigns lens */
+.lens-fig{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:22px 26px;margin-top:28px}
+.lens-fig svg{width:100%;height:auto;display:block}
+.toggle{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;margin-bottom:16px}
+.toggle button{font-family:var(--display);font-size:14px;font-weight:600;background:transparent;border:0;padding:8px 16px;cursor:pointer;color:var(--ink-2)}
+.toggle button[aria-pressed=true]{background:var(--ink);color:#fff}
+#lens .campaign-layer,#lens .routine-layer{transition:opacity .3s}
+#lens[data-mode=campaign] .routine-layer{opacity:0}
+#lens[data-mode=routine] .campaign-layer{opacity:0}
+.lens-legend{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:10px}
+.lens-legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.t2{font-family:var(--body);font-size:13px;fill:var(--ink-2)}
+.m{font-family:var(--mono);font-size:11px;fill:var(--ink-3);letter-spacing:.06em}
+.m2{font-family:var(--mono);font-size:11.5px;fill:var(--ink);letter-spacing:.02em}
+.dc{font-family:var(--display);font-size:14px;font-weight:600}
+@media (prefers-reduced-motion:reduce){#lens .campaign-layer,#lens .routine-layer{transition:none}}
 :focus-visible{outline:2px solid var(--reg);outline-offset:2px}
 </style>
 </head>
@@ -233,10 +250,86 @@ footer a{color:var(--ink-2)}
 <section id="beyond">
   <div class="wrap">
     <div class="eyebrow">Beyond campaigns</div>
-    <h2>A place recorded by a campaign is the same place for every other programme.</h2>
-    <p class="lede">The registry is built on HL7 FHIR, and FHIR Location, Organization, Patient, and Group resources are not campaign‑specific.</p>
-    <p>Once a village, a facility, a school, or a household exists as a FHIR resource with a stable identifier, it is the same resource that routine immunization, nutrition, HIV, surveillance, supply chain, and civil registration systems can reference. Campaigns are the first programme to create those resources, because campaigns are the only programme that visits every place. Every programme that follows starts from the same location and population records.</p>
-    <p>The immunization case makes it concrete. A country that runs a measles campaign and then wants to strengthen routine immunization in the same districts already has, in the registry, the facilities that will deliver routine doses, the community denominators, and the households with children. The transition from campaign mode to routine mode is a change of flag, not a change of system.</p>
+    <h2>Two programmes, one map. Flip the lens and nothing underneath moves.</h2>
+    <p class="lede">The household a campaign team visits is the household a health worker visits on a routine round. The school that serves as a vaccination post sits in the catchment of the same health centre. The ICR records each place once, so every programme works from the same map.</p>
+    <div class="lens-fig">
+      <div class="toggle" role="group" aria-label="Choose a programme view">
+        <button aria-pressed="true" data-mode="campaign">Campaign</button>
+        <button aria-pressed="false" data-mode="routine">Routine</button>
+      </div>
+      <svg id="lens" data-mode="campaign" viewBox="0 0 1000 480" role="img" aria-label="A settlement map that stays the same while the programme overlay changes">
+        <defs>
+          <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--campaign)" stroke-width="1.2" opacity=".55"/></pattern>
+        </defs>
+        <!-- base layer: boundaries -->
+        <g class="base">
+          <path d="M60,60 L420,40 L700,90 L940,70 L960,300 L820,440 L520,460 L260,420 L80,330 Z" fill="#fff" stroke="var(--ink-2)" stroke-width="1.4"/>
+          <path d="M420,40 L440,230 L260,420" fill="none" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <path d="M700,90 L640,260 L820,440" fill="none" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <path d="M80,330 L440,230 L640,260 L960,300" fill="none" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <text x="230" y="140" class="m">KIRI WARD</text>
+          <text x="520" y="120" class="m">NAKO WARD</text>
+          <text x="790" y="180" class="m">SABU WARD</text>
+          <text x="330" y="360" class="m">GORA WARD</text>
+          <text x="640" y="380" class="m">MOSI WARD</text>
+          <!-- river -->
+          <path d="M60,200 C200,180 260,260 400,240 S600,150 700,200 S860,320 960,260" fill="none" stroke="#B9D2E8" stroke-width="5" opacity=".8"/>
+        </g>
+
+        <!-- base layer: facilities -->
+        <g class="base">
+          <g transform="translate(560,210)"><rect x="-9" y="-9" width="18" height="18" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/><rect x="-1.5" y="-6" width="3" height="12" fill="var(--ink)"/><rect x="-6" y="-1.5" width="12" height="3" fill="var(--ink)"/><text x="14" y="4" class="m2">Health centre</text></g>
+          <g transform="translate(300,300)"><rect x="-9" y="-9" width="18" height="18" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/><rect x="-1.5" y="-6" width="3" height="12" fill="var(--ink)"/><rect x="-6" y="-1.5" width="12" height="3" fill="var(--ink)"/><text x="14" y="4" class="m2">Health post</text></g>
+          <g transform="translate(250,180)"><path d="M-9,7 L0,-8 L9,7 Z" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/><text x="14" y="4" class="m2">Primary school</text></g>
+          <g transform="translate(760,330)"><path d="M-9,7 L0,-8 L9,7 Z" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/><text x="14" y="4" class="m2">Church</text></g>
+        </g>
+
+        <!-- base layer: households -->
+        <g class="base" id="hh"></g>
+
+        <!-- campaign overlay -->
+        <g class="campaign-layer">
+          <!-- temporary posts at school and church -->
+          <circle cx="250" cy="180" r="18" fill="none" stroke="var(--campaign)" stroke-width="2.5"/>
+          <text x="250" y="152" text-anchor="middle" class="dc" fill="var(--campaign)" style="font-size:11px;letter-spacing:.06em">TEMPORARY POST</text>
+          <circle cx="760" cy="330" r="18" fill="none" stroke="var(--campaign)" stroke-width="2.5"/>
+          <text x="760" y="366" text-anchor="middle" class="dc" fill="var(--campaign)" style="font-size:11px;letter-spacing:.06em">TEMPORARY POST</text>
+          <!-- house-to-house sweep area -->
+          <path d="M100,120 L400,70 L430,220 L280,400 L100,320 Z" fill="url(#hatch)" stroke="var(--campaign)" stroke-width="1.5"/>
+          <text x="140" y="110" class="dc" fill="var(--campaign)" style="font-size:11px;letter-spacing:.06em">HOUSE‑TO‑HOUSE SWEEP · TEAM 4</text>
+          <!-- team route -->
+          <path d="M150,150 L210,230 L170,300 L250,340 L330,260 L390,150" fill="none" stroke="var(--campaign)" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round"/>
+        </g>
+
+        <!-- routine overlay -->
+        <g class="routine-layer">
+          <!-- catchment around health centre -->
+          <path d="M430,90 L700,95 L720,280 L560,360 L420,250 Z" fill="var(--routine)" fill-opacity=".08" stroke="var(--routine)" stroke-width="1.5"/>
+          <text x="600" y="150" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CATCHMENT · HEALTH CENTRE</text>
+          <path d="M120,220 L420,250 L300,420 L100,330 Z" fill="var(--routine)" fill-opacity=".08" stroke="var(--routine)" stroke-width="1.5"/>
+          <text x="118" y="322" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CATCHMENT · HEALTH POST</text>
+          <!-- CHW visit spokes -->
+          <g stroke="var(--routine)" stroke-width="1.6" stroke-dasharray="6 4" fill="none">
+            <line x1="300" y1="300" x2="180" y2="260"/><line x1="300" y1="300" x2="230" y2="360"/><line x1="300" y1="300" x2="360" y2="240"/>
+            <line x1="560" y1="210" x2="500" y2="160"/><line x1="560" y1="210" x2="640" y2="300"/><line x1="560" y1="210" x2="480" y2="300"/>
+          </g>
+          <text x="330" y="440" class="dc" fill="var(--routine)" style="font-size:11px;letter-spacing:.06em">CHW ROUTINE VISITS · MONTHLY</text>
+        </g>
+
+        <!-- highlighted household in both -->
+        <g transform="translate(180,260)">
+          <rect x="-7" y="-7" width="14" height="14" fill="var(--reg)" stroke="#fff" stroke-width="1.5"/>
+          <text x="12" y="-8" class="m2" style="fill:var(--reg)">HH‑0412</text>
+        </g>
+      </svg>
+      <div class="lens-legend">
+        <span><i style="background:var(--ink)"></i>Base layer: boundaries, facilities, households (never changes)</span>
+        <span><i style="background:var(--campaign)"></i>Campaign overlay</span>
+        <span><i style="background:var(--routine)"></i>Routine overlay</span>
+        <span><i style="background:var(--reg)"></i>The same household in both</span>
+      </div>
+    </div>
+    <p class="lede" style="margin-top:22px;font-size:16px;color:var(--ink-3)">Illustrative map with synthetic data.</p>
   </div>
 </section>
 
@@ -441,6 +534,28 @@ const tabs=document.getElementById('tabs');
 tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
   tabs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b));
   document.querySelectorAll('.aud').forEach(a=>a.classList.toggle('on',a.dataset.a===b.dataset.t)); });
+
+// beyond-campaigns lens
+(function(){
+// households for option 2: seeded scatter inside the wards
+  const g=document.getElementById('hh'); const NS='http://www.w3.org/2000/svg';
+  let s=7; const r=()=>{s=(s*9301+49297)%233280;return s/233280;};
+  const pts=[];
+  for(let i=0;i<64;i++){ const x=100+r()*820, y=90+r()*330;
+    // crude inside test for the outline polygon: keep away from edges
+    if(x<110||x>930||y<80||y>430) continue;
+    const avoid=[[560,210],[300,300],[250,180],[760,330],[180,260]];
+    if(avoid.some(([ax,ay])=>Math.hypot(x-ax,y-ay)<46)) continue;
+    // label zones: ward names, sweep label, catchment labels
+    const zones=[[130,95,330,120],[220,125,330,150],[510,105,600,130],[780,165,860,190],[320,345,420,370],[630,365,720,390],[590,135,800,160],[110,310,320,330],[320,425,520,450]];
+    if(zones.some(([x1,y1,x2,y2])=>x>x1-6&&x<x2+6&&y>y1-6&&y<y2+6)) continue;
+    pts.push([x,y]); }
+  pts.forEach(([x,y])=>{ const q=document.createElementNS(NS,'rect'); q.setAttribute('x',x-4); q.setAttribute('y',y-4); q.setAttribute('width',8); q.setAttribute('height',8); q.setAttribute('fill','#fff'); q.setAttribute('stroke','var(--ink-2)'); q.setAttribute('stroke-width','1'); g.appendChild(q); });
+})();
+document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.toggle button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  document.getElementById('lens').dataset.mode=b.dataset.mode;
+}));
 </script>
 </body>
 </html>
