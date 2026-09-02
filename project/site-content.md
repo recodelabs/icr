@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.8.0
-last_modified: 2026-09-03T00:05:00Z
+version: 0.8.1
+last_modified: 2026-09-03T00:20:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.8.0 · Last modified Sep 2, 2026 at 8:05 PM EDT`</sub>
+<sub>`v0.8.1 · Last modified Sep 2, 2026 at 8:20 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -154,7 +154,7 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 - Ward labels: Kiri ward · Nako ward · Sabu ward · Gora ward · Mosi ward
 - Facilities: Health centre · Health post · Primary school · Church
 - Campaign overlay labels: Temporary post (×2) · House‑to‑house sweep · Team 4
-- Routine overlay labels: Catchment · Health centre · Catchment · Health post · CHW routine visits · Monthly
+- Routine overlay labels: Catchment · Health centre · Catchment · Health post
 - Highlighted household: HH‑0412
 - Legend: Base layer: boundaries, facilities, households (never changes) · Campaign overlay · Routine overlay · The same household in both
 - Small caption under the map: Illustrative map with synthetic data.
