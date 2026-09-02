@@ -138,9 +138,9 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 | Better denominators | The ICR makes it easy to compare census, WorldPop, administrative and last-round figures side by side. This empowers campaign teams with choice when selecting planning denominators. |
 | Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR creates a centralized view of what is planned where that any programme can consult. |
 | Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
-| Validated aggregates | Delivery events roll up to the coverage report, so a district figure can be traced to the visits beneath it. Administrative and survey coverage are stored as separate figures and never merged. |
-| Effectiveness over time | Rounds of the same protocol are directly comparable records, so coverage trend, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
-| Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. Aligned with the WHO SMART Immunizations guideline, so neither contaminates the other's statistics. |
+|     |     |
+| Effectiveness over time | The ICR provides a standardized way of storing camparable campaign records - making it possible to calculate coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
+| Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care. |
 ### Two consequences
 **Co‑delivery and integration** Once the registry knows what is planned where, it can surface two campaigns hitting the same wards within weeks of each other. That is the integrated‑campaign argument in its most concrete form.
 
