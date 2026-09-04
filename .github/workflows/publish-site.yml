@@ -1,0 +1,32 @@
+name: Publish site to Cloudflare Pages
+
+# Deploys the static landing site (site/) to Cloudflare Pages project
+# healthcampaigns (https://www.healthcampaigns.org). Uses the same repo
+# secrets as publish-docs.yml: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/publish-site.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=healthcampaigns --branch=main
