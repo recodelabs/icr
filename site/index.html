@@ -197,7 +197,7 @@ footer a{color:var(--ink-2)}
 <section id="why" class="band">
   <div class="wrap">
     <div>
-      <div class="eyebrow">Why campaigns first</div>
+      <div class="eyebrow">Why campaigns</div>
       <h2>Campaigns are how health services reach everyone.</h2>
     </div>
     <div class="pts">
@@ -213,7 +213,7 @@ footer a{color:var(--ink-2)}
   <div class="wrap">
     <div class="eyebrow">What the ICR is</div>
     <h2>The ICR is an open data standard for storing campaign data between campaigns.</h2>
-    <p class="lede">Immunization, polio, NTD, malaria, and vitamin A campaigns can share, exchange, and reuse their data, so that what one campaign collects the next can build on. It is three things.</p>
+    <p class="lede">Immunization, polio, NTD, malaria, and vitamin A campaigns can share, exchange, and reuse their data, so that what one campaign collects the next can build on.</p>
     <div class="cards">
       <div class="card"><h3>A data standard</h3><p>An HL7 FHIR Implementation Guide that defines a shared vocabulary for campaigns: campaign types, delivery strategies, places, teams, denominators, coverage, and the protocol each round follows. Any conformant implementation, whatever its software, speaks the same model.</p></div>
       <div class="card"><h3>A registry</h3><p>A FHIR store the country owns, where every campaign round adds to the same records of places, households, teams, and results. Data from one programme is available to the next instead of being collected again.</p></div>
@@ -305,7 +305,7 @@ footer a{color:var(--ink-2)}
 <section id="safe">
   <div class="wrap">
     <div class="eyebrow">Technical overview</div>
-    <h2>How the ICR is built.</h2>
+    <h2>Key ICR Components</h2>
     <figure class="unlocks tech">
       <a href="img/tech-full.jpg" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
         <img src="img/tech.jpg" alt="Hand-drawn diagram titled 'How the ICR is built': tools countries already use (ODK, DHIS2, CommCare, GIS) connect through integration and enrichment steps (connect, match, geocode, validate) to a country-owned FHIR store holding campaigns, places, households, teams, denominators, and results, which feeds planning, analytics, and reporting. Underneath, the shared contract: the FHIR Implementation Guide and shared terminology." width="1400" height="788" loading="lazy">
@@ -331,7 +331,7 @@ footer a{color:var(--ink-2)}
 <section id="audience">
   <div class="wrap">
     <div class="eyebrow">Who benefits</div>
-    <h2>Why the ICR matters.</h2>
+    <h2>Why the ICR matters to</h2>
     <div class="tabs" role="tablist" id="tabs">
       <button role="tab" aria-selected="true" data-t="donor">Donors and global partners</button>
       <button role="tab" aria-selected="false" data-t="national">National programmes</button>
@@ -397,15 +397,13 @@ footer a{color:var(--ink-2)}
 <section id="objections">
   <div class="wrap">
     <div class="eyebrow">Objections</div>
-    <h2>The questions we get asked, answered.</h2>
+    <h2>Frequently Asked Questions</h2>
     <div class="obj" style="margin-top:2rem">
-      <div class="o"><div class="q">"DHIS2 already does this."</div><div class="a">DHIS2 does aggregate reporting and case tracking. It does not hold a reusable campaign model with places, teams, denominators, and protocols that carry across programmes. The registry feeds DHIS2.</div></div>
-      <div class="o"><div class="q">"Another standard nobody will adopt."</div><div class="a">It is FHIR R4, the most widely deployed health data standard, aligned with WHO SMART Guidelines, and every profile is valid plain FHIR. Adoption starts with reading the data, not rewriting systems.</div></div>
-      <div class="o"><div class="q">"This locks us into one vendor."</div><div class="a">Apache 2.0 licence, UNICEF‑published, country‑owned store, interchangeable components. The consortium builds the reference; it does not own the result.</div></div>
-      <div class="o"><div class="q">"Person‑level data in campaigns is a privacy risk."</div><div class="a">The model works at aggregate and register level without individuals. Where individuals are recorded, consent is modelled and governance is explicit.</div></div>
-      <div class="o"><div class="q">"Our location data is a mess."</div><div class="a">That is the first thing the registry fixes, and campaigns are the activity that visits every place to fix it.</div></div>
-      <div class="o"><div class="q">"The benefit is all in the next round."</div><div class="a">Common places and denominator triangulation pay off in this round. Historical loading gives a multi‑year picture before the first ICR‑native round. Where several campaigns run a year, the next round is months away.</div></div>
-      <div class="o"><div class="q">"We cannot compare across countries; contexts differ."</div><div class="a">The standard makes comparison possible; whether to use it is the country's decision. Within‑country comparison across rounds is the primary use.</div></div>
+      <div class="o"><div class="q">"Another standard nobody will adopt."</div><div class="a">The ICR is based on the HL7 FHIR data standard which is the way most countries have decided to represent and store their national health data. The ICR is the first attempt to adapt the FHIR standard to represent campaigns.</div></div>
+        <div class="o"><div class="q">"DHIS2 already does this."</div><div class="a">DHIS2 does aggregate reporting and case tracking. It is not designed to be a standards based campaign model with places, teams, denominators, and protocols that carry across programmes. The ICR is designed to feed data into and out of DHIS2.</div></div>
+      <div class="o"><div class="q">"This locks us into one vendor."</div><div class="a">The ICR is an open standard and reference architecture that any country or tech provider can use. It is meant to compliment not replace existing platforms.</div></div>
+      <div class="o"><div class="q">"Person‑level data in campaigns is a privacy risk."</div><div class="a">The ICR data model can be uses to store aggregate (tally) level or individual data. The ICR provides mechanisms to control if and how individual level data can be shared between campaigns, partners, etc.</div></div>
+      <div class="o"><div class="q">"We cannot compare across countries; contexts differ."</div><div class="a">Adoption of the standard makes comparison between countries easier. Within‑country comparison across rounds, however, is the primary use.</div></div>
     </div>
   </div>
 </section>
