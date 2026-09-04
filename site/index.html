@@ -74,6 +74,14 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .play:hover{background:#255740}
 
 /* cards */
+.band{background:var(--paper-2);padding:40px 0}
+.band .wrap{display:grid;grid-template-columns:1.1fr 2.4fr;gap:48px;align-items:start}
+.band .eyebrow{margin-bottom:.4rem}
+.band h2{font-size:26px;letter-spacing:-0.015em;margin:6px 0 0;max-width:16ch}
+.band .pts{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.band .pts b{font-family:var(--display);font-weight:600;font-size:16px;display:block;margin-bottom:4px}
+.band .pts p{margin:0;font-size:15px;color:var(--ink-2);line-height:1.45}
+@media(max-width:800px){.band .wrap,.band .pts{grid-template-columns:1fr}}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px;margin-top:8px}
 .card{border-top:2px solid var(--ink);padding-top:14px}
 .card h3{font-size:19px}
@@ -173,7 +181,7 @@ footer a{color:var(--ink-2)}
   <div class="bar">
     <div class="brand">Integrated Campaign Registry <span>UNICEF</span></div>
     <nav>
-      <a href="#what">What it is</a><a href="#why">Why campaigns</a><a href="#unlock">Benefits</a><a href="#compound">Compounding</a><a href="#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>
+      <a href="#why">Why campaigns</a><a href="#what">What it is</a><a href="#unlock">Benefits</a><a href="#compound">Compounding</a><a href="#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>
     </nav>
   </div>
 </div>
@@ -203,6 +211,21 @@ footer a{color:var(--ink-2)}
   </div>
 </header>
 
+<section id="why" class="band">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Why campaigns first</div>
+      <h2>Campaigns are how health services reach everyone.</h2>
+    </div>
+    <div class="pts">
+      <div><b>Funded</b><p>Governments and donors already pay to map places and reach people.</p></div>
+      <div><b>Repeat</b><p>Many run every year, in the same districts with the same teams.</p></div>
+      <div><b>Broad reach</b><p>They go where routine services do not.</p></div>
+      <div><b>Measure</b><p>They count people to set a target, then again to check it.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="what">
   <div class="wrap">
     <div class="eyebrow">What the ICR is</div>
@@ -212,20 +235,6 @@ footer a{color:var(--ink-2)}
       <div class="card"><h3>A data standard</h3><p>An HL7 FHIR Implementation Guide that defines a shared vocabulary for campaigns: campaign types, delivery strategies, places, teams, denominators, coverage, and the protocol each round follows. Any conformant implementation, whatever its software, speaks the same model.</p></div>
       <div class="card"><h3>A registry</h3><p>A FHIR store the country owns, where every campaign round adds to the same records of places, households, teams, and results. Data from one programme is available to the next instead of being collected again.</p></div>
       <div class="card"><h3>A reference solution</h3><p>Interchangeable open‑source components that connect the collection tools countries already use, such as ODK, DHIS2, and CommCare, to the registry and on to planning, data quality, warehouse, and reporting. A blueprint to adapt, not a product to buy.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="why">
-  <div class="wrap">
-    <div class="eyebrow">Why campaigns first</div>
-    <h2>Campaigns are how health services reach everyone.</h2>
-    <p class="lede">This requires an investment in finding out where people are and planning how to reach them.</p>
-    <div class="cards">
-      <div class="card"><h3>Campaigns are funded</h3><p>Campaigns represent a significant investment by governments and donors to ensure services reach those who need them. That funding also carries smaller programmes along: an MDA round can share the teams and logistics of a polio round. The cost of mapping the places and delivering the services is already paid; capturing what was learned costs almost nothing more, and losing it is a waste.</p></div>
-      <div class="card"><h3>Campaigns repeat</h3><p>Many campaigns repeat every year, often in the same districts with the same teams. Each repeat is a chance to reuse last round's data and compare results.</p></div>
-      <div class="card"><h3>Campaigns have broad reach</h3><p>Campaigns reach places routine services do not cover. Every village, hamlet, or household visit is a chance to find people who may have been missed.</p></div>
-      <div class="card"><h3>Campaigns measure</h3><p>Campaigns count people twice: once to set the target, once to see whether it was met, with monitoring in between. No other health activity produces a denominator and a validated result for so many places in so short a time.</p></div>
     </div>
   </div>
 </section>
