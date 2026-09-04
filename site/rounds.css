@@ -1,0 +1,35 @@
+/* Campaign rounds animation: map, panel, tooltip. Loaded by index.html; markup lives in #rounds. */
+#rounds{padding:0 0 56px;border-top:0}
+#rounds .mapwrap{margin:0}
+.mapwrap{margin:28px 0 40px;border:1px solid var(--rule);background:#fff;border-radius:6px;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
+.mapcanvas{position:relative;padding:18px 8px 8px 18px}
+.mapcanvas svg{width:100%;height:auto;display:block}
+.synthetic{position:absolute;top:14px;left:18px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.district{stroke:#fff;stroke-width:1.6;transition:fill .35s ease;cursor:pointer}
+.district.none{fill:var(--paper-2)}
+.district:hover{stroke:var(--ink);stroke-width:1.8}
+.dlabel{font-family:var(--mono);font-size:9.5px;fill:var(--ink);pointer-events:none;text-anchor:middle}
+.dots circle{stroke:#fff;stroke-width:.8;pointer-events:none}
+.panel{border-left:1px solid var(--rule);padding:22px 22px 18px;display:flex;flex-direction:column;background:var(--paper)}
+.panel .year{font-family:var(--display);font-size:56px;font-weight:700;letter-spacing:-0.03em;line-height:1}
+.panel .year small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:400;margin-top:6px}
+.panel input[type=range]{width:100%;margin:18px 0 6px;accent-color:var(--reg)}
+.ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.knows{margin-top:22px;border-top:1px solid var(--rule);padding-top:14px}
+.knows .k{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--rule);font-size:14px}
+.knows .k b{font-family:var(--mono);font-weight:500;font-size:15px;color:var(--reg)}
+.knows .k span{color:var(--ink-2)}
+.panel .cap{font-size:13px;color:var(--ink-3);margin:auto 0 0;padding-top:16px;line-height:1.45}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:12px 18px 14px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:12px;color:var(--ink-2);grid-column:1/-1;background:#fff}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-family:var(--mono);font-size:12px;line-height:1.45;padding:10px 12px;border-radius:4px;width:max-content;max-width:min(340px,70vw);opacity:0;transform:translateY(4px);transition:opacity .12s}
+.tip.on{opacity:1;transform:none}
+.tip b{color:#B8E0C8;font-weight:500}
+.tip .row{white-space:normal;padding-left:1.2em;text-indent:-1.2em}
+.play{font-family:var(--display);font-size:14px;font-weight:600;background:var(--reg);color:#fff;border:0;border-radius:4px;padding:8px 14px;cursor:pointer;margin-top:14px;align-self:flex-start}
+.play:hover{background:#255740}
+@media (max-width:860px){
+  .mapwrap{grid-template-columns:1fr}
+  .panel{border-left:0;border-top:1px solid var(--rule)}
+}
+@media (prefers-reduced-motion:reduce){.district{transition:none}}
