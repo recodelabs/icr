@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.13.0
-last_modified: 2026-09-03T22:30:00Z
+version: 0.14.0
+last_modified: 2026-09-03T22:45:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.13.0 · Last modified Sep 3, 2026 at 6:30 PM EDT`</sub>
+<sub>`v0.14.0 · Last modified Sep 3, 2026 at 6:45 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -136,6 +136,19 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 | Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care. |
 
 * * *
+## Beyond campaigns
+**Eyebrow:** Beyond campaigns
+
+**Heading:** ICR bridges campaigns to routine care.
+
+**Lede:** Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.
+
+### Map
+Two hand‑drawn images, switched by the toggle (`site/img/lens-campaign.jpg`, `site/img/lens-routine.jpg`). Text inside the images is not editable here.
+
+- Toggle: Campaign · Routine
+
+* * *
 ## How value compounds
 **Eyebrow:** How value compounds
 
@@ -160,19 +173,6 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 **Sourced** Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.
 
 **Persistent** Places, households, and teams keep the same identifier from one round to the next.
-
-* * *
-## Beyond campaigns
-**Eyebrow:** Beyond campaigns
-
-**Heading:** ICR bridges campaigns to routine care.
-
-**Lede:** Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.
-
-### Map
-Two hand‑drawn images, switched by the toggle (`site/img/lens-campaign.jpg`, `site/img/lens-routine.jpg`). Text inside the images is not editable here.
-
-- Toggle: Campaign · Routine
 
 * * *
 ## Why it is safe to adopt
