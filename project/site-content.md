@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.15.0
-last_modified: 2026-09-03T23:00:00Z
+version: 0.16.0
+last_modified: 2026-09-03T23:15:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.15.0 · Last modified Sep 3, 2026 at 7:00 PM EDT`</sub>
+<sub>`v0.16.0 · Last modified Sep 3, 2026 at 7:15 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -31,57 +31,6 @@ tags:
 **Browser tab title:** Integrated Campaign Registry — Ensuring every campaign builds on the last
 
 **Subhead:** Health campaigns are expensive but essential to reaching the hard-to-reach. The ICR makes sure their data is reused and validated, so the investment compounds and every round that follows is cheaper and more effective.
-### Map
-- Corner label: Synthetic data · Illustrative country
-- Panel heading (under the round label): What the registry knows
-- Slider tick labels: 2022 · 2023 · 2024 · 2025 · 2026
-- Button: Play the rounds (becomes "Pause" while playing)
-- Caption: Drag the slider. Each campaign round adds places, denominators, households, teams, and coverage to the same registry. Hover a district to see what is known about it.
-
-Panel counters (label → value is generated):
-
-- Campaign rounds recorded
-- Districts with history
-- Settlements with stable IDs
-- Denominator sources per district
-- Households in register
-- Teams with history
-- Coverage data points
-
-Campaign types (legend and tooltips):
-
-- Measles‑rubella SIA
-- Polio round
-- NTD mass drug administration
-- Bed‑net distribution
-- Vitamin A
-
-Legend lead item: Fill = how much the registry knows (rounds recorded)
-
-Rounds on the slider, with the note shown for each:
-
-| Round | Type | Note |
-| --- | --- | --- |
-| Q1 2022 | Polio | Historical load · Loaded from existing reports: district coverage and denominators only. |
-| Q3 2022 | Measles | Historical load · Loaded from existing reports. |
-| Q1 2023 | MDA | First ICR‑native round: settlements registered, CDD teams recorded. |
-| Q3 2023 | Bed nets | Household register created for the net‑distribution wards. |
-| Q1 2024 | Polio | Reused the 2023 settlement list; enumeration skipped in 25 districts. |
-| Q3 2024 | Vitamin A | Same posts and teams as the polio round. |
-| Q1 2025 | MDA | Second MDA round on the same registers: coverage trend now available. |
-| Q3 2025 | Measles | Three denominator sources per district for planning. |
-| Q1 2026 | Bed nets | Household revisit targeted from the 2023 register. |
-| Q3 2026 | Polio | Every district now has a five‑year coverage history. |
-
-Tooltip lines (per district, values generated):
-
-- `{District} District`
-- `Pop. est. {n} · {n} settlements mapped` or `settlements not yet mapped`
-- One line per round: `{round} · {type} (loaded) · {coverage}%`
-- If none: No campaign recorded yet
-
-District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, Kiri, Nako, Sabu, Ende, Yala, Bori, Tami, Gora, Central, Mosi, Rafa, Duma, Ibe, Kanu, Pela, Sori, Nuru, Wari, Ojo, Lira, Bala, Teso, Mbeya, Zila.
-
 * * *
 ## What the ICR is
 **Eyebrow:** What the ICR is
@@ -153,6 +102,57 @@ Two hand‑drawn images, switched by the toggle (`site/img/lens-campaign.jpg`, `
 **Eyebrow:** How value compounds
 
 **Heading:** Every campaign round contributes to shared registries
+### Map
+- Corner label: Synthetic data · Illustrative country
+- Panel heading (under the round label): What the registry knows
+- Slider tick labels: 2022 · 2023 · 2024 · 2025 · 2026
+- Button: Play the rounds (becomes "Pause" while playing)
+- Caption: Drag the slider. Each campaign round adds places, denominators, households, teams, and coverage to the same registry. Hover a district to see what is known about it.
+
+Panel counters (label → value is generated):
+
+- Campaign rounds recorded
+- Districts with history
+- Settlements with stable IDs
+- Denominator sources per district
+- Households in register
+- Teams with history
+- Coverage data points
+
+Campaign types (legend and tooltips):
+
+- Measles‑rubella SIA
+- Polio round
+- NTD mass drug administration
+- Bed‑net distribution
+- Vitamin A
+
+Legend lead item: Fill = how much the registry knows (rounds recorded)
+
+Rounds on the slider, with the note shown for each:
+
+| Round | Type | Note |
+| --- | --- | --- |
+| Q1 2022 | Polio | Historical load · Loaded from existing reports: district coverage and denominators only. |
+| Q3 2022 | Measles | Historical load · Loaded from existing reports. |
+| Q1 2023 | MDA | First ICR‑native round: settlements registered, CDD teams recorded. |
+| Q3 2023 | Bed nets | Household register created for the net‑distribution wards. |
+| Q1 2024 | Polio | Reused the 2023 settlement list; enumeration skipped in 25 districts. |
+| Q3 2024 | Vitamin A | Same posts and teams as the polio round. |
+| Q1 2025 | MDA | Second MDA round on the same registers: coverage trend now available. |
+| Q3 2025 | Measles | Three denominator sources per district for planning. |
+| Q1 2026 | Bed nets | Household revisit targeted from the 2023 register. |
+| Q3 2026 | Polio | Every district now has a five‑year coverage history. |
+
+Tooltip lines (per district, values generated):
+
+- `{District} District`
+- `Pop. est. {n} · {n} settlements mapped` or `settlements not yet mapped`
+- One line per round: `{round} · {type} (loaded) · {coverage}%`
+- If none: No campaign recorded yet
+
+District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, Kiri, Nako, Sabu, Ende, Yala, Bori, Tami, Gora, Central, Mosi, Rafa, Duma, Ibe, Kanu, Pela, Sori, Nuru, Wari, Ojo, Lira, Bala, Teso, Mbeya, Zila.
+
 ### Table
 Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 
