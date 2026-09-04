@@ -98,6 +98,7 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .unlocks a{display:block;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#F6F2E8}
 .unlocks img{width:100%;height:auto;display:block}
 .unlocks a:hover{border-color:var(--ink-3)}
+.unlocks.tech{max-width:1000px}
 .unlocks figcaption{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:center;margin-top:10px;letter-spacing:.02em}
 .benefits{border-top:1px solid var(--rule)}
 .benefits .b{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:22px 0;border-bottom:1px solid var(--rule)}
@@ -296,16 +297,26 @@ footer a{color:var(--ink-2)}
   <div class="wrap">
     <div class="eyebrow">Technical overview</div>
     <h2>How the ICR is built.</h2>
-    <ul class="list" style="margin-top:2rem">
-      <li><b>FHIR Implementation Guide</b><span>The ICR is based on a FHIR Implementation Guide. The IG uses FHIR profiles to adapt standard FHIR resources for campaigns: CarePlan for campaigns, Task for units of work, Location for places, and so on.</span></li>
-      <li><b>Shared terminology</b><span>Code systems and value sets cover campaign types, delivery strategies, missed reasons, team roles, and more, so forms and reports use the same codes everywhere.</span></li>
-      <li><b>Aligned with WHO SMART Guidelines</b><span>The ICR is built with the same toolchain as the WHO SMART Guidelines and is designed to be fully compatible with the Immunization guideline.</span></li>
-      <li><b>A country‑owned FHIR store</b><span>The ICR provides a reference FHIR store that countries can use to host and manage their campaign data in country.</span></li>
-      <li><b>Integration tools</b><span>A suite of connectors that automates the exchange of ICR data with the platforms countries already use, including ODK, DHIS2, and CommCare.</span></li>
-      <li><b>Matching and enrichment tools</b><span>Tools that deduplicate people, households, and places across sources, attach population figures to places, and find coordinates for settlement names.</span></li>
-      <li><b>Analytics and reporting</b><span>The registry keeps a historical record of every campaign, with services delivered measured against estimated populations. It serves as a data warehouse for analysis across campaigns and over time, and can feed results into tools like DHIS2 for partner reporting.</span></li>
-      <li><b>Global good</b><span>Developed by UNICEF with development partners, supported by the Gates Foundation, and released under an open licence.</span></li>
-    </ul>
+    <figure class="unlocks tech">
+      <a href="img/tech-full.jpg" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
+        <img src="img/tech.jpg" alt="Hand-drawn diagram titled 'How the ICR is built': tools countries already use (ODK, DHIS2, CommCare, GIS) connect through integration and enrichment steps (connect, match, geocode, validate) to a country-owned FHIR store holding campaigns, places, households, teams, denominators, and results, which feeds planning, analytics, and reporting. Underneath, the shared contract: the FHIR Implementation Guide and shared terminology." width="1400" height="788" loading="lazy">
+      </a>
+      <figcaption>Click the image to open the full-size original.</figcaption>
+    </figure>
+    <h3 class="subhead">Open‑source reference solution</h3>
+    <div class="props props-4">
+      <div><h3>Integration tools</h3><p>A suite of connectors that automates the exchange of ICR data with the platforms countries already use, including ODK, DHIS2, and CommCare.</p></div>
+      <div><h3>Matching and enrichment</h3><p>Tools that deduplicate people, households, and places across sources, attach population figures to places, and find coordinates for settlement names.</p></div>
+      <div><h3>Country‑owned FHIR store</h3><p>The ICR provides a reference FHIR store that countries can use to host and manage their campaign data in country.</p></div>
+      <div><h3>Analytics and reporting</h3><p>The registry keeps a historical record of every campaign, with services delivered measured against estimated populations. It serves as a data warehouse for analysis across campaigns and over time, and can feed results into tools like DHIS2 for partner reporting.</p></div>
+    </div>
+    <h3 class="subhead">The shared contract</h3>
+    <div class="props props-4">
+      <div><h3>FHIR Implementation Guide</h3><p>The ICR is based on a FHIR Implementation Guide. The IG uses FHIR profiles to adapt standard FHIR resources for campaigns: CarePlan for campaigns, Task for units of work, Location for places, and so on.</p></div>
+      <div><h3>Shared terminology</h3><p>Code systems and value sets cover campaign types, delivery strategies, missed reasons, team roles, and more, so forms and reports use the same codes everywhere.</p></div>
+      <div><h3>Aligned with WHO SMART Guidelines</h3><p>The ICR is built with the same toolchain as the WHO SMART Guidelines and is designed to be fully compatible with the Immunization guideline.</p></div>
+      <div><h3>Global good</h3><p>Developed by UNICEF with development partners, supported by the Gates Foundation, and released under an open licence.</p></div>
+    </div>
   </div>
 </section>
 
