@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.14.0
-last_modified: 2026-09-03T22:45:00Z
+version: 0.15.0
+last_modified: 2026-09-03T23:00:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.14.0 · Last modified Sep 3, 2026 at 6:45 PM EDT`</sub>
+<sub>`v0.15.0 · Last modified Sep 3, 2026 at 7:00 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -100,9 +100,9 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 ## Why campaigns first
 **Eyebrow:** Why campaigns first
 
-**Heading:** Whether health services come through routine delivery or a campaign, the aim is the same: reach everyone, equitably.
+**Heading:** Campaigns are how health services reach everyone.
 
-**Lede:** The hard part is everything that makes that possible: knowing where people are, how many there are, whether they were reached, and who is still missing. Campaigns are the activity best placed to find out.
+**Lede:** To do that, a campaign has to find out where people are, how many there are, and deliver to each of them. That work is an investment, and its results are worth keeping.
 ### Cards
 **Campaigns are funded** Campaigns represent a significant investment by governments and donors to ensure services reach those who need them. That funding also carries smaller programmes along: an MDA round can share the teams and logistics of a polio round. The cost of mapping the places and delivering the services is already paid; capturing what was learned costs almost nothing more, and losing it is a waste.
 
