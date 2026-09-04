@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.11.0
-last_modified: 2026-09-03T21:40:00Z
+version: 0.12.0
+last_modified: 2026-09-03T22:05:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.11.0 · Last modified Sep 3, 2026 at 5:40 PM EDT`</sub>
+<sub>`v0.12.0 · Last modified Sep 3, 2026 at 6:05 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -81,6 +81,20 @@ Tooltip lines (per district, values generated):
 - If none: No campaign recorded yet
 
 District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, Kiri, Nako, Sabu, Ende, Yala, Bori, Tami, Gora, Central, Mosi, Rafa, Duma, Ibe, Kanu, Pela, Sori, Nuru, Wari, Ojo, Lira, Bala, Teso, Mbeya, Zila.
+
+* * *
+## What the ICR is
+**Eyebrow:** What the ICR is
+
+**Heading:** An open data standard and a country‑owned registry for public health campaigns.
+
+**Lede:** The Integrated Campaign Registry lets immunization, polio, NTD, malaria, and vitamin A campaigns share, exchange, and reuse their data and metadata, so that what one campaign collects the next can build on. It is three things.
+### Cards
+**A data standard** An HL7 FHIR Implementation Guide that defines a shared vocabulary for campaigns: campaign types, delivery strategies, places, teams, denominators, coverage, and the protocol each round follows. Any conformant implementation, whatever its software, speaks the same model.
+
+**A registry** A FHIR store the country owns, where every campaign round adds to the same records of places, households, teams, and results. Data from one programme is available to the next instead of being collected again.
+
+**A reference solution** Interchangeable open‑source components that connect the collection tools countries already use, such as ODK, DHIS2, and CommCare, to the registry and on to planning, data quality, warehouse, and reporting. A blueprint to adapt, not a product to buy.
 
 * * *
 ## Why campaigns first
