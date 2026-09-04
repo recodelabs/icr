@@ -45,7 +45,7 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .hero h1 em{font-style:normal;color:var(--reg)}
 .hero .sub{font-size:20px;color:var(--ink-2);max-width:68ch;margin:1.2rem 0 0}
 
-.mapwrap{margin:28px 0 40px;border:1px solid var(--rule);background:#fff;border-radius:6px;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
+.mapwrap{margin-top:36px;border:1px solid var(--rule);background:#fff;border-radius:6px;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
 .mapcanvas{position:relative;padding:18px 8px 8px 18px}
 .mapcanvas svg{width:100%;height:auto;display:block}
 .synthetic{position:absolute;top:14px;left:18px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
@@ -182,6 +182,23 @@ footer a{color:var(--ink-2)}
     <div class="kicker">Integrated Campaign Registry</div>
     <h1>Ensuring every campaign <em>builds on the last.</em></h1>
     <p class="sub">Health campaigns are expensive but essential to reaching the hard‑to‑reach. The ICR makes sure their data is reused and validated, so the investment <b>compounds</b> and every round that follows is <b>cheaper</b> and more <b>effective</b>.</p>
+
+    <div class="mapwrap" id="mapwrap">
+      <div class="mapcanvas">
+        <div class="synthetic">Synthetic data · illustrative country</div>
+        <svg id="map" viewBox="108 48 444 404" role="img" aria-label="Map of an illustrative country showing campaigns by district over time"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="panel">
+        <div class="year"><span id="yr">2022</span><small>What the registry knows</small></div>
+        <input type="range" id="range" min="0" max="9" value="0" step="1" aria-label="Campaign round">
+        <div class="ticks"><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span></div>
+        <div class="knows" id="knows"></div>
+        <button class="play" id="play">Play the rounds</button>
+        <p class="cap">Drag the slider. Each campaign round adds places, denominators, households, teams, and coverage to the same registry. Hover a district to see what is known about it.</p>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
   </div>
 </header>
 
@@ -256,23 +273,6 @@ footer a{color:var(--ink-2)}
   <div class="wrap">
     <div class="eyebrow">How value compounds</div>
     <h2>Every campaign round contributes to shared registries</h2>
-    <div class="mapwrap" id="mapwrap">
-      <div class="mapcanvas">
-        <div class="synthetic">Synthetic data · illustrative country</div>
-        <svg id="map" viewBox="108 48 444 404" role="img" aria-label="Map of an illustrative country showing campaigns by district over time"></svg>
-        <div class="tip" id="tip"></div>
-      </div>
-      <div class="panel">
-        <div class="year"><span id="yr">2022</span><small>What the registry knows</small></div>
-        <input type="range" id="range" min="0" max="9" value="0" step="1" aria-label="Campaign round">
-        <div class="ticks"><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span></div>
-        <div class="knows" id="knows"></div>
-        <button class="play" id="play">Play the rounds</button>
-        <p class="cap">Drag the slider. Each campaign round adds places, denominators, households, teams, and coverage to the same registry. Hover a district to see what is known about it.</p>
-      </div>
-      <div class="legend" id="legend"></div>
-    </div>
-
     <div class="grow">
       <div class="r head"><div>Record</div><div>Start of round 1</div><div>Start of round 2</div><div>Start of round 5</div></div>
       <div class="r"><div class="h">Places</div><div class="c">A list of settlement names, some with GPS points, some without</div><div class="c">Every settlement visited last round, each with a GPS point and verified name.</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus points of interest eg. the schools and churches that served as vaccination posts, etc.</div></div>
