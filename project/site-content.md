@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.10.1
-last_modified: 2026-09-03T02:15:00Z
+version: 0.12.0
+last_modified: 2026-09-03T22:05:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.10.1 · Last modified Sep 2, 2026 at 10:15 PM EDT`</sub>
+<sub>`v0.12.0 · Last modified Sep 3, 2026 at 6:05 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -83,6 +83,20 @@ Tooltip lines (per district, values generated):
 District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, Kiri, Nako, Sabu, Ende, Yala, Bori, Tami, Gora, Central, Mosi, Rafa, Duma, Ibe, Kanu, Pela, Sori, Nuru, Wari, Ojo, Lira, Bala, Teso, Mbeya, Zila.
 
 * * *
+## What the ICR is
+**Eyebrow:** What the ICR is
+
+**Heading:** An open data standard and a country‑owned registry for public health campaigns.
+
+**Lede:** The Integrated Campaign Registry lets immunization, polio, NTD, malaria, and vitamin A campaigns share, exchange, and reuse their data and metadata, so that what one campaign collects the next can build on. It is three things.
+### Cards
+**A data standard** An HL7 FHIR Implementation Guide that defines a shared vocabulary for campaigns: campaign types, delivery strategies, places, teams, denominators, coverage, and the protocol each round follows. Any conformant implementation, whatever its software, speaks the same model.
+
+**A registry** A FHIR store the country owns, where every campaign round adds to the same records of places, households, teams, and results. Data from one programme is available to the next instead of being collected again.
+
+**A reference solution** Interchangeable open‑source components that connect the collection tools countries already use, such as ODK, DHIS2, and CommCare, to the registry and on to planning, data quality, warehouse, and reporting. A blueprint to adapt, not a product to buy.
+
+* * *
 ## Why campaigns first
 **Eyebrow:** Why campaigns first
 
@@ -140,6 +154,7 @@ Column heads: Benefit · Description (claim and what makes it true, merged)
 | Benefit | Description |
 | --- | --- |
 | Common places | One common source of locations across tools. Stable place IDs and administrative boundaries, linked to health data in FHIR, load straight into field data collection tools such as ODK and DHIS2, so that what each round collects adds to a living map. |
+| Common model | The ICR defines a shared vocabulary for campaigns: campaign types, delivery strategies, missed reasons, team roles, and more. A form built against these codes in ODK, DHIS2, or CommCare produces data the registry understands without a custom mapping. Adopting shared instruments instead of authoring them from scratch makes results easier to compare across programmes and countries. |
 | Better denominators | The ICR makes it easy to compare census, WorldPop, administrative, and last‑round figures side by side, so campaign teams choose their planning denominator with the alternatives in view. |
 | Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. When two campaigns are heading for the same wards within weeks of each other, the registry shows it making co‑delivery and integration practical. |
 | Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
