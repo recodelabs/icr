@@ -294,16 +294,17 @@ footer a{color:var(--ink-2)}
 
 <section id="safe">
   <div class="wrap">
-    <div class="eyebrow">Why it is safe to adopt</div>
-    <h2>An open standard and a reference solution, not a product.</h2>
+    <div class="eyebrow">Technical overview</div>
+    <h2>How the ICR is built.</h2>
     <ul class="list" style="margin-top:2rem">
-      <li><b>Open standard</b><span>The core is a FHIR R4 Implementation Guide, published by UNICEF under Apache 2.0. Every ICR profile is valid plain FHIR, so any FHIR system can read the data as its base type.</span></li>
-      <li><b>Aligned with WHO</b><span>Designed as the campaign complement to the WHO SMART Immunizations guideline, using the same toolchain and the same routine‑immunization vocabulary where it overlaps.</span></li>
-      <li><b>Country‑owned</b><span>The FHIR store is the country's. Tools connect to it; none of them owns it. Data can be replicated into whatever platforms the country already runs.</span></li>
-      <li><b>Reference solution, not a platform</b><span>Interchangeable open‑source components for collection, transformation, storage, data quality, geospatial planning, warehouse, and reporting. Any component can be swapped. The common data model in the middle holds them together, not a vendor.</span></li>
-      <li><b>Feeds DHIS2, does not replace it</b><span>National reporting continues in DHIS2. The registry supplies validated, place‑linked figures rather than competing for the reporting role.</span></li>
-      <li><b>A better path to analytics</b><span>Building a warehouse from a FHIR store is a single, standard transformation. Mapping every collection tool into a warehouse separately is the work countries are already struggling with.</span></li>
-      <li><b>Person‑level data is optional and governed</b><span>The model works at aggregate, register, and individual level. Where individuals are recorded, a consent profile governs their use.</span></li>
+      <li><b>FHIR Implementation Guide</b><span>The ICR is defined by a FHIR IG. Its profiles adapt standard FHIR resources to campaigns: CarePlan for the campaign, Task for the unit of work, Location for places, Group for households, and Immunization and MedicationAdministration for what was delivered.</span></li>
+      <li><b>Shared terminology</b><span>Code systems and value sets cover campaign types, delivery strategies, missed reasons, team roles, and more, so forms and reports use the same codes everywhere.</span></li>
+      <li><b>Aligned with WHO SMART Guidelines</b><span>The ICR is built with the same toolchain as the WHO SMART Guidelines and is designed to be fully compatible with the Immunization guideline.</span></li>
+      <li><b>A country‑owned FHIR store</b><span>The reference solution includes a FHIR store that a country can host and manage itself, so campaign data stays in country and under national control.</span></li>
+      <li><b>Integration tools</b><span>A suite of connectors that automates the exchange of ICR data with the platforms countries already use, including ODK, DHIS2, and CommCare.</span></li>
+      <li><b>Matching and enrichment tools</b><span>Tools that deduplicate people, households, and places across sources, attach population figures to places, and find coordinates for settlement names.</span></li>
+      <li><b>Analytics and reporting</b><span>A SQL‑on‑FHIR warehouse is one standard transformation away. Validated, place‑linked figures flow on to DHIS2 and partner reporting.</span></li>
+      <li><b>Open and governed</b><span>Developed by UNICEF with development partners, supported by the Gates Foundation, and released under an open licence.</span></li>
     </ul>
   </div>
 </section>
