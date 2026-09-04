@@ -212,8 +212,8 @@ footer a{color:var(--ink-2)}
 <section id="what">
   <div class="wrap">
     <div class="eyebrow">What the ICR is</div>
-    <h2>The ICR is an open data standard for storing campaign data across campaigns.</h2>
-    <p class="lede" style="margin-bottom:0">It has three parts: a FHIR Implementation Guide that defines a shared vocabulary for campaigns, a country‑owned FHIR store where every round adds to the same records of places, households, teams, and results, and an open‑source reference solution that connects the tools countries already use, such as ODK, DHIS2, and CommCare, to that store.</p>
+    <h2>The ICR is an open data standard for storing and integrating data across health campaigns</h2>
+    <p class="lede" style="margin-bottom:0">It has three parts: a FHIR Implementation Guide that defines a shared vocabulary for campaigns, a country‑owned FHIR based data registry where data across campaigns can be stored and analyzed, and an open‑source reference solution that connects the platforms countries already use, such as ODK, DHIS2, and CommCare, to that store.</p>
   </div>
 </section>
 
@@ -239,23 +239,6 @@ footer a{color:var(--ink-2)}
   </div>
 </section>
 
-<section id="beyond">
-  <div class="wrap">
-    <div class="eyebrow">Beyond campaigns</div>
-    <h2>ICR bridges campaigns to routine care.</h2>
-    <p class="lede">Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.</p>
-    <div class="lens-fig">
-      <div class="toggle" role="group" aria-label="Choose a programme view">
-        <button aria-pressed="true" data-mode="campaign">Campaign</button>
-        <button aria-pressed="false" data-mode="routine">Routine</button>
-      </div>
-      <div id="lens" data-mode="campaign" class="lens-imgs">
-        <img class="campaign-layer" src="img/lens-campaign.jpg" alt="Illustrative settlement map in campaign view: a house‑to‑house sweep area and two temporary posts at the primary school and the church, over the same wards, facilities, and households as the routine view" width="1400" height="808">
-        <img class="routine-layer" src="img/lens-routine.jpg" alt="Illustrative settlement map in routine view: catchments around the health centre and the health post, over the same wards, facilities, and households as the campaign view" width="1400" height="789">
-      </div>
-    </div>
-  </div>
-</section>
 
 <section id="compound">
   <div class="wrap">
@@ -319,6 +302,24 @@ footer a{color:var(--ink-2)}
       <div><h3>Shared terminology</h3><p>Code systems and value sets cover campaign types, delivery strategies, missed reasons, team roles, and more, so forms and reports use the same codes everywhere.</p></div>
       <div><h3>Aligned with WHO SMART Guidelines</h3><p>The ICR is built with the same toolchain as the WHO SMART Guidelines and is designed to be fully compatible with the Immunization guideline.</p></div>
       <div><h3>Global good</h3><p>Developed by UNICEF with development partners, supported by the Gates Foundation, and released under an open licence.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="beyond">
+  <div class="wrap">
+    <div class="eyebrow">Beyond campaigns</div>
+    <h2>ICR bridges campaigns to routine care.</h2>
+    <p class="lede">Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.</p>
+    <div class="lens-fig">
+      <div class="toggle" role="group" aria-label="Choose a programme view">
+        <button aria-pressed="true" data-mode="campaign">Campaign</button>
+        <button aria-pressed="false" data-mode="routine">Routine</button>
+      </div>
+      <div id="lens" data-mode="campaign" class="lens-imgs">
+        <img class="campaign-layer" src="img/lens-campaign.jpg" alt="Illustrative settlement map in campaign view: a house‑to‑house sweep area and two temporary posts at the primary school and the church, over the same wards, facilities, and households as the routine view" width="1400" height="808">
+        <img class="routine-layer" src="img/lens-routine.jpg" alt="Illustrative settlement map in routine view: catchments around the health centre and the health post, over the same wards, facilities, and households as the campaign view" width="1400" height="789">
+      </div>
     </div>
   </div>
 </section>
