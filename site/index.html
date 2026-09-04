@@ -194,6 +194,45 @@ footer a{color:var(--ink-2)}
   </div>
 </header>
 
+<section id="compound">
+  <div class="wrap">
+    <div class="eyebrow">How value compounds</div>
+    <h2>Every campaign round contributes to shared registries</h2>
+    <div class="mapwrap" id="mapwrap">
+      <div class="mapcanvas">
+        <div class="synthetic">Illustrative country</div>
+        <svg id="map" viewBox="108 48 444 404" role="img" aria-label="Map of an illustrative country showing campaigns by district over time"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="panel">
+        <div class="year"><span id="yr">2022</span><small>What the registry knows</small></div>
+        <input type="range" id="range" min="0" max="9" value="0" step="1" aria-label="Campaign round">
+        <div class="ticks"><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span></div>
+        <div class="knows" id="knows"></div>
+        <button class="play" id="play">Play the rounds</button>
+        <p class="cap">Drag the slider. Each campaign round adds places, denominators, households, teams, and coverage to the same registry. Hover a district to see what is known about it.</p>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="grow">
+      <div class="r head"><div>Record</div><div>Start of round 1</div><div>Start of round 2</div><div>Start of round 5</div></div>
+      <div class="r"><div class="h">Places</div><div class="c">A list of settlement names, some with GPS points, some without</div><div class="c">Every settlement visited last round, each with a GPS point and verified name.</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus points of interest eg. the schools and churches that served as vaccination posts, etc.</div></div>
+      <div class="r"><div class="h">Denominators</div><div class="c">One estimate from the census projection</div><div class="c">The census projection and last round's headcount, side by side</div><div class="c later">Census, WorldPop, previous‑round enumeration, and administrative figures side by side, each with its source recorded</div></div>
+      <div class="r"><div class="h">People and households</div><div class="c">No register yet</div><div class="c">Last round's household register, ready for revisits</div><div class="c later">Household members including number of children and women of reproductive age known enabling further targeting and linkages to routine service delivery.</div></div>
+      <div class="r"><div class="h">Teams</div><div class="c">A list of names</div><div class="c">Last round's teams and the areas each one covered</div><div class="c later">Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed</div></div>
+      <div class="r"><div class="h">Coverage</div><div class="c">No baseline for these places</div><div class="c">One coverage figure per place, from last round</div><div class="c later">A trend line per place per campaign type, with administrative and survey coverage kept separate</div></div>
+    </div>
+    <h3 class="subhead">Key properties</h3>
+    <div class="props props-4">
+      <div><h3>Resolution‑agnostic</h3><p>Household, village, or district: the ICR data model is designed to store however the data is captured.</p></div>
+      <div><h3>Backfillable</h3><p>The ICR is designed to take in past campaign data, so it can serve as the system of record for every round a country has run, not just the ones ahead.</p></div>
+      <div><h3>Sourced</h3><p>Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.</p></div>
+      <div><h3>Persistent</h3><p>Places, households, and teams keep the same identifier from one round to the next.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="why" class="band">
   <div class="wrap">
     <div>
@@ -235,46 +274,6 @@ footer a{color:var(--ink-2)}
       <div class="b"><div class="h">Skip the pre‑census</div><div class="claim">Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again.</div></div>
       <div class="b"><div class="h">Effectiveness over time</div><div class="claim">The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard.</div></div>
       <div class="b"><div class="h">Campaign‑to‑routine bridge</div><div class="claim">Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care.</div></div>
-    </div>
-  </div>
-</section>
-
-
-<section id="compound">
-  <div class="wrap">
-    <div class="eyebrow">How value compounds</div>
-    <h2>Every campaign round contributes to shared registries</h2>
-    <div class="mapwrap" id="mapwrap">
-      <div class="mapcanvas">
-        <div class="synthetic">Illustrative country</div>
-        <svg id="map" viewBox="108 48 444 404" role="img" aria-label="Map of an illustrative country showing campaigns by district over time"></svg>
-        <div class="tip" id="tip"></div>
-      </div>
-      <div class="panel">
-        <div class="year"><span id="yr">2022</span><small>What the registry knows</small></div>
-        <input type="range" id="range" min="0" max="9" value="0" step="1" aria-label="Campaign round">
-        <div class="ticks"><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026</span></div>
-        <div class="knows" id="knows"></div>
-        <button class="play" id="play">Play the rounds</button>
-        <p class="cap">Drag the slider. Each campaign round adds places, denominators, households, teams, and coverage to the same registry. Hover a district to see what is known about it.</p>
-      </div>
-      <div class="legend" id="legend"></div>
-    </div>
-
-    <div class="grow">
-      <div class="r head"><div>Record</div><div>Start of round 1</div><div>Start of round 2</div><div>Start of round 5</div></div>
-      <div class="r"><div class="h">Places</div><div class="c">A list of settlement names, some with GPS points, some without</div><div class="c">Every settlement visited last round, each with a GPS point and verified name.</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus points of interest eg. the schools and churches that served as vaccination posts, etc.</div></div>
-      <div class="r"><div class="h">Denominators</div><div class="c">One estimate from the census projection</div><div class="c">The census projection and last round's headcount, side by side</div><div class="c later">Census, WorldPop, previous‑round enumeration, and administrative figures side by side, each with its source recorded</div></div>
-      <div class="r"><div class="h">People and households</div><div class="c">No register yet</div><div class="c">Last round's household register, ready for revisits</div><div class="c later">Household members including number of children and women of reproductive age known enabling further targeting and linkages to routine service delivery.</div></div>
-      <div class="r"><div class="h">Teams</div><div class="c">A list of names</div><div class="c">Last round's teams and the areas each one covered</div><div class="c later">Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed</div></div>
-      <div class="r"><div class="h">Coverage</div><div class="c">No baseline for these places</div><div class="c">One coverage figure per place, from last round</div><div class="c later">A trend line per place per campaign type, with administrative and survey coverage kept separate</div></div>
-    </div>
-    <h3 class="subhead">Key properties</h3>
-    <div class="props props-4">
-      <div><h3>Resolution‑agnostic</h3><p>Household, village, or district: the ICR data model is designed to store however the data is captured.</p></div>
-      <div><h3>Backfillable</h3><p>The ICR is designed to take in past campaign data, so it can serve as the system of record for every round a country has run, not just the ones ahead.</p></div>
-      <div><h3>Sourced</h3><p>Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.</p></div>
-      <div><h3>Persistent</h3><p>Places, households, and teams keep the same identifier from one round to the next.</p></div>
     </div>
   </div>
 </section>
