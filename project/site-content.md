@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.12.0
-last_modified: 2026-09-03T22:05:00Z
+version: 0.13.0
+last_modified: 2026-09-03T22:30:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.12.0 · Last modified Sep 3, 2026 at 6:05 PM EDT`</sub>
+<sub>`v0.13.0 · Last modified Sep 3, 2026 at 6:30 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -113,6 +113,29 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 **Campaigns count** Once to set the target, once to see whether it was met, with monitoring in between to check the count. No other health activity attempts to produce a denominator and a validated result for so many places in so short a time.
 
 * * *
+## What the ICR unlocks
+**Eyebrow:** What the ICR unlocks
+
+**Heading:** Key ICR benefits
+
+### Illustration
+"What the ICR unlocks" hand‑drawn overview (`site/img/unlocks.jpg`, click opens the original `site/img/unlocks-full.png` in a new tab).
+
+- Caption: Click the image to open the full-size original.
+### Table
+Column heads: Benefit · Description (claim and what makes it true, merged)
+
+| Benefit | Description |
+| --- | --- |
+| Common places | One common source of locations across tools. Stable place IDs and administrative boundaries, linked to health data in FHIR, load straight into field data collection tools such as ODK and DHIS2, so that what each round collects adds to a living map. |
+| Common model | The ICR defines a shared vocabulary for campaigns: campaign types, delivery strategies, missed reasons, team roles, and more. A form built against these codes in ODK, DHIS2, or CommCare produces data the registry understands without a custom mapping. Adopting shared instruments instead of authoring them from scratch makes results easier to compare across programmes and countries. |
+| Better denominators | The ICR makes it easy to compare census, WorldPop, administrative, and last‑round figures side by side, so campaign teams choose their planning denominator with the alternatives in view. |
+| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. When two campaigns are heading for the same wards within weeks of each other, the registry shows it making co‑delivery and integration practical. |
+| Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
+| Effectiveness over time | The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
+| Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care. |
+
+* * *
 ## How value compounds
 **Eyebrow:** How value compounds
 
@@ -137,29 +160,6 @@ Column heads: Record · Start of round 1 · Start of round 2 · Start of round 5
 **Sourced** Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.
 
 **Persistent** Places, households, and teams keep the same identifier from one round to the next.
-
-* * *
-## What compounding unlocks
-**Eyebrow:** What compounding unlocks
-
-**Heading:** Key ICR benefits
-
-### Illustration
-"What the ICR unlocks" hand‑drawn overview (`site/img/unlocks.jpg`, click opens the original `site/img/unlocks-full.png` in a new tab).
-
-- Caption: Click the image to open the full-size original.
-### Table
-Column heads: Benefit · Description (claim and what makes it true, merged)
-
-| Benefit | Description |
-| --- | --- |
-| Common places | One common source of locations across tools. Stable place IDs and administrative boundaries, linked to health data in FHIR, load straight into field data collection tools such as ODK and DHIS2, so that what each round collects adds to a living map. |
-| Common model | The ICR defines a shared vocabulary for campaigns: campaign types, delivery strategies, missed reasons, team roles, and more. A form built against these codes in ODK, DHIS2, or CommCare produces data the registry understands without a custom mapping. Adopting shared instruments instead of authoring them from scratch makes results easier to compare across programmes and countries. |
-| Better denominators | The ICR makes it easy to compare census, WorldPop, administrative, and last‑round figures side by side, so campaign teams choose their planning denominator with the alternatives in view. |
-| Campaign visibility | Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. When two campaigns are heading for the same wards within weeks of each other, the registry shows it making co‑delivery and integration practical. |
-| Skip the pre‑census | Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again. |
-| Effectiveness over time | The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard. |
-| Campaign‑to‑routine bridge | Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care. |
 
 * * *
 ## Beyond campaigns
