@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.15.0
-last_modified: 2026-09-03T23:00:00Z
+version: 0.17.0
+last_modified: 2026-09-03T23:30:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.15.0 · Last modified Sep 3, 2026 at 7:00 PM EDT`</sub>
+<sub>`v0.17.0 · Last modified Sep 3, 2026 at 7:30 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
