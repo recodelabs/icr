@@ -1,7 +1,7 @@
 ---
 title: ICR site content
-version: 0.19.0
-last_modified: 2026-09-04T00:00:00Z
+version: 0.20.0
+last_modified: 2026-09-04T00:10:00Z
 source_of: site/index.html
 tags:
   - icr
@@ -10,7 +10,7 @@ tags:
 ---
 
 # ICR site content
-<sub>`v0.19.0 · Last modified Sep 3, 2026 at 8:00 PM EDT`</sub>
+<sub>`v0.20.0 · Last modified Sep 3, 2026 at 8:10 PM EDT`</sub>
 
 > [!note] **How to use this file.** Every piece of visible text on `site/index.html` is here, in page order. Edit the text here and ask for the site to be updated from it. Headings marked `##` are page sections, `###` are blocks inside a section. Lines starting with `>` are notes about where the text goes and are not shown on the page. The argument itself lives in [[valueprop]]; this file is the page's wording.
 
@@ -106,7 +106,7 @@ District names (invented): Kalu, Bemba, Oru, Sena, Mira, Tolo, Adi, Weke, Lomu, 
 ### Cards
 **Campaigns are funded** Campaigns are a significant investment by governments and donors. That funding pays to map places and reach people, and it can carry smaller programmes along: an MDA round can share the teams and logistics of a polio round. Capturing what was learned costs almost nothing more.
 
-**Campaigns repeat** The same protocol runs again next year, in the same districts, often with the same teams. Repetition is what makes reuse valuable and what makes comparison possible.
+**Campaigns repeat** Many campaigns repeat every year, often in the same districts with the same teams. Each repeat is a chance to reuse last round's data and compare results.
 
 **Campaigns have broad reach** Campaigns reach places routine services do not cover. Every village, hamlet, or household visited is a chance to find people who may have been missed.
 
