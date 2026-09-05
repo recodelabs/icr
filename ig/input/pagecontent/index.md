@@ -55,6 +55,12 @@ cross-campaign join key alongside P-codes and national codes. Administrative and
 survey coverage are **separate, never-merged lineages**
 ([ICRAdministrativeCoverage](StructureDefinition-ICRAdministrativeCoverage.html),
 [ICRSurveyCoverage](StructureDefinition-ICRSurveyCoverage.html)).
+Campaign **cost** is a first-class record too (cost-v1):
+[ICRCampaignCost](StructureDefinition-ICRCampaignCost.html) (`Observation`) holds
+budget and expenditure **line items** that point at the round and are attributed to a
+place, and [ICRCostReport](StructureDefinition-ICRCostReport.html) (`MeasureReport`)
+carries the computed total and **cost per person targeted / reached / per dose**,
+dividing by the same denominators coverage uses.
 
 #### The model at a glance
 
@@ -77,6 +83,10 @@ graph TD
   CP -.->|"campaign extension ▲"| AC["ICRAdministrativeCoverage"]
   CP -.->|"campaign extension ▲"| SC["ICRSurveyCoverage"]
   AC -.->|"reporter-team ext"| CT
+  CP -.->|"Observation.basedOn ▲"| CC["ICRCampaignCost (Observation: budget / expenditure line)"]
+  CC -->|"subject (place, not estimate)"| LOC
+  CP -.->|"campaign extension ▲"| CR["ICRCostReport (total · cost per person)"]
+  CR -.->|evaluatedResource| AC
 ```
 
 <sub>Edge labels name the FHIR element that carries the reference; ▲ marks edges whose reference runs against the drawn arrow — everything points *at* the campaign, so the CarePlan is never rewritten as tasks and records accumulate.</sub>

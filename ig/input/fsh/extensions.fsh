@@ -314,3 +314,56 @@ Description: "The CareTeam a supply movement was issued to. R4 SupplyDelivery.re
 Context: SupplyDelivery
 * ^experimental = false
 * value[x] only Reference(ICRCareTeam)
+
+// --- cost-v1 -------------------------------------------------------------------
+
+Extension: CostLineage
+Id: cost-lineage
+Title: "Cost Lineage"
+Description: "Budgeted (microplan budget) vs actual (expenditure). A structural discriminator: a cost line or a cost report is one or the other, and the two are never summed together. Distinct from realtime-vs-reconciled, which distinguishes preliminary from close-out ACTUALS (Observation.status on the line items; the data-lineage extension on the report) (cost-v1)."
+Context: Observation, MeasureReport
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRCostLineageVS (required)
+
+Extension: CostPerspective
+Id: cost-perspective
+Title: "Cost Perspective"
+Description: "Financial (cash outlay) vs economic (full resource cost including donated commodities and salaried time) — the Global Health Cost Consortium reference-case distinction. Default semantics: ABSENT MEANS FINANCIAL (cost-v1)."
+Context: Observation, MeasureReport
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRCostPerspectiveVS (required)
+
+Extension: CostScope
+Id: cost-scope
+Title: "Cost Scope"
+Description: "Which categories a cost report's figures include: full, or delivery-only (excludes commodities — the standard published unit-cost metric). Required on ICRCostReport: a unit cost is meaningless without it, since commodity value is the single biggest swing between otherwise comparable figures (cost-v1)."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only code
+* value[x] from ICRCostScopeVS (required)
+
+Extension: CostAllocation
+Id: cost-allocation
+Title: "Cost Allocation"
+Description: "How a cost report at a geography treats higher-level (umbrella / national) line items: DIRECT counts only lines attributed to the geography's subtree; FULLY-LOADED adds an apportioned share (per capita, per dose, …), stated in method. The ledger is never allocated downward — apportionment is a report-level statement, traceable through evaluatedResource. Absent ⇒ direct (cost-v1)."
+Context: MeasureReport
+* ^experimental = false
+* extension contains
+    basis 1..1 MS and
+    method 0..1 MS
+* extension[basis].value[x] only code
+* extension[basis].value[x] from ICRCostAllocationBasisVS (required)
+* extension[basis] ^short = "direct | fully-loaded"
+* extension[method].value[x] only string
+* extension[method] ^short = "The apportionment rule when fully-loaded (e.g. 'national commodity line apportioned per dose delivered')"
+
+Extension: FundingSource
+Id: funding-source
+Title: "Funding Source"
+Description: "Who paid for a cost line item — the funding envelope (government, Gavi, GPEI, UNICEF…), as distinct from the organization that spent it (Observation.performer). Extensible so named donors and country mechanisms ride as country codes or text (cost-v1)."
+Context: Observation
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRFundingSourceVS (extensible)

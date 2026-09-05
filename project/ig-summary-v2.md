@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-08-20T10:42:34Z
+last_modified: 2026-09-05T12:25:31Z
 tags:
   - icr
   - fhir
@@ -16,11 +16,11 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026`
 
 ⁠
 
-> [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document.
+> [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document. **Exception:** the cost-v1 round (§7.4, Sep 5, 2026) is documented here first; [[ig-summary]] does not yet carry it.
 
 > [!note] **This is a draft for feedback. It is not a final standard.** We show the open questions and the roadmap (§13) on purpose. We made v0.1 so that partners can test it against real campaign data and partner experience. You can challenge each design decision in this document. The published IG is at [**https://icr.healthcampaigns.org**](https://icr.healthcampaigns.org). Send feedback to the ICR project team at Ona/UNICEF.
 
@@ -116,6 +116,9 @@ This section is a quick reference for each abbreviation in this document. The ab
 | **M&E** | Monitoring and Evaluation |
 | **mCSD** | Mobile Care Services Discovery — an IHE profile for a location directory |
 | **CPG / CRMI / SDC** | HL7 frameworks: Clinical Practice Guidelines / Canonical Resource Management Infrastructure / Structured Data Capture |
+| **GHCC** | Global Health Cost Consortium — its *Reference Case for Estimating the Costs of Global Health Services* defines the financial-vs-economic perspective and the cost groupings that ICRCostCategoryCS follows (§7.4) |
+| **IDCC** | Immunization Delivery Cost Catalogue — the published benchmark of immunization delivery unit costs; its "cost per dose delivered excluding vaccine" is the `delivery-only` cost scope (§7.4) |
+| **DHMT** | District Health Management Team — the district-level unit that plans, runs, and reports a campaign round (and files its expenditure return) |
 
 * * *
 ## 1. Introduction
@@ -178,17 +181,18 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | **Profiles — population & geography** | 5   | ICRPatient (Patient — the registered individual), ICRDeliveryUnit (Group — household/community/school-cohort), ICRTargetPopulation (Group — denominator), ICRLocation (Location), ICRFacilityOrganization (Organization — the accountable facility entity, mCSD pairing) |
 | **Profiles — delivery events** | 4   | ICRImmunizationEvent (Immunization), ICRMedicationAdministration (MedicationAdministration), ICRSupplyDistribution + ICRSupplyMovement (SupplyDelivery — the supply split, §6.3) |
 | **Profiles — coverage** | 2   | ICRAdministrativeCoverage (MeasureReport), ICRSurveyCoverage (MeasureReport) |
+| **Profiles — cost** *(cost-v1)* | 2   | ICRCampaignCost (Observation — a budget/expenditure line item), ICRCostReport (MeasureReport — total & cost per person targeted / reached / per dose, §7.4) |
 | **Profiles — safety & teams** | 3   | ICRAdverseEvent (AdverseEvent — intervention-neutral AEFI/MDA safety), ICRCareTeam (CareTeam), ICRCampaignFormResponse (QuestionnaireResponse — the filled campaign form: supervision, readiness, monitoring…) |
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
-| **Measures** | 6   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, and (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness` — the canonical definitions that the coverage and readiness MeasureReports instantiate (§7) |
+| **Measures** | 7   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness`, and (cost-v1) `icr-campaign-cost` — the canonical definitions that the coverage, readiness, and cost MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 37  | See §10 |
-| **CodeSystems** | 28  | See §9 |
-| **ValueSets** | 30  | Usually one per code system, plus purpose-built sets (§9) |
-| **Example instances** | 61  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task), a custom-national-identifier ward, and an LQAS lot assessment (§11) |
+| **Extensions** | 36  | See §10 — cost-v1 added five |
+| **CodeSystems** | 40  | See §9 — cost-v1 added eight |
+| **ValueSets** | 40  | Usually one per code system, plus purpose-built sets (§9) |
+| **Example instances** | 71  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task), a custom-national-identifier ward, and an LQAS lot assessment (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
-File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `examples.fsh`.
+File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-cost.fsh` (cost-v1), `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `examples.fsh`.
 
 **Build:** The command `sushi build .` compiles FSH → JSON. The script `./_genonce.sh` renders the IG website. This script needs Java 17+. The current commit compiles clean (0 errors / 0 warnings).
 
@@ -281,6 +285,12 @@ Each delivery event and the adverse event carry a mandatory `record-origin` flag
 - **ICRSurveyCoverage** *(MeasureReport)* — coverage that an independent method measures (cluster survey, LQAS, RCM). The structure prevents a merge with administrative coverage.
 - Six canonical **Measure** definitions. The reports point at these definitions (§7.3).
 - Both coverage profiles carry the same `campaign` extension the delivery events use. Thus a coverage figure joins its campaign (round) directly (§7).
+
+**Cost (§7.4, cost-v1)**
+
+- **ICRCampaignCost** *(Observation)* — **one cost line item**: a budgeted or actual amount for one cost category, attributed to one place (`subject` = ICRLocation) and pointing at its campaign through the native `basedOn`. Recorded at the grain the source states, never allocated downward.
+- **ICRCostReport** *(MeasureReport)* — **the computed cost figures**: total cost and cost per person targeted / per person reached / per dose delivered, dividing by the same denominators the coverage reports use and listing its inputs in `evaluatedResource`. Declares lineage (budgeted vs actual), perspective (financial vs economic), scope (full vs delivery-only), and allocation (direct vs fully-loaded).
+- One canonical **Measure**, `icr-campaign-cost`, with one group per figure.
 ### 2.3 Five cross-cutting principles
 §8 gives the full statement of the design invariants. Keep these five principles in mind while you read:
 
@@ -439,6 +449,8 @@ graph TD
   SUP["ICRSupplyMovement(s)<br/>receipts · team issues · returns"] -.->|"campaign ext"| CP
   AC["ICRAdministrativeCoverage"] -.->|"campaign ext"| CP
   SC["ICRSurveyCoverage"] -.->|"campaign ext"| CP
+  CC["ICRCampaignCost<br/>budget · expenditure lines"] -->|basedOn| CP
+  CR["ICRCostReport<br/>cost per person"] -.->|"campaign ext"| CP
   FR["ICRCampaignFormResponse<br/>supervision · readiness"] -->|basedOn| CP
   CP -->|instantiatesCanonical| PD["ICRCampaignProtocol<br/>(the reusable template)"]
   CP -->|partOf| U["Umbrella ICRCampaign"]
@@ -1927,7 +1939,7 @@ Administrative coverage and survey coverage measure the same conceptual quantity
 
 In that case, one campaign had approximately 99% administrative coverage and approximately 76% survey coverage. The IG keeps this difference visible and queryable. The IG does not reconcile the two figures silently.
 
-Both profiles are based on **MeasureReport**. Its numerator/denominator `group.population` structure matches coverage directly. Each report points at one of six canonical **Measure** definitions in the IG. The Measures are `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, and the forms-v1 pair `icr-zero-dose-coverage` and `icr-campaign-readiness`. Each Measure declares its numerator, its denominator, and the standard stratifier axes. The Measures carry placeholder CQL until executable logic is written.
+Both profiles are based on **MeasureReport**. Its numerator/denominator `group.population` structure matches coverage directly. Each report points at one of seven canonical **Measure** definitions in the IG. The Measures are `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, the forms-v1 pair `icr-zero-dose-coverage` and `icr-campaign-readiness`, and the cost-v1 `icr-campaign-cost` (§7.4). Each Measure declares its numerator, its denominator, and the standard stratifier axes. The Measures carry placeholder CQL until executable logic is written.
 
 In addition to the data source, coverage carries two more coded axes:
 
@@ -2238,7 +2250,7 @@ Two more shapes of the same administrative-coverage profile show how the IG hand
 - **The stratified treatment tally** (`example-mda-treatment-tally`). MDA field forms collect a **multi-dimensional** aggregate. The aggregate holds treated counts by drug × sex × age band, plus exclusion dispositions. A single Group-subject MedicationAdministration cannot hold this aggregate. The canonical home is an `ICRAdministrativeCoverage` MeasureReport with `group.stratifier`. The example reports 2,900 / 3,200 ≈ **91%**. The **sex** stratifier shows 1,500 F / 1,400 M. The **age band** stratifier shows 1,100 at 5–14 / 1,800 at 15+. The **disposition** stratifier shows 2,900 treated / 180 excluded / 95 absent / 25 refused. Thus one report holds the full not-treated cube. The report sets `denominator-type = at-risk`, and `measure` points to `icr-mda-treatment-coverage`. The operational per-visit scalar (the community Task's "2,900 treated") stays on `Task.output`. That output references this report.
 - **Geographic (implementation-unit) coverage** (`example-geographic-coverage`). The axis `coverage-unit = implementation-units` makes the supervision-form figure "villages treated / total" a first-class coverage report. The example reports 188/200 ≈ **94%**. The non-treatment reasons (insecurity 7, medication shortage 5) form a disposition stratifier. The Measure is `icr-geographic-coverage`. The profile is the same as for dose coverage; only the unit is different.
 
-**ICRCoverageStratifierCS** names the standard stratifier axes: `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history` (forms-v1), and `readiness-domain`. Thus disaggregation shares one vocabulary across all reports.
+**ICRCoverageStratifierCS** names the standard stratifier axes: `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history` (forms-v1), `readiness-domain`, and (cost-v1) `cost-category` and `funding-source`. Thus disaggregation shares one vocabulary across all reports, cost reports included.
 
 **Two forms-v1 Measures** extend the coverage family. `icr-zero-dose-coverage` divides zero-dose children reached by children reached. It is stratified by `dose-history`, `sex`, and `age-band`. It uses the polio tally's never/previously/no-recall split, and it feeds zero-dose-reduction analytics. `icr-campaign-readiness` divides operational units validated ready by total units targeted (`coverage-unit = implementation-units`). It is the roll-up of the readiness checklist (§4.7), stratified by `geography` and `readiness-domain`. Both Measures carry placeholder CQL, like the other four.
 
@@ -2254,6 +2266,120 @@ Two more shapes of the same administrative-coverage profile show how the IG hand
 - No *required* binding yet forces a given report to carry specific stratifiers. The stratifiers are Must Support and illustrated, not mandated.
 - Section 13.2 proposes the remaining coverage work. **Structure** `sample-design` into sub-elements: method, clusters, design effect, sample size, weighting, and evidence source. Author **executable CQL** for the Measures. Add a multi-dose "fully-immunized" measure with round-to-round linkage. Define explicit RCM/LQAS semantics: pass/fail plus a trigger, not a rate.
 
+### 7.4 Campaign cost — ICRCampaignCost (`Observation`) & ICRCostReport (`MeasureReport`) *(cost-v1)*
+**Purpose.** Before cost-v1, the IG did not record what a campaign costs. Without cost, the IG could not compute **cost per person reached**. That figure is the one that donors and ministries compare across campaigns and across countries. The cost-v1 round adds two profiles. **ICRCampaignCost** is one cost **line item**: a budgeted or actual amount, for one cost category, attributed to one place. **ICRCostReport** holds the **computed figures**: the total cost, and the cost per person targeted, per person reached, and per dose delivered. The IG already holds every divisor (the planning denominator, the coverage numerator, the delivery-event count). The cost round adds only the money.
+
+**Why Observation, and not a billing resource.** FHIR has `ChargeItem` and `ChargeItemDefinition`. Their scope includes internal cost allocation, and they fit. But they are maturity level 0 in R4, their `subject` must be a Patient or a Group, and they have no Location element. `Observation` is normative. Its `basedOn` element can target a CarePlan natively. Its `subject` can be a Location. The IG already uses Observation for non-clinical assertions (ICRLocationStatus, §5.6). So a cost line item is an Observation. The `ChargeItemDefinition` path stays open for a versioned unit-cost schedule later (§13.4).
+
+**Design rules.**
+
+1. **A cost line points at the campaign through** `basedOn`**.** Observation is the only ICR event resource where this link is native. No `campaign` extension is needed. The CarePlan is never rewritten as costs accumulate.
+2. **A cost line is attributed to a place, not to a population estimate.** Kambia District has several competing denominators: the GRID3 estimate (48,250, the planning denominator), the calculated ward sum (50,120), and the enumerated count. None of these Groups references the campaign. An estimate is revisable. A cost is not. If a cost line pointed at a Group, each re-flag of the planning denominator would orphan the ledger. So `subject` is `Reference(ICRLocation)`. The division happens later, in the report. The report declares the estimate it divided by, with the same `denominator-source` and `denominator-type` axes that coverage uses.
+3. **Record at the grain the source states. Never allocate downward.** A district expenditure return gives district lines on the round. A national vaccine invoice gives one national line on the umbrella. A cost at any location is the sum of the lines in its `partOf` subtree. Apportionment of a national line to a district is a **report-level** statement (`cost-allocation`), never a ledger entry. This keeps the ledger honest: sums never double-count.
+4. **Budget vs actual is an axis, not a status.** `cost-lineage` (`budgeted` | `actual`) is required. The two are never summed. `Observation.status` carries `preliminary → final → amended` for actuals, exactly as `data-lineage` does for coverage. Consumers read the newest final or amended line per (campaign, place, category, lineage, perspective) — the ICRLocationStatus read rule.
+5. **Financial vs economic, and full vs delivery-only, are explicit.** Commodity value (vaccine, drugs, nets) is the largest swing between two otherwise comparable unit costs. The published standard metric excludes it ("delivery cost per dose"). A report must state its `cost-scope`. Perspective follows the Global Health Cost Consortium (GHCC) reference case; absent means financial.
+
+```mermaid
+graph TD
+  CC1["ICRCampaignCost<br/>vaccine · national · actual<br/>subject: country"] -->|basedOn| U["Umbrella ICRCampaign"]
+  CC2["ICRCampaignCost<br/>per diems · budgeted<br/>subject: Kambia District"] -->|basedOn| R["Kambia round ICRCampaign"]
+  CC3["ICRCampaignCost<br/>per diems · actual<br/>subject: Kambia District"] -->|basedOn| R
+  CC4["ICRCampaignCost<br/>transport · actual<br/>subject: Kambia District"] -->|basedOn| R
+  CR["ICRCostReport<br/>total 96,500 USD<br/>2.00 / person targeted · 2.02 / person reached"] -.->|"campaign ext"| R
+  CR -->|evaluatedResource| CC3
+  CR -->|evaluatedResource| CC4
+  CR -->|"evaluatedResource (apportioned, fully-loaded)"| CC1
+  CR -->|"evaluatedResource (the divisor)"| AC["ICRAdministrativeCoverage<br/>47,766 / 48,250"]
+```
+
+**ICRCampaignCost — properties.**
+
+| Element | Flags | Card. | Type / Binding | Description |
+| --- | --- | --- | --- | --- |
+| `status` | MS  |     |     | `final`; `preliminary` for in-flight expenditure; `amended` when restated. A newer final/amended line supersedes. |
+| `basedOn` | MS  | 1..1 | `Reference(ICRCampaign)` only | The campaign this cost belongs to. The round for round-specific costs; the umbrella for costs shared across rounds (national vaccine, national training). |
+| `code` | MS  | 1..1 | CodeableConcept, **extensible** → ICRCostCategoryVS | **What** the money is for: `personnel`, `per-diem-incentive`, `training`, `transport`, `cold-chain`, `commodities`, `consumables`, `social-mobilization`, `supervision-monitoring`, `waste-management`, `planning`, `post-campaign-survey`, `other`. |
+| `subject` | MS  | 1..1 | `Reference(ICRLocation)` only | **Where** the cost is attributed: an admin unit or operational area, at the grain the source states (country / district / ward). It must lie within the campaign's target geography. |
+| `focus` | MS  | 0..1 | `Reference(ICRCareTeam)` only | Optional: the team, for team-level microplan budget lines. `subject` stays the team's area. |
+| `effective[x]` | MS  | 1..1 | Period | The period the amount covers: the round period for a budget line; the expenditure window for an actual. |
+| `performer` | MS  |     | `Reference(Organization)` only | Who budgeted, spent, or reported the line: the DHMT, the MoH programme, the UNICEF country office. The *spender*, as distinct from the funding source. |
+| `value[x]` | MS  | 1..1 | Quantity, `system` fixed `urn:iso:std:iso:4217`, `code` 1..1 | The amount in the currency incurred. `code` is the ISO 4217 currency (`SLE`, `NGN`, `USD`). |
+| `extension[costLineage]` | MS  | 1..1 | code, **required** → ICRCostLineageVS | `budgeted` \| `actual`. Never summed together. |
+| `extension[costPerspective]` | MS  | 0..1 | code, **required** → ICRCostPerspectiveVS | `financial` \| `economic`; absent ⇒ financial. |
+| `extension[fundingSource]` | MS  | 0..1 | CodeableConcept, **extensible** → ICRFundingSourceVS | Who paid: `government`, `gavi`, `gpei`, `unicef`, `who`, `global-fund`, `other-donor`, `unknown`. The envelope, not the spender. |
+| `component[units]` | MS  | 0..1 | Quantity | The driver quantity: 3,200 person-days, 12 vehicle-days, 50,000 doses. |
+| `component[unitCost]` | MS  | 0..1 | Quantity (ISO 4217) | The norm: the rate per driver unit. `units × unit-cost = value`. With this pair, a budget can be **generated from the microplan**: `workload-target` days × roster size × the per-diem norm. |
+| `component[amountUsd]` | MS  | 0..1 | Quantity, `code` fixed `USD` | The USD-normalised amount for cross-country comparison. |
+| `derivedFrom` | MS  |     |     | The evidentiary trail: the budget form response (ICRCampaignFormResponse) or the finance-system document. |
+| `note` | MS  |     |     | Free-text detail: the named donor for `other-donor`, the country budget line label. |
+
+Two invariants. `icr-cost-currency` (**error**): the amount's `code` must be a three-letter ISO 4217 code under the ISO 4217 system. `icr-cost-driver-product` (**warning**): when both `units` and `unit-cost` are present, the amount must equal their product within 1%. A gap is a reconciliation signal, not always an error.
+
+**Where costs usually sit.** The profile supports every level of the location tree. Most countries have only these:
+
+| Cost | Usual grain | `basedOn` / `subject` |
+| --- | --- | --- |
+| Vaccine, drugs, ITNs, freight; national training; mass media | National | umbrella / country |
+| Per diems, local transport, cold chain, waste, district training, town criers | District | round / district |
+| Team per diems in a bottom-up microplan | PHU catchment or team | round / ward or operational area, `focus` = team |
+| Post-campaign survey | National or district | umbrella or round |
+
+**ICRCostReport — properties.** One report = one (campaign, geography, lineage, perspective, scope). Full and delivery-only side by side are two reports, exactly as administrative and survey coverage are two reports.
+
+| Element | Flags | Card. | Type / Binding | Description |
+| --- | --- | --- | --- | --- |
+| `measure` | MS  |     | fixed canonical | `icr-campaign-cost`. |
+| `period` | MS  | 1..1 | Period | The campaign or round period the figures cover. |
+| `reporter` | MS  | 1..1 |     | Who computed or signed off the figures: the DHMT, the national programme, a costing study team. |
+| `group` | MS  | 1..* |     | One group per figure. |
+| `group.code` | MS  | 1..1 | CodeableConcept, **required** → ICRCostFigureVS | `total-cost` \| `per-person-targeted` \| `per-person-reached` \| `per-dose-delivered`. |
+| `group.measureScore` | MS  | 1..1 | Quantity, `system` fixed ISO 4217 | The figure as money. The `unit` text says "USD per person reached"; UCUM has no currency-per-person unit. |
+| `group.population` | MS  |     |     | On the unit-cost groups: the divisor, as a `denominator` count (planning denominator / persons reached / doses delivered). |
+| `group.stratifier` | MS  |     | code **extensible** → ICRCoverageStratifierVS | `cost-category` and `funding-source` on the total; `geography` and `delivery-strategy` on the unit costs. The shared stratifier vocabulary. |
+| `evaluatedResource` | MS  |     |     | The inputs: the line items summed, the coverage report whose numerator was the divisor, and any higher-level lines apportioned in. A unit cost carries its own provenance. |
+| `extension[campaign]` | MS  | 1..1 | `Reference(ICRCampaign)` | The round or umbrella the figures report against. |
+| `extension[costLineage]` | MS  | 1..1 | code, **required** | `budgeted` \| `actual`. A report never mixes the two. |
+| `extension[costPerspective]` | MS  | 0..1 | code, **required** | `financial` \| `economic`; absent ⇒ financial. |
+| `extension[costScope]` | MS  | 1..1 | code, **required** → ICRCostScopeVS | `full` \| `delivery-only` (excludes `commodities`). |
+| `extension[costAllocation]` | MS  | 0..1 | complex: `basis` (code, **required** → ICRCostAllocationBasisVS) + `method` (string) | `direct` (subtree lines only) \| `fully-loaded` (plus an apportioned share of umbrella lines; the method is stated). Absent ⇒ direct. |
+| `extension[denominatorSource]` / `[denominatorType]` | MS  | 0..1 | as on coverage | Which estimate the per-person-targeted figure divided by. |
+| `extension[dataLineage]` | MS  | 1..1 | code, **required** | `realtime` \| `reconciled`, inherited from the coverage report the divisor came from. |
+
+One invariant. `icr-cost-report-divisor` (**error**): every `per-*` group must carry its divisor as a `denominator` population count. A ratio without its divisor is not auditable.
+
+**The Measure.** `icr-campaign-cost` uses `continuous-variable` scoring and declares four groups, one per figure. The money is the `measureScore`. The divisor sits in the group's `denominator` population. The measure-population code set does not forbid `denominator` under continuous-variable scoring, and `denominator` is the word every ICR reader expects. The CQL is a placeholder, as for the coverage Measures.
+
+**Worked example — the Kambia thread.** Illustrative composite; SLE ≈ 22.5 per USD.
+
+| Line item | `basedOn` / `subject` | Lineage | Amount |
+| --- | --- | --- | --- |
+| MR vaccine, 50,000 doses × 0.60 USD (Gavi, UNICEF-procured) | umbrella / country | actual | 30,000 USD |
+| Vaccinator per diems, 3,200 person-days × 200 SLE (from `workload-target`: 640 vaccinators × 5 days) | round / district | budgeted | 640,000 SLE ≈ 28,400 USD |
+| Vaccinator per diems (two extra mop-up days) | round / district | actual | 668,000 SLE ≈ 29,650 USD |
+| Transport & fuel (government) | round / district | actual | 277,000 SLE ≈ 12,300 USD |
+
+| Report | Scope | Total | Per person targeted (÷ 48,250) | Per person reached (÷ 47,766) |
+| --- | --- | --- | --- | --- |
+| `example-cost-report` | full, fully-loaded | 96,500 USD | 2.00 USD | 2.02 USD |
+| `example-cost-report-delivery` | delivery-only | 66,500 USD | 1.38 USD | 1.39 USD |
+
+The full report stratifies its total by category (commodities 30,000; per diems 29,650; transport 12,300; training 7,000; cold chain 6,050; social mobilization 5,500; supervision 4,000; waste 2,000). Both reports divide by the same GRID3 planning denominator and the same reconciled admin-coverage numerator, and both list those inputs in `evaluatedResource`. The delivery-only figure (1.39 USD per child reached) is the one that cross-country comparisons use.
+
+**Key observations.**
+
+- **Counts and money stay in their native homes.** Person counts stay in the coverage reports. Money lives in the cost profiles. The cost report joins the two through `evaluatedResource`.
+- **The microplan can generate the budget.** The CareTeam's `workload-target` already carries days and population. Days × roster × a per-diem norm is a budget line with `units` and `unit-cost`. Microplanning tools can emit ICRCampaignCost budget lines directly.
+- **Spreadsheets are the intake.** Most budgets and expenditure returns will arrive as Excel. A budget Questionnaire answered through ICRCampaignFormResponse can be the capture form. Ingestion emits the Observations. The form is the input; the Observation is the truth (§4.6).
+- **The flat view is simple.** The SQL-on-FHIR table is: campaign, place, category, lineage, perspective, amount, currency, USD amount, funder. That is what DHIS2 and the warehouse want.
+
+**Open questions.**
+
+- **Currency conversion.** Local currency is the truth and USD is a component. Someone must own the rate and its date. The default is the end of `effectivePeriod`. Confirm with UNICEF finance.
+- **Apportionment default.** When a report is fully-loaded, which method is the default: per capita, or per dose delivered? The example uses per dose.
+- **Subject grain.** Location only, or also `ICRTargetPopulation` for the rare cost that is tied to a cohort and not a place (a school feeding add-on)? v0.1 starts with Location only.
+- **Unit-cost norms.** Norms live inline as `unit-cost` for now. A country that wants a versioned norm schedule would use `ChargeItemDefinition`. This slots in without a change to the line item.
+- **Economic perspective guidance.** Which in-kind items an economic line must include (salaried time, donated vaccine, volunteer time) needs a short costing note aligned to the GHCC reference case.
+
 * * *
 ## 8. The cross-cutting invariants (in depth)
 These design rules recur across the profiles. Hold the IG against these rules. §2.3 introduced them. This section gives the fuller statement.
@@ -2267,6 +2393,7 @@ These design rules recur across the profiles. Hold the IG against these rules. �
 7. **Task origin is first-class and coded.** The code separates pre-planned Tasks from field-registered Tasks. The element is `1..1`, and the binding is required. Discovery-mode field registration is a supported workflow. Its counts measure microplan completeness.
 8. **One Task per visit; person detail lives in registration and the delivery events.** Registration of the individuals in a household is a mainline workflow. It happens in the *data* layer. The household Group's `member` list holds the ICRPatients. One Immunization or MedicationAdministration per person carries its own campaign link (the `campaign` extension) and joins its delivery unit through Group membership; `Task.output` closes the visit with a tally and may additionally reference the events. The IG does **not** mint one Task per person. A person-focused Task (`for = Patient`) has one purpose only: to chase a specific missed or zero-dose individual. Per-person *Tasks* would multiply Task volume approximately fivefold. They would add nothing that registration and the delivery events do not already carry. Per-person *records*, in contrast, are the goal.
 9. **Accountability is queryable.** `Task.owner` is a real reference to an ICRCareTeam. `MeasureReport.reporter` is required. Thus "who worked this area" and "who reported this figure" are both joins, not string comparisons.
+10. **Cost is a place-attributed ledger; ratios live in the report** *(cost-v1)*. A cost line item points at its campaign through `basedOn` and at a place through `subject`, never at a population estimate, and is recorded at the grain its source states. Budget and actual are an axis, never summed. Every unit-cost figure in a cost report carries its divisor and lists the line items and the coverage report it was computed from (§7.4).
 
 * * *
 ## 9. Terminology (CodeSystems & ValueSets)
@@ -2274,7 +2401,7 @@ These design rules recur across the profiles. Hold the IG against these rules. �
 
 Local and national codes connect through ConceptMap (deferred). This is standard IG practice. WHO's SMART Immunizations IG does the same with its `IMMZ.*` codes. No ICR code system duplicates a standard system. All ICR code systems are `caseSensitive` and not experimental.
 
-**The 32 CodeSystems.** The forms-v1 round (§13.2) added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, and `ICRSettlementTypeCS`. The espen-forms round (§4.8) added `ICRNTDDiseaseCS` and `ICRMDAMedicinePackageCS`. The Aug 19 rounds added `ICRLocationStatusCS` + `ICREndemicityStatusCS` (§5.6), `ICRCommodityClassCS` (§6.3), and `ICRTaskOutputTypeCS` (§4.4). The rounds also extended several existing systems. The table below marks these changes.
+**The 40 CodeSystems.** The cost-v1 round (§7.4) added eight: `ICRCostCategoryCS`, `ICRCostLineageCS`, `ICRCostPerspectiveCS`, `ICRCostScopeCS`, `ICRCostAllocationBasisCS`, `ICRFundingSourceCS`, `ICRCostComponentCS`, `ICRCostFigureCS`. The forms-v1 round (§13.2) added `ICRDoseHistoryCS`, `ICRRevisitOutcomeCS`, and `ICRSettlementTypeCS`. The espen-forms round (§4.8) added `ICRNTDDiseaseCS` and `ICRMDAMedicinePackageCS`. The Aug 19 rounds added `ICRLocationStatusCS` + `ICREndemicityStatusCS` (§5.6), `ICRCommodityClassCS` (§6.3), and `ICRTaskOutputTypeCS` (§4.4). The rounds also extended several existing systems. The table below marks these changes.
 
 | CodeSystem | Codes | FR? | Bound on (strength) |
 | --- | --- | --- | --- |
@@ -2291,7 +2418,7 @@ Local and national codes connect through ConceptMap (deferred). This is standard
 | **ICRDenominatorSourceCS** | `census`, `census-projection`, `microcensus`, `worldpop`, `grid3`, `hmis`, `govt-estimate`, `unknown`, `other` (9) | —   | denominator-source ext (**extensible**, `1..1` on ICRTargetPopulation) — v0.1 added `govt-estimate`/`unknown` as low-precision escapes for the now-mandatory source |
 | **ICRDataLineageCS** | `realtime`, `reconciled` (2) | ✔   | realtime-vs-reconciled ext (**required**) |
 | **ICRCoverageSourceCS** | `administrative`, `survey`, `lqas`, `rcm` (4) | ✔   | coverage-source ext (**required**) |
-| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history`, `readiness-domain` (7) | —   | `group.stratifier.code` on both coverage profiles (**extensible**) — forms-v1 added `dose-history` (zero-dose axis); v0.1.1 added `readiness-domain` |
+| **ICRCoverageStratifierCS** | `sex`, `age-band`, `delivery-strategy`, `disposition`, `geography`, `dose-history`, `readiness-domain`, `cost-category`, `funding-source` (9) | —   | `group.stratifier.code` on both coverage profiles (**extensible**) — forms-v1 added `dose-history` (zero-dose axis); v0.1.1 added `readiness-domain` |
 | **ICRDenominatorTypeCS** | `total-population`, `at-risk` (2) | —   | denominator-type ext (**required**) |
 | **ICRCoverageUnitCS** | `people`, `implementation-units` (2) | —   | coverage-unit ext (**required**) |
 | **ICRAdverseEventCausalityCS** | `a-consistent`, `b-indeterminate`, `c-coincidental`, `d-unclassifiable` (4) | —   | ICRAdverseEvent causality (**extensible**) — WHO/CIOMS A/B/C/D |
@@ -2306,8 +2433,16 @@ Local and national codes connect through ConceptMap (deferred). This is standard
 | **ICRNTDDiseaseCS** *(espen-forms)* | `lf`, `oncho`, `schisto`, `sth`, `trachoma` (5) | —   | the ESPEN MDA disease-scope axis (bound in the espen-forms instruments, §4.8) — the PC-NTDs that an MDA campaign addresses |
 | **ICRMDAMedicinePackageCS** *(espen-forms)* | `ivm`, `ivm-alb`, `ivm-alb-dec`, `alb`, `meb`, `pzq`, `pzq-alb`, `pzq-meb`, `azm-tab`, `azm-susp`, `tetra` (11) | —   | the ESPEN MDA medicine-package axis (§4.8) — single drugs and standard co-administration combinations |
 | **ICRProjectTagCS** *(example-tags)* | `espen`, `mr-sia`, `mda`, `gallery` (4) | —   | example-gallery scenario tags on `meta.tag` — tagging only, no ValueSet / no binding axis |
+| **ICRCostCategoryCS** *(cost-v1)* | `personnel`, `per-diem-incentive`, `training`, `transport`, `cold-chain`, `commodities`, `consumables`, `social-mobilization`, `supervision-monitoring`, `waste-management`, `planning`, `post-campaign-survey`, `other` (13) | —   | ICRCampaignCost.code (**extensible**) — the GHCC-grouped line structure shared by the GPEI SIA, Gavi operational-cost, and ESPEN MDA budget templates; also the value space of the `cost-category` stratifier |
+| **ICRCostLineageCS** *(cost-v1)* | `budgeted`, `actual` (2) | —   | cost-lineage ext (**required**) — never summed together |
+| **ICRCostPerspectiveCS** *(cost-v1)* | `financial`, `economic` (2) | —   | cost-perspective ext (**required**); absent ⇒ financial |
+| **ICRCostScopeCS** *(cost-v1)* | `full`, `delivery-only` (2) | —   | cost-scope ext (**required**, `1..1` on ICRCostReport) — delivery-only excludes `commodities` |
+| **ICRCostAllocationBasisCS** *(cost-v1)* | `direct`, `fully-loaded` (2) | —   | cost-allocation ext, `basis` sub-extension (**required**); absent ⇒ direct |
+| **ICRFundingSourceCS** *(cost-v1)* | `government`, `gavi`, `gpei`, `unicef`, `who`, `global-fund`, `other-donor`, `unknown` (8) | —   | funding-source ext (**extensible**); also the value space of the `funding-source` stratifier |
+| **ICRCostComponentCS** *(cost-v1)* | `units`, `unit-cost`, `amount-usd` (3) | —   | fixed codes on the ICRCampaignCost component slices (no VS) |
+| **ICRCostFigureCS** *(cost-v1)* | `total-cost`, `per-person-targeted`, `per-person-reached`, `per-dose-delivered` (4) | —   | ICRCostReport.group.code (**required**) — one group per figure |
 
-**ValueSets.** ICR defines one whole-system ValueSet for each CodeSystem, with two exceptions. ICRGroupCharacteristicCS has no ValueSet: its `geography` code is fixed directly in the characteristic slice, and `age-band` lives in the instruments. ICRProjectTagCS has no ValueSet: it only tags examples. These purpose-built sets add to the whole-system sets:
+**ValueSets.** ICR defines one whole-system ValueSet for each CodeSystem, with three exceptions. ICRCostComponentCS (cost-v1) has no ValueSet: its codes are fixed per component slice on ICRCampaignCost. ICRGroupCharacteristicCS has no ValueSet: its `geography` code is fixed directly in the characteristic slice, and `age-band` lives in the instruments. ICRProjectTagCS has no ValueSet: it only tags examples. These purpose-built sets add to the whole-system sets:
 
 - **ICRIndependentCoverageSourceVS** — contains `survey`, `lqas`, `rcm` only. It *excludes* `administrative`. It is the binding on ICRSurveyCoverage. This small VS makes the rule "never merge the lineages" structurally enforceable.
 - **ICRMDAMedicationVS** — contains all of ATC (the extensible binding on MDA medication). It lists the typical PC-NTD codes (albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01, azithromycin J01FA10, DEC P02CB02). A subtree restriction is deferred until the team reviews the country formularies.
@@ -2323,9 +2458,9 @@ The data type follows the same pattern. Pure discriminators use a bare `code`. C
 
 | Axis | Kind | Binding | Type |
 | --- | --- | --- | --- |
-| `record-origin`, `realtime-vs-reconciled`, `coverage-source`, `denominator-type`, `coverage-unit`, `task-origin`, `prior-dose-status` | structural discriminator | **required** | `code` |
+| `record-origin`, `realtime-vs-reconciled`, `coverage-source`, `denominator-type`, `coverage-unit`, `task-origin`, `prior-dose-status`, `cost-lineage`, `cost-perspective`, `cost-scope`, `cost-allocation.basis` | structural discriminator | **required** | `code` |
 | `campaign-type`, `group-kind`, `delivery-strategy` | structural discriminator | **required** | CodeableConcept¹ |
-| `missed-reason`, `noncompliance-reason`, `exclusion-reason`, `denominator-source`², `location-type`, `settlement-type`, `team-role`, `communication-channel`, `revisit-outcome`, `seriousness`, `serious-criteria`, `causality` | field vocabulary | **extensible** | CodeableConcept |
+| `missed-reason`, `noncompliance-reason`, `exclusion-reason`, `denominator-source`², `location-type`, `settlement-type`, `team-role`, `communication-channel`, `revisit-outcome`, `seriousness`, `serious-criteria`, `causality`, `cost-category`, `funding-source` | field vocabulary | **extensible** | CodeableConcept |
 
 ¹ The binding is required, but the type is CodeableConcept (these appear in repeatable/hybrid lists). ² Presence is mandatory (`1..1` on ICRTargetPopulation, v0.1). The binding stays extensible so countries can add sources.
 
@@ -2342,7 +2477,7 @@ The data type follows the same pattern. Pure discriminators use a bare `code`. C
 
 * * *
 ## 10. Extensions
-FHIR has no native campaign semantics. Thus 31 extensions carry these semantics on the profiled core resources. The extensions group into four families. The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`. (Aug 2026: `overlays-admin-unit` was removed — operational areas now attach to the `partOf` tree directly, see §5.3. The Aug 19 rounds added `campaign`, `distribution-recipient`, and `issued-to-team`, and the **task-outputs round retired the eight Task tally/reason extensions** — those axes are now coded `Task.output` entries, §4.4.)
+FHIR has no native campaign semantics. Thus 36 extensions carry these semantics on the profiled core resources. The extensions group into five families. The cost-v1 round added five: `cost-lineage`, `cost-perspective`, `cost-scope`, `cost-allocation`, `funding-source`. The forms-v1 round added three: `prior-dose-status`, `revisit-outcome`, `settlement-type`. (Aug 2026: `overlays-admin-unit` was removed — operational areas now attach to the `partOf` tree directly, see §5.3. The Aug 19 rounds added `campaign`, `distribution-recipient`, and `issued-to-team`, and the **task-outputs round retired the eight Task tally/reason extensions** — those axes are now coded `Task.output` entries, §4.4.)
 
 **Campaign mechanics**
 
@@ -2392,6 +2527,18 @@ FHIR has no native campaign semantics. Thus 31 extensions carry these semantics 
 | CoverageUnit (`coverage-unit`) | MeasureReport | code, **required** → ICRCoverageUnitVS — people \| implementation-units; absent ⇒ people |
 | SampleDesign (`sample-design`) | MeasureReport | string — survey/LQAS/RCM method & sample-design detail |
 | ReporterTeam (`reporter-team`) *(v0.1.1)* | MeasureReport | `Reference(ICRCareTeam)` — the team whose figures the report rolls up; R4 `reporter` cannot target a CareTeam, so the team join lives here |
+
+**Cost** *(cost-v1, §7.4)*
+
+| Extension (id) | Context | Type / binding | Cardinality where used |
+| --- | --- | --- | --- |
+| CostLineage (`cost-lineage`) | Observation, MeasureReport | code, **required** → ICRCostLineageVS — budgeted \| actual | ICRCampaignCost **1..1 MS**, ICRCostReport **1..1 MS** |
+| CostPerspective (`cost-perspective`) | Observation, MeasureReport | code, **required** → ICRCostPerspectiveVS — financial \| economic; absent ⇒ financial | 0..1 MS on both |
+| CostScope (`cost-scope`) | MeasureReport | code, **required** → ICRCostScopeVS — full \| delivery-only | ICRCostReport **1..1 MS** |
+| CostAllocation (`cost-allocation`) | MeasureReport | complex: `basis` (code, **required** → ICRCostAllocationBasisVS: direct \| fully-loaded) + `method` (string) — absent ⇒ direct | ICRCostReport 0..1 MS |
+| FundingSource (`funding-source`) | Observation | CodeableConcept, **extensible** → ICRFundingSourceVS — who paid, as distinct from `performer` (who spent) | ICRCampaignCost 0..1 MS |
+
+The cost profiles also reuse `campaign` (1..1 on ICRCostReport), `denominator-source`, `denominator-type`, and `realtime-vs-reconciled` (1..1 on ICRCostReport) unchanged. ICRCampaignCost needs no `campaign` extension: `Observation.basedOn` targets a CarePlan natively.
 
 **Design notes.**
 
@@ -2521,6 +2668,12 @@ The trio shows the "planned per protocol" versus "targeted this round" compariso
 | 63  | `example-lf-endemicity` *(location-status)* | ICRLocationStatus | **The JRSM endemicity table as data**: Kambia District is LF-**endemic, under MDA** — subject → the district (#2), effective Jan 2026, performer the MoH NTD programme, method the 2019 mapping survey, derivedFrom the survey report |
 | 64  | `example-oncho-endemicity` *(location-status)* | ICRLocationStatus | Kambia District is oncho-**non-endemic** — the second assertion on the same district: the **co-endemicity** read is two Observations, one per disease |
 | 65  | `example-team-issuance` *(supply-split)* | ICRSupplyMovement | **Field-team daily stock**: 400 tablets issued to CDD team 7 (#24) on day 1 — `partOf` → the receipt (#31, the explicit chain), `issuedToTeam` → the CareTeam, own day-ledger (received 400 / used 360 / remaining 38 / not usable 2 / concordant ✓) |
+| 66  | `example-cost-vaccine-national` *(cost-v1)* | ICRCampaignCost | **A national line on the umbrella**: MR vaccine, 50,000 doses × 0.60 USD = 30,000 USD (`units` × `unit-cost`), actual, financial, Gavi-funded, UNICEF-procured; basedOn → #22 (umbrella), subject → the country (#1). Apportioned to district reports only when fully-loaded |
+| 67  | `example-cost-perdiem-budget` *(cost-v1)* | ICRCampaignCost | **A budget line generated from the microplan**: vaccinator per diems, 3,200 person-days × 200 SLE = 640,000 SLE (≈ 28,400 USD) — 640 vaccinators × 5 days from `workload-target`; `costLineage` budgeted; basedOn → the Kambia round, subject → the district (#2); derivedFrom → the microplan budget |
+| 68  | `example-cost-perdiem-actual` *(cost-v1)* | ICRCampaignCost | **The matching actual**: 668,000 SLE (≈ 29,650 USD), two extra mop-up days; `costLineage` actual, status final; derivedFrom → the DHMT expenditure return |
+| 69  | `example-cost-transport-actual` *(cost-v1)* | ICRCampaignCost | Transport & fuel, actual, government-funded: 277,000 SLE (≈ 12,300 USD) on the district |
+| 70  | `example-cost-report` *(cost-v1)* | ICRCostReport | **The full, fully-loaded cost report** for the Kambia round: total **96,500 USD** stratified by category (8 strata); **2.00 USD per person targeted** (÷ 48,250, GRID3) and **2.02 USD per person reached** (÷ 47,766, the reconciled admin numerator); allocation fully-loaded (national vaccine apportioned per dose); evaluatedResource → #37 (admin coverage) + #66, #68, #69 |
+| 71  | `example-cost-report-delivery` *(cost-v1)* | ICRCostReport | **The delivery-only twin** (commodities excluded): total **66,500 USD**, **1.38 USD per person targeted**, **1.39 USD per person reached** — the cross-country comparison figure; same divisors, same inputs minus the vaccine line |
 
 *Definitional artifacts (alongside the examples)*
 
@@ -2615,7 +2768,7 @@ Several of the highest-priority findings are now built: the intervention-neutral
 - **Programme-semantics quartet** — four small coded axes that every campaign type treats as first-class. One: `activity-type`/`sia-type` (routine / preventive-mass / catch-up / follow-up / mop-up / reactive), orthogonal to `campaign-type` (§4.1). Two: `coverage-target` — store the programme-defined threshold (≥95% SIA, ≥65% LF epidemiological, EYE 50/60/80%), not only the achieved coverage. Three: `stockpile-source` (ICG / national / Gavi), with the allocation and the request-to-delivery interval. Four: `dosing-regimen` (single-dose-lifelong / multi-dose / fractional), needed to define "fully immunized".
 - **Remaining coverage work** — structure `sample-design` into sub-elements (method, PSU/EA, cluster count, design effect, sample size, weighting, evidence source, crude-vs-valid, confidence interval). Author executable CQL. Add a multi-dose "fully-immunized" Measure with round1↔round2 linkage for OCV/multi-round campaigns. Add explicit RCM/LQAS semantics (pass/fail + trigger thresholds, not a coverage rate).
 - **Reason-code reconciliation** *(partly built — forms-v1)* — extend `missed-reason`/`noncompliance-reason` with the WHO RCM field lists (`unaware-campaign`, `post-distance`, `post-stockout`, `not-decision-maker`, …). Split out the non-missed dispositions (`already-vaccinated`, `plan-to-go-later`). forms-v1 added `not-revisited`, `not-decision-maker`, and the `revisit-outcome` disposition. The fuller WHO RCM list and the remaining non-missed dispositions stay open.
-- **Further candidates** (convergent, more design work): campaign-trigger and campaign-cost axes; ~~a campaign-phase/readiness lifecycle with a readiness MeasureReport~~ *(built — forms-v1, §4.7)*; ~~defaulter/dropout/zero-dose disposition~~ *(zero-dose built — forms-v1; the dropout Measure and routine hand-off stay open)*; the `ICRStructureTreatment` event for structure-applied interventions (§6.4); a standalone microplan resource (beyond the CareTeam-carried workload); ~~a population-vulnerability/equity taxonomy~~ *(built — forms-v1* `settlement-type`*)*; ~~an~~ `outreach` ~~delivery strategy~~ *(built — forms-v1)*; a population-estimation-method + source-raster version/date on denominators; a `structure`/footprint location type; and a cold-chain/logistics/stock-readiness axis beyond SupplyDelivery.
+- **Further candidates** (convergent, more design work): a campaign-trigger axis; ~~campaign-cost axes~~ *(built — cost-v1, §7.4)*; ~~a campaign-phase/readiness lifecycle with a readiness MeasureReport~~ *(built — forms-v1, §4.7)*; ~~defaulter/dropout/zero-dose disposition~~ *(zero-dose built — forms-v1; the dropout Measure and routine hand-off stay open)*; the `ICRStructureTreatment` event for structure-applied interventions (§6.4); a standalone microplan resource (beyond the CareTeam-carried workload); ~~a population-vulnerability/equity taxonomy~~ *(built — forms-v1* `settlement-type`*)*; ~~an~~ `outreach` ~~delivery strategy~~ *(built — forms-v1)*; a population-estimation-method + source-raster version/date on denominators; a `structure`/footprint location type; and a cold-chain/logistics/stock-readiness axis beyond SupplyDelivery.
 
 **Scope decision — reference, don't model.** Surveillance and outbreak response (case-based surveillance, lab confirmation, susceptibility modelling) are the *trigger and evaluation context* for a campaign. They are not the campaign's execution data. ICR holds only a thin reference: the signal that justified the campaign, and the case-age distribution that set the target age. ICR links out to a VPD-surveillance IG. The same rule applies to Location context (accessibility/travel-time, endemicity, TAS status — linked externally by location ID, §5.3).
 
@@ -2648,6 +2801,7 @@ These decisions still need a project, UNICEF, or partner call. They come from th
 8. `eligible-` **vs** `children-` **count-extension naming** — get partner input before v1 locks the extension ids. `eligible-` is accurate for MDA/ITN, where the target is not children. `children-` is more familiar to EPI staff.
 9. **Structure-applied-intervention event base** (the proposed `ICRStructureTreatment`, §6.4) — choose between a profiled `Procedure` with a structure-Location extension and a Location-keyed custom event.
 10. **Person-data governance** — the decisions behind `ICRConsent` (§5.5): what minimal data crosses a border, the retention periods, and the withdrawal process.
+11. **Campaign cost** (§7.4, cost-v1) — who owns the local-currency → USD conversion rate and date; the default apportionment method for fully-loaded reports (per capita vs per dose); whether `ICRCampaignCost.subject` may also target an `ICRTargetPopulation` for cohort-tied costs; whether to add a `ChargeItemDefinition`-based unit-cost norm schedule; and a short economic-perspective costing note aligned to the GHCC reference case.
 
 **Held for FHIR community review** (flagged in the IG itself): Task granularity at scale; deep `partOf` performance; MeasureReport vs Observation for coverage; GeoJSON on R4; the record-linkage pattern; Bulk Data access patterns.
 
