@@ -13,6 +13,7 @@ rationale lives in the working doc: [`../project/icr-v1.md`](../project/icr-v1.m
   - `profiles-population.fsh` — ICRDeliveryUnit (household/community Group), ICRTargetPopulation (Group), ICRLocation
   - `profiles-delivery.fsh` — ICRImmunizationEvent, ICRMedicationAdministration, ICRSupplyDelivery
   - `profiles-coverage.fsh` — ICRAdministrativeCoverage, ICRSurveyCoverage (MeasureReport)
+  - `profiles-cost.fsh` — ICRCampaignCost (Observation — budget/expenditure line item), ICRCostReport (MeasureReport — total & cost per person)
   - `extensions.fsh`, `codesystems.fsh`, `valuesets.fsh`, `aliases.fsh`, `examples.fsh`
 - `input/pagecontent/` — IG narrative (index, background)
 

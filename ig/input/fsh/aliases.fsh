@@ -65,3 +65,16 @@ Alias: $LocationStatus = https://icr.healthcampaigns.org/CodeSystem/icr-location
 Alias: $EndemicityStatus = https://icr.healthcampaigns.org/CodeSystem/icr-endemicity-status-cs
 Alias: $CommodityClass = https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs
 Alias: $TaskOutputType = https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs
+
+// --- cost-v1 (campaign cost line items + cost reports) ---
+// FHIR's designated system URI for ISO 4217 currency codes (the Money datatype's system);
+// used on Quantity so a cost carries its currency as a code, not as text
+Alias: $ISO4217 = urn:iso:std:iso:4217
+Alias: $CostCategory = https://icr.healthcampaigns.org/CodeSystem/icr-cost-category-cs
+Alias: $CostLineage = https://icr.healthcampaigns.org/CodeSystem/icr-cost-lineage-cs
+Alias: $CostPerspective = https://icr.healthcampaigns.org/CodeSystem/icr-cost-perspective-cs
+Alias: $CostScope = https://icr.healthcampaigns.org/CodeSystem/icr-cost-scope-cs
+Alias: $CostAllocationBasis = https://icr.healthcampaigns.org/CodeSystem/icr-cost-allocation-basis-cs
+Alias: $FundingSource = https://icr.healthcampaigns.org/CodeSystem/icr-funding-source-cs
+Alias: $CostComponent = https://icr.healthcampaigns.org/CodeSystem/icr-cost-component-cs
+Alias: $CostFigure = https://icr.healthcampaigns.org/CodeSystem/icr-cost-figure-cs

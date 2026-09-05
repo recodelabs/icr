@@ -238,3 +238,54 @@ Title: "ICR Task Output Type"
 Description: "The standard Task.output axes. Binding: extensible on ICRCampaignTask.output.type, so campaign-specific output types (e.g. 'rooms treated' under IRS) stay legal as custom codes or text."
 * ^experimental = false
 * include codes from system ICRTaskOutputTypeCS
+
+// --- cost-v1 -------------------------------------------------------------------
+
+ValueSet: ICRCostCategoryVS
+Id: icr-cost-category
+Title: "ICR Cost Category"
+Description: "Campaign cost categories. Binding: extensible on ICRCampaignCost.code, so country budget lines that fit no standard category stay legal (cost-v1)."
+* ^experimental = false
+* include codes from system ICRCostCategoryCS
+
+ValueSet: ICRCostLineageVS
+Id: icr-cost-lineage
+Title: "ICR Cost Lineage"
+Description: "Budgeted vs actual. Binding: required on the cost-lineage extension (cost-v1)."
+* ^experimental = false
+* include codes from system ICRCostLineageCS
+
+ValueSet: ICRCostPerspectiveVS
+Id: icr-cost-perspective
+Title: "ICR Cost Perspective"
+Description: "Financial vs economic. Binding: required on the cost-perspective extension (cost-v1)."
+* ^experimental = false
+* include codes from system ICRCostPerspectiveCS
+
+ValueSet: ICRCostScopeVS
+Id: icr-cost-scope
+Title: "ICR Cost Scope"
+Description: "Full vs delivery-only. Binding: required on the cost-scope extension (cost-v1)."
+* ^experimental = false
+* include codes from system ICRCostScopeCS
+
+ValueSet: ICRCostAllocationBasisVS
+Id: icr-cost-allocation-basis
+Title: "ICR Cost Allocation Basis"
+Description: "Direct vs fully-loaded. Binding: required on the cost-allocation extension's basis (cost-v1)."
+* ^experimental = false
+* include codes from system ICRCostAllocationBasisCS
+
+ValueSet: ICRFundingSourceVS
+Id: icr-funding-source
+Title: "ICR Funding Source"
+Description: "Who paid. Binding: extensible on the funding-source extension, so named donors and country mechanisms stay legal (cost-v1)."
+* ^experimental = false
+* include codes from system ICRFundingSourceCS
+
+ValueSet: ICRCostFigureVS
+Id: icr-cost-figure
+Title: "ICR Cost Figure"
+Description: "The figures a cost report carries. Binding: required on ICRCostReport.group.code (cost-v1)."
+* ^experimental = false
+* include codes from system ICRCostFigureCS

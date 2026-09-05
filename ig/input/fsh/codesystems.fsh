@@ -242,6 +242,8 @@ Description: "The standard disaggregation axes a coverage MeasureReport stratifi
 * #geography "Geography" "Disaggregation by the location/admin level the figure covers."
 * #dose-history "Dose history / zero-dose status" "Disaggregation by prior-dose status (ICRDoseHistoryCS: zero-dose | previously-received | no-recall) — the polio SIA tally's never-received / previously-received / no-recall split, and the zero-dose vs not-zero-dose axis (forms-v1 / jul3-form-analysis §Aggregate #1)."
 * #readiness-domain "Readiness domain" "Disaggregation of the campaign-readiness measure by checklist domain (microplan | cold-chain | social-mobilization | trainings) (forms-v1 / jul3-form-analysis §Aggregate #2)."
+* #cost-category "Cost category" "Disaggregation of a cost report's total-cost figure by ICRCostCategoryCS (personnel, transport, commodities…) (cost-v1)."
+* #funding-source "Funding source" "Disaggregation of a cost report's total-cost figure by who paid (ICRFundingSourceCS) (cost-v1)."
 
 CodeSystem: ICRDenominatorTypeCS
 Id: icr-denominator-type-cs
@@ -506,3 +508,103 @@ Description: "The standard axes of what a campaign visit produced — the coded 
 * #revisit-outcome "Revisit outcome" "Outcome of a person-targeted follow-up revisit: already-vaccinated | vaccinated-on-revisit | still-missing."
 * #delivery-event "Delivery event reference" "Reference to an Immunization / MedicationAdministration / supply event captured inside the visit workflow."
 * #coverage-report "Coverage report reference" "Reference to the stratified MeasureReport that disaggregates this visit's tally."
+
+// --- cost-v1: campaign cost -----------------------------------------------------
+// The cost axis the field-evidence review flagged (§13.2 "campaign-cost axes").
+// Costs are line-item Observations (ICRCampaignCost) that point AT the round;
+// unit costs (cost per person targeted / reached, per dose) are MeasureReports
+// (ICRCostReport). Category vocabulary follows the Global Health Cost Consortium
+// reference-case cost groupings and the recurring line structure of the GPEI SIA,
+// Gavi operational-cost and ESPEN MDA budget templates.
+
+CodeSystem: ICRCostCategoryCS
+Id: icr-cost-category-cs
+Title: "ICR Cost Category"
+Description: "The cost category of a campaign cost line item — WHAT the money was budgeted for or spent on. Derived from the line structure shared by the GPEI SIA budget, the Gavi campaign operational-cost template and the ESPEN MDA budget, grouped per the Global Health Cost Consortium reference case. A country line that does not fit is a country code or text (extensible binding), never a new profile (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #personnel "Personnel (salaried)" "Salaried staff time attributed to the campaign — programme officers, facility staff, drivers on payroll. Usually an economic-perspective line."
+* #per-diem-incentive "Per diems & incentives" "Per diems, allowances and incentives paid to vaccinators, CDDs, volunteers, supervisors and mobilizers — the largest financial line in most campaigns."
+* #training "Training" "Training of trainers, cascade trainings, venue, materials and participant allowances."
+* #transport "Transport & fuel" "Vehicle hire, fuel, motorbikes, boats, vaccine/drug transport to and within the district."
+* #cold-chain "Cold chain" "Ice packs, cold boxes, vaccine carriers, refrigerator fuel/power, cold-chain maintenance."
+* #commodities "Commodities" "The delivered product itself — vaccine, drugs, ITNs, insecticide, vitamin A — including freight and insurance. Excluded from delivery-only cost scope."
+* #consumables "Consumables & supplies" "Syringes, safety boxes, dose poles, finger markers, tally sheets, registers, printing."
+* #social-mobilization "Social mobilization & communication" "Radio, town criers, community-leader engagement, IEC materials, mobile PA, SMS."
+* #supervision-monitoring "Supervision & monitoring" "Supervisory visits, in-process monitoring (RCM), data collection and data management."
+* #waste-management "Waste management" "Sharps and medical-waste collection, transport and disposal."
+* #planning "Planning & microplanning" "Microplanning workshops, coordination meetings, mapping and enumeration."
+* #post-campaign-survey "Post-campaign survey" "Independent coverage survey, LQAS or evaluation."
+* #other "Other" "A cost line that fits no listed category — carry the detail in text."
+
+CodeSystem: ICRCostLineageCS
+Id: icr-cost-lineage-cs
+Title: "ICR Cost Lineage"
+Description: "Whether a cost figure is a BUDGET (planned, from the microplan) or an ACTUAL (expenditure). Separate from the realtime-vs-reconciled data-lineage axis, which applies to actuals (preliminary vs close-out) and rides Observation.status / the data-lineage extension (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #budgeted "Budgeted" "A planned amount from the microplan budget."
+* #actual "Actual" "Expenditure — what was actually spent."
+
+CodeSystem: ICRCostPerspectiveCS
+Id: icr-cost-perspective-cs
+Title: "ICR Cost Perspective"
+Description: "Financial vs economic costing perspective (Global Health Cost Consortium reference case). Financial = money actually disbursed for the campaign. Economic = financial plus the value of donated commodities, salaried staff time and other in-kind resources. Absent ⇒ financial (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #financial "Financial" "Cash outlay only."
+* #economic "Economic" "Full resource cost including in-kind and opportunity costs."
+
+CodeSystem: ICRCostScopeCS
+Id: icr-cost-scope-cs
+Title: "ICR Cost Scope"
+Description: "Which cost categories a cost report's figures include: FULL (all categories) or DELIVERY-ONLY (all categories except commodities — the standard published unit-cost metric, e.g. the Immunization Delivery Cost Catalogue's 'cost per dose delivered excluding vaccine') (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #full "Full" "All cost categories, including commodities."
+* #delivery-only "Delivery only" "All cost categories except commodities."
+
+CodeSystem: ICRCostAllocationBasisCS
+Id: icr-cost-allocation-basis-cs
+Title: "ICR Cost Allocation Basis"
+Description: "Whether a cost report at a geography counts only the line items attributed to that geography's subtree (DIRECT) or also apportions a share of higher-level lines — national vaccine, national training — to it (FULLY-LOADED). The ledger (ICRCampaignCost) is never allocated downward; allocation is a report-level statement (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #direct "Direct" "Only line items whose subject is in the report geography's subtree."
+* #fully-loaded "Fully loaded" "Direct lines plus an apportioned share of umbrella / higher-level lines — the allocation method is stated alongside."
+
+CodeSystem: ICRFundingSourceCS
+Id: icr-funding-source-cs
+Title: "ICR Funding Source"
+Description: "Who paid for a cost line item — the funding envelope, not the spending organization (which is Observation.performer). Extensible: named donors and country mechanisms are country codes (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #government "Government" "Domestic government budget (national or sub-national)."
+* #gavi "Gavi" "Gavi, the Vaccine Alliance (vaccine and/or operational-cost support)."
+* #gpei "GPEI" "Global Polio Eradication Initiative."
+* #unicef "UNICEF" "UNICEF core or programme funds."
+* #who "WHO" "World Health Organization."
+* #global-fund "Global Fund" "The Global Fund to Fight AIDS, Tuberculosis and Malaria (ITN/IRS campaigns)."
+* #other-donor "Other donor" "Any other bilateral, multilateral, philanthropic or NGO funder — name it in text."
+* #unknown "Unknown" "Funding source not recorded."
+
+CodeSystem: ICRCostComponentCS
+Id: icr-cost-component-cs
+Title: "ICR Cost Component"
+Description: "The coded components of a cost line item (ICRCampaignCost.component.code): the driver quantity, the unit cost (norm), and the USD-normalised amount. Fixed per component slice — no ValueSet (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #units "Driver units" "The quantity that drives the line: person-days, vehicle-days, doses, km."
+* #unit-cost "Unit cost" "The rate per driver unit (the norm) in the line's currency — units × unit-cost = the amount."
+* #amount-usd "Amount (USD)" "The amount converted to US dollars for cross-country comparison."
+
+CodeSystem: ICRCostFigureCS
+Id: icr-cost-figure-cs
+Title: "ICR Cost Figure"
+Description: "The figures a cost report carries, one per MeasureReport.group: the total and the unit costs (per person targeted, per person reached, per dose/treatment delivered). Bound required on ICRCostReport.group.code so the figures are queryable by code (cost-v1)."
+* ^caseSensitive = true
+* ^experimental = false
+* #total-cost "Total cost" "Sum of the in-scope line items for the report geography, lineage and perspective."
+* #per-person-targeted "Cost per person targeted" "Total cost ÷ the planning denominator (the flagged ICRTargetPopulation for the geography)."
+* #per-person-reached "Cost per person reached" "Total cost ÷ persons reached (the administrative-coverage numerator for the same round, geography and data lineage)."
+* #per-dose-delivered "Cost per dose / treatment delivered" "Total cost ÷ doses or treatments delivered (Immunization / MedicationAdministration count, record-origin = campaign)."

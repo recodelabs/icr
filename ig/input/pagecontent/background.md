@@ -149,7 +149,10 @@ IG's terminology; the IDHC three-phase lifecycle (planning, readiness and execut
 monitoring and response) is the CarePlan lifecycle; and IDHC vocabulary (beneficiary,
 enumerator, refusal, campaign worker, master list) is adopted throughout the IG.
 Deliberately out of ICR scope, with the toolkit as the reference: training, payments,
-grievance redressal, device management and costing.
+grievance redressal and device management. Campaign *cost reporting* — budget and
+expenditure line items and the cost-per-person figures computed from them
+(ICRCampaignCost / ICRCostReport, cost-v1) — is in scope; financial management and
+payment execution are not.
 
 #### Relationship to WHO SMART Guidelines
 

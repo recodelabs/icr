@@ -164,3 +164,51 @@ Usage: #definition
 * group.stratifier[1].code = $CoverageStratifier#readiness-domain "Readiness domain"
 * group.stratifier[1].criteria.language = #text/cql
 * group.stratifier[1].criteria.expression = "Readiness checklist domain (microplan | cold-chain | social-mobilization | trainings)"
+
+// --- cost-v1 -------------------------------------------------------------------
+
+Instance: icr-campaign-cost
+InstanceOf: Measure
+Title: "ICR Campaign Cost Measure"
+Usage: #definition
+* url = "https://icr.healthcampaigns.org/Measure/icr-campaign-cost"
+* status = #active
+* experimental = false
+* name = "ICRCampaignCost"
+* title = "ICR Campaign Cost"
+* description = "Total cost of a campaign (round) and its unit costs — per person targeted (÷ planning denominator), per person reached (÷ the administrative-coverage numerator for the same round, geography and data lineage) and per dose/treatment delivered — one group per figure (ICRCostFigureCS). Inputs are ICRCampaignCost line items filtered by the report's lineage, perspective, scope and allocation basis; the divisors are the same resources coverage already uses, so a unit cost never invents a denominator. Continuous-variable scoring: the money is the measureScore, the divisor sits in the group's denominator population. Placeholder CQL pending executable logic (cost-v1)."
+* scoring = $MeasureScoring#continuous-variable "Continuous Variable"
+* group[0].code = $CostFigure#total-cost "Total cost"
+* group[0].population[0].code = $MeasurePopulation#measure-population "Measure Population"
+* group[0].population[0].criteria.language = #text/cql
+* group[0].population[0].criteria.expression = "ICRCampaignCost line items for the campaign whose subject is in the report geography's subtree (plus apportioned umbrella lines when fully-loaded), matching lineage / perspective / scope"
+* group[0].stratifier[0].code = $CoverageStratifier#cost-category "Cost category"
+* group[0].stratifier[0].criteria.language = #text/cql
+* group[0].stratifier[0].criteria.expression = "ICRCampaignCost.code"
+* group[0].stratifier[1].code = $CoverageStratifier#funding-source "Funding source"
+* group[0].stratifier[1].criteria.language = #text/cql
+* group[0].stratifier[1].criteria.expression = "ICRCampaignCost.funding-source"
+* group[0].stratifier[2].code = $CoverageStratifier#geography "Geography"
+* group[0].stratifier[2].criteria.language = #text/cql
+* group[0].stratifier[2].criteria.expression = "ICRCampaignCost.subject (admin level)"
+* group[1].code = $CostFigure#per-person-targeted "Cost per person targeted"
+* group[1].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[1].population[0].criteria.language = #text/cql
+* group[1].population[0].criteria.expression = "Planning denominator (the flagged ICRTargetPopulation for the geography; denominator-type as declared)"
+* group[1].stratifier[0].code = $CoverageStratifier#geography "Geography"
+* group[1].stratifier[0].criteria.language = #text/cql
+* group[1].stratifier[0].criteria.expression = "Reporting Location"
+* group[2].code = $CostFigure#per-person-reached "Cost per person reached"
+* group[2].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[2].population[0].criteria.language = #text/cql
+* group[2].population[0].criteria.expression = "icr-admin-coverage numerator for the same round, geography and data lineage"
+* group[2].stratifier[0].code = $CoverageStratifier#delivery-strategy "Delivery strategy"
+* group[2].stratifier[0].criteria.language = #text/cql
+* group[2].stratifier[0].criteria.expression = "Task.delivery-strategy"
+* group[2].stratifier[1].code = $CoverageStratifier#geography "Geography"
+* group[2].stratifier[1].criteria.language = #text/cql
+* group[2].stratifier[1].criteria.expression = "Reporting Location"
+* group[3].code = $CostFigure#per-dose-delivered "Cost per dose / treatment delivered"
+* group[3].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[3].population[0].criteria.language = #text/cql
+* group[3].population[0].criteria.expression = "Immunization / MedicationAdministration count in the round (record-origin = campaign)"

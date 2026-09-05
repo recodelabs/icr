@@ -1369,3 +1369,182 @@ Usage: #example
 * effectiveDateTime = "2026-01-15"
 * performer.display = "MoH NTD Programme — JRSM 2026 submission"
 * method.text = "Epidemiological mapping (REMO); no active transmission foci"
+
+// --- cost-v1: the Kambia cost thread ------------------------------------------
+// Line items are Observations pointing AT the campaign (basedOn) and attributed to
+// a PLACE at the grain the source states: the vaccine is one national line on the
+// umbrella (UNICEF-procured, Gavi-funded); the per diems and transport are district
+// lines on the Kambia round (budget from the microplan, actuals from the DHMT
+// expenditure return). The two cost reports divide the same total by the same
+// denominators the coverage reports use — one full, one delivery-only — and list
+// their inputs. Amounts are an illustrative composite (SLE ≈ 22.5 per USD).
+
+Instance: example-cost-vaccine-national
+InstanceOf: ICRCampaignCost
+Title: "Cost line — MR vaccine, national procurement (actual, umbrella campaign)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #final
+* basedOn = Reference(example-mr-sia-national)
+* code = $CostCategory#commodities "Commodities"
+* subject = Reference(example-country)
+* effectivePeriod.start = "2026-04-01"
+* effectivePeriod.end = "2026-06-14"
+* performer.display = "UNICEF Sierra Leone Country Office"
+* extension[costLineage].valueCode = #actual
+* extension[costPerspective].valueCode = #financial
+* extension[fundingSource].valueCodeableConcept = $FundingSource#gavi "Gavi"
+* valueQuantity = 30000 $ISO4217#USD "USD"
+* component[units].valueQuantity = 50000 '{dose}' "doses"
+* component[unitCost].valueQuantity = 0.60 $ISO4217#USD "USD per dose"
+* component[amountUsd].valueQuantity = 30000 $ISO4217#USD "USD"
+* note.text = "MR vaccine for the Kambia round incl. freight and insurance; 50,000 doses procured against 48,250 targeted (wastage allowance). A NATIONAL line: apportioned to district reports only when fully-loaded."
+
+Instance: example-cost-perdiem-budget
+InstanceOf: ICRCampaignCost
+Title: "Cost line — vaccinator per diems, Kambia round (budgeted)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #final
+* basedOn = Reference(example-mr-sia-2026)
+* code = $CostCategory#per-diem-incentive "Per diems & incentives"
+* subject = Reference(example-district)
+* effectivePeriod.start = "2026-06-15"
+* effectivePeriod.end = "2026-06-26"
+* performer.display = "Kambia District Health Management Team"
+* extension[costLineage].valueCode = #budgeted
+* extension[fundingSource].valueCodeableConcept = $FundingSource#gavi "Gavi"
+* valueQuantity = 640000 $ISO4217#SLE "SLE"
+* component[units].valueQuantity = 3200 'd' "person-days"
+* component[unitCost].valueQuantity = 200 $ISO4217#SLE "SLE per person-day"
+* component[amountUsd].valueQuantity = 28400 $ISO4217#USD "USD"
+* derivedFrom.display = "Kambia District MR SIA microplan budget, April 2026"
+* note.text = "Generated from the microplan: 640 vaccinators × 5 days (workload-target) × the SLE 200 per-diem norm."
+
+Instance: example-cost-perdiem-actual
+InstanceOf: ICRCampaignCost
+Title: "Cost line — vaccinator per diems, Kambia round (actual)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #final
+* basedOn = Reference(example-mr-sia-2026)
+* code = $CostCategory#per-diem-incentive "Per diems & incentives"
+* subject = Reference(example-district)
+* effectivePeriod.start = "2026-06-15"
+* effectivePeriod.end = "2026-07-31"
+* performer.display = "Kambia District Health Management Team"
+* extension[costLineage].valueCode = #actual
+* extension[costPerspective].valueCode = #financial
+* extension[fundingSource].valueCodeableConcept = $FundingSource#gavi "Gavi"
+* valueQuantity = 668000 $ISO4217#SLE "SLE"
+* component[amountUsd].valueQuantity = 29650 $ISO4217#USD "USD"
+* derivedFrom.display = "DHMT campaign expenditure return, July 2026"
+* note.text = "SLE 28,000 over budget: two extra mop-up days for team 7 (see the mop-up Task)."
+
+Instance: example-cost-transport-actual
+InstanceOf: ICRCampaignCost
+Title: "Cost line — transport & fuel, Kambia round (actual)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #final
+* basedOn = Reference(example-mr-sia-2026)
+* code = $CostCategory#transport "Transport & fuel"
+* subject = Reference(example-district)
+* effectivePeriod.start = "2026-06-15"
+* effectivePeriod.end = "2026-07-31"
+* performer.display = "Kambia District Health Management Team"
+* extension[costLineage].valueCode = #actual
+* extension[fundingSource].valueCodeableConcept = $FundingSource#government "Government"
+* valueQuantity = 277000 $ISO4217#SLE "SLE"
+* component[amountUsd].valueQuantity = 12300 $ISO4217#USD "USD"
+* derivedFrom.display = "DHMT campaign expenditure return, July 2026"
+
+Instance: example-cost-report
+InstanceOf: ICRCostReport
+Title: "Cost report — Kambia MR SIA, June 2026 round (actual · financial · full · fully-loaded)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-campaign-cost"
+* period.start = "2026-06-15"
+* period.end = "2026-06-26"
+* reporter.display = "Kambia District Health Management Team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
+* extension[costLineage].valueCode = #actual
+* extension[costPerspective].valueCode = #financial
+* extension[costScope].valueCode = #full
+* extension[costAllocation].extension[basis].valueCode = #fully-loaded
+* extension[costAllocation].extension[method].valueString = "National commodity line apportioned to the round per dose delivered"
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #total-population
+* extension[dataLineage].valueCode = #reconciled
+// Group 1 — the total, disaggregated by category
+* group[0].code = $CostFigure#total-cost "Total cost"
+* group[0].measureScore = 96500 $ISO4217#USD "USD"
+* group[0].stratifier[0].code = $CoverageStratifier#cost-category "Cost category"
+* group[0].stratifier[0].stratum[0].value = $CostCategory#commodities "Commodities"
+* group[0].stratifier[0].stratum[0].measureScore = 30000 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[1].value = $CostCategory#per-diem-incentive "Per diems & incentives"
+* group[0].stratifier[0].stratum[1].measureScore = 29650 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[2].value = $CostCategory#transport "Transport & fuel"
+* group[0].stratifier[0].stratum[2].measureScore = 12300 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[3].value = $CostCategory#training "Training"
+* group[0].stratifier[0].stratum[3].measureScore = 7000 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[4].value = $CostCategory#cold-chain "Cold chain"
+* group[0].stratifier[0].stratum[4].measureScore = 6050 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[5].value = $CostCategory#social-mobilization "Social mobilization & communication"
+* group[0].stratifier[0].stratum[5].measureScore = 5500 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[6].value = $CostCategory#supervision-monitoring "Supervision & monitoring"
+* group[0].stratifier[0].stratum[6].measureScore = 4000 $ISO4217#USD "USD"
+* group[0].stratifier[0].stratum[7].value = $CostCategory#waste-management "Waste management"
+* group[0].stratifier[0].stratum[7].measureScore = 2000 $ISO4217#USD "USD"
+// Group 2 — ÷ the planning denominator (48,250, GRID3)
+* group[1].code = $CostFigure#per-person-targeted "Cost per person targeted"
+* group[1].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[1].population[0].count = 48250
+* group[1].measureScore = 2.00 $ISO4217#USD "USD per person targeted"
+// Group 3 — ÷ persons reached (the admin-coverage numerator, 47,766, reconciled)
+* group[2].code = $CostFigure#per-person-reached "Cost per person reached"
+* group[2].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[2].population[0].count = 47766
+* group[2].measureScore = 2.02 $ISO4217#USD "USD per person reached"
+* evaluatedResource[+] = Reference(example-admin-coverage)
+* evaluatedResource[+] = Reference(example-cost-perdiem-actual)
+* evaluatedResource[+] = Reference(example-cost-transport-actual)
+* evaluatedResource[+] = Reference(example-cost-vaccine-national)
+
+Instance: example-cost-report-delivery
+InstanceOf: ICRCostReport
+Title: "Cost report — Kambia MR SIA, June 2026 round (actual · financial · delivery-only)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-campaign-cost"
+* period.start = "2026-06-15"
+* period.end = "2026-06-26"
+* reporter.display = "Kambia District Health Management Team"
+* extension[campaign].valueReference = Reference(example-mr-sia-2026)
+* extension[costLineage].valueCode = #actual
+* extension[costPerspective].valueCode = #financial
+* extension[costScope].valueCode = #delivery-only
+* extension[costAllocation].extension[basis].valueCode = #fully-loaded
+* extension[costAllocation].extension[method].valueString = "As example-cost-report; the national commodity line is excluded by scope, so here fully-loaded equals direct"
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #total-population
+* extension[dataLineage].valueCode = #reconciled
+// The same round, the same divisors, commodities excluded: the figure donors compare across countries.
+* group[0].code = $CostFigure#total-cost "Total cost"
+* group[0].measureScore = 66500 $ISO4217#USD "USD"
+* group[1].code = $CostFigure#per-person-targeted "Cost per person targeted"
+* group[1].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[1].population[0].count = 48250
+* group[1].measureScore = 1.38 $ISO4217#USD "USD per person targeted"
+* group[2].code = $CostFigure#per-person-reached "Cost per person reached"
+* group[2].population[0].code = $MeasurePopulation#denominator "Denominator"
+* group[2].population[0].count = 47766
+* group[2].measureScore = 1.39 $ISO4217#USD "USD per person reached"
+* evaluatedResource[+] = Reference(example-admin-coverage)
+* evaluatedResource[+] = Reference(example-cost-perdiem-actual)
+* evaluatedResource[+] = Reference(example-cost-transport-actual)
