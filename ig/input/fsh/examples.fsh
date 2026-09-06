@@ -81,6 +81,9 @@ Usage: #example
 * partOf = Reference(example-district)
 * position.longitude = -12.9469
 * position.latitude = 9.0144
+* extension[spatialIndex][0].extension[system].valueCode = #quadkey
+* extension[spatialIndex][0].extension[level].valueUnsignedInt = 18
+* extension[spatialIndex][0].extension[cell].valueString = "033321123102101100"
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-place-example"
 * extension[settlementType].valueCodeableConcept = $SettlementType#rural "Rural"
@@ -96,6 +99,9 @@ Usage: #example
 * partOf = Reference(example-settlement)
 * position.longitude = -12.9471
 * position.latitude = 9.0149
+* extension[spatialIndex][0].extension[system].valueCode = #quadkey
+* extension[spatialIndex][0].extension[level].valueUnsignedInt = 18
+* extension[spatialIndex][0].extension[cell].valueString = "033321123102101100"
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-building-example"
 
@@ -111,6 +117,9 @@ Usage: #example
 * partOf = Reference(example-settlement)
 * position.longitude = -12.9465
 * position.latitude = 9.0140
+* extension[spatialIndex][0].extension[system].valueCode = #quadkey
+* extension[spatialIndex][0].extension[level].valueUnsignedInt = 18
+* extension[spatialIndex][0].extension[cell].valueString = "033321123102101100"
 * identifier[gers].system = $GERSId
 * identifier[gers].value = "08f2a3b4c5d6e7f8-building-chc-example"
 

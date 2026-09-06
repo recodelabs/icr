@@ -95,6 +95,11 @@ Description: "An administrative unit must carry at least one identifier (any sys
 Severity: #error
 Expression: "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs' and code = 'admin-unit').exists() implies identifier.exists()"
 
+Invariant: icr-loc-spatial-one-per-level
+Description: "A Location carries at most one spatial-index cell per scheme and level — the cell is a function of the position, so two would mean one is stale."
+Severity: #error
+Expression: "extension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/spatial-index').select(extension.where(url = 'system').value.toString() & ':' & extension.where(url = 'level').value.toString()).isDistinct()"
+
 Invariant: icr-loc-admin-official
 Description: "An administrative unit should mark its authoritative country code with identifier.use = 'official' — the uniform cross-country join key. Warning in v0.x; expected to be promoted to error at v1.0."
 Severity: #warning
@@ -106,7 +111,7 @@ Id: ICRLocation
 Title: "ICR Location"
 Description: "The most-customized ICR resource — the ICR's georegistry layer, covering the WHO IDHC administrative boundary, health facility and school master lists: a single partOf containment tree (6+ levels in campaign countries) holding admin units and operational geography alike, distinguished by type — not tree position; GeoJSON boundaries; and multi-system geospatial identity — Overture Maps GERS IDs (building / place / division) as the preferred cross-campaign join key, with P-codes and national codes as coequal aliases. Per the IDHC georegistry rule, this layer holds only identify/classify/locate/contact data; programmatic data references it but never lives in it (working doc §7.7, §9)."
 * ^experimental = false
-* obeys icr-loc-admin-id and icr-loc-admin-official
+* obeys icr-loc-admin-id and icr-loc-admin-official and icr-loc-spatial-one-per-level
 * name MS
 * status MS
 * partOf only Reference(ICRLocation)
@@ -142,8 +147,10 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * identifier[isoSubdivision] ^short = "ISO 3166-2 subdivision code (first-level subdivisions) — FHIR-designated system URI"
 * extension contains
     LocationBoundaryGeoJson named boundary 0..1 MS and
-    SettlementType named settlementType 0..1 MS
+    SettlementType named settlementType 0..1 MS and
+    SpatialIndex named spatialIndex 0..* MS
 * extension[boundary] ^short = "District polygon, settlement area, or catchment zone (GeoJSON)"
+* extension[spatialIndex] ^short = "Spatial index cell(s) derived from position — scheme + level + cell (quadkey 18 first; h3 later). One per scheme and level. Searchable: Location?quadkey=<prefix> (tile containment), Location?h3=<cell> (spatial-index round)"
 * extension[settlementType] ^short = "Settlement / special-population type (urban-slum, refugee-IDP, nomad-pastoralist, security-compromised, hard-to-reach…) — vulnerability/equity attribute for HTRA targeting (v0.21.0)"
 
 Profile: ICRFacilityOrganization

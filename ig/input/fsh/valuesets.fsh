@@ -289,3 +289,10 @@ Title: "ICR Cost Figure"
 Description: "The figures a cost report carries. Binding: required on ICRCostReport.group.code (cost-v1)."
 * ^experimental = false
 * include codes from system ICRCostFigureCS
+
+ValueSet: ICRSpatialIndexVS
+Id: icr-spatial-index
+Title: "ICR Spatial Index Scheme"
+Description: "Tiling schemes a spatial-index cell may use. Binding: required on the spatial-index extension's system (spatial-index round)."
+* ^experimental = false
+* include codes from system ICRSpatialIndexCS

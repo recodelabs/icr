@@ -608,3 +608,16 @@ Description: "The figures a cost report carries, one per MeasureReport.group: th
 * #per-person-targeted "Cost per person targeted" "Total cost ÷ the planning denominator (the flagged ICRTargetPopulation for the geography)."
 * #per-person-reached "Cost per person reached" "Total cost ÷ persons reached (the administrative-coverage numerator for the same round, geography and data lineage)."
 * #per-dose-delivered "Cost per dose / treatment delivered" "Total cost ÷ doses or treatments delivered (Immunization / MedicationAdministration count, record-origin = campaign)."
+
+// Spatial index schemes (spatial-index round, Sep 2026). A Location's point can carry
+// the cell it falls in under one or more tiling schemes, so that de-duplication,
+// tile-level joins (GRID3, Overture) and containment queries need no geometry engine.
+CodeSystem: ICRSpatialIndexCS
+Id: icr-spatial-index-cs
+Title: "ICR Spatial Index Scheme"
+Description: "The tiling scheme a spatial-index cell belongs to. Each scheme has its own notion of level: quadkey zoom (1–23; the cell string is the zoom-length base-4 tile key, so a prefix is the containing tile at a coarser zoom), H3 resolution (0–15; the cell is the 15-hex-character index), geohash precision (the character count)."
+* ^caseSensitive = true
+* ^experimental = false
+* #quadkey "Quadkey (XYZ tile key)" "Bing/XYZ tile quadkey: base-4 digits, one per zoom level from 1; the string length is the zoom; every prefix is the containing tile at that shorter zoom."
+* #h3 "H3 cell" "Uber H3 hexagonal cell index (15 hex characters); level = resolution 0–15. Not prefix-hierarchical as a string — join on exact cell."
+* #geohash "Geohash" "Base-32 geohash; level = precision (character count); prefixes are containing cells."

@@ -69,6 +69,10 @@ the same geography in the same window — is a query, not a report. Two custom
 `partof` and reverse-includable from a Location subtree) and `Group?geography=Location/…`
 (every target-population estimate scoped to a place). A server that loads the IG answers
 "which campaigns touch this district between June and September" with one search.
+Every point Location can also carry **spatial index cells** — the
+[spatial-index](StructureDefinition-spatial-index.html) extension: scheme (quadkey, H3, geohash),
+level, and cell, derived from `position` by the loader. Quadkeys are prefix-hierarchical, so
+`Location?quadkey=0313131` is "every point inside that tile" with no geometry engine.
 
 #### The model at a glance
 

@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-09-06T18:11:27Z
+last_modified: 2026-09-06T20:59:23Z
 tags:
   - icr
   - fhir
@@ -16,7 +16,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026 · campaign-visibility search parameters added Sep 6, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026 · campaign-visibility search parameters and spatial-index added Sep 6, 2026`
 
 ⁠
 
@@ -186,10 +186,10 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
 | **Measures** | 7   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness`, and (cost-v1) `icr-campaign-cost` — the canonical definitions that the coverage, readiness, and cost MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 36  | See §10 — cost-v1 added five |
-| **SearchParameters** *(campaign-visibility)* | 2   | `icr-campaign-target-geography` (`CarePlan?target-geography=`) and `icr-target-population-geography` (`Group?geography=`) — the geography links become searchable, so "what is planned where" is one query (§10.1) |
-| **CodeSystems** | 40  | See §9 — cost-v1 added eight |
-| **ValueSets** | 40  | Usually one per code system, plus purpose-built sets (§9) |
+| **Extensions** | 37  | See §10 — cost-v1 added five; spatial-index (Sep 2026) added `spatial-index` |
+| **SearchParameters** *(campaign-visibility, spatial-index)* | 4   | `icr-location-quadkey` (`Location?quadkey=` — prefix = tile containment) and `icr-location-h3` (`Location?h3=`) on spatial-index cells (§10.2);  `icr-campaign-target-geography` (`CarePlan?target-geography=`) and `icr-target-population-geography` (`Group?geography=`) — the geography links become searchable, so "what is planned where" is one query (§10.1) |
+| **CodeSystems** | 41  | See §9 — cost-v1 added eight; spatial-index added `ICRSpatialIndexCS` |
+| **ValueSets** | 41  | Usually one per code system, plus purpose-built sets (§9) |
 | **Example instances** | 71  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task), a custom-national-identifier ward, and an LQAS lot assessment (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
@@ -1385,6 +1385,7 @@ Each box is an ICRLocation. Each one points to its single parent. The chain is c
 | `managingOrganization` | MS  | 0..1 | `Reference(ICRFacilityOrganization)` only | For facilities: the accountable facility Organization (the mCSD pairing, see below). Admin units and other non-facility places do not carry it. |
 | `identifier` | MS  |     | **sliced by** `system` (open): `gers` 0..1 MS, `pcode` 0..1 MS, `isoCountry` 0..1 MS (`urn:iso:std:iso:3166`), `isoSubdivision` 0..1 MS (`urn:iso:std:iso:3166:-2`) | Multi-system identity — **all slices are optional**. The country's own admin code rides the open list under the country's system URI, marked `use = official`. That mark makes the uniform join key (`identifier.where(use = 'official')`). Invariants: **at least 1 identifier of any system is required when** `type = admin-unit` (`icr-loc-admin-id`, error). The `official` mark is expected on admin units (`icr-loc-admin-official`, warning → error at v1.0). |
 | `extension[boundary]` (`location-boundary-geojson`) | MS  | 0..1 | Attachment, `contentType` fixed `application/geo+json` | The GeoJSON geometry (a Polygon/MultiPolygon shape, or a Point). |
+| `extension[spatialIndex]` (`spatial-index`) *(spatial-index, Sep 2026)* | MS  | 0..* | complex: `system` (code, **required** → ICRSpatialIndexVS: quadkey \| h3 \| geohash) + `level` (unsignedInt) + `cell` (string) | Spatial index cell(s) derived from `position` by the loader — quadkey zoom 18 first, H3 later. At most one cell per scheme and level (`icr-loc-spatial-one-per-level`). Searchable: `Location?quadkey=<prefix>` is tile containment; `Location?h3=<cell>` an exact cell (§10.2). |
 | `extension[settlementType]` *(forms-v1)* | MS  | 0..1 | CodeableConcept, **extensible** → ICRSettlementTypeVS | The settlement / special-population classification (`urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`…). This is the recurring "type of settlement" axis on campaign monitoring forms. It is a vulnerability/equity attribute that drives HTRA targeting. |
 | `extension[locationAncestors]` *(proposed)* |     | 0..* | complex: per-level `adm0…adm3+` code + `Reference(ICRLocation)` | A **server-maintained** denormalized admin breadcrumb of the `partOf` chain. It permits fast hierarchy filters without deep recursion. This extension is proposed and is not yet in the IG. |
 
@@ -2428,6 +2429,7 @@ Local and national codes connect through ConceptMap (deferred). This is standard
 | **ICRSeriousCriteriaCS** | `death`, `life-threatening`, `hospitalization`, `disability`, `congenital-anomaly`, `medically-important` (6) | —   | serious-criteria ext (**extensible**) — WHO/CIOMS |
 | **ICRDoseHistoryCS** *(forms-v1)* | `zero-dose`, `previously-received`, `no-recall` (3) | —   | prior-dose-status ext (**required**); the value space of the `dose-history` stratifier — the polio SIA never/previously/no-recall split |
 | **ICRRevisitOutcomeCS** *(forms-v1)* | `already-vaccinated`, `vaccinated-on-revisit`, `still-missing` (3) | —   | revisit-outcome ext (**extensible**) — the outcome of a follow-up revisit |
+| **ICRSpatialIndexCS** *(spatial-index)* | `quadkey`, `h3`, `geohash` (3) | —   | spatial-index ext `system` (**required**) — the tiling scheme of a derived cell; level semantics differ per scheme (§10.2) |
 | **ICRSettlementTypeCS** *(forms-v1)* | `ordinary`, `urban`, `rural`, `urban-slum`, `refugee-idp`, `nomad-pastoralist`, `security-compromised`, `hard-to-reach`, `cross-border`, `immigrant`, `other` (11) | —   | settlement-type ext (**extensible**) — the vulnerability/special-population axis for HTRA targeting |
 | **ICRFacilityTypeCS** *(facility-pairing)* | `primary`, `secondary`, `tertiary`, `unknown` (4) | ✔   | ICRFacilityOrganization.type — **planned** binding (deferred to the mCSD-alignment pass; the codes are usable today on the open element) — the national MFL tier; the country-specific kind ("Primary Health Center", "Health Post") travels as display/text or as a country localization |
 | **ICROwnershipCS** *(facility-pairing)* | `public`, `private-for-profit`, `private-not-for-profit`, `faith-based`, `military`, `unknown` (6) | ✔   | ICRFacilityOrganization.type — **planned** binding (deferred to the mCSD-alignment pass; the codes are usable today on the open element) — ownership as a second type axis (base Organization has no ownership element; the mCSD/OpenHIE convention) |
@@ -2538,6 +2540,7 @@ FHIR has no native campaign semantics. Thus 36 extensions carry these semantics 
 | CostScope (`cost-scope`) | MeasureReport | code, **required** → ICRCostScopeVS — full \| delivery-only | ICRCostReport **1..1 MS** |
 | CostAllocation (`cost-allocation`) | MeasureReport | complex: `basis` (code, **required** → ICRCostAllocationBasisVS: direct \| fully-loaded) + `method` (string) — absent ⇒ direct | ICRCostReport 0..1 MS |
 | FundingSource (`funding-source`) | Observation | CodeableConcept, **extensible** → ICRFundingSourceVS — who paid, as distinct from `performer` (who spent) | ICRCampaignCost 0..1 MS |
+| SpatialIndex (`spatial-index`) *(spatial-index, Sep 2026)* | Location | complex: `system` (code, **required** → ICRSpatialIndexVS) + `level` (unsignedInt) + `cell` (string); shape invariants per scheme | ICRLocation 0..* MS, one per scheme and level (§10.2) |
 
 The cost profiles also reuse `campaign` (1..1 on ICRCostReport), `denominator-source`, `denominator-type`, and `realtime-vs-reconciled` (1..1 on ICRCostReport) unchanged. ICRCampaignCost needs no `campaign` extension: `Observation.basedOn` targets a CarePlan natively.
 
@@ -2561,6 +2564,13 @@ The IG now ships two `SearchParameter` definitions (`searchparameters.fsh`). A s
 Because both are **reference** parameters, the standard reference machinery applies: chaining (`CarePlan?target-geography.partof=Location/kambia` — campaigns in the district's direct children), reverse chaining (`Location?_has:CarePlan:target-geography:status=active` — places with an active campaign), and reverse includes (`Location?_id=kambia&_revinclude:iterate=Location:partof&_revinclude:iterate=CarePlan:target-geography` — the whole Location subtree **and** every campaign that targets any node of it, in one call). Add `date=ge…&date=le…` to scope the answer to a window, and the co-delivery question in the ICR pitch — two campaigns heading for the same wards within weeks of each other — is one search.
 
 **Server notes.** Verified against HAPI FHIR 8.12.0 (`tools/hapi`, Sep 6, 2026). Two limits shape the query recipes: HAPI does not implement the `:above` / `:below` modifiers on reference parameters, and it resolves only one level of chaining. So "everything under this district" is the reverse-include call above, or a two-step (resolve the subtree, then pass the Location ids as a comma list). A custom SearchParameter is indexed **going forward**; resources stored before it existed need a `$reindex`, which the local loader (`tools/hapi/load.py ig`) now issues after loading.
+
+### 10.2 Spatial index cells — `spatial-index` and `Location?quadkey=` / `Location?h3=` *(spatial-index, Sep 2026)*
+A point Location can carry the **cell it falls in** under one or more tiling schemes: the `spatial-index` extension (0..* on ICRLocation) with `system` (quadkey | h3 | geohash — ICRSpatialIndexCS), `level` (quadkey zoom 1–23, H3 resolution 0–15, geohash precision) and `cell` (the key). The cell is **derived from `position`** by the loader — kiln `bake-points` writes it at import, `kiln index` backfills it as an ordinary version-checked edit — and is recomputed whenever the position changes; it is never hand-entered and it is not an identifier (many places share a cell). Shape invariants per scheme (`icr-spatial-quadkey`: base-4, exactly `level` digits; `icr-spatial-h3`: 15 hex characters; `icr-spatial-geohash`) and one cell per scheme and level (`icr-loc-spatial-one-per-level`).
+
+We start with **quadkey at zoom 18** (about 150 m tiles at Nigeria's latitudes — one settlement or facility compound), with H3 to follow at a resolution to be chosen. `level` is stored explicitly even where the cell implies it, so "every point indexed at level 18" is a plain query and the three schemes read the same way.
+
+Two **string** SearchParameters make the cells queryable. FHIR string search matches by prefix, and quadkeys are prefix-hierarchical, so `Location?quadkey=0313131` returns every point inside that zoom-7 tile — containment with no geometry engine — and the full 18-digit key (or `:exact`) returns the one cell. H3 indexes are fixed 15-character strings that are not prefix-hierarchical; `Location?h3=<cell>` joins on the exact cell.
 
 **Design note.** The alternative was to move the geography from an extension to a core searchable element. CarePlan has no location element, and its `subject` is already the target-population Group, so there is no honest core home for the place. A SearchParameter is the FHIR-native answer: the model stays as it is, and the IG states how it is queried. The same pattern will cover future extension-held links (for example the coverage report's `campaign` extension) if a search on them is needed.
 

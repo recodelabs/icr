@@ -48,3 +48,39 @@ Description: "Search ICRTargetPopulation (Group) by the Location its estimate is
 * expression = "Group.characteristic.where(code.coding.where(system='https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs' and code='geography').exists()).value.as(Reference)"
 * xpathUsage = #normal
 * target = #Location
+
+// Spatial index cells (spatial-index round). Both are STRING parameters on the cell
+// key. FHIR string search matches by prefix, and quadkeys are prefix-hierarchical,
+// so Location?quadkey=0313131 returns every point inside that coarser tile and
+// Location?quadkey=<18 digits> the exact level-18 cell. H3 indexes are not prefix-
+// hierarchical as strings: use Location?h3:exact=<cell> (or the full cell, which
+// only matches itself since all H3 cells are 15 characters).
+Instance: icr-location-quadkey
+InstanceOf: SearchParameter
+Usage: #definition
+Title: "ICR Location — quadkey cell"
+Description: "Search Location by its quadkey spatial-index cell (spatial-index extension, system = quadkey). String-typed on purpose: quadkeys are prefix-hierarchical, so the default starts-with match answers tile containment at any coarser zoom — Location?quadkey=0313131 is every point in that zoom-7 tile — with no geometry engine. Use :exact for one cell."
+* name = "ICRLocationQuadkey"
+* status = #active
+* experimental = false
+* version = "1.0.0"
+* code = #quadkey
+* base = #Location
+* type = #string
+* expression = "Location.extension('https://icr.healthcampaigns.org/StructureDefinition/spatial-index').where(extension('system').value = 'quadkey').extension('cell').value.as(string)"
+* xpathUsage = #normal
+
+Instance: icr-location-h3
+InstanceOf: SearchParameter
+Usage: #definition
+Title: "ICR Location — H3 cell"
+Description: "Search Location by its H3 spatial-index cell (spatial-index extension, system = h3). H3 indexes are fixed 15-character strings and are not prefix-hierarchical, so a full cell matches only itself; join on the exact cell."
+* name = "ICRLocationH3"
+* status = #active
+* experimental = false
+* version = "1.0.0"
+* code = #h3
+* base = #Location
+* type = #string
+* expression = "Location.extension('https://icr.healthcampaigns.org/StructureDefinition/spatial-index').where(extension('system').value = 'h3').extension('cell').value.as(string)"
+* xpathUsage = #normal
