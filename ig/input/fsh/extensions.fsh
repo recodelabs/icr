@@ -367,3 +367,40 @@ Context: Observation
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRFundingSourceVS (extensible)
+
+// Spatial index cells (spatial-index round, Sep 2026). Derived from the Location's
+// position by the loader (kiln bake-points at import; kiln index as a backfill edit),
+// never hand-entered; if the position changes the cell must be recomputed.
+Invariant: icr-spatial-quadkey
+Description: "A quadkey cell is base-4 digits, exactly level characters long, level 1–23."
+Severity: #error
+Expression: "extension.where(url = 'system').value = 'quadkey' implies (extension.where(url = 'cell').value.matches('^[0-3]+$') and extension.where(url = 'cell').value.length() = extension.where(url = 'level').value and extension.where(url = 'level').value >= 1 and extension.where(url = 'level').value <= 23)"
+
+Invariant: icr-spatial-h3
+Description: "An H3 cell is a 15-hex-character index, level (resolution) 0–15."
+Severity: #error
+Expression: "extension.where(url = 'system').value = 'h3' implies (extension.where(url = 'cell').value.matches('^[0-9a-f]{15}$') and extension.where(url = 'level').value <= 15)"
+
+Invariant: icr-spatial-geohash
+Description: "A geohash cell is base-32 characters, exactly level characters long, level 1–12."
+Severity: #error
+Expression: "extension.where(url = 'system').value = 'geohash' implies (extension.where(url = 'cell').value.matches('^[0-9b-hjkmnp-z]+$') and extension.where(url = 'cell').value.length() = extension.where(url = 'level').value and extension.where(url = 'level').value >= 1 and extension.where(url = 'level').value <= 12)"
+
+Extension: SpatialIndex
+Id: spatial-index
+Title: "Spatial Index Cell"
+Description: "A spatial index cell derived from the Location's position: which tiling scheme (quadkey | h3 | geohash), at what level (quadkey zoom / H3 resolution / geohash precision), and the cell key. Repeatable — a point carries at most one cell per scheme and level (ICRLocation invariant icr-loc-spatial-one-per-level); several schemes and levels may coexist. Quadkey and geohash cells are prefix-hierarchical, so a FHIR string search on the cell (Location?quadkey=0313…) answers 'every point inside this coarser tile' with no geometry engine; H3 cells join on exact match. Derived data: written by the loader (kiln) at import or as a backfill edit, recomputed whenever the position changes, never hand-entered. Not an identifier — many places share a cell (spatial-index round, Sep 2026)."
+Context: Location
+* ^experimental = false
+* obeys icr-spatial-quadkey and icr-spatial-h3 and icr-spatial-geohash
+* extension contains
+    system 1..1 MS and
+    level 1..1 MS and
+    cell 1..1 MS
+* extension[system].value[x] only code
+* extension[system].valueCode from ICRSpatialIndexVS (required)
+* extension[system] ^short = "quadkey | h3 | geohash"
+* extension[level].value[x] only unsignedInt
+* extension[level] ^short = "Quadkey zoom (1–23), H3 resolution (0–15), geohash precision (1–12) — explicit even where recoverable from the cell, so 'every point indexed at level 18' is a plain query"
+* extension[cell].value[x] only string
+* extension[cell] ^short = "The cell key in the scheme's canonical string form (quadkey: base-4 digits; h3: 15 hex chars; geohash: base-32)"

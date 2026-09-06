@@ -46,6 +46,7 @@ Alias: $SeriousCriteria = https://icr.healthcampaigns.org/CodeSystem/icr-serious
 Alias: $DoseHistory = https://icr.healthcampaigns.org/CodeSystem/icr-dose-history-cs
 Alias: $RevisitOutcome = https://icr.healthcampaigns.org/CodeSystem/icr-revisit-outcome-cs
 Alias: $SettlementType = https://icr.healthcampaigns.org/CodeSystem/icr-settlement-type-cs
+Alias: $SpatialIndex = https://icr.healthcampaigns.org/CodeSystem/icr-spatial-index-cs
 Alias: $FacilityType = https://icr.healthcampaigns.org/CodeSystem/icr-facility-type-cs
 Alias: $Ownership = https://icr.healthcampaigns.org/CodeSystem/icr-ownership-cs
 Alias: $OrgType = http://terminology.hl7.org/CodeSystem/organization-type
