@@ -91,6 +91,14 @@ jobs:
           path: ig/output
           retention-days: 7
 
+      # Cloudflare Pages rejects any file over 25 MiB. full-ig.zip (the whole-IG
+      # download the Publisher emits) crossed that line on 2026-09-06 and failed the
+      # deploy; it is kept in the run artifact above but dropped from the sites.
+      - name: Drop files over Cloudflare Pages' 25 MiB limit
+        run: |
+          rm -f ig/output/full-ig.zip
+          find ig/output -type f -size +25M -print -delete
+
       - name: Deploy standard IG to Cloudflare Pages
         if: env.CF_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
