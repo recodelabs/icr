@@ -64,7 +64,7 @@ dividing by the same denominators coverage uses.
 
 Campaign **visibility** — what is planned where, and which campaigns are heading for
 the same geography in the same window — is a query, not a report. Two custom
-[SearchParameters](artifacts.html#search-parameters) make the geography links searchable:
+[SearchParameters](artifacts.html#behavior-search-parameters) make the geography links searchable:
 `CarePlan?target-geography=Location/…` (a campaign's target geography, chainable through
 `partof` and reverse-includable from a Location subtree) and `Group?geography=Location/…`
 (every target-population estimate scoped to a place). A server that loads the IG answers
