@@ -51,8 +51,21 @@ $KILN run  --server http://localhost:3447/fhir --snapshot .local/snapshot --out 
 
 No token is needed: the server is open on localhost.
 
-Verified Sep 6, 2026 with kiln 0.2.0 against HAPI 8.12.0: `kiln run` paged 1,843 Locations and
-1,469 Organizations (2 pages each at `_count=1000`) and wrote 1,819 rows across 6 partitions in ~9 s.
+Verified Sep 6, 2026 with kiln 0.2.0 against HAPI 8.12.0 on a laptop, after the national Nigeria load
+(812 admin units from the GRID3 LGA boundaries, 51,022 GRID3 facilities each paired with an Organization;
+baked with `kiln bake` / `kiln bake-points`, loaded with `kiln load`):
+
+| Step | Result |
+| --- | --- |
+| `kiln load` admin units | 812 resources, 9 bundles, ~2 s |
+| `kiln load` facilities + Organizations | 102,044 resources, 511 bundles of 200, ~85 s |
+| `kiln run` full (extract + transform) | 51,843 Locations + 51,023 Organizations paged in 52 pages each; 51,840 rows across 6 partitions; 58 s |
+| `kiln transform` only, from the snapshot | 18 s |
+| `kiln run` incremental, nothing changed | 20 s (the transform dominates) |
+| Snapshot / parquet on disk | 111 MB / 19 MB (the facility partition is 16 MB) |
+
+Before the `search_prefetch_thresholds` change below, the same full run took 9 s because HAPI stopped
+paging at 3,000 Locations and kiln (then) took the missing next link as the end of the set.
 
 ## Campaign visibility: which campaigns target this place, in this window?
 
@@ -94,6 +107,7 @@ is the revinclude call above, or resolve the subtree first and pass the ids as a
 | --- | --- | --- |
 | `max_page_size` | 1000 | kiln pages with `_count=1000`; HAPI's default cap of 200 would silently shrink pages |
 | `reuse_cached_search_results_millis` | 0 | an extract run right after a `kiln load` must see the new versions |
+| `search_prefetch_thresholds` | 13,503,2003,200003,-1 | with the stock `13,503,2003,-1`, HAPI 8.12 stopped issuing next links after 3,000 results (log: "Pass completed with no matching results seeking rows 2004-…"), so a full `kiln extract` of 51,843 Locations silently returned 3,000; a large finite step before `-1` avoids that pass |
 | `enforce_referential_integrity_on_write` | false | client-assigned ids arrive in arbitrary batch order (`partOf`, `managingOrganization`) |
 | `allow_external_references` | true | canonical and cross-store references in the IG examples |
 | `allow_multiple_delete` / `expunge_enabled` | true | dev box: wipe a resource type without dropping the volume |

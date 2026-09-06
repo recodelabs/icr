@@ -424,7 +424,7 @@ hapi:
     # A threshold of -1 means to load all results. Note that if the final threshold is a
     # number other than -1, the system will never prefetch more than the given number.
     # CSV list; -1 as final value means "all"
-    search_prefetch_thresholds: 13,503,2003,-1
+    search_prefetch_thresholds: 13,503,2003,200003,-1   # ICR: with the stock 2003,-1 HAPI 8.12 stopped paging at 3,000 results ("Pass completed with no matching results seeking rows 2004-…"); a large finite step before -1 avoids that pass
 
     # -------------------------------------------------------------------------------
     # M. Extensibility (custom beans / interceptors / providers)
