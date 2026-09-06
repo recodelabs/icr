@@ -102,6 +102,26 @@ curl -s "$B/Location?_id=example-district&_revinclude:iterate=Location:partof&_r
 HAPI 8 does not implement the `:above` / `:below` reference modifiers, so "everything under X"
 is the revinclude call above, or resolve the subtree first and pass the ids as a comma list.
 
+### Spatial index cells (quadkey)
+
+Every point Location carries its zoom-18 quadkey in the IG's `spatial-index` extension (written by
+`kiln bake-points --spatial-index quadkey:18` at import, or backfilled with `kiln index` + `kiln load`).
+`Location?quadkey=` is a **string** parameter, and FHIR string search matches by prefix, so a shorter
+key is a containment query at that coarser zoom. Verified Sep 6, 2026 (344,281 Locations; the
+backfill wrote 343,462 updates in 27 s and loaded in 5 min):
+
+```bash
+B=localhost:3447/fhir
+curl -s "$B/Location?quadkey=12222&_summary=count"                     # zoom 5 tile   -> 185,033
+curl -s "$B/Location?quadkey=1222211120&_summary=count"                # zoom 10 tile  ->   1,473
+curl -s "$B/Location?quadkey=12222111203031&_summary=count"            # zoom 14 tile  ->       9
+curl -s "$B/Location?quadkey:exact=122221112030312213"                 # one zoom-18 cell (~150 m) -> 2
+curl -s "$B/Location?quadkey=1222211120&type=facility&_count=100"      # facilities in the tile
+```
+
+Backfill recipe (after a load that predates the extension): `kiln extract` to refresh the snapshot,
+`kiln index --snapshot DIR --spatial-index quadkey:18 --out changes.ndjson`, then `kiln load --in changes.ndjson`.
+
 ## What is configured, and why (`hapi.application.yaml`)
 
 | Setting | Value | Why |
