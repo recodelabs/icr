@@ -13,7 +13,7 @@ server:
   # Uncomment to serve FHIR under a non-default context path (e.g., /example/path/fhir)
   # servlet:
   #   context-path: /example/path
-  port: 8080
+  port: 3447                                        # ICR: same port inside and outside the container, so the web tester (which calls the API from inside) and clients agree
   tomcat:
     # allow | as a separator in URLs
     relaxed-query-chars: "|"
@@ -194,7 +194,7 @@ hapi:
     # use_apache_address_strategy_https: false
     # custom_content_path: ./custom               # folder name must be 'custom'
     # app_content_path: ./configs/app            # served under /web/app
-    server_address: http://localhost:3447/fhir        # ICR: host port 3447 → container 8080
+    server_address: http://localhost:3447/fhir        # ICR
     defer_indexing_for_codesystems_of_size: 101      # ICR: keep startup quick with the IG terminology loaded
 
     # -------------------------------------------------------------------------------

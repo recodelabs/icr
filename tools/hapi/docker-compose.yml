@@ -35,19 +35,16 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "3447:8080"
+      - "3447:3447"
     environment:
       SPRING_CONFIG_LOCATION: file:///app/config/application.yaml
       # JVM heap — boundary polygons are large base64 attachments; 2 GB is comfortable
       JAVA_TOOL_OPTIONS: -Xmx2g
     volumes:
       - ./hapi.application.yaml:/app/config/application.yaml:ro
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/fhir/metadata > /dev/null || exit 1"]
-      interval: 10s
-      timeout: 5s
-      start_period: 120s
-      retries: 30
+    # No container healthcheck: the image is distroless (no shell, no wget/curl).
+    # Readiness is checked from the host — `curl localhost:3447/fhir/metadata`,
+    # and load.py waits on it before sending anything.
 
 volumes:
   pgdata:
