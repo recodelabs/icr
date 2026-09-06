@@ -62,6 +62,14 @@ place, and [ICRCostReport](StructureDefinition-ICRCostReport.html) (`MeasureRepo
 carries the computed total and **cost per person targeted / reached / per dose**,
 dividing by the same denominators coverage uses.
 
+Campaign **visibility** — what is planned where, and which campaigns are heading for
+the same geography in the same window — is a query, not a report. Two custom
+[SearchParameters](artifacts.html#search-parameters) make the geography links searchable:
+`CarePlan?target-geography=Location/…` (a campaign's target geography, chainable through
+`partof` and reverse-includable from a Location subtree) and `Group?geography=Location/…`
+(every target-population estimate scoped to a place). A server that loads the IG answers
+"which campaigns touch this district between June and September" with one search.
+
 #### The model at a glance
 
 ```mermaid

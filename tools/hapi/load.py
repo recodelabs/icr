@@ -96,11 +96,49 @@ def read_ig():
         if r.get("resourceType") in SKIP_TYPES or "id" not in r:
             continue
         out.append(r)
-    # Conformance first, then everything else — HAPI likes CodeSystems before ValueSets
-    order = {"CodeSystem": 0, "ValueSet": 1, "StructureDefinition": 2, "ConceptMap": 3,
-             "Questionnaire": 4, "Measure": 5}
+    # Conformance first, then everything else — HAPI likes CodeSystems before ValueSets.
+    # SearchParameters go in their own leading bundle (see load_ig) so the custom
+    # parameters exist before the resources they index arrive.
+    order = {"SearchParameter": -1, "CodeSystem": 0, "ValueSet": 1, "StructureDefinition": 2,
+             "ConceptMap": 3, "Questionnaire": 4, "Measure": 5}
     out.sort(key=lambda r: (order.get(r["resourceType"], 9), r["resourceType"], r["id"]))
     return out
+
+
+def reindex(base, resource_types):
+    """Ask HAPI to re-index the given types so custom SearchParameters apply to
+    resources that were already stored (HAPI only indexes new params going forward)."""
+    params = {"resourceType": "Parameters",
+              "parameter": [{"name": "url", "valueString": f"{t}?"} for t in sorted(resource_types)]}
+    req = urllib.request.Request(f"{base}/$reindex", data=json.dumps(params).encode(),
+                                 headers={"Content-Type": "application/fhir+json",
+                                          "Accept": "application/fhir+json", "Prefer": "respond-async"},
+                                 method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            body = json.loads(r.read())
+        msg = "; ".join(i.get("diagnostics", "") for i in body.get("issue", []) if i.get("severity") == "information")
+        print(f"  $reindex {', '.join(sorted(resource_types))}: {msg or 'accepted'}")
+    except urllib.error.HTTPError as e:
+        print(f"  $reindex failed: HTTP {e.code} {e.read().decode()[:300]}")
+        return 1
+    return 0
+
+
+def load_ig(base, batch):
+    """SearchParameters first in their own bundle, then everything else, then a
+    $reindex of the SearchParameters' base types so already-loaded data is searchable."""
+    resources = read_ig()
+    sps = [r for r in resources if r["resourceType"] == "SearchParameter"]
+    rest = [r for r in resources if r["resourceType"] != "SearchParameter"]
+    failures = 0
+    if sps:
+        failures += load(base, sps, batch, "ig:searchparameters")
+    failures += load(base, rest, batch, "ig")
+    if sps:
+        bases = {b for sp in sps for b in sp.get("base", [])}
+        failures += reindex(base, bases)
+    return failures
 
 
 def read_ndjson(path):
@@ -127,7 +165,7 @@ def main():
     wait_for(a.base, a.wait)
     failures = 0
     if a.source == "ig":
-        failures += load(a.base, read_ig(), a.batch, "ig")
+        failures += load_ig(a.base, a.batch)
     elif a.source == "kiln-demo":
         for name in ("organizations.ndjson", "locations.ndjson"):
             p = os.path.join(a.snapshot, name)
