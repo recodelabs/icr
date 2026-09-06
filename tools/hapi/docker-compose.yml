@@ -1,0 +1,54 @@
+# Local HAPI FHIR R4 server for ICR development — the FHIR-store slot of the
+# reference stack, on a laptop. Used to test kiln (Location registry ⇄ GeoParquet)
+# and, later, the OpenFn/Cinder/SQL-on-FHIR pieces against real ICR-shaped data.
+#
+#   docker compose up -d          # start (first run pulls ~1 GB of images)
+#   python3 load.py ig            # seed the IG examples (Kambia MR SIA scenario …)
+#   python3 load.py kiln-demo     # seed the Bauchi Location/Organization registry
+#   docker compose down           # stop, keep data     |  down -v : stop AND wipe
+#
+# Ports are deliberately unusual so they never collide with other local stacks:
+#   FHIR base URL   http://localhost:3447/fhir   (3447 = F-H-I-R on a phone keypad)
+#   Postgres        localhost:3448  (hapi / hapi / db hapi)
+name: icr-hapi
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: hapi
+    ports:
+      - "3448:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  hapi:
+    # pinned: hapi.application.yaml is the upstream default for this exact version + ICR overrides
+    image: hapiproject/hapi:v8.12.0-1
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3447:8080"
+    environment:
+      SPRING_CONFIG_LOCATION: file:///app/config/application.yaml
+      # JVM heap — boundary polygons are large base64 attachments; 2 GB is comfortable
+      JAVA_TOOL_OPTIONS: -Xmx2g
+    volumes:
+      - ./hapi.application.yaml:/app/config/application.yaml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/fhir/metadata > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      start_period: 120s
+      retries: 30
+
+volumes:
+  pgdata:
+    name: icr-hapi-pgdata

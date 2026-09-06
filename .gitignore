@@ -18,3 +18,6 @@ docs/contract/Complete_with_Docusign_*.pdf
 __pycache__/
 *.pyc
 tools/espen-mda-datagen/**/sample-data/
+
+# tools/hapi scratch (kiln snapshots / parquet output)
+tools/hapi/.local/
