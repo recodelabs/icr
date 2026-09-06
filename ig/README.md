@@ -15,6 +15,7 @@ rationale lives in the working doc: [`../project/icr-v1.md`](../project/icr-v1.m
   - `profiles-coverage.fsh` — ICRAdministrativeCoverage, ICRSurveyCoverage (MeasureReport)
   - `profiles-cost.fsh` — ICRCampaignCost (Observation — budget/expenditure line item), ICRCostReport (MeasureReport — total & cost per person)
   - `extensions.fsh`, `codesystems.fsh`, `valuesets.fsh`, `aliases.fsh`, `examples.fsh`
+  - `searchparameters.fsh` — custom SearchParameters: `CarePlan?target-geography=` and `Group?geography=` (campaign visibility: what is planned where; see `tools/hapi/README.md` for the query recipes)
 - `input/pagecontent/` — IG narrative (index, background)
 
 ## Build

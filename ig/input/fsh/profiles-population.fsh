@@ -69,7 +69,7 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * characteristic ^slicing.rules = #open
 * characteristic contains geography 0..1 MS
 * characteristic[geography].code = $GroupCharacteristic#geography
-* characteristic[geography] ^short = "The Location this estimate is scoped to — any level: country, district, ward, settlement, or operational area. Makes estimates computably joinable to the location hierarchy."
+* characteristic[geography] ^short = "The Location this estimate is scoped to — any level: country, district, ward, settlement, or operational area. Makes estimates computably joinable to the location hierarchy, and searchable as Group?geography= (SearchParameter icr-target-population-geography, campaign-visibility)."
 * characteristic[geography].value[x] only Reference(ICRLocation)
 * characteristic[geography].exclude = false
 * extension contains

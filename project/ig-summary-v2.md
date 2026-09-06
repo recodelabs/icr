@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-09-05T12:25:31Z
+last_modified: 2026-09-06T18:11:27Z
 tags:
   - icr
   - fhir
@@ -16,11 +16,11 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026 · campaign-visibility search parameters added Sep 6, 2026`
 
 ⁠
 
-> [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document. **Exception:** the cost-v1 round (§7.4, Sep 5, 2026) is documented here first; [[ig-summary]] does not yet carry it.
+> [!note] **About this edition.** This document is the Simplified Technical English edition of [[ig-summary]]. The rules: active voice, short sentences, one idea for each sentence, the same word for the same idea, no jargon. The technical content is identical — profiles, tables, codes, numbers, and examples do not change. Review comments stay in the source document. **Exception:** the cost-v1 round (§7.4, Sep 5, 2026) and the campaign-visibility search parameters (§10.1, Sep 6, 2026) are documented here first; [[ig-summary]] does not yet carry them.
 
 > [!note] **This is a draft for feedback. It is not a final standard.** We show the open questions and the roadmap (§13) on purpose. We made v0.1 so that partners can test it against real campaign data and partner experience. You can challenge each design decision in this document. The published IG is at [**https://icr.healthcampaigns.org**](https://icr.healthcampaigns.org). Send feedback to the ICR project team at Ona/UNICEF.
 
@@ -187,12 +187,13 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | **Measures** | 7   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness`, and (cost-v1) `icr-campaign-cost` — the canonical definitions that the coverage, readiness, and cost MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
 | **Extensions** | 36  | See §10 — cost-v1 added five |
+| **SearchParameters** *(campaign-visibility)* | 2   | `icr-campaign-target-geography` (`CarePlan?target-geography=`) and `icr-target-population-geography` (`Group?geography=`) — the geography links become searchable, so "what is planned where" is one query (§10.1) |
 | **CodeSystems** | 40  | See §9 — cost-v1 added eight |
 | **ValueSets** | 40  | Usually one per code system, plus purpose-built sets (§9) |
 | **Example instances** | 71  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task), a custom-national-identifier ward, and an LQAS lot assessment (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 
-File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-cost.fsh` (cost-v1), `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `examples.fsh`.
+File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `extensions.fsh`, `profiles-campaign.fsh`, `profiles-population.fsh`, `profiles-delivery.fsh`, `profiles-coverage.fsh`, `profiles-cost.fsh` (cost-v1), `profiles-consent.fsh`, `profiles-adverse.fsh`, `profiles-careteam.fsh`, `measures.fsh`, `questionnaires.fsh`, `questionnaires-espen.fsh` (espen-forms), `conceptmaps.fsh`, `searchparameters.fsh` (campaign-visibility), `examples.fsh`.
 
 **Build:** The command `sushi build .` compiles FSH → JSON. The script `./_genonce.sh` renders the IG website. This script needs Java 17+. The current commit compiles clean (0 errors / 0 warnings).
 
@@ -2546,6 +2547,22 @@ The cost profiles also reuse `campaign` (1..1 on ICRCostReport), `denominator-so
 - `LocationBoundaryGeoJson` mirrors the R5 standard boundary extension on R4. A future move to R5 (or to the cross-version extension) migrates the stored attachments easily. But the extension **URL** changes. This item stays on the v1.0 checklist.
 - A **structured** `sample-design` would replace today's free-text string. It would carry method, clusters, design effect, sample size, weighting, and evidence source as sub-elements. This work is deferred and coupled to the executable-Measure work. Both make coverage computable (§13.2).
 - The `eligible-present`/`eligible-absent` naming (rather than `children-…`) is accurate for MDA/ITN campaigns, where the target is not children. But `children-…` is more familiar to EPI staff. We request partner input before v1 locks the extension ids (§13.4).
+
+### 10.1 Search parameters *(campaign-visibility)*
+The registry's first promise is **campaign visibility**: every campaign is a record with a geography, dates, and a status, and any programme can ask "what is planned where, and when". The dates and status are core CarePlan elements (`period`, `status`, `intent`) and are searchable out of the box (`CarePlan?date=ge…&date=le…&status=active`). The geography is not. `ICRCampaign` carries its target place in the `target-geography` **extension**, and `ICRTargetPopulation` carries its scope in a `characteristic.valueReference`. A FHIR server does not index either without a `SearchParameter`. Before this round, `CarePlan?target-geography=…` returned "unknown search parameter".
+
+The IG now ships two `SearchParameter` definitions (`searchparameters.fsh`). A server that loads the IG's conformance resources gets them with the profiles.
+
+| SearchParameter | Base | Code | Type → target | Expression |
+| --- | --- | --- | --- | --- |
+| `icr-campaign-target-geography` | CarePlan | `target-geography` | reference → Location | `CarePlan.extension('…/target-geography').value.as(Reference)` |
+| `icr-target-population-geography` | Group | `geography` | reference → Location | `Group.characteristic.where(code = geography).value.as(Reference)` |
+
+Because both are **reference** parameters, the standard reference machinery applies: chaining (`CarePlan?target-geography.partof=Location/kambia` — campaigns in the district's direct children), reverse chaining (`Location?_has:CarePlan:target-geography:status=active` — places with an active campaign), and reverse includes (`Location?_id=kambia&_revinclude:iterate=Location:partof&_revinclude:iterate=CarePlan:target-geography` — the whole Location subtree **and** every campaign that targets any node of it, in one call). Add `date=ge…&date=le…` to scope the answer to a window, and the co-delivery question in the ICR pitch — two campaigns heading for the same wards within weeks of each other — is one search.
+
+**Server notes.** Verified against HAPI FHIR 8.12.0 (`tools/hapi`, Sep 6, 2026). Two limits shape the query recipes: HAPI does not implement the `:above` / `:below` modifiers on reference parameters, and it resolves only one level of chaining. So "everything under this district" is the reverse-include call above, or a two-step (resolve the subtree, then pass the Location ids as a comma list). A custom SearchParameter is indexed **going forward**; resources stored before it existed need a `$reindex`, which the local loader (`tools/hapi/load.py ig`) now issues after loading.
+
+**Design note.** The alternative was to move the geography from an extension to a core searchable element. CarePlan has no location element, and its `subject` is already the target-population Group, so there is no honest core home for the place. A SearchParameter is the FHIR-native answer: the model stays as it is, and the IG states how it is queried. The same pattern will cover future extension-held links (for example the coverage report's `campaign` extension) if a search on them is needed.
 
 * * *
 ## 11. The worked scenario

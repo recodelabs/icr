@@ -58,6 +58,7 @@ Description: "A specific campaign execution — the keystone resource. Begins li
     SocialMobilization named socialMobilization 0..1 MS and
     RealtimeVsReconciled named dataLineage 0..1 MS
 * extension[socialMobilization] ^short = "Demand generation: population-informed + channels used (v0.20.0)"
+* extension[targetGeography] ^short = "The Location this campaign targets — searchable as CarePlan?target-geography= (SearchParameter icr-campaign-target-geography): what is planned where, chainable through partof and reverse-includable from a Location subtree (campaign-visibility)"
 
 Profile: ICRCampaignActivity
 Parent: ActivityDefinition
