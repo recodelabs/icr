@@ -1,0 +1,77 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation",
+  "title": "ICR target populations",
+  "description": "One row per target-population estimate (ICRTargetPopulation Group): the\n**denominators** \u2014 how many people a campaign plans to reach, where, for which\nage band, from which source. Joined to the campaign calendar on\n`denominator_id` this gives \"people targeted\"; joined to coverage reports it\ngives the denominator side of coverage.\n\n`location_id` is the geography characteristic; `age_low` / `age_high` are the\nage-band characteristic (units in `age_unit`, months or years); competing\nestimates for the same geography are distinguished by `source`, `estimate_date`\nand `is_planning`.",
+  "name": "IcrTargetPopulation",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Group",
+  "where": [
+    {
+      "path": "actual = false and quantity.exists()",
+      "description": "Definitional cohorts with a count \u2014 the ICRTargetPopulation profile; excludes households and other actual groups and the count-less eligibility definitions"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "group_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "name",
+          "path": "name",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "path": "quantity",
+          "type": "unsignedInt",
+          "description": "The denominator count"
+        },
+        {
+          "name": "location_id",
+          "path": "characteristic.where(code.coding.code = 'geography').first().value.ofType(Reference).getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "age_low",
+          "path": "characteristic.where(code.coding.code = 'age-band').first().value.ofType(Range).low.value",
+          "type": "decimal"
+        },
+        {
+          "name": "age_high",
+          "path": "characteristic.where(code.coding.code = 'age-band').first().value.ofType(Range).high.value",
+          "type": "decimal"
+        },
+        {
+          "name": "age_unit",
+          "path": "characteristic.where(code.coding.code = 'age-band').first().value.ofType(Range).low.code",
+          "type": "code",
+          "description": "UCUM: mo | a"
+        },
+        {
+          "name": "source",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/denominator-source').value.ofType(CodeableConcept).coding.first().code",
+          "type": "code",
+          "description": "census | census-projection | worldpop | grid3 | microcensus | hmis | govt-estimate | \u2026"
+        },
+        {
+          "name": "estimate_date",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/estimate-date').value.ofType(date)",
+          "type": "date"
+        },
+        {
+          "name": "is_planning",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/is-planning-denominator').value.ofType(boolean)",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}

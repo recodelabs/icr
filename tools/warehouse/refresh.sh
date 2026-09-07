@@ -7,9 +7,10 @@
 #                  resource type (paged FHIR search → data/raw/<server>/<Type>.ndjson),
 #                  run it in memory with octofhir-sof, partition the result by
 #                  country (joined from the registry) into data/parquet/<view_name>/
-#   3. manifest:   data/manifest.json with counts and provenance
+#   3. tiles:      admin boundaries → data/tiles/admin.pmtiles (tools/warehouse/tiles.sh)
+#   4. manifest:   data/manifest.json with counts and provenance
 #
-# Usage: tools/warehouse/refresh.sh [--views] [--locations]     (default: both)
+# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles]   (default: all)
 # Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
 #        KILN (~/github/kiln/target/debug/kiln)  SOF (octofhir-sof)  DATA (repo data/)
 set -euo pipefail
@@ -24,11 +25,12 @@ KILN="${KILN:-$HOME/github/kiln/target/debug/kiln}"
 SOF="${SOF:-octofhir-sof}"
 export PATH="$HOME/.local/bin:$PATH"
 
-DO_LOC=1; DO_VIEWS=1
+DO_LOC=1; DO_VIEWS=1; DO_TILES=1
 for a in "$@"; do
   case "$a" in
-    --views) DO_LOC=0 ;;
-    --locations) DO_VIEWS=0 ;;
+    --views) DO_LOC=0; DO_TILES=0 ;;
+    --locations) DO_VIEWS=0; DO_TILES=0 ;;
+    --tiles) DO_LOC=0; DO_VIEWS=0 ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
   esac
 done
@@ -89,6 +91,10 @@ EOF
     rows=$(duckdb -noheader -csv -c "SELECT count(*) FROM read_parquet('$PARQUET/$table/**/*.parquet', hive_partitioning=true)")
     echo "   $name → parquet/$table ($rows rows)"
   done
+fi
+
+if [ "$DO_TILES" = 1 ]; then
+  DATA="$DATA" "$HERE/tiles.sh"
 fi
 
 echo "== manifest"

@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-07T14:06:15+00:00",
+  "refreshed_at": "2026-09-07T14:19:52+00:00",
   "server": "http://localhost:3447/fhir",
   "server_name": "hapi-local",
   "tables": {
@@ -8,9 +8,17 @@
     },
     "locations": {
       "rows": 344278
+    },
+    "target_population": {
+      "rows": 1959
     }
   },
   "views": {
+    "IcrTargetPopulation": {
+      "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation",
+      "resource": "Group",
+      "status": "draft"
+    },
     "IcrCampaignCalendar": {
       "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar",
       "resource": "CarePlan",

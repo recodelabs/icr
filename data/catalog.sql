@@ -9,6 +9,9 @@ CREATE OR REPLACE VIEW locations AS
 CREATE OR REPLACE VIEW campaign_calendar AS
   SELECT * FROM read_parquet('parquet/campaign_calendar/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
+CREATE OR REPLACE VIEW target_population AS
+  SELECT * FROM read_parquet('parquet/target_population/**/*.parquet', hive_partitioning = true, union_by_name = true);
+
 -- Convenience: LGA-level calendar rows with their state and LGA names.
 CREATE OR REPLACE VIEW campaign_calendar_lga AS
   SELECT c.*, l.name AS lga, l.admin1_name AS state
