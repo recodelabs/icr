@@ -67,6 +67,12 @@
           "path": "instantiatesCanonical.first()",
           "type": "canonical",
           "description": "The PlanDefinition (protocol) this campaign instantiates"
+        },
+        {
+          "name": "denominator_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator').value.ofType(Reference).getReferenceKey(Group)",
+          "type": "string",
+          "description": "The ICRTargetPopulation Group this campaign plans against \u2014 join key to the target_population view for people targeted"
         }
       ]
     },

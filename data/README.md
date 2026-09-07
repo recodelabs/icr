@@ -21,22 +21,28 @@ data/
     locations/             country=NGA/geom_type=…/type=…/part-0.parquet   (kiln transform)
     campaign_calendar/     country=NGA/part-0.parquet                      (ViewDefinition IcrCampaignCalendar)
     _report.json           kiln's transform report (geometry issues etc.)
+  tiles/
+    admin.pmtiles          admin boundaries (layers `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)
   views/                   the exact ViewDefinition JSON each table was built from (from the IG build)
   catalog.sql              CREATE VIEW per table over the parquet globs — `FROM campaign_calendar`
   manifest.json            when, from which server, row counts, view canonicals (written by the refresh)
 ```
+
+The dashboard that reads all of this is `campaignhq/` (Observable Framework, DuckDB-WASM, MapLibre).
 
 ## Refresh
 
 ```bash
 tools/warehouse/refresh.sh            # kiln run (incremental) + every ViewDefinition in the IG
 tools/warehouse/refresh.sh --views    # views only (seconds)
+tools/warehouse/refresh.sh --tiles    # admin boundary PMTiles only
 ```
 
 Needs: the local HAPI (`tools/hapi`), `kiln` (`~/github/kiln/target/debug/kiln`
 or `KILN=`), `octofhir-sof` (the recodelabs/sof fork build, on the PATH or
-`SOF=`), `duckdb`, and a sushi build of the IG (`ig/fsh-generated/`) for the
-ViewDefinitions.
+`SOF=`), `duckdb` (with the spatial extension, installed on first use),
+`tippecanoe` (`brew install tippecanoe`) for the tiles, and a sushi build of the
+IG (`ig/fsh-generated/`) for the ViewDefinitions.
 
 ## Query
 
