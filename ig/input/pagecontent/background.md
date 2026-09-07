@@ -79,9 +79,12 @@ campaign.
 10. **Every delivery event is flagged campaign vs routine** (`record-origin`).
 11. **Provenance on everything ingested** — lineage is a model feature, not an ETL
     afterthought.
-12. **ViewDefinitions are planned, not yet shipped** — SQL-on-FHIR view definitions
-    will make the analytics layer as portable as the data model (targeted for the
-    next draft; none ship in v0.1).
+12. **ViewDefinitions ship with the data model** — SQL-on-FHIR view definitions make
+    the analytics layer as portable as the data model. The first,
+    [IcrCampaignCalendar](ViewDefinition-IcrCampaignCalendar.html), flattens
+    campaigns (CarePlan) to one row per target geography for the campaign calendar;
+    any conformant runner produces the same table, and the location registry is
+    joined on `location_id`. Coverage and delivery-event views follow.
 
 #### Campaign work vs routine encounters
 

@@ -23,6 +23,7 @@ license: Apache-2.0
 jurisdiction: http://unstats.un.org/unsd/methods/m49/m49.htm#001 "World"
 dependencies:
   hl7.fhir.uv.sdc: 4.0.0
+  org.sql-on-fhir.ig: 2.0.0
 publisher:
   name: UNICEF
   url: https://www.unicef.org

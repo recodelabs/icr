@@ -13,6 +13,14 @@
 country_location: nga
 canonical_base: https://icr.healthcampaigns.org
 
+# meta.tag stamped on every generated resource so the set can be selected or
+# excluded in one search (?_tag=system|code). Implementers use their own tag
+# system; this repo's demo uses the IG's project-tag code system.
+dataset_tag:
+  system: https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs
+  code: nga-demo
+  display: Nigeria demo calendar
+
 # Age-band fractions of total population, northern-Nigeria shaped (high
 # fertility: ~18% under five, ~44% under fifteen). Fractions are applied to the
 # LGA total for the round year. Ranges are what goes on the Group

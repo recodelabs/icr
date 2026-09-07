@@ -1,7 +1,8 @@
 """FHIR resource builders for the ICR IG profiles.
 
-Everything generated carries meta.tag `nga-demo` (ICR project-tag code system)
-so it can be selected or excluded in one search: `?_tag=<system>|nga-demo`.
+Everything generated carries the dataset tag from config/states.yaml
+(`dataset_tag`) as meta.tag, so it can be selected or excluded in one search:
+`?_tag=<system>|<code>`.
 """
 
 from __future__ import annotations
@@ -9,10 +10,6 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 from .config import AgeBand, Config, Lga, State
-
-TAG_SYSTEM = "https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs"
-TAG_CODE = "nga-demo"
-TAG_DISPLAY = "Nigeria demo calendar (Bauchi, Kano, Jigawa, Gombe, Yobe)"
 
 CS = "https://icr.healthcampaigns.org/CodeSystem"
 SD = "https://icr.healthcampaigns.org/StructureDefinition"
@@ -39,8 +36,8 @@ DELIVERY_DISPLAY = {
 }
 
 
-def meta(profile: str | None) -> dict:
-    m = {"tag": [{"system": TAG_SYSTEM, "code": TAG_CODE, "display": TAG_DISPLAY}]}
+def meta(cfg: Config, profile: str | None) -> dict:
+    m = {"tag": [dict(cfg.dataset_tag)]}
     if profile:
         m["profile"] = [f"{SD}/{profile}"]
     return m
@@ -173,7 +170,7 @@ def activity_definitions(cfg: Config) -> list[dict]:
     out = []
     for aid, a in ACTIVITIES.items():
         out.append({
-            "resourceType": "ActivityDefinition", "id": aid, "meta": meta("ICRCampaignActivity"),
+            "resourceType": "ActivityDefinition", "id": aid, "meta": meta(cfg, "ICRCampaignActivity"),
             "url": f"{cfg.canonical_base}/ActivityDefinition/{aid}", "version": "1.0.0",
             "name": aid.replace("-", "_"), "title": a["title"], "status": "active", "kind": "Task",
             "code": {"text": a["code"]},
@@ -194,7 +191,7 @@ def eligibility_groups(cfg: Config) -> list[dict]:
     for pid, p in PROTOCOLS.items():
         band = cfg.age_bands[p["band"]]
         out.append({
-            "resourceType": "Group", "id": eligibility_group_id(pid), "meta": meta(None),
+            "resourceType": "Group", "id": eligibility_group_id(pid), "meta": meta(cfg, None),
             "type": "person", "actual": False,
             "name": f"{band.label} (eligibility, {p['title']})",
             "characteristic": [{
@@ -208,7 +205,7 @@ def plan_definitions(cfg: Config) -> list[dict]:
     out = []
     for pid, p in PROTOCOLS.items():
         out.append({
-            "resourceType": "PlanDefinition", "id": pid, "meta": meta("ICRCampaignProtocol"),
+            "resourceType": "PlanDefinition", "id": pid, "meta": meta(cfg, "ICRCampaignProtocol"),
             "url": f"{cfg.canonical_base}/PlanDefinition/{pid}", "version": "1.0.0",
             "name": pid.replace("-", "_"), "title": p["title"], "status": "active",
             "type": cc(CAMPAIGN_TYPE, p["type"], CAMPAIGN_TYPE_DISPLAY[p["type"]]),
@@ -226,7 +223,7 @@ def plan_definitions(cfg: Config) -> list[dict]:
 def population_group(cfg: Config, unit: Lga | State, location_id: str, band: AgeBand, year: int, quantity: int, gid: str) -> dict:
     scope = f"{unit.name} LGA" if isinstance(unit, Lga) else f"{unit.name} State"
     return {
-        "resourceType": "Group", "id": gid, "meta": meta("ICRTargetPopulation"),
+        "resourceType": "Group", "id": gid, "meta": meta(cfg, "ICRTargetPopulation"),
         "type": "person", "actual": False,
         "name": f"{band.label}, {scope}, {year} (planning denominator)",
         "quantity": quantity,
@@ -271,7 +268,7 @@ def care_plan(cfg: Config, *, cid: str, title: str, description: str, protocol: 
         {"url": f"{SD}/planning-denominator", "valueReference": {"reference": f"Group/{subject_group}"}},
     ]
     cp = {
-        "resourceType": "CarePlan", "id": cid, "meta": meta("ICRCampaign"),
+        "resourceType": "CarePlan", "id": cid, "meta": meta(cfg, "ICRCampaign"),
         "instantiatesCanonical": [f"{cfg.canonical_base}/PlanDefinition/{protocol}"],
         "status": status, "intent": intent, "category": categories,
         "title": title, "description": description,
