@@ -38,9 +38,10 @@ preview) time and their output is cached under `src/.observablehq/cache`.
   for the LGA's count and people targeted. The targeted ramp rescales to the
   selection. Boundaries come from `admin.pmtiles` (layers `states`, `lgas`;
   `promoteId: id` so feature-state is keyed by the registry Location id).
-- **Timeline** — one lane per state, one bar per state round coloured by programme;
-  overlaps are two programmes in the same state at the same time. Red dotted line is
-  today.
+- **Timeline** — toggle between *By state* (one lane per state, one bar per state
+  round coloured by programme; overlaps are two programmes in the same state at the
+  same time) and *By LGA* (one lane per LGA, grouped into a collapsible section per
+  state, all sharing one time axis). Red dotted line is today.
 - **Table** — searchable, sortable LGA rounds.
 
 ## Basemap

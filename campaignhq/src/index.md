@@ -101,9 +101,16 @@ const kpi = {
 </div>
 
 <div class="card" style="margin-top: 12px">
-  <h2>Rounds over time, by state</h2>
-  <div class="muted" style="margin-bottom: 6px">One bar per state round, coloured by programme; overlapping bars are programmes in the same state at the same time. The red dotted line is today.</div>
-  ${timeline}
+  <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap">
+    <div>
+      <h2>Rounds over time</h2>
+      <div class="muted" style="margin-bottom: 6px">${timelineMode === "By state"
+        ? "One bar per state round, coloured by programme; overlapping bars are programmes in the same state at the same time."
+        : "One lane per LGA, grouped by state — click a state to collapse or expand it."} The red dotted line is today.</div>
+    </div>
+    <div>${timelineModeInput}</div>
+  </div>
+  ${timelineEl}
 </div>
 
 ```js
@@ -121,25 +128,73 @@ mapTargeted.update(lgaRows);
 ```
 
 ```js
+const timelineModeInput = Inputs.radio(["By state", "By LGA"], {value: "By state"});
+const timelineMode = Generators.input(timelineModeInput);
+```
+
+```js
 const laneStates = states.filter((s) => stateRows.some((d) => d.state === s));
+// One shared time axis for every chart so the LGA blocks line up with each other.
+const allRows = [...stateRows, ...lgaRows];
+const pad = 7 * 864e5;
+const xDomain = allRows.length
+  ? [new Date(Math.min(...allRows.map((d) => +new Date(d.period_start))) - pad), new Date(Math.max(...allRows.map((d) => +new Date(d.period_end))) + pad)]
+  : [new Date(`${year === "All" ? 2022 : year}-01-01`), new Date(`${year === "All" ? 2027 : year}-12-31`)];
+const barTitle = (d) => `${d.title}\n${fmtDate(d.period_start)} → ${fmtDate(d.period_end)} · ${d.status === "draft" ? "planned" : d.status}\npeople targeted: ${fmtInt(d.targeted)}`;
+
 const timeline = Plot.plot({
   width,  // Framework's reactive main-column width: fill the card, re-render on resize
   height: 60 + 46 * Math.max(1, laneStates.length),
   marginLeft: 70,
   marginRight: 20,
-  x: {type: "utc", label: null, grid: true},
+  x: {type: "utc", label: null, grid: true, domain: xDomain},
   y: {label: null, domain: laneStates},
   color: {legend: true, domain: programmes},
   marks: [
     Plot.barX(stateRows, {
       x1: "period_start", x2: "period_end", y: "state", fill: "programme", fillOpacity: 0.75,
       insetTop: 6, insetBottom: 6, rx: 2, stroke: "white", strokeWidth: 0.5,
-      tip: true,
-      title: (d) => `${d.title}\n${fmtDate(d.period_start)} → ${fmtDate(d.period_end)} · ${d.status === "draft" ? "planned" : d.status}\npeople targeted: ${fmtInt(d.targeted)}`
+      tip: true, title: barTitle
     }),
     Plot.ruleX([today], {stroke: "#ef4444", strokeDasharray: "3,3"})
   ]
 });
+
+// LGA view: one chart per state (own lane list), inside a native <details> so each
+// state collapses independently. Same width, margins and x domain as the state view.
+function lgaTimeline(stateName) {
+  const rows = lgaRows.filter((d) => d.state === stateName);
+  const lanes = [...new Set(rows.map((d) => d.location_name))].sort((a, b) => a.localeCompare(b));
+  return Plot.plot({
+    width,
+    height: 34 + 16 * lanes.length,
+    marginLeft: 110, marginRight: 20, marginTop: 4, marginBottom: 26,
+    x: {type: "utc", label: null, grid: true, domain: xDomain},
+    y: {label: null, domain: lanes, tickSize: 0},
+    color: {domain: programmes},
+    marks: [
+      Plot.barX(rows, {
+        x1: "period_start", x2: "period_end", y: "location_name", fill: "programme", fillOpacity: 0.85,
+        insetTop: 2, insetBottom: 2, rx: 1.5, tip: true, title: barTitle
+      }),
+      Plot.ruleX([today], {stroke: "#ef4444", strokeDasharray: "3,3"})
+    ]
+  });
+}
+
+const timelineEl = timelineMode === "By state"
+  ? timeline
+  : html`<div>
+      ${Plot.legend({color: {domain: programmes}})}
+      ${laneStates.map((st) => {
+        const n = lgaRows.filter((d) => d.state === st).length;
+        const lgas = new Set(lgaRows.filter((d) => d.state === st).map((d) => d.location_id)).size;
+        return html`<details class="tl-state" open>
+          <summary><span>${st}</span><span class="muted">${fmtInt(n)} rounds · ${lgas} LGA${lgas === 1 ? "" : "s"}</span></summary>
+          ${lgaTimeline(st)}
+        </details>`;
+      })}
+    </div>`;
 ```
 
 ## Campaign rounds
@@ -173,6 +228,11 @@ Inputs.table(search, {
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; }
 .map-title { font-size: 13px; font-weight: 500; color: var(--theme-foreground-muted); padding: 10px 14px 6px; }
+.tl-state { border-top: 1px solid var(--theme-foreground-faintest); padding: 6px 0 2px; }
+.tl-state > summary { cursor: pointer; display: flex; justify-content: space-between; align-items: baseline; font-weight: 500; padding: 4px 0; list-style: none; }
+.tl-state > summary::before { content: "▾"; display: inline-block; width: 1.2em; color: var(--theme-foreground-muted); }
+.tl-state:not([open]) > summary::before { content: "▸"; }
+.tl-state > summary > span:first-child { flex: 1; }
 .card h2 { font-size: 13px; font-weight: 500; color: var(--theme-foreground-muted); margin: 0 0 4px; }
 .maplibregl-popup-content { padding: 6px 9px; }
 </style>
