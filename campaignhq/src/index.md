@@ -123,6 +123,7 @@ mapTargeted.update(lgaRows);
 ```js
 const laneStates = states.filter((s) => stateRows.some((d) => d.state === s));
 const timeline = Plot.plot({
+  width,  // Framework's reactive main-column width: fill the card, re-render on resize
   height: 60 + 46 * Math.max(1, laneStates.length),
   marginLeft: 70,
   marginRight: 20,
