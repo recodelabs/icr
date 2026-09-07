@@ -1,0 +1,166 @@
+# Which LGAs each NTD programme treats, by state and by year.
+#
+# This is the part of the demo that is "as real as we could find". Every block
+# carries a `source` note saying what is published and what is our assumption.
+# LGA names are registry names (config/states.yaml). A year entry is either a
+# list of LGA names or the string `all`. Years not listed fall back to
+# `default`; an explicit empty list means "no MDA that year" (programme stopped).
+#
+# Modelling conventions (WHO PC-NTD practice, applied to make the calendar
+# behave like a real programme rather than a flat repeat):
+#   - LF MDA (ivermectin + albendazole, community-directed) runs ≥5 annual
+#     rounds, then LGAs pass a transmission assessment survey (TAS) and STOP.
+#   - Where LF stops but onchocerciasis is co-endemic, ivermectin-only CDTI
+#     continues (onchocerciasis needs 12–15+ rounds).
+#   - Trachoma MDA (azithromycin) runs 1–3 or 3–5 rounds depending on baseline
+#     TF, then an impact survey; LGAs at 5–9.9% TF stop earlier than ≥10%.
+#   - Schisto/STH school MDA is annual and does not stop within our window.
+
+lf-oncho:            # ivermectin + albendazole, community-directed (CDTI network)
+  ba:
+    source: >-
+      Bauchi is in the NE hydrocele belt (PAMJ LF review 2024). A 2025 state NTD
+      report (Tribune, Jan 2025) shows LF albendazole treatment continuing only in
+      Itas/Gadau, Misau, Toro and Warji, with TAS1 planned in Darazo, Ganjuwa,
+      Alkaleri and Ningi — i.e. most LGAs had already stopped. We model
+      state-wide MDA through 2023, 8 LGAs in 2024, 4 LGAs from 2025.
+    by_year:
+      2022: all
+      2023: all
+      2024: [Itas/Gadau, Misau, Toro, Warji, Darazo, Ganjuwa, Alkaleri, Ningi]
+      default: [Itas/Gadau, Misau, Toro, Warji]
+  go:
+    source: >-
+      Gombe: LF endemic state-wide; "a decade of MDA reduced LF" in Billiri and
+      Kaltungo (PAMJ 2024). Assumption: Billiri and Kaltungo pass TAS after the
+      2023 round; Balanga and Shomgom after 2025.
+    by_year:
+      2022: all
+      2023: all
+      2024: [Akko, Balanga, Dukku, Funakaye, Gombe, Kwami, Nafada, Shomgom, Yamaltu/Deba]
+      2025: [Akko, Balanga, Dukku, Funakaye, Gombe, Kwami, Nafada, Shomgom, Yamaltu/Deba]
+      default: [Akko, Dukku, Funakaye, Gombe, Kwami, Nafada, Yamaltu/Deba]
+  kn:
+    source: >-
+      Kano LF programme treats rural LGAs; the eight metropolitan LGAs were
+      surveyed as not requiring MDA (Is MDA required in urban settings? Kano,
+      2017). Assumption: 12 rural LGAs pass TAS after the 2024 round.
+    exclude_always: [Kano Municipal, Dala, Fagge, Gwale, Nassarawa, Tarauni, Kumbotso, Ungogo]
+    by_year:
+      2022: all
+      2023: all
+      2024: all
+      default: [Ajingi, Albasu, Bebeji, Bunkure, Doguwa, Garko, Gaya, Kibiya, Kiru, Rano,
+                Rogo, Sumaila, Takai, Tudun Wada, Wudil, Warawa, Garun Malam, Kura,
+                Madobi, Karaye, Kabo, Gwarzo, Shanono, Bagwai]
+  ji:
+    source: >-
+      Jigawa: LF endemic in most LGAs (national LF mapping 2000–2013). Assumption:
+      MDA in 22 LGAs (not the five Hadejia-valley urban/peri-urban LGAs) through
+      2024, then 10 stop after TAS.
+    exclude_always: [Hadejia, Dutse, Gumel, Kazaure, Auyo]
+    by_year:
+      2022: all
+      2023: all
+      2024: all
+      default: [Babura, Birnin Kudu, Buji, Garki, Gwaram, Gwiwa, Jahun, Kafin Hausa,
+                Kiri Kasama, Kiyawa, Miga, Ringim]
+  yo:
+    source: >-
+      Yobe: Bade passed iTAS in 2017 after 5–7 LF rounds and stopped (PLoS NTD
+      iTAS paper, 2022). LF MDA continues in the southern LGAs. Assumption:
+      Damaturu, Tarmuwa, Potiskum and Fika stop after 2023; the rest after 2025.
+    by_year:
+      2022: [Fune, Fika, Gujba, Gulani, Nangere, Potiskum, Damaturu, Tarmuwa]
+      2023: [Fune, Fika, Gujba, Gulani, Nangere, Potiskum, Damaturu, Tarmuwa]
+      2024: [Fune, Gujba, Gulani, Nangere]
+      2025: [Fune, Gujba, Gulani, Nangere]
+      default: []
+
+oncho-only:          # ivermectin-only CDTI where LF has stopped but onchocerciasis continues
+  ba:
+    source: >-
+      Onchocerciasis is focal on the Bauchi plateau (southern LGAs). Ivermectin-
+      only rounds start the year after an LGA leaves the LF list.
+    by_year:
+      2022: []
+      2023: []
+      2024: [Bauchi, Bogoro, Dass, Tafawa-Balewa, Kirfi]
+      default: [Bauchi, Bogoro, Dass, Tafawa-Balewa, Kirfi, Alkaleri, Ningi]
+  go:
+    source: Southern Gombe onchocerciasis foci; ivermectin-only once LF stops.
+    by_year:
+      2022: []
+      2023: []
+      2024: [Billiri, Kaltungo]
+      2025: [Billiri, Kaltungo]
+      default: [Billiri, Kaltungo, Balanga, Shomgom]
+  yo:
+    source: Southern Yobe onchocerciasis foci (iTAS paper); ivermectin-only from 2026.
+    by_year:
+      default: []
+      2026: [Gujba, Gulani, Fune]
+      2027: [Gujba, Gulani, Fune]
+
+trachoma:            # azithromycin (+ tetracycline eye ointment), directly observed
+  kn:
+    source: >-
+      Kano 44-LGA surveys: 6 LGAs with TF ≥10% and 6 at 5–9.9% require MDA
+      (Mpyet et al. 2017). The paper does not name them in the abstract; the
+      twelve below are our assumption, weighted to the drier northern LGAs.
+      The 5–9.9% group stops after the 2023 impact survey; the ≥10% group runs
+      to 2026.
+    by_year:
+      2022: [Gabasawa, Gezawa, Minjibir, Dambatta, Makoda, Kunchi,
+             Tsanyawa, Bagwai, Shanono, Karaye, Rogo, Doguwa]
+      2023: [Gabasawa, Gezawa, Minjibir, Dambatta, Makoda, Kunchi,
+             Tsanyawa, Bagwai, Shanono, Karaye, Rogo, Doguwa]
+      2024: [Gabasawa, Gezawa, Minjibir, Dambatta, Makoda, Kunchi]
+      2025: [Gabasawa, Gezawa, Minjibir, Dambatta, Makoda, Kunchi]
+      2026: [Gabasawa, Gezawa, Minjibir, Dambatta, Makoda, Kunchi]
+      default: []
+  ji:
+    source: >-
+      Jigawa: Taura and Garki are documented trachoma-MDA LGAs (coverage surveys
+      2017, 2023). The other ten are assumed. Half stop after 2023, the rest
+      after 2025.
+    by_year:
+      2022: [Taura, Garki, Gumel, Maigatari, Sule Tankarkar, Babura,
+             Gagarawa, Yankwashi, Roni, Kazaure, Gwiwa, Kiyawa]
+      2023: [Taura, Garki, Gumel, Maigatari, Sule Tankarkar, Babura,
+             Gagarawa, Yankwashi, Roni, Kazaure, Gwiwa, Kiyawa]
+      2024: [Taura, Garki, Maigatari, Sule Tankarkar, Babura, Gagarawa]
+      2025: [Taura, Garki, Maigatari, Sule Tankarkar, Babura, Gagarawa]
+      default: []
+  yo:
+    source: >-
+      Yobe: 12 of 17 endemic LGAs had stopped MDA by 2022; Karasuwa, Machina,
+      Nangere, Nguru and Yusufari still required it (Int Health 2025, TEO
+      compliance study; 2022 round in April–May). Assumption: they complete
+      their rounds in 2023 and stop after the 2024 impact survey.
+    by_year:
+      2022: [Karasuwa, Machina, Nangere, Nguru, Yusufari]
+      2023: [Karasuwa, Machina, Nangere, Nguru, Yusufari]
+      default: []
+
+sch-sth-school:      # praziquantel + albendazole, school-based with community mop-up
+  ba:
+    source: >-
+      Bauchi treated 1.1M children 5–14 for schistosomiasis in 16 LGAs in 2024
+      (Tribune, Jan 2025). Which 16 is not stated; we drop the four small
+      plateau LGAs.
+    by_year:
+      default: [Alkaleri, Bauchi, Dambam, Darazo, Gamawa, Ganjuwa, Giade, Itas/Gadau,
+                Jama'Are, Katagum, Kirfi, Misau, Ningi, Shira, Toro, Zaki]
+  go:
+    source: Assumption — river-valley LGAs (Benue/Gongola tributaries).
+    by_year:
+      default: [Akko, Balanga, Billiri, Kaltungo, Shomgom, Yamaltu/Deba, Dukku, Nafada]
+  kn:
+    source: >-
+      Kano has widespread urinary schistosomiasis around irrigation schemes;
+      assumption — 20 LGAs south and east of the metropolis.
+    by_year:
+      default: [Ajingi, Albasu, Bebeji, Bunkure, Dawakin Kudu, Doguwa, Garko, Garun Malam,
+                Gaya, Kibiya, Kiru, Kura, Madobi, Rano, Rogo, Sumaila, Takai, Tudun Wada,
+                Warawa, Wudil]

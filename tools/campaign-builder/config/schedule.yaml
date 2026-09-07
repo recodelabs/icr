@@ -1,0 +1,198 @@
+# The campaign calendar: what ran (and is planned) where, 2022–2027.
+#
+# Two kinds of entry:
+#   rounds:  one dated event (polio round, measles campaign, outbreak response)
+#   series:  an annual programme expanded into one round per listed year
+#
+# Every round becomes: one national umbrella CarePlan (if >1 state), one
+# umbrella CarePlan per state, and one CarePlan per LGA (intent=order) with its
+# own start/end. LGA dates are derived from `start` + the stagger rule, so the
+# calendar shows LGAs rolling rather than a single bar.
+#
+# Stagger rules:
+#   {kind: none}                       all LGAs start on `start`
+#   {kind: jitter, max_days: N}        each LGA starts 0..N days late (polio
+#                                      rounds: a few LGAs slip for security or
+#                                      vaccine arrival)
+#   {kind: batches, count: K, gap_days: G}  LGAs split into K batches, batch i
+#                                      starts i*G days later (MDA and measles
+#                                      campaigns work through LGAs in waves)
+#
+# LGA selectors (`lgas`):  all | endemicity:<programme> | [explicit names]
+# `protocol_by_state` overrides the programme protocol for named states
+# (the Oct 2025 MR round co-delivered NTD treatment in Kano and Yobe).
+#
+# Statuses are derived from --as-of (default 2026-09-07): completed / active /
+# draft. Rounds after the as-of date are what the user sees as "planned".
+
+programmes:
+  polio:
+    label: "Polio (nOPV2)"
+    protocol: nga-demo-proto-nopv2-sia
+    campaign_type: vaccination-sia
+    age_band: under5
+    disease: "Poliomyelitis (cVDPV2)"
+  measles-catchup:
+    label: "Measles catch-up"
+    protocol: nga-demo-proto-measles-catchup
+    campaign_type: vaccination-sia
+    age_band: m9_59
+    disease: "Measles"
+  measles-obr:
+    label: "Measles outbreak response"
+    protocol: nga-demo-proto-measles-obr
+    campaign_type: vaccination-sia
+    age_band: m6_59
+    disease: "Measles"
+  mr-integrated:
+    label: "Measles-rubella + nOPV2 integrated"
+    protocol: nga-demo-proto-mr-nopv2-integrated
+    campaign_type: integrated
+    age_band: m9_y14
+    disease: "Measles, rubella, poliomyelitis"
+  lf-oncho:
+    label: "LF / onchocerciasis MDA"
+    protocol: nga-demo-proto-lf-oncho-mda
+    campaign_type: mda
+    age_band: y5_plus
+    disease: "Lymphatic filariasis, onchocerciasis"
+  oncho-only:
+    label: "Onchocerciasis CDTI"
+    protocol: nga-demo-proto-oncho-cdti
+    campaign_type: mda
+    age_band: y5_plus
+    disease: "Onchocerciasis"
+  trachoma:
+    label: "Trachoma MDA"
+    protocol: nga-demo-proto-trachoma-mda
+    campaign_type: mda
+    age_band: m6_plus
+    disease: "Trachoma"
+  sch-sth-school:
+    label: "Schisto / STH school MDA"
+    protocol: nga-demo-proto-sch-sth-school-mda
+    campaign_type: mda
+    age_band: y5_14
+    disease: "Schistosomiasis, soil-transmitted helminthiasis"
+
+rounds:
+  # ---- Polio: nOPV2 outbreak response and National Immunization Plus Days ----
+  # 2022 was the peak cVDPV2 year (168 cases nationally); three nOPV2 rounds
+  # across the north plus a November NIPD.
+  - {id: polio-2022-r1, programme: polio, round: 1, title: "nOPV2 outbreak response round 1",
+     start: 2022-02-26, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  - {id: polio-2022-r2, programme: polio, round: 2, title: "nOPV2 outbreak response round 2",
+     start: 2022-04-30, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  - {id: polio-2022-r3, programme: polio, round: 3, title: "nOPV2 outbreak response round 3 (NW/NE high-risk states)",
+     start: 2022-07-16, duration_days: 4, stagger: {kind: jitter, max_days: 1}, states: [kn, ji, yo]}
+  - {id: polio-2022-r4, programme: polio, round: 4, title: "National Immunization Plus Days, November 2022",
+     start: 2022-11-12, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  # 2023: two NIPDs and one outbreak round in the high-risk trio.
+  - {id: polio-2023-r1, programme: polio, round: 1, title: "National Immunization Plus Days, March 2023",
+     start: 2023-03-25, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  - {id: polio-2023-r2, programme: polio, round: 2, title: "nOPV2 outbreak response, June 2023 (NW/NE high-risk states)",
+     start: 2023-06-03, duration_days: 4, stagger: {kind: jitter, max_days: 1}, states: [kn, ji, yo]}
+  - {id: polio-2023-r3, programme: polio, round: 3, title: "National Immunization Plus Days, October 2023",
+     start: 2023-10-28, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  # 2024: NIPDs in April and October; targeted outbreak rounds in August and
+  # the seven-state December round (Borno, Jigawa, Kano, Kebbi, Sokoto, Yobe, Zamfara).
+  - {id: polio-2024-r1, programme: polio, round: 1, title: "National Immunization Plus Days, April 2024",
+     start: 2024-04-06, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  - {id: polio-2024-r2, programme: polio, round: 2, title: "Targeted local outbreak response, August 2024",
+     start: 2024-08-03, duration_days: 4, stagger: {kind: jitter, max_days: 1}, states: [kn, ji, yo]}
+  - {id: polio-2024-r3, programme: polio, round: 3, title: "National Immunization Plus Days, October 2024",
+     start: 2024-10-12, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  - {id: polio-2024-r4, programme: polio, round: 4, title: "nOPV2 outbreak response, seven high-burden states, December 2024",
+     start: 2024-12-07, duration_days: 4, stagger: {kind: jitter, max_days: 1}, states: [kn, ji, yo]}
+  # 2025: March subnational round (Jigawa, Yobe among five states), April NIPDs,
+  # then polio rides inside the October MR campaign (see mr-2025 below).
+  - {id: polio-2025-r1, programme: polio, round: 1, title: "nOPV2 subnational round, March 2025",
+     start: 2025-03-12, duration_days: 4, stagger: {kind: jitter, max_days: 1}, states: [ji, yo]}
+  - {id: polio-2025-r2, programme: polio, round: 2, title: "National Immunization Plus Days, April 2025",
+     start: 2025-04-26, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  # 2026: March NIPDs done; a September outbreak round is running as of the
+  # as-of date; November NIPDs planned.
+  - {id: polio-2026-r1, programme: polio, round: 1, title: "National Immunization Plus Days, March 2026",
+     start: 2026-03-21, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  - {id: polio-2026-r2, programme: polio, round: 2, title: "nOPV2 outbreak response, September 2026",
+     start: 2026-09-05, duration_days: 4, stagger: {kind: jitter, max_days: 1}, states: [ji, yo]}
+  - {id: polio-2026-r3, programme: polio, round: 3, title: "National Immunization Plus Days, November 2026 (planned)",
+     start: 2026-11-14, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+  # 2027 (planned): April NIPDs; October polio rides with the MR follow-up.
+  - {id: polio-2027-r1, programme: polio, round: 1, title: "National Immunization Plus Days, April 2027 (planned)",
+     start: 2027-04-10, duration_days: 4, stagger: {kind: jitter, max_days: 2}, states: [ba, kn, ji, go, yo]}
+
+  # ---- Measles ----
+  # Nov 2022: north-east catch-up (9–59 months) after the 2021–22 resurgence;
+  # LGAs in three weekly waves, six days each.
+  - {id: measles-2022-ne, programme: measles-catchup, round: 1, title: "Measles catch-up campaign, north-east, November 2022",
+     start: 2022-11-05, duration_days: 6, stagger: {kind: batches, count: 3, gap_days: 7}, states: [ba, go, yo]}
+  # Outbreak responses: urban Kano 2023, Hadejia valley 2024, Bauchi 2025.
+  - {id: measles-obr-kn-2023, programme: measles-obr, round: 1, title: "Measles outbreak response, Kano metropolis, April 2023",
+     start: 2023-04-15, duration_days: 5, stagger: {kind: jitter, max_days: 1}, states: [kn],
+     lgas: {kn: [Kano Municipal, Dala, Fagge, Nassarawa, Ungogo]}}
+  - {id: measles-obr-ji-2024, programme: measles-obr, round: 1, title: "Measles outbreak response, Hadejia valley, February 2024",
+     start: 2024-02-10, duration_days: 5, stagger: {kind: jitter, max_days: 1}, states: [ji],
+     lgas: {ji: [Hadejia, Kafin Hausa, Auyo]}}
+  - {id: measles-obr-ba-2025, programme: measles-obr, round: 1, title: "Measles outbreak response, Bauchi central, January 2025",
+     start: 2025-01-18, duration_days: 5, stagger: {kind: jitter, max_days: 1}, states: [ba],
+     lgas: {ba: [Bauchi, Ganjuwa, Darazo]}}
+  # 6 Oct 2025: the real integrated MR + nOPV2 campaign, phase 1 (20 northern
+  # states). Eight days per LGA in three waves; Kano and Yobe co-delivered NTD
+  # treatment.
+  - {id: mr-2025, programme: mr-integrated, round: 1, title: "Integrated measles-rubella + nOPV2 campaign, phase 1, October 2025",
+     start: 2025-10-06, duration_days: 8, stagger: {kind: batches, count: 3, gap_days: 4}, states: [ba, kn, ji, go, yo],
+     protocol_by_state: {kn: nga-demo-proto-mr-nopv2-ntd-integrated, yo: nga-demo-proto-mr-nopv2-ntd-integrated}}
+  # Oct 2027 (planned): MR follow-up with nOPV2.
+  - {id: mr-2027, programme: mr-integrated, round: 2, title: "Measles-rubella follow-up + nOPV2, October 2027 (planned)",
+     start: 2027-10-09, duration_days: 8, stagger: {kind: batches, count: 3, gap_days: 4}, states: [ba, kn, ji, go, yo]}
+
+series:
+  # ---- NTD MDA: annual rounds in the dry season, LGAs in batches ----
+  # LF/oncho (ivermectin + albendazole) — CDDs work through LGAs over 5–6 weeks.
+  - {id: lf-ba, programme: lf-oncho, title: "LF/onchocerciasis MDA (ivermectin + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "11-12", start_shift_days: 5,
+     duration_days: 14, stagger: {kind: batches, count: 4, gap_days: 10}, states: [ba], lgas: "endemicity:lf-oncho"}
+  - {id: lf-go, programme: lf-oncho, title: "LF/onchocerciasis MDA (ivermectin + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "12-03", start_shift_days: 4,
+     duration_days: 14, stagger: {kind: batches, count: 3, gap_days: 7}, states: [go], lgas: "endemicity:lf-oncho"}
+  - {id: lf-kn, programme: lf-oncho, title: "LF MDA (ivermectin + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "01-15", start_shift_days: 6,
+     duration_days: 14, stagger: {kind: batches, count: 4, gap_days: 10}, states: [kn], lgas: "endemicity:lf-oncho"}
+  - {id: lf-ji, programme: lf-oncho, title: "LF MDA (ivermectin + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "02-04", start_shift_days: 5,
+     duration_days: 14, stagger: {kind: batches, count: 3, gap_days: 10}, states: [ji], lgas: "endemicity:lf-oncho"}
+  - {id: lf-yo, programme: lf-oncho, title: "LF MDA (ivermectin + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025], start_md: "11-26", start_shift_days: 4,
+     duration_days: 14, stagger: {kind: batches, count: 2, gap_days: 10}, states: [yo], lgas: "endemicity:lf-oncho"}
+  # Onchocerciasis-only CDTI after LF stops.
+  - {id: oncho-ba, programme: oncho-only, title: "Onchocerciasis CDTI (ivermectin), {year} round",
+     years: [2024, 2025, 2026, 2027], start_md: "11-19", start_shift_days: 5,
+     duration_days: 14, stagger: {kind: batches, count: 2, gap_days: 10}, states: [ba], lgas: "endemicity:oncho-only"}
+  - {id: oncho-go, programme: oncho-only, title: "Onchocerciasis CDTI (ivermectin), {year} round",
+     years: [2024, 2025, 2026, 2027], start_md: "12-10", start_shift_days: 4,
+     duration_days: 14, stagger: {kind: batches, count: 2, gap_days: 7}, states: [go], lgas: "endemicity:oncho-only"}
+  - {id: oncho-yo, programme: oncho-only, title: "Onchocerciasis CDTI (ivermectin), {year} round",
+     years: [2026, 2027], start_md: "11-26", start_shift_days: 4,
+     duration_days: 14, stagger: {kind: batches, count: 1, gap_days: 0}, states: [yo], lgas: "endemicity:oncho-only"}
+  # Trachoma (azithromycin): Mar–Apr, after the LF rounds have cleared the same LGAs;
+  # one week per LGA, two batches.
+  - {id: trachoma-kn, programme: trachoma, title: "Trachoma MDA (azithromycin), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026], start_md: "03-18", start_shift_days: 6,
+     duration_days: 7, stagger: {kind: batches, count: 2, gap_days: 7}, states: [kn], lgas: "endemicity:trachoma"}
+  - {id: trachoma-ji, programme: trachoma, title: "Trachoma MDA (azithromycin), {year} round",
+     years: [2022, 2023, 2024, 2025], start_md: "03-26", start_shift_days: 6,
+     duration_days: 7, stagger: {kind: batches, count: 2, gap_days: 7}, states: [ji], lgas: "endemicity:trachoma"}
+  - {id: trachoma-yo, programme: trachoma, title: "Trachoma MDA (azithromycin + TEO), {year} round",
+     years: [2022, 2023], start_md: "04-16", start_shift_days: 5,
+     duration_days: 7, stagger: {kind: batches, count: 1, gap_days: 0}, states: [yo], lgas: "endemicity:trachoma"}
+  # Schisto/STH school MDA: second school term (May–June), five days per LGA.
+  - {id: sch-ba, programme: sch-sth-school, title: "Schistosomiasis/STH school MDA (praziquantel + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "05-13", start_shift_days: 6,
+     duration_days: 5, stagger: {kind: batches, count: 3, gap_days: 7}, states: [ba], lgas: "endemicity:sch-sth-school"}
+  - {id: sch-go, programme: sch-sth-school, title: "Schistosomiasis/STH school MDA (praziquantel + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "05-20", start_shift_days: 6,
+     duration_days: 5, stagger: {kind: batches, count: 2, gap_days: 7}, states: [go], lgas: "endemicity:sch-sth-school"}
+  - {id: sch-kn, programme: sch-sth-school, title: "Schistosomiasis/STH school MDA (praziquantel + albendazole), {year} round",
+     years: [2022, 2023, 2024, 2025, 2026, 2027], start_md: "06-03", start_shift_days: 6,
+     duration_days: 5, stagger: {kind: batches, count: 3, gap_days: 7}, states: [kn], lgas: "endemicity:sch-sth-school"}
