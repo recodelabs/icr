@@ -136,3 +136,127 @@ and `is_planning`.
 * select[0].column[9].name = "is_planning"
 * select[0].column[9].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/is-planning-denominator').value.ofType(boolean)"
 * select[0].column[9].type = "boolean"
+
+Instance: IcrCoverage
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR coverage reports"
+Description: """
+One row per coverage report (MeasureReport): the **results** — people reached
+and coverage, whether from administrative tallies (`source = administrative`),
+a post-campaign survey (`survey`) or LQAS (`lqas`), and whether preliminary
+(`lineage = realtime`) or final (`reconciled`). Joined to the campaign
+calendar on `campaign_id` this gives people reached and coverage per round;
+grouping by `campaign_id` and `source` puts administrative and survey figures
+side by side. Strata (sex, age band, delivery strategy, disposition,
+geography) are in the companion view `IcrCoverageStrata`.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage"
+* name = "IcrCoverage"
+* title = "ICR coverage reports"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #MeasureReport
+* where[0].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').exists()"
+* where[0].description = "Only ICR coverage reports (administrative, survey, LQAS) — not cost or readiness reports"
+* select[0].column[0].name = "report_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "campaign_id"
+* select[0].column[1].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)"
+* select[0].column[1].type = "string"
+* select[0].column[1].description = "The campaign (round) this report is about — join key to IcrCampaignCalendar"
+* select[0].column[2].name = "location_id"
+* select[0].column[2].path = "subject.getReferenceKey(Location)"
+* select[0].column[2].type = "string"
+* select[0].column[3].name = "measure"
+* select[0].column[3].path = "measure"
+* select[0].column[3].type = "canonical"
+* select[0].column[4].name = "source"
+* select[0].column[4].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').value.ofType(code)"
+* select[0].column[4].type = "code"
+* select[0].column[4].description = "administrative | survey | lqas"
+* select[0].column[5].name = "lineage"
+* select[0].column[5].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled').value.ofType(code)"
+* select[0].column[5].type = "code"
+* select[0].column[5].description = "realtime (preliminary, in-campaign) | reconciled (final)"
+* select[0].column[6].name = "denominator_type"
+* select[0].column[6].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/denominator-type').value.ofType(code)"
+* select[0].column[6].type = "code"
+* select[0].column[7].name = "status"
+* select[0].column[7].path = "status"
+* select[0].column[7].type = "code"
+* select[0].column[8].name = "period_start"
+* select[0].column[8].path = "period.start"
+* select[0].column[8].type = "date"
+* select[0].column[9].name = "period_end"
+* select[0].column[9].path = "period.end"
+* select[0].column[9].type = "date"
+* select[0].column[10].name = "reported"
+* select[0].column[10].path = "date"
+* select[0].column[10].type = "dateTime"
+* select[0].column[11].name = "numerator"
+* select[0].column[11].path = "group.first().population.where(code.coding.code = 'numerator').first().count"
+* select[0].column[11].type = "integer"
+* select[0].column[11].description = "People reached (administrative) or sampled and covered (survey / LQAS)"
+* select[0].column[12].name = "denominator"
+* select[0].column[12].path = "group.first().population.where(code.coding.code = 'denominator').first().count"
+* select[0].column[12].type = "integer"
+* select[0].column[12].description = "Planning denominator (administrative) or sample size (survey / LQAS)"
+* select[0].column[13].name = "score"
+* select[0].column[13].path = "group.first().measureScore.value"
+* select[0].column[13].type = "decimal"
+* select[0].column[13].description = "Coverage as a proportion 0–1 (the ICR coverage Measures are proportion-scored; multiply by 100 for percent)"
+* select[0].column[14].name = "ci_low"
+* select[0].column[14].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('low').value.ofType(decimal)"
+* select[0].column[14].type = "decimal"
+* select[0].column[15].name = "ci_high"
+* select[0].column[15].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('high').value.ofType(decimal)"
+* select[0].column[15].type = "decimal"
+* select[0].column[16].name = "sample_design"
+* select[0].column[16].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/sample-design').value.ofType(string)"
+* select[0].column[16].type = "string"
+* select[0].column[17].name = "reporter"
+* select[0].column[17].path = "reporter.display"
+* select[0].column[17].type = "string"
+
+Instance: IcrCoverageStrata
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR coverage strata"
+Description: """
+One row per stratum of a coverage report: the disaggregations (sex, age band,
+delivery strategy, disposition, geography) declared by the ICR coverage
+Measures. Join to `IcrCoverage` on `report_id`.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverageStrata"
+* name = "IcrCoverageStrata"
+* title = "ICR coverage strata"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #MeasureReport
+* where[0].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').exists()"
+* select[0].column[0].name = "report_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "campaign_id"
+* select[0].column[1].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)"
+* select[0].column[1].type = "string"
+* select[1].forEach = "group.first().stratifier"
+* select[1].column[0].name = "stratifier"
+* select[1].column[0].path = "code.coding.first().code"
+* select[1].column[0].type = "code"
+* select[1].column[0].description = "sex | age-band | delivery-strategy | disposition | geography | dose-history"
+* select[1].select[0].forEach = "stratum"
+* select[1].select[0].column[0].name = "stratum"
+* select[1].select[0].column[0].path = "value.text"
+* select[1].select[0].column[0].type = "string"
+* select[1].select[0].column[1].name = "numerator"
+* select[1].select[0].column[1].path = "population.where(code.coding.code = 'numerator').first().count"
+* select[1].select[0].column[1].type = "integer"
+* select[1].select[0].column[2].name = "denominator"
+* select[1].select[0].column[2].path = "population.where(code.coding.code = 'denominator').first().count"
+* select[1].select[0].column[2].type = "integer"
+* select[1].select[0].column[3].name = "score"
+* select[1].select[0].column[3].path = "measureScore.value"
+* select[1].select[0].column[3].type = "decimal"

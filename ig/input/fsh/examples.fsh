@@ -632,7 +632,7 @@ Usage: #example
 * group.population[0].count = 47766
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 48250
-* group.measureScore = 99 '%' "%"
+* group.measureScore.value = 0.99
 * extension[coverageSource].valueCode = #administrative
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
 * extension[dataLineage].valueCode = #reconciled
@@ -656,19 +656,22 @@ Usage: #example
 * group.population[0].count = 1596
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 2100
-* group.measureScore = 76 '%' "%"
+* group.measureScore.value = 0.76
 * group.stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group.stratifier[0].stratum[0].value.text = "female"
-* group.stratifier[0].stratum[0].measureScore = 78 '%' "%"
+* group.stratifier[0].stratum[0].measureScore.value = 0.78
 * group.stratifier[0].stratum[1].value.text = "male"
-* group.stratifier[0].stratum[1].measureScore = 74 '%' "%"
+* group.stratifier[0].stratum[1].measureScore.value = 0.74
 * group.stratifier[1].code = $CoverageStratifier#age-band "Age band"
 * group.stratifier[1].stratum[0].value.text = "9–59 months"
-* group.stratifier[1].stratum[0].measureScore = 71 '%' "%"
+* group.stratifier[1].stratum[0].measureScore.value = 0.71
 * group.stratifier[1].stratum[1].value.text = "5–14 years"
-* group.stratifier[1].stratum[1].measureScore = 79 '%' "%"
+* group.stratifier[1].stratum[1].measureScore.value = 0.79
 * extension[coverageSource].valueCode = #survey
-* extension[sampleDesign].valueString = "WHO 30×10 cluster survey (n = 2,100), district-representative; evidence: vaccination card + caregiver recall; 76% (95% CI 72–80)"
+* extension[sampleDesign].valueString = "WHO 30×10 cluster survey (n = 2,100), district-representative; evidence: vaccination card + caregiver recall"
+* extension[confidenceInterval].extension[low].valueDecimal = 0.72
+* extension[confidenceInterval].extension[high].valueDecimal = 0.80
+* extension[confidenceInterval].extension[level].valueDecimal = 95
 * extension[dataLineage].valueCode = #reconciled
 
 // LQAS — the second independent method (coverage-source #lqas). LQAS is an
@@ -695,7 +698,7 @@ Usage: #example
 * group.population[0].count = 12
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 15
-* group.measureScore = 80 '%' "%"
+* group.measureScore.value = 0.8
 * group.stratifier[0].code = $CoverageStratifier#disposition "Disposition"
 * group.stratifier[0].stratum[0].value.text = "lot rejected — mop-up triggered (Rokupr zone 1)"
 * group.stratifier[0].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
@@ -893,7 +896,7 @@ Usage: #example
 * group.population[0].count = 2900
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 3200
-* group.measureScore = 91 '%' "%"
+* group.measureScore.value = 0.91
 // The drug × sex × age-band × disposition cube the ESPEN treatment form collects,
 // carried as MeasureReport stratifiers keyed by the standard ICRCoverageStratifier
 // axes the Measure (icr-mda-treatment-coverage) declares — the canonical, now-
@@ -957,7 +960,7 @@ Usage: #example
 * group.population[0].count = 188
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 200
-* group.measureScore = 94 '%' "%"
+* group.measureScore.value = 0.94
 * group.stratifier[0].code = $CoverageStratifier#disposition "Disposition"
 * group.stratifier[0].stratum[0].value.text = "not treated — insecurity"
 * group.stratifier[0].stratum[0].population[0].code = $MeasurePopulation#numerator "Numerator"
@@ -1170,14 +1173,14 @@ Usage: #example
 * group.population[0].count = 2866
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 47766
-* group.measureScore = 6 '%' "%"
+* group.measureScore.value = 0.06
 * group.stratifier[0].code = $CoverageStratifier#dose-history "Dose history / zero-dose status"
 * group.stratifier[0].stratum[0].value.text = "zero-dose"
-* group.stratifier[0].stratum[0].measureScore = 6 '%' "%"
+* group.stratifier[0].stratum[0].measureScore.value = 0.06
 * group.stratifier[0].stratum[1].value.text = "previously-received"
-* group.stratifier[0].stratum[1].measureScore = 91 '%' "%"
+* group.stratifier[0].stratum[1].measureScore.value = 0.91
 * group.stratifier[0].stratum[2].value.text = "no-recall"
-* group.stratifier[0].stratum[2].measureScore = 3 '%' "%"
+* group.stratifier[0].stratum[2].measureScore.value = 0.03
 
 Instance: example-readiness-coverage
 InstanceOf: ICRAdministrativeCoverage
@@ -1199,16 +1202,16 @@ Usage: #example
 * group.population[0].count = 10
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 12
-* group.measureScore = 83 '%' "%"
+* group.measureScore.value = 0.83
 * group.stratifier[0].code = $CoverageStratifier#readiness-domain "Readiness domain"
 * group.stratifier[0].stratum[0].value.text = "microplan"
-* group.stratifier[0].stratum[0].measureScore = 100 '%' "%"
+* group.stratifier[0].stratum[0].measureScore.value = 1
 * group.stratifier[0].stratum[1].value.text = "cold-chain"
-* group.stratifier[0].stratum[1].measureScore = 83 '%' "%"
+* group.stratifier[0].stratum[1].measureScore.value = 0.83
 * group.stratifier[0].stratum[2].value.text = "social-mobilization"
-* group.stratifier[0].stratum[2].measureScore = 75 '%' "%"
+* group.stratifier[0].stratum[2].measureScore.value = 0.75
 * group.stratifier[0].stratum[3].value.text = "trainings"
-* group.stratifier[0].stratum[3].measureScore = 83 '%' "%"
+* group.stratifier[0].stratum[3].measureScore.value = 0.83
 
 Instance: example-sch-mda-protocol
 InstanceOf: ICRCampaignProtocol

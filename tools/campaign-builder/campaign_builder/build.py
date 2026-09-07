@@ -8,6 +8,7 @@ Outputs (in --out, default tools/campaign-builder/out/):
     03-plan-definitions.ndjson
     04-target-populations.ndjson
     05-care-plans.ndjson
+    06-coverage-reports.ndjson   results: administrative / realtime / survey / LQAS MeasureReports
     calendar.csv       one row per LGA CarePlan (a quick preview of the calendar)
     report.md          counts by programme / year / state, plus overlaps
 """
@@ -24,6 +25,7 @@ from pathlib import Path
 from . import fhir
 from .config import CONFIG_DIR, Config, load_config
 from .population import band_population
+from .results import build_results, load_results_config
 from .schedule import Round, expand
 
 DEFAULT_OUT = Path(__file__).resolve().parent.parent / "out"
@@ -101,14 +103,22 @@ def build(cfg: Config, as_of: date) -> dict[str, list[dict]]:
                     start=w.start, end=w.end, as_of=as_of, geography_id=w.lga.id, geography_name=f"{w.lga.name} LGA",
                     round_number=r.round_number, part_of=state_cid, created_lead_days=45, activity_types=extra_types))
 
+    reports, results_summary = build_results(cfg, load_results_config(cfg_dir(cfg)), rounds, populations, as_of, _short)
+
     return {
         "01-activity-definitions": activities,
         "02-eligibility-groups": eligibility,
         "03-plan-definitions": protocols,
         "04-target-populations": list(populations.values()),
         "05-care-plans": care_plans,
+        "06-coverage-reports": reports,
         "_rounds": rounds,  # not written as NDJSON; used by the report
+        "_results_summary": results_summary,
     }
+
+
+def cfg_dir(cfg: Config) -> Path:
+    return getattr(cfg, "config_dir", CONFIG_DIR)
 
 
 class _Scope:
@@ -154,6 +164,20 @@ def _report(cfg: Config, bundle: dict, as_of: date) -> str:
     by_status = Counter(cp["status"] for cp in plans)
     lines += ["## CarePlans by status", "", "| status | count |", "|---|---|"]
     lines += [f"| {k} | {v} |" for k, v in sorted(by_status.items())]
+
+    rs = bundle.get("_results_summary", {})
+    reports = bundle.get("06-coverage-reports", [])
+    lines += ["", "## Results (coverage MeasureReports)", "",
+              f"{len(reports)} reports: {rs.get('admin', 0)} reconciled administrative, {rs.get('realtime', 0)} realtime (active round), "
+              f"{rs.get('survey_state', 0)} state-level post-campaign surveys, {rs.get('lqas', 0)} LQAS lots, {rs.get('ces', 0)} NTD coverage evaluation surveys. "
+              f"{rs.get('missing', 0)} LGA rounds have no administrative report (never submitted or not yet received); "
+              f"{rs.get('incidents', 0)} rounds were hit by an incident (stock-out, security, late start); {rs.get('over100', 0)} LGA rounds report administrative coverage above 100%."]
+    admin = [r for r in reports if r["extension"][1]["valueCode"] == "administrative" and r["extension"][2]["valueCode"] == "reconciled"]
+    if admin:
+        scores = sorted(r["group"][0]["measureScore"]["value"] for r in admin)
+        q = lambda p: scores[min(len(scores) - 1, int(p * len(scores)))]
+        lines += ["", "| admin coverage | p10 | p25 | median | p75 | p90 |", "|---|---|---|---|---|---|",
+                  f"| all programmes | {q(.1):.0%} | {q(.25):.0%} | {q(.5):.0%} | {q(.75):.0%} | {q(.9):.0%} |"]
 
     lines += ["", "## LGA rounds by programme and year", ""]
     years = sorted({r.year for r in rounds})
@@ -215,7 +239,7 @@ def main(argv: list[str] | None = None) -> None:
     write_outputs(cfg, bundle, a.out, a.as_of)
     plans = bundle["05-care-plans"]
     print(f"Wrote {len(plans)} CarePlans, {len(bundle['04-target-populations'])} target-population Groups, "
-          f"{len(bundle['03-plan-definitions'])} PlanDefinitions to {a.out}")
+          f"{len(bundle['03-plan-definitions'])} PlanDefinitions, {len(bundle['06-coverage-reports'])} coverage MeasureReports to {a.out}")
     print(f"Status split: {dict(Counter(cp['status'] for cp in plans))}")
     print(f"See {a.out / 'report.md'} and {a.out / 'calendar.csv'}")
 

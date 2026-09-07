@@ -27,8 +27,9 @@ const manifest = await FileAttachment("data/manifest.json").json();
    boundaries and settlements.
 2. **SQL-on-FHIR ViewDefinitions** in the ICR Implementation Guide say how those
    resources flatten to tables. `IcrCampaignCalendar` gives one row per campaign per
-   geography; `IcrTargetPopulation` gives the denominators. Any conformant runner
-   produces the same tables.
+   geography; `IcrTargetPopulation` the denominators; `IcrCoverage` and
+   `IcrCoverageStrata` the results (administrative, survey and LQAS MeasureReports
+   and their disaggregations). Any conformant runner produces the same tables.
 3. **`tools/warehouse/refresh.sh`** exports the resources from the server, runs the
    views (octofhir-sof), writes hive-partitioned parquet under `data/parquet/`, runs
    kiln for the location GeoParquet, and builds the admin-boundary PMTiles.
@@ -48,9 +49,14 @@ tagged `nga-demo` in the registry. The four Sierra Leone campaigns are the IG's
 worked examples. See `tools/campaign-builder/README.md` for what is sourced and
 what is assumed.
 
-**People reached** is blank on purpose: delivery events (immunizations, drug
-administrations) are not loaded yet. When they are, a third ViewDefinition adds
-them and the column fills in without changing anything else here.
+**Results** are synthetic too: one reconciled administrative coverage report per
+completed LGA round (tallies ÷ planning denominator, so above 100 % where the
+census projection undercounts a fast-growing LGA), daily realtime reports for
+the round running now, state-level post-campaign cluster surveys for the
+vaccination campaigns, LQAS lots for polio and MR, and NTD coverage evaluation
+surveys in a sample of LGAs. About 7 % of rounds have no report, because that is
+what real dashboards face. Individual delivery events are not loaded yet; when
+they are, they reconcile against these aggregates.
 
 <style>
 .big { font-size: 24px; font-weight: 600; line-height: 1.1; }

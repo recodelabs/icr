@@ -1,10 +1,16 @@
 {
-  "refreshed_at": "2026-09-07T14:19:52+00:00",
+  "refreshed_at": "2026-09-07T17:43:16+00:00",
   "server": "http://localhost:3447/fhir",
   "server_name": "hapi-local",
   "tables": {
     "campaign_calendar": {
       "rows": 3041
+    },
+    "coverage": {
+      "rows": 2890
+    },
+    "coverage_strata": {
+      "rows": 19853
     },
     "locations": {
       "rows": 344278
@@ -19,9 +25,19 @@
       "resource": "Group",
       "status": "draft"
     },
+    "IcrCoverageStrata": {
+      "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverageStrata",
+      "resource": "MeasureReport",
+      "status": "draft"
+    },
     "IcrCampaignCalendar": {
       "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar",
       "resource": "CarePlan",
+      "status": "draft"
+    },
+    "IcrCoverage": {
+      "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage",
+      "resource": "MeasureReport",
       "status": "draft"
     }
   },

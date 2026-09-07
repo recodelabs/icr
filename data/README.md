@@ -20,6 +20,9 @@ data/
   parquet/                 the warehouse: one folder per table, hive-partitioned, read in place
     locations/             country=NGA/geom_type=…/type=…/part-0.parquet   (kiln transform)
     campaign_calendar/     country=NGA/part-0.parquet                      (ViewDefinition IcrCampaignCalendar)
+    target_population/                                                     (IcrTargetPopulation — denominators)
+    coverage/                                                              (IcrCoverage — admin / survey / LQAS results)
+    coverage_strata/                                                       (IcrCoverageStrata — sex, age band, strategy, disposition)
     _report.json           kiln's transform report (geometry issues etc.)
   tiles/
     admin.pmtiles          admin boundaries (layers `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)
@@ -70,8 +73,11 @@ Table names are the ViewDefinition names in snake case, so a new view in the
 IG becomes a new folder here with no naming decision. `locations` is kiln's
 table (columns: id, name, type, part_of, admin0..4 names/codes, path,
 ancestor_ids, quadkey, geometry…). Views are partitioned by `country`, taken
-from the registry by joining `location_id`; rows whose geography is not in the
-registry land in `country=__HIVE_DEFAULT_PARTITION__`.
+from the registry by joining `location_id` (or, for views without one, through
+`campaign_id` and the calendar); rows whose geography is not in the registry
+land in `country=__HIVE_DEFAULT_PARTITION__`. Partition columns are also written
+into the files (`WRITE_PARTITION_COLUMNS`), so they read correctly with or
+without `hive_partitioning` and with `union_by_name`.
 
 ## Conventions
 

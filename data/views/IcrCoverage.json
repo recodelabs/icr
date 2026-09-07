@@ -1,0 +1,120 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage",
+  "title": "ICR coverage reports",
+  "description": "One row per coverage report (MeasureReport): the **results** \u2014 people reached\nand coverage, whether from administrative tallies (`source = administrative`),\na post-campaign survey (`survey`) or LQAS (`lqas`), and whether preliminary\n(`lineage = realtime`) or final (`reconciled`). Joined to the campaign\ncalendar on `campaign_id` this gives people reached and coverage per round;\ngrouping by `campaign_id` and `source` puts administrative and survey figures\nside by side. Strata (sex, age band, delivery strategy, disposition,\ngeography) are in the companion view `IcrCoverageStrata`.",
+  "name": "IcrCoverage",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "MeasureReport",
+  "where": [
+    {
+      "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').exists()",
+      "description": "Only ICR coverage reports (administrative, survey, LQAS) \u2014 not cost or readiness reports"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "report_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "campaign_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)",
+          "type": "string",
+          "description": "The campaign (round) this report is about \u2014 join key to IcrCampaignCalendar"
+        },
+        {
+          "name": "location_id",
+          "path": "subject.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "measure",
+          "path": "measure",
+          "type": "canonical"
+        },
+        {
+          "name": "source",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').value.ofType(code)",
+          "type": "code",
+          "description": "administrative | survey | lqas"
+        },
+        {
+          "name": "lineage",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/realtime-vs-reconciled').value.ofType(code)",
+          "type": "code",
+          "description": "realtime (preliminary, in-campaign) | reconciled (final)"
+        },
+        {
+          "name": "denominator_type",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/denominator-type').value.ofType(code)",
+          "type": "code"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code"
+        },
+        {
+          "name": "period_start",
+          "path": "period.start",
+          "type": "date"
+        },
+        {
+          "name": "period_end",
+          "path": "period.end",
+          "type": "date"
+        },
+        {
+          "name": "reported",
+          "path": "date",
+          "type": "dateTime"
+        },
+        {
+          "name": "numerator",
+          "path": "group.first().population.where(code.coding.code = 'numerator').first().count",
+          "type": "integer",
+          "description": "People reached (administrative) or sampled and covered (survey / LQAS)"
+        },
+        {
+          "name": "denominator",
+          "path": "group.first().population.where(code.coding.code = 'denominator').first().count",
+          "type": "integer",
+          "description": "Planning denominator (administrative) or sample size (survey / LQAS)"
+        },
+        {
+          "name": "score",
+          "path": "group.first().measureScore.value",
+          "type": "decimal",
+          "description": "Coverage as a proportion 0\u20131 (the ICR coverage Measures are proportion-scored; multiply by 100 for percent)"
+        },
+        {
+          "name": "ci_low",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('low').value.ofType(decimal)",
+          "type": "decimal"
+        },
+        {
+          "name": "ci_high",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('high').value.ofType(decimal)",
+          "type": "decimal"
+        },
+        {
+          "name": "sample_design",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/sample-design').value.ofType(string)",
+          "type": "string"
+        },
+        {
+          "name": "reporter",
+          "path": "reporter.display",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverageStrata",
+  "title": "ICR coverage strata",
+  "description": "One row per stratum of a coverage report: the disaggregations (sex, age band,\ndelivery strategy, disposition, geography) declared by the ICR coverage\nMeasures. Join to `IcrCoverage` on `report_id`.",
+  "name": "IcrCoverageStrata",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "MeasureReport",
+  "where": [
+    {
+      "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').exists()"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "report_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "campaign_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "forEach": "group.first().stratifier",
+      "column": [
+        {
+          "name": "stratifier",
+          "path": "code.coding.first().code",
+          "type": "code",
+          "description": "sex | age-band | delivery-strategy | disposition | geography | dose-history"
+        }
+      ],
+      "select": [
+        {
+          "forEach": "stratum",
+          "column": [
+            {
+              "name": "stratum",
+              "path": "value.text",
+              "type": "string"
+            },
+            {
+              "name": "numerator",
+              "path": "population.where(code.coding.code = 'numerator').first().count",
+              "type": "integer"
+            },
+            {
+              "name": "denominator",
+              "path": "population.where(code.coding.code = 'denominator').first().count",
+              "type": "integer"
+            },
+            {
+              "name": "score",
+              "path": "measureScore.value",
+              "type": "decimal"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

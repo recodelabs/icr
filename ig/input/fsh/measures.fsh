@@ -60,6 +60,8 @@ Usage: #definition
 * group.stratifier[1].code = $CoverageStratifier#age-band "Age band"
 * group.stratifier[1].criteria.language = #text/cql
 * group.stratifier[1].criteria.expression = "Eligibility age band"
+* group.stratifier[2].code = $CoverageStratifier#disposition "Disposition"
+* group.stratifier[2].description = "Survey disposition — covered / not covered for cluster surveys; the lot verdict (pass / intermediate / fail, children missed) for LQAS"
 
 Instance: icr-mda-treatment-coverage
 InstanceOf: Measure
