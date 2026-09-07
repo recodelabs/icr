@@ -1,0 +1,85 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar",
+  "title": "ICR campaign calendar",
+  "description": "One row per campaign (CarePlan) per target geography: **what is planned or ran,\nwhere, and when** \u2014 the table behind the campaign calendar and the\ncampaign-visibility use case (an official registry of what is planned where,\nviewable as a map and a calendar).\n\nJoin `location_id` to the location registry (Location, or its parquet export) to\nroll campaigns up or down the administrative hierarchy; `parent_campaign_id`\nlinks a round to its umbrella campaign; `round` is the round number within the\nprogramme-year. Umbrella campaigns without a `target-geography` still appear\n(one row, `location_id` empty) thanks to `forEachOrNull`.\n\nColumn types are declared so runners that support native temporal types write\n`period_start` / `period_end` as dates rather than strings.",
+  "name": "IcrCampaignCalendar",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "CarePlan",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "campaign_id",
+          "path": "getResourceKey()",
+          "type": "id",
+          "description": "The CarePlan id"
+        },
+        {
+          "name": "title",
+          "path": "title",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code",
+          "description": "draft (planned) | active | completed | \u2026"
+        },
+        {
+          "name": "intent",
+          "path": "intent",
+          "type": "code",
+          "description": "plan (microplan / umbrella) | order (execution)"
+        },
+        {
+          "name": "campaign_type",
+          "path": "category.first().coding.first().code",
+          "type": "code",
+          "description": "First category: vaccination-sia | mda | itn-distribution | irs | vitamin-a | integrated"
+        },
+        {
+          "name": "period_start",
+          "path": "period.start",
+          "type": "date"
+        },
+        {
+          "name": "period_end",
+          "path": "period.end",
+          "type": "date"
+        },
+        {
+          "name": "round",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-round').value.ofType(positiveInt)",
+          "type": "positiveInt"
+        },
+        {
+          "name": "parent_campaign_id",
+          "path": "partOf.first().getReferenceKey(CarePlan)",
+          "type": "string",
+          "description": "The umbrella campaign this round belongs to"
+        },
+        {
+          "name": "protocol",
+          "path": "instantiatesCanonical.first()",
+          "type": "canonical",
+          "description": "The PlanDefinition (protocol) this campaign instantiates"
+        }
+      ]
+    },
+    {
+      "forEachOrNull": "extension('https://icr.healthcampaigns.org/StructureDefinition/target-geography')",
+      "column": [
+        {
+          "name": "location_id",
+          "path": "value.ofType(Reference).getReferenceKey(Location)",
+          "type": "string",
+          "description": "The Location this campaign targets \u2014 join key to the location registry. One row per target geography; empty for umbrella campaigns with none."
+        }
+      ]
+    }
+  ]
+}

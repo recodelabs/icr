@@ -35,6 +35,11 @@ ndjson FILE…` loads any NDJSON of FHIR resources. The IG resources come from
 
 ## Testing kiln against it
 
+The registry export now lives in the repo's analytics hub, `data/` (see `data/README.md`):
+`tools/warehouse/refresh.sh` runs kiln against this server into `data/raw/hapi-local/locations`
+(snapshot) and `data/parquet/locations` (GeoParquet), then every IG ViewDefinition. For ad-hoc
+kiln experiments use a scratch directory:
+
 ```bash
 cd tools/hapi && mkdir -p .local           # .local/ is git-ignored scratch
 KILN=~/github/kiln/target/debug/kiln       # or `cargo build --release` → target/release/kiln
