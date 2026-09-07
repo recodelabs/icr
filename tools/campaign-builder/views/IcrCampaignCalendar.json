@@ -1,0 +1,78 @@
+{
+  "resourceType": "ViewDefinition",
+  "name": "IcrCampaignCalendar",
+  "resource": "CarePlan",
+  "status": "draft",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "campaign_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "title",
+          "path": "title",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code"
+        },
+        {
+          "name": "intent",
+          "path": "intent",
+          "type": "code"
+        },
+        {
+          "name": "campaign_type",
+          "path": "category.first().coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "period_start",
+          "path": "period.start",
+          "type": "date"
+        },
+        {
+          "name": "period_end",
+          "path": "period.end",
+          "type": "date"
+        },
+        {
+          "name": "round",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-round').value.ofType(positiveInt)",
+          "type": "positiveInt"
+        },
+        {
+          "name": "parent_campaign_id",
+          "path": "partOf.first().getReferenceKey(CarePlan)",
+          "type": "string"
+        },
+        {
+          "name": "protocol",
+          "path": "instantiatesCanonical.first()",
+          "type": "canonical"
+        }
+      ]
+    },
+    {
+      "forEachOrNull": "extension('https://icr.healthcampaigns.org/StructureDefinition/target-geography')",
+      "column": [
+        {
+          "name": "location_id",
+          "path": "value.ofType(Reference).getReferenceKey(Location)",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar",
+  "title": "ICR campaign calendar",
+  "description": "One row per campaign per target geography: what is planned or ran where and when. Join location_id to the location registry (parquet) for admin roll-ups.",
+  "fhirVersion": [
+    "4.0.1"
+  ]
+}

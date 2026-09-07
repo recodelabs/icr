@@ -1,0 +1,178 @@
+# States, LGAs and population inputs for the Nigeria demo calendar.
+#
+# LGA ids are the registry Location ids (state code + GRID3 lgacode) as loaded
+# in the local HAPI on 2026-09-06 (see tools/hapi). Names are the registry names.
+#
+# Population: 2006 census (NPC) and the 2022 NPC projection, both as published
+# on citypopulation.de (accessed 2026-09-07). Any other year is interpolated /
+# extrapolated geometrically from those two points per LGA. This is the
+# "estimate we could find" placeholder; the plan is to replace it with WorldPop
+# grids aggregated to LGA boundaries in a second step (denominator-source then
+# becomes `worldpop`).
+
+country_location: nga
+canonical_base: https://icr.healthcampaigns.org
+
+# Age-band fractions of total population, northern-Nigeria shaped (high
+# fertility: ~18% under five, ~44% under fifteen). Fractions are applied to the
+# LGA total for the round year. Ranges are what goes on the Group
+# characteristic; units are UCUM (`mo` months, `a` years).
+age_bands:
+  under5:      {label: "Children 0–59 months",          low: 0,  low_unit: mo, high: 59, high_unit: mo, fraction: 0.185}
+  m6_59:       {label: "Children 6–59 months",          low: 6,  low_unit: mo, high: 59, high_unit: mo, fraction: 0.175}
+  m9_59:       {label: "Children 9–59 months",          low: 9,  low_unit: mo, high: 59, high_unit: mo, fraction: 0.160}
+  m9_y14:      {label: "Children 9 months–14 years",    low: 9,  low_unit: mo, high: 14, high_unit: a,  fraction: 0.440}
+  y5_14:       {label: "School-age children 5–14 years", low: 5, low_unit: a,  high: 14, high_unit: a,  fraction: 0.300}
+  y5_plus:     {label: "Population 5 years and older",  low: 5,  low_unit: a,  high: null, high_unit: a, fraction: 0.815}
+  m6_plus:     {label: "Population 6 months and older", low: 6,  low_unit: mo, high: null, high_unit: a, fraction: 0.985}
+
+states:
+  ba:
+    id: nga-ba
+    name: Bauchi
+    census_2006: 4653066
+    projection_2022: 8308800
+    lgas:
+      nga-ba-5001: {name: Alkaleri,      census_2006: 328284, projection_2022: 586200}
+      nga-ba-5002: {name: Bauchi,        census_2006: 493730, projection_2022: 881600}
+      nga-ba-5003: {name: Bogoro,        census_2006: 83809,  projection_2022: 149700}
+      nga-ba-5004: {name: Dambam,        census_2006: 150212, projection_2022: 268200}
+      nga-ba-5005: {name: Darazo,        census_2006: 249946, projection_2022: 446300}
+      nga-ba-5006: {name: Dass,          census_2006: 90114,  projection_2022: 160900}
+      nga-ba-5007: {name: Gamawa,        census_2006: 284411, projection_2022: 507900}
+      nga-ba-5008: {name: Ganjuwa,       census_2006: 278471, projection_2022: 497300}
+      nga-ba-5009: {name: Giade,         census_2006: 156022, projection_2022: 278600}
+      nga-ba-5010: {name: Itas/Gadau,    census_2006: 228527, projection_2022: 408100}
+      nga-ba-5011: {name: Jama'Are,      census_2006: 117482, projection_2022: 209800}
+      nga-ba-5012: {name: Katagum,       census_2006: 293020, projection_2022: 523200}
+      nga-ba-5013: {name: Kirfi,         census_2006: 145636, projection_2022: 260100}
+      nga-ba-5014: {name: Misau,         census_2006: 261410, projection_2022: 466800}
+      nga-ba-5015: {name: Ningi,         census_2006: 385997, projection_2022: 689300}
+      nga-ba-5016: {name: Shira,         census_2006: 233999, projection_2022: 417800}
+      nga-ba-5017: {name: Tafawa-Balewa, census_2006: 221310, projection_2022: 395200}
+      nga-ba-5018: {name: Toro,          census_2006: 346000, projection_2022: 617800}
+      nga-ba-5019: {name: Warji,         census_2006: 114983, projection_2022: 205300}
+      nga-ba-5020: {name: Zaki,          census_2006: 189703, projection_2022: 338700}
+  kn:
+    id: nga-kn
+    name: Kano
+    census_2006: 9401288
+    projection_2022: 15462200
+    lgas:
+      nga-kn-20001: {name: Tarauni,        census_2006: 221844, projection_2022: 364900}
+      nga-kn-20002: {name: Takai,          census_2006: 202639, projection_2022: 333300}
+      nga-kn-20003: {name: Garun Malam,    census_2006: 118622, projection_2022: 195100}
+      nga-kn-20004: {name: Ajingi,         census_2006: 172610, projection_2022: 283900}
+      nga-kn-20005: {name: Rimin Gado,     census_2006: 103371, projection_2022: 170000}
+      nga-kn-20006: {name: Garko,          census_2006: 161966, projection_2022: 266400}
+      nga-kn-20007: {name: Gaya,           census_2006: 207419, projection_2022: 341100}
+      nga-kn-20008: {name: Tsanyawa,       census_2006: 157730, projection_2022: 259400}
+      nga-kn-20009: {name: Albasu,         census_2006: 187639, projection_2022: 308600}
+      nga-kn-20010: {name: Gezawa,         census_2006: 282328, projection_2022: 464300}
+      nga-kn-20011: {name: Sumaila,        census_2006: 250379, projection_2022: 411800}
+      nga-kn-20012: {name: Gwale,          census_2006: 357827, projection_2022: 588500}
+      nga-kn-20013: {name: Shanono,        census_2006: 139128, projection_2022: 228800}
+      nga-kn-20014: {name: Rano,           census_2006: 148276, projection_2022: 243900}
+      nga-kn-20015: {name: Tofa,           census_2006: 98603,  projection_2022: 162200}
+      nga-kn-20016: {name: Gabasawa,       census_2006: 211204, projection_2022: 347400}
+      nga-kn-20017: {name: Gwarzo,         census_2006: 183624, projection_2022: 302000}
+      nga-kn-20018: {name: Ungogo,         census_2006: 365737, projection_2022: 601500}
+      nga-kn-20019: {name: Warawa,         census_2006: 131858, projection_2022: 216900}
+      nga-kn-20020: {name: Doguwa,         census_2006: 150645, projection_2022: 247800}
+      nga-kn-20021: {name: Dawakin Tofa,   census_2006: 246197, projection_2022: 404900}
+      nga-kn-20022: {name: Dawakin Kudu,   census_2006: 225497, projection_2022: 370900}
+      nga-kn-20023: {name: Dambatta,       census_2006: 210474, projection_2022: 346200}
+      nga-kn-20024: {name: Dala,           census_2006: 418759, projection_2022: 688700}
+      nga-kn-20025: {name: Bebeji,         census_2006: 191916, projection_2022: 315600}
+      nga-kn-20026: {name: Kabo,           census_2006: 153158, projection_2022: 251900}
+      nga-kn-20027: {name: Wudil,          census_2006: 188639, projection_2022: 310300}
+      nga-kn-20028: {name: Bunkure,        census_2006: 174467, projection_2022: 286900}
+      nga-kn-20029: {name: Tudun Wada,     census_2006: 228658, projection_2022: 376100}
+      nga-kn-20030: {name: Fagge,          census_2006: 200095, projection_2022: 329100}
+      nga-kn-20031: {name: Bichi,          census_2006: 278309, projection_2022: 457700}
+      nga-kn-20032: {name: Rogo,           census_2006: 227607, projection_2022: 374300}
+      nga-kn-20033: {name: Kibiya,         census_2006: 138618, projection_2022: 228000}
+      nga-kn-20034: {name: Kiru,           census_2006: 267168, projection_2022: 439400}
+      nga-kn-20035: {name: Kura,           census_2006: 143094, projection_2022: 235300}
+      nga-kn-20036: {name: Madobi,         census_2006: 137685, projection_2022: 226400}
+      nga-kn-20037: {name: Nassarawa,      census_2006: 596411, projection_2022: 980900}
+      nga-kn-20038: {name: Bagwai,         census_2006: 161533, projection_2022: 265700}
+      nga-kn-20039: {name: Makoda,         census_2006: 220094, projection_2022: 362000}
+      nga-kn-20040: {name: Minjibir,       census_2006: 219611, projection_2022: 361200}
+      nga-kn-20041: {name: Karaye,         census_2006: 144045, projection_2022: 236900}
+      nga-kn-20042: {name: Kunchi,         census_2006: 110170, projection_2022: 181200}
+      nga-kn-20043: {name: Kano Municipal, census_2006: 371243, projection_2022: 610600}
+      nga-kn-20044: {name: Kumbotso,       census_2006: 294391, projection_2022: 484200}
+  ji:
+    id: nga-ji
+    name: Jigawa
+    census_2006: 4361002
+    projection_2022: 7499100
+    lgas:
+      nga-ji-18001: {name: Kaugama,        census_2006: 128981, projection_2022: 221800}
+      nga-ji-18002: {name: Taura,          census_2006: 131861, projection_2022: 226700}
+      nga-ji-18004: {name: Babura,         census_2006: 212955, projection_2022: 366200}
+      nga-ji-18005: {name: Guri,           census_2006: 113363, projection_2022: 194900}
+      nga-ji-18006: {name: Gumel,          census_2006: 106371, projection_2022: 182900}
+      nga-ji-18007: {name: Kiri Kasama,    census_2006: 192583, projection_2022: 331200}
+      nga-ji-18008: {name: Gwaram,         census_2006: 271368, projection_2022: 466600}
+      nga-ji-18009: {name: Gwiwa,          census_2006: 128730, projection_2022: 221400}
+      nga-ji-18010: {name: Kazaure,        census_2006: 161161, projection_2022: 277100}
+      nga-ji-18011: {name: Hadejia,        census_2006: 104286, projection_2022: 179300}
+      nga-ji-18012: {name: Dutse,          census_2006: 251135, projection_2022: 431800}
+      nga-ji-18013: {name: Auyo,           census_2006: 132268, projection_2022: 227400}
+      nga-ji-18014: {name: Miga,           census_2006: 127876, projection_2022: 219900}
+      nga-ji-18015: {name: Roni,           census_2006: 77414,  projection_2022: 133100}
+      nga-ji-18016: {name: Gagarawa,       census_2006: 82153,  projection_2022: 141300}
+      nga-ji-18017: {name: Malam Madori,   census_2006: 164791, projection_2022: 283400}
+      nga-ji-18018: {name: Buji,           census_2006: 97284,  projection_2022: 167300}
+      nga-ji-18019: {name: Yankwashi,      census_2006: 95643,  projection_2022: 164500}
+      nga-ji-18020: {name: Ringim,         census_2006: 192407, projection_2022: 330900}
+      nga-ji-18021: {name: Biriniwa,       census_2006: 142015, projection_2022: 244200}
+      nga-ji-18022: {name: Birnin Kudu,    census_2006: 314108, projection_2022: 540100}
+      nga-ji-18023: {name: Maigatari,      census_2006: 177057, projection_2022: 304500}
+      nga-ji-18024: {name: Garki,          census_2006: 150261, projection_2022: 258400}
+      nga-ji-18025: {name: Kiyawa,         census_2006: 172952, projection_2022: 297400}
+      nga-ji-18026: {name: Jahun,          census_2006: 229882, projection_2022: 395300}
+      nga-ji-18027: {name: Kafin Hausa,    census_2006: 267284, projection_2022: 459600}
+      nga-ji-18030: {name: Sule Tankarkar, census_2006: 134813, projection_2022: 231800}
+  go:
+    id: nga-go
+    name: Gombe
+    census_2006: 2365040
+    projection_2022: 3960100
+    lgas:
+      nga-go-16001: {name: Akko,         census_2006: 337435, projection_2022: 565000}
+      nga-go-16002: {name: Balanga,      census_2006: 211490, projection_2022: 354100}
+      nga-go-16003: {name: Billiri,      census_2006: 202680, projection_2022: 339400}
+      nga-go-16004: {name: Dukku,        census_2006: 207658, projection_2022: 347700}
+      nga-go-16005: {name: Funakaye,     census_2006: 237687, projection_2022: 398000}
+      nga-go-16006: {name: Gombe,        census_2006: 266844, projection_2022: 446800}
+      nga-go-16007: {name: Kaltungo,     census_2006: 160392, projection_2022: 268600}
+      nga-go-16008: {name: Kwami,        census_2006: 193995, projection_2022: 324800}
+      nga-go-16009: {name: Nafada,       census_2006: 140185, projection_2022: 234700}
+      nga-go-16010: {name: Shomgom,      census_2006: 150948, projection_2022: 252800}
+      nga-go-16011: {name: Yamaltu/Deba, census_2006: 255726, projection_2022: 428200}
+  yo:
+    id: nga-yo
+    name: Yobe
+    census_2006: 2321339
+    projection_2022: 3649600
+    lgas:
+      nga-yo-701: {name: Bade,     census_2006: 139804, projection_2022: 219800}
+      nga-yo-702: {name: Bursari,  census_2006: 109692, projection_2022: 172500}
+      nga-yo-703: {name: Damaturu, census_2006: 87706,  projection_2022: 137900}
+      nga-yo-704: {name: Fika,     census_2006: 136736, projection_2022: 215000}
+      nga-yo-705: {name: Fune,     census_2006: 301954, projection_2022: 474700}
+      nga-yo-706: {name: Geidam,   census_2006: 155740, projection_2022: 244900}
+      nga-yo-707: {name: Gujba,    census_2006: 129797, projection_2022: 204100}
+      nga-yo-708: {name: Gulani,   census_2006: 103516, projection_2022: 162700}
+      nga-yo-709: {name: Jakusko,  census_2006: 232458, projection_2022: 365500}
+      nga-yo-710: {name: Karasuwa, census_2006: 105514, projection_2022: 165900}
+      nga-yo-711: {name: Machina,  census_2006: 60994,  projection_2022: 95900}
+      nga-yo-712: {name: Nangere,  census_2006: 87517,  projection_2022: 137600}
+      nga-yo-713: {name: Nguru,    census_2006: 150699, projection_2022: 236900}
+      nga-yo-714: {name: Potiskum, census_2006: 204866, projection_2022: 322100}
+      nga-yo-715: {name: Tarmuwa,  census_2006: 77667,  projection_2022: 122100}
+      nga-yo-716: {name: Yunusari, census_2006: 125940, projection_2022: 198000}
+      nga-yo-717: {name: Yusufari, census_2006: 110739, projection_2022: 174100}

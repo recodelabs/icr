@@ -21,3 +21,8 @@ tools/espen-mda-datagen/**/sample-data/
 
 # tools/hapi scratch (kiln snapshots / parquet output)
 tools/hapi/.local/
+
+# tools/campaign-builder generated output and venv
+tools/campaign-builder/out/
+tools/campaign-builder/.venv/
+tools/campaign-builder/*.egg-info/
