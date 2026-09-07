@@ -82,14 +82,20 @@ EOF
     tmp="$(mktemp -t "$table.XXXX").parquet"
     "$SOF" run "$view_json" --input "$ndjson" --output parquet --parquet-temporal native --out "$tmp"
     rm -rf "$PARQUET/$table"; mkdir -p "$PARQUET/$table"
-    # Partition by country, taken from the registry (locations parquet) via location_id.
+    # Partition by country: from the registry via location_id when the view has one,
+    # else via campaign_id through the campaign calendar table, else unpartitioned.
+    cols=$(duckdb -noheader -csv -c "SELECT string_agg(column_name, ',') FROM (DESCRIBE SELECT * FROM read_parquet('$tmp'))" | tr -d '"')
+    if [[ ",$cols," == *",location_id,"* ]]; then
+      country_join="LEFT JOIN (SELECT id AS _k, country FROM read_parquet('$PARQUET/locations/**/*.parquet', hive_partitioning=true, union_by_name=true)) l ON l._k = v.location_id"
+    elif [[ ",$cols," == *",campaign_id,"* ]] && [ -d "$PARQUET/campaign_calendar" ]; then
+      country_join="LEFT JOIN (SELECT campaign_id AS _k, any_value(country) AS country FROM read_parquet('$PARQUET/campaign_calendar/**/*.parquet', hive_partitioning=true, union_by_name=true) GROUP BY 1) l ON l._k = v.campaign_id"
+    else
+      country_join="LEFT JOIN (SELECT NULL AS _k, NULL::VARCHAR AS country) l ON FALSE"
+    fi
     duckdb -c "
       COPY (
-        SELECT v.*, l.country
-        FROM read_parquet('$tmp') v
-        LEFT JOIN (SELECT id, country FROM read_parquet('$PARQUET/locations/**/*.parquet', hive_partitioning=true, union_by_name=true)) l
-          ON l.id = v.location_id
-      ) TO '$PARQUET/$table' (FORMAT PARQUET, PARTITION_BY (country), OVERWRITE_OR_IGNORE, FILENAME_PATTERN 'part-{i}');"
+        SELECT v.*, l.country FROM read_parquet('$tmp') v $country_join
+      ) TO '$PARQUET/$table' (FORMAT PARQUET, PARTITION_BY (country), WRITE_PARTITION_COLUMNS TRUE, OVERWRITE_OR_IGNORE, FILENAME_PATTERN 'part-{i}');"
     rm -f "$tmp"
     rows=$(duckdb -noheader -csv -c "SELECT count(*) FROM read_parquet('$PARQUET/$table/**/*.parquet', hive_partitioning=true)")
     echo "   $name → parquet/$table ($rows rows)"

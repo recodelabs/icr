@@ -1,0 +1,143 @@
+# Results: how the synthetic campaign outcomes are generated.
+#
+# The generator does not draw a coverage percentage directly. For each LGA round:
+#
+#   true_population = planning denominator × denominator_error(LGA)
+#   reach           = quality(LGA, programme) + round noise (+ incident penalty)
+#   people_reached  = true_population × reach
+#   admin coverage  = people_reached ÷ planning denominator          (can exceed 100%)
+#
+# so administrative coverage lands above 100% exactly where it does in real life —
+# fast-growing LGAs whose census projection is too low — without being hand-placed.
+# Surveys measure `reach` (with recall loss and sampling error); they are the
+# independent check on the administrative figure.
+#
+# Everything is deterministic from `seed`.
+
+seed: 20260907
+
+# Share of LGA rounds with no administrative report at all (never submitted / lost).
+missing_report_rate: 0.07
+
+# Rounds that are `active` at the as-of date get daily realtime reports instead of
+# a reconciled one: cumulative share of the final numerator reported at the end of
+# each campaign day.
+realtime_daily_shares: [0.28, 0.58, 0.84, 1.0]
+
+# Reporting lag (days after the LGA round ends) for the reconciled administrative report.
+admin_report_lag_days: [14, 35]
+
+# Per-LGA persistent factors. denominator_error > 1 means the projection undercounts.
+lga_factors:
+  denominator_error_default: [0.90, 1.15]
+  denominator_error:            # named overrides — urban growth outruns the projection
+    Kano Municipal: 1.28
+    Dala: 1.22
+    Nassarawa: 1.22
+    Fagge: 1.18
+    Tarauni: 1.15
+    Ungogo: 1.20
+    Kumbotso: 1.16
+    Gwale: 1.18
+    Bauchi: 1.17
+    Dutse: 1.10
+    Damaturu: 1.12
+    Potiskum: 1.10
+    Gombe: 1.14
+    Hadejia: 1.06
+  quality_adjust:               # added to the reach fraction for every programme
+    Gujba: -0.22                # insecurity (southern Yobe / Borno fringe)
+    Gulani: -0.20
+    Geidam: -0.15
+    Yunusari: -0.12
+    Machina: -0.10
+    Yusufari: -0.08
+    Tarmuwa: -0.06
+    Alkaleri: -0.06             # remote plateau LGAs
+    Ningi: -0.05
+    Toro: -0.04
+    Bogoro: -0.04
+  metro_lgas:                   # community-directed MDA under-reaches apartment dwellers
+    [Kano Municipal, Dala, Fagge, Gwale, Nassarawa, Tarauni, Kumbotso, Ungogo, Bauchi, Gombe, Damaturu, Dutse]
+  metro_mda_penalty: -0.12
+
+# One-off problems in a round (stock-out on day two, security incident, late start).
+incident_rate: 0.05
+incident_reach_multiplier: 0.72
+
+programmes:
+  polio:
+    quality: [0.88, 1.00]         # base reach fraction range (per LGA × programme, persistent)
+    round_sd: 0.03
+    measure: icr-admin-coverage
+    denominator_type: at-risk
+    strategies: {house-to-house: 0.88, outreach: 0.12}
+    age_bands: {"0–11 months": 0.20, "12–59 months": 0.80}
+    lqas: {share_of_lgas: 0.35, sample: 60, pass_max_missed: 3, intermediate_max_missed: 8, lag_days: [2, 9]}
+  measles-catchup:
+    quality: [0.78, 0.95]
+    round_sd: 0.04
+    measure: icr-admin-coverage
+    denominator_type: at-risk
+    strategies: {fixed-post: 0.62, temporary-post: 0.38}
+    age_bands: {"9–11 months": 0.06, "12–59 months": 0.94}
+    survey: {level: state, clusters: 30, per_cluster: 70, recall: [0.90, 0.98], design_effect: 1.6, lag_days: [28, 45]}
+  measles-obr:
+    quality: [0.84, 0.98]
+    round_sd: 0.04
+    measure: icr-admin-coverage
+    denominator_type: at-risk
+    strategies: {fixed-post: 0.40, temporary-post: 0.30, house-to-house: 0.30}
+    age_bands: {"6–11 months": 0.10, "12–59 months": 0.90}
+  mr-integrated:
+    quality: [0.86, 1.00]
+    round_sd: 0.03
+    measure: icr-admin-coverage
+    denominator_type: at-risk
+    strategies: {fixed-post: 0.55, temporary-post: 0.25, house-to-house: 0.20}
+    age_bands: {"9–59 months": 0.36, "5–14 years": 0.64}
+    survey: {level: state, clusters: 30, per_cluster: 70, recall: [0.90, 0.98], design_effect: 1.6, lag_days: [28, 45]}
+    lqas: {share_of_lgas: 0.25, sample: 60, pass_max_missed: 3, intermediate_max_missed: 8, lag_days: [3, 10]}
+  lf-oncho:
+    quality: [0.58, 0.88]         # programme coverage of the eligible population; WHO wants ≥ 65% epidemiological
+    round_sd: 0.05
+    measure: icr-mda-treatment-coverage
+    denominator_type: at-risk
+    strategies: {community-directed: 1.0}
+    age_bands: {"5–14 years": 0.37, "15+ years": 0.63}
+    ces: {share_of_lgas: 0.15, sample: 400, recall: [0.88, 0.98], design_effect: 1.4, lag_days: [30, 60]}
+  oncho-only:
+    quality: [0.65, 0.90]
+    round_sd: 0.05
+    measure: icr-mda-treatment-coverage
+    denominator_type: at-risk
+    strategies: {community-directed: 1.0}
+    age_bands: {"5–14 years": 0.37, "15+ years": 0.63}
+    ces: {share_of_lgas: 0.15, sample: 400, recall: [0.88, 0.98], design_effect: 1.4, lag_days: [30, 60]}
+  trachoma:
+    quality: [0.70, 0.95]
+    round_sd: 0.04
+    measure: icr-mda-treatment-coverage
+    denominator_type: at-risk
+    strategies: {community-directed: 0.7, house-to-house: 0.3}
+    age_bands: {"6 months–14 years": 0.44, "15+ years": 0.56}
+    ces: {share_of_lgas: 0.25, sample: 400, recall: [0.88, 0.98], design_effect: 1.4, lag_days: [30, 60]}
+  sch-sth-school:
+    quality: [0.62, 0.90]         # non-enrolled children drag it down
+    round_sd: 0.05
+    measure: icr-mda-treatment-coverage
+    denominator_type: at-risk
+    strategies: {school: 0.78, community-directed: 0.22}
+    age_bands: {"5–9 years": 0.52, "10–14 years": 0.48}
+    ces: {share_of_lgas: 0.10, sample: 400, recall: [0.88, 0.98], design_effect: 1.4, lag_days: [30, 60]}
+
+# Sex split of people reached: female share range (MDA reaches slightly more women;
+# vaccination is near even).
+female_share: [0.49, 0.53]
+
+reporters:
+  admin_vaccination: "{state} State Primary Health Care Development Agency — {lga} LGA immunization officer"
+  admin_mda: "{state} State NTD programme — {lga} LGA NTD focal person"
+  survey_state: "Independent post-campaign coverage survey team, {state} State"
+  lqas: "{state} State polio LQAS monitoring team"
+  ces: "{state} State NTD coverage evaluation survey team"

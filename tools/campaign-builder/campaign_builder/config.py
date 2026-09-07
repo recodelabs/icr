@@ -58,6 +58,7 @@ class Config:
     programmes: dict
     rounds: list[dict]
     series: list[dict]
+    config_dir: Path = CONFIG_DIR
 
     def lgas_for(self, state_code: str, selector, year: int) -> list[Lga]:
         """Resolve an LGA selector for one state and round year.
@@ -126,6 +127,7 @@ def load_config(config_dir: Path = CONFIG_DIR) -> Config:
         programmes=schedule["programmes"],
         rounds=schedule.get("rounds", []),
         series=schedule.get("series", []),
+        config_dir=config_dir,
     )
     _validate(cfg)
     return cfg

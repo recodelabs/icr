@@ -143,6 +143,23 @@ Context: MeasureReport
 * ^experimental = false
 * value[x] only string
 
+Extension: ConfidenceInterval
+Id: confidence-interval
+Title: "Confidence Interval"
+Description: "The confidence interval of a survey-derived estimate, in the same unit as the measureScore it accompanies (a proportion 0–1 for the ICR coverage Measures): low and high bounds and the confidence level in percent (default 95). Structured so a dashboard can draw the interval and a comparison can test whether the administrative figure lies inside it; the free-text sample-design extension still carries the design narrative."
+Context: MeasureReport, MeasureReport.group, MeasureReport.group.stratifier.stratum
+* ^experimental = false
+* extension contains
+    low 1..1 MS and
+    high 1..1 MS and
+    level 0..1 MS
+* extension[low].value[x] only decimal
+* extension[low] ^short = "Lower bound, same unit as measureScore"
+* extension[high].value[x] only decimal
+* extension[high] ^short = "Upper bound, same unit as measureScore"
+* extension[level].value[x] only decimal
+* extension[level] ^short = "Confidence level in percent (default 95)"
+
 Extension: CoverageSource
 Id: coverage-source
 Title: "Coverage Source"

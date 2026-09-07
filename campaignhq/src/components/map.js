@@ -40,6 +40,13 @@ const METRICS = {
     stops: () => [0, 1, 3, 6, 10, 18],
     format: (v, i, arr) => i === arr.length - 1 ? `${v}+` : String(v)
   },
+  coverage: {
+    label: "Administrative coverage per LGA",
+    state: "coverage",
+    colors: ["#fde0dd", "#fcc5c0", "#fa9fb5", "#c7e9c0", "#74c476", "#238b45"],
+    stops: () => [0.5, 0.65, 0.8, 0.9, 0.95, 1.05],
+    format: (v, i, arr) => (i === 0 ? `<${Math.round(v * 100)}%` : i === arr.length - 1 ? `${Math.round(v * 100)}%+` : `${Math.round(v * 100)}%`)
+  },
   targeted: {
     label: "People targeted per LGA",
     state: "targeted",
@@ -60,9 +67,10 @@ function niceCeil(x) {
 }
 
 function rampExpression(metric, stops) {
-  const expr = ["interpolate", ["linear"], ["coalesce", ["feature-state", metric.state], 0]];
-  stops.forEach((v, i) => expr.push(v, metric.colors[i]));
-  return expr;
+  const ramp = ["interpolate", ["linear"], ["coalesce", ["feature-state", metric.state], 0]];
+  stops.forEach((v, i) => ramp.push(v, metric.colors[i]));
+  // No value (null feature-state) → neutral grey rather than the bottom of the ramp.
+  return ["case", ["==", ["feature-state", metric.state], null], "#e5e7eb", ramp];
 }
 
 /** Keep two maps' viewports in lockstep. */
@@ -179,7 +187,8 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("en");
     popup.setLngLat(e.lngLat).setHTML(
       `<div style="font:12px system-ui;line-height:1.35"><b>${f.properties.name}</b> LGA, ${f.properties.admin1_name}<br>` +
-      `${s ? `${s.count} campaign round${s.count === 1 ? "" : "s"}<br>people targeted: ${fmt(s.targeted)}` : "no campaigns in this selection"}</div>`
+      `${s ? `${s.count} campaign round${s.count === 1 ? "" : "s"}<br>people targeted: ${fmt(s.targeted)}<br>people reached: ${s.reportedTargeted ? fmt(s.reached) : "no report"}` +
+        `${s.coverage != null ? `<br>admin coverage: ${Math.round(s.coverage * 100)}%` : ""}` : "no campaigns in this selection"}</div>`
     ).addTo(map);
   });
   map.on("mouseleave", "lga-fill", () => {
@@ -194,26 +203,36 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   let applied = new Set();
   function apply(rows) {
     // Clear previous counts, then set the new ones.
-    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null});
+    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null, coverage: null});
     applied = new Set();
     stats = new Map();
     for (const r of rows) {
-      const cur = stats.get(r.location_id) ?? {count: 0, targeted: 0, name: r.location_name, state: r.state};
+      const cur = stats.get(r.location_id) ?? {count: 0, targeted: 0, reached: 0, reportedTargeted: 0, name: r.location_name, state: r.state};
       cur.count += 1;
       cur.targeted += Number(r.targeted ?? 0);
+      if (r.reached != null && r.targeted) {
+        cur.reached += Number(r.reached);
+        cur.reportedTargeted += Number(r.targeted);
+      }
       stats.set(r.location_id, cur);
     }
     for (const [id, s] of stats) {
-      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted});
+      s.coverage = s.reportedTargeted > 0 ? s.reached / s.reportedTargeted : null;
+      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted, coverage: s.coverage});
       applied.add(id);
     }
     // Rescale the ramp to the selection (matters for people targeted).
-    const max = Math.max(0, ...Array.from(stats.values(), (s) => s[M.state]));
+    const max = Math.max(0, ...Array.from(stats.values(), (s) => s[M.state] ?? 0));
     const stops = M.stops(max);
     if (map.getLayer("lga-fill")) map.setPaintProperty("lga-fill", "fill-color", rampExpression(M, stops));
     renderLegend(stops);
   }
   map.on("load", () => {
+    // Start with the attribution collapsed to its "i" button (it opens expanded on wide maps).
+    for (const el of container.querySelectorAll(".maplibregl-ctrl-attrib")) {
+      el.classList.remove("maplibregl-compact-show");
+      el.removeAttribute("open");
+    }
     if (styleUrl) {
       // Vector-style basemap: add our sources and layers on top of it.
       map.addSource("admin", sources.admin);

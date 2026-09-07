@@ -8,7 +8,8 @@ from the FHIR registry into the repo's analytics hub, `data/`.
 
 ```
 data/parquet/campaign_calendar/   ─┐
-data/parquet/target_population/    ├─ src/data/campaigns.parquet.sh   (duckdb join at build time)
+data/parquet/target_population/    │
+data/parquet/coverage/             ├─ src/data/campaigns.parquet.sh   (duckdb join at build time)
 data/parquet/locations/           ─┘   src/data/admin_units.parquet.sh
 data/tiles/admin.pmtiles          ──▶ src/data/admin.pmtiles.sh
 data/manifest.json                ──▶ src/data/manifest.json.sh
@@ -31,18 +32,21 @@ preview) time and their output is cached under `src/.observablehq/cache`.
 
 - **Filters** — year, state, programme, status. Everything below reacts.
 - **KPIs** — LGA-level campaign rounds, LGAs covered, people targeted (sum of the
-  campaigns' planning denominators), people reached (blank until delivery events are
-  loaded).
-- **Two synced maps** — LGA choropleths of campaign rounds (left) and people
-  targeted (right) in the selection; pan or zoom one and the other follows. Hover
-  for the LGA's count and people targeted. The targeted ramp rescales to the
-  selection. Boundaries come from `admin.pmtiles` (layers `states`, `lgas`;
+  campaigns' planning denominators), people reached with the administrative
+  coverage over reported rounds (plus how many rounds have no report or are in
+  progress).
+- **Three synced maps** — LGA choropleths of campaign rounds, people targeted, and
+  administrative coverage (reached ÷ targeted over reported rounds; grey = no
+  report). Pan or zoom one and the others follow. Hover for the LGA's figures.
+  The targeted ramp rescales to the selection; the coverage ramp is fixed around
+  the 95 % target. Boundaries come from `admin.pmtiles` (layers `states`, `lgas`;
   `promoteId: id` so feature-state is keyed by the registry Location id).
 - **Timeline** — toggle between *By state* (one lane per state, one bar per state
   round coloured by programme; overlaps are two programmes in the same state at the
   same time) and *By LGA* (one lane per LGA, grouped into a collapsible section per
   state, all sharing one time axis). Red dotted line is today.
-- **Table** — searchable, sortable LGA rounds.
+- **Table** — searchable, sortable LGA rounds with targeted, reached, administrative
+  coverage, the LQAS verdict and the survey estimate with its confidence interval.
 
 ## Deploy — https://monitor.healthcampaigns.org
 

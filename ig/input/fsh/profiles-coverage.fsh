@@ -57,10 +57,12 @@ Description: "Independently-measured coverage — post-campaign cluster survey, 
     ReporterTeam named reporterTeam 0..1 MS and
     CoverageSource named coverageSource 1..1 MS and
     SampleDesign named sampleDesign 0..1 MS and
+    ConfidenceInterval named confidenceInterval 0..1 MS and
     DenominatorType named denominatorType 0..1 MS and
     CoverageUnit named coverageUnit 0..1 MS and
     RealtimeVsReconciled named dataLineage 1..1 MS
 * extension[campaign] ^short = "The campaign (round) this survey/LQAS measurement assesses — the direct MeasureReport→ICRCampaign join (same extension as the delivery events)"
+* extension[confidenceInterval] ^short = "Structured CI of the estimate (low / high / level), same unit as measureScore — so dashboards can draw it and admin-vs-survey comparisons can test containment"
 * extension[coverageSource].value[x] from ICRIndependentCoverageSourceVS (required)
 * extension[sampleDesign] ^short = "Method / sample design of the independent measurement (e.g. WHO 30×10 cluster survey)"
 * extension[dataLineage] ^short = "Required on coverage reports: preliminary survey results (realtime) vs final results (reconciled)"

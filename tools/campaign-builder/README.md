@@ -58,6 +58,7 @@ Options: `--as-of YYYY-MM-DD` (default 2026-09-07) sets the line between
 | PlanDefinition | ICRCampaignProtocol | 9 | protocols: nOPV2 SIA, measles catch-up, measles OBR, MR + nOPV2 (± NTD), LF/oncho MDA, oncho CDTI, trachoma MDA, schisto/STH school MDA |
 | Group | ICRTargetPopulation | ~2,000 | planning denominators per LGA / state × age band × year |
 | CarePlan | ICRCampaign | ~3,000 | national umbrella (multi-state rounds) → state umbrella → **one CarePlan per LGA** |
+| MeasureReport | ICRAdministrativeCoverage / ICRSurveyCoverage | ~2,900 | results — see below |
 
 The three CarePlan levels are linked by `partOf`. Every CarePlan carries
 `target-geography` (the Location), `campaign-round`, `planning-denominator`,
@@ -96,11 +97,36 @@ CarePlan?_tag=https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs|nga-
   census-projection`, `is-calculated = true`. **WorldPop aggregation to LGA
   boundaries is the planned replacement**; only `population.py` changes.
 
+## Results
+
+`06-coverage-reports.ndjson` holds the outcomes as ICR coverage MeasureReports
+(`config/results.yaml` is the model):
+
+| Kind | Profile | Per | Count |
+|---|---|---|---|
+| Administrative coverage, reconciled | ICRAdministrativeCoverage | LGA round (completed) | ~2,170 |
+| Administrative coverage, realtime (daily) | ICRAdministrativeCoverage | LGA round (active) | ~120 |
+| Post-campaign cluster survey | ICRSurveyCoverage (`survey`) | state round, MR and measles catch-up | 8 |
+| LQAS lot | ICRSurveyCoverage (`lqas`) | ~⅓ of polio / MR LGA rounds | ~500 |
+| NTD coverage evaluation survey | ICRSurveyCoverage (`survey`) | ~15 % of MDA LGA rounds | ~90 |
+
+The generator does not draw a coverage percentage. Each LGA has a persistent
+*denominator error* (how far the census projection is from reality; urban
+growth LGAs run high) and a persistent *programme quality*; each round adds
+noise and a 5 % chance of an incident. People reached = true population ×
+reach, so administrative coverage exceeds 100 % exactly where projections
+undercount. Surveys measure reach with recall loss and sampling error and carry
+a structured 95 % confidence interval. About 7 % of LGA rounds have no report;
+active rounds have daily realtime reports instead of a reconciled one. Scores
+are proportions 0–1 (proportion-scored Measures are unit-less). Reports carry
+exactly the stratifiers their Measure declares (sex, age band, delivery
+strategy, geography, disposition), which the validator checks.
+
 ## Not yet generated
 
 Tasks and delivery events (Immunization / MedicationAdministration), teams,
-supply, coverage MeasureReports. The calendar layer comes first; those hang off
-these CarePlans in a second step.
+supply. The aggregate results exist first — that is how campaign data arrives —
+and the individual events can later be reconciled against them.
 
 ## Tweaking
 
