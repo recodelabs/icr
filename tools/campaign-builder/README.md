@@ -40,8 +40,11 @@ ViewDefinition (`ig/input/fsh/viewdefinitions.fsh`, built by sushi to
 ```
 
 `export.sh` needs `octofhir-sof` on the PATH (the recodelabs/sof fork build,
-for `--parquet-temporal native`) and, for the summary, `duckdb`. Join
-`out/campaign-calendar.parquet` to the kiln location parquet on `location_id`.
+for `--parquet-temporal native`) and, for the summary, `duckdb`. It is the
+one-off, tag-filtered version; the repo's analytics hub (`data/`, refreshed by
+`tools/warehouse/refresh.sh`) runs every IG ViewDefinition over everything on
+the server and partitions the result by country next to the location registry
+parquet — that is what dashboards should read.
 
 Options: `--as-of YYYY-MM-DD` (default 2026-09-07) sets the line between
 `completed`, `active` and `draft` (planned) CarePlans; `--out DIR`; `--config DIR`.
