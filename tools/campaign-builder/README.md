@@ -31,6 +31,18 @@ python3 ../hapi/load.py ndjson out/0*.ndjson           # load into local HAPI
 `out/report.md` summarises rounds, counts and same-LGA collisions between
 programmes; `out/calendar.csv` is one row per LGA round for a quick look.
 
+Then flatten what the server holds with the IG's campaign-calendar
+ViewDefinition (`ig/input/fsh/viewdefinitions.fsh`, built by sushi to
+`ig/fsh-generated/resources/Binary-IcrCampaignCalendar.json`):
+
+```bash
+./export.sh            # FHIR search by tag → NDJSON → octofhir-sof → out/campaign-calendar.parquet
+```
+
+`export.sh` needs `octofhir-sof` on the PATH (the recodelabs/sof fork build,
+for `--parquet-temporal native`) and, for the summary, `duckdb`. Join
+`out/campaign-calendar.parquet` to the kiln location parquet on `location_id`.
+
 Options: `--as-of YYYY-MM-DD` (default 2026-09-07) sets the line between
 `completed`, `active` and `draft` (planned) CarePlans; `--out DIR`; `--config DIR`.
 

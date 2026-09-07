@@ -51,6 +51,7 @@ class AgeBand:
 class Config:
     country_location: str
     canonical_base: str
+    dataset_tag: dict  # {system, code, display}
     age_bands: dict[str, AgeBand]
     states: dict[str, State]
     endemicity: dict
@@ -118,6 +119,7 @@ def load_config(config_dir: Path = CONFIG_DIR) -> Config:
     cfg = Config(
         country_location=states_raw["country_location"],
         canonical_base=states_raw["canonical_base"].rstrip("/"),
+        dataset_tag=dict(states_raw["dataset_tag"]),
         age_bands=age_bands,
         states=states,
         endemicity=endemicity,

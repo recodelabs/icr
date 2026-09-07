@@ -111,7 +111,9 @@ This is the **v0.1 draft** produced in Phase 1 of the UNICEF ICR project. It enc
 revised against real campaign datasets (data conformance testing) and FHIR community
 review (chat.fhir.org, working-group calls, Connectathons) before pilot use.
 
-Planned for subsequent drafts: SQL-on-FHIR `ViewDefinition` resources (the portable
-analytics layer), `ConceptMap` scaffolds for country code localization, `Consent`
-guidance, and `Measure` definitions aligned to WHO JAP / ICG / ESPEN reporting
-minimums.
+The first SQL-on-FHIR `ViewDefinition` ships in this draft:
+[IcrCampaignCalendar](ViewDefinition-IcrCampaignCalendar.html), the flat table behind
+the campaign calendar (one row per campaign per target geography). Planned for
+subsequent drafts: further `ViewDefinition`s (coverage, delivery events), `ConceptMap`
+scaffolds for country code localization, `Consent` guidance, and `Measure` definitions
+aligned to WHO JAP / ICG / ESPEN reporting minimums.
