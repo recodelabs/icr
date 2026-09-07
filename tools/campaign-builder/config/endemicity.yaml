@@ -164,3 +164,63 @@ sch-sth-school:      # praziquantel + albendazole, school-based with community m
       default: [Ajingi, Albasu, Bebeji, Bunkure, Dawakin Kudu, Doguwa, Garko, Garun Malam,
                 Gaya, Kibiya, Kiru, Kura, Madobi, Rano, Rogo, Sumaila, Takai, Tudun Wada,
                 Warawa, Wudil]
+
+# ---------------------------------------------------------------------------
+# Endemicity ASSERTIONS (ICRLocationStatus Observations) — what the NTD programme
+# says about each LGA, per disease, with the baseline prevalence figure the
+# classification rests on. Statuses follow the programme lists above:
+#   in the MDA list for a year      → endemic-under-mda
+#   dropped from the list           → post-mda-surveillance (TAS / impact survey passed)
+#   never in the list               → non-endemic (or `unknown` for the few unmapped)
+# A new assertion is written only when the status changes (current until superseded).
+#
+# Baseline prevalence ranges are the published orders of magnitude for northern
+# Nigeria: LF antigenaemia (ICT/FTS) 1–20% at mapping (NE hydrocele belt higher);
+# onchocerciasis microfilaria prevalence 10–45% pre-control in the plateau foci;
+# trachoma TF in 1–9 year olds 5–9.9% (3 rounds) or ≥10% (5 rounds) where MDA is
+# required, <5% after; schistosomiasis prevalence in school-age children 10–50%;
+# STH 5–25% in the dry north.
+assertions:
+  seed: 20260907
+  mapping_year: {lf: 2012, oncho: 2008, trachoma: 2010, schisto: 2015, sth: 2015}
+  baseline_date: "2022-01-15"           # the JRSM 2022 submission that opens the demo window
+  performer: "{state} State Ministry of Health, NTD programme — JRSM {year} submission"
+  unknown_share: 0.04                   # a few LGAs per disease still unmapped
+  # Endemic LGAs that had already stopped MDA before the demo window opens
+  # (post-MDA surveillance at baseline): Bade passed LF iTAS in 2017; 12 of
+  # Yobe's 17 trachoma-endemic LGAs had stopped by 2022 (Int Health 2025).
+  historically_stopped:
+    lf: {yo: [Bade]}
+    trachoma: {yo: [Bade, Bursari, Damaturu, Fika, Fune, Geidam, Gujba, Gulani, Jakusko, Potiskum, Tarmuwa, Yunusari]}
+  diseases:
+    lf:
+      code: lf-endemicity
+      programmes: [lf-oncho]
+      prevalence: {label: "LF antigenaemia prevalence at mapping (ICT), 15+ years", unit: "%", endemic: [1.5, 18.0], non_endemic: [0.0, 0.9]}
+      stop_method: "Transmission assessment survey (TAS1) passed — FTS positives below the critical cut-off"
+      stop_result: {label: "TAS1 FTS positives", unit: "children", range: [0, 6], sample: 1556, cutoff: 18}
+      mapping_method: "LGA-level ICT mapping survey (national LF mapping programme)"
+    oncho:
+      code: oncho-endemicity
+      programmes: [oncho-only]
+      also_endemic_in: {ba: [Alkaleri, Bauchi, Bogoro, Dass, Tafawa-Balewa, Toro, Ningi, Kirfi], go: [Balanga, Billiri, Kaltungo, Shomgom, Akko, Yamaltu/Deba], yo: [Gujba, Gulani, Fune]}
+      prevalence: {label: "Onchocerciasis microfilaria prevalence pre-control (skin snip), adults", unit: "%", endemic: [12.0, 45.0], non_endemic: [0.0, 0.5]}
+      stop_method: "Ov16 serology and entomological evaluation — transmission not interrupted; CDTI continues"
+      mapping_method: "Rapid epidemiological mapping of onchocerciasis (REMO) and skin-snip surveys"
+    trachoma:
+      code: trachoma-endemicity
+      programmes: [trachoma]
+      prevalence: {label: "TF prevalence, children 1–9 years", unit: "%", endemic: [5.0, 24.0], non_endemic: [0.3, 4.9]}
+      stop_method: "Trachoma impact survey — TF below 5% in 1–9 year olds; MDA stopped, surveillance survey due in 2 years"
+      stop_result: {label: "TF prevalence at impact survey, 1–9 years", unit: "%", range: [1.2, 4.8]}
+      mapping_method: "Global Trachoma Mapping Project baseline survey (LGA-level)"
+    schisto:
+      code: schisto-endemicity
+      programmes: [sch-sth-school]
+      prevalence: {label: "Schistosomiasis prevalence, school-age children (urine filtration / Kato-Katz)", unit: "%", endemic: [10.0, 52.0], non_endemic: [0.0, 4.0]}
+      mapping_method: "School-based schistosomiasis and STH mapping survey"
+    sth:
+      code: sth-endemicity
+      programmes: [sch-sth-school]
+      prevalence: {label: "Soil-transmitted helminth prevalence, school-age children (Kato-Katz)", unit: "%", endemic: [6.0, 26.0], non_endemic: [0.0, 4.0]}
+      mapping_method: "School-based schistosomiasis and STH mapping survey"

@@ -23,6 +23,7 @@ data/
     target_population/                                                     (IcrTargetPopulation — denominators)
     coverage/                                                              (IcrCoverage — admin / survey / LQAS results)
     coverage_strata/                                                       (IcrCoverageStrata — sex, age band, strategy, disposition)
+    location_status/                                                       (IcrLocationStatus — endemicity per LGA × NTD, with provenance)
     _report.json           kiln's transform report (geometry issues etc.)
   tiles/
     admin.pmtiles          admin boundaries (layers `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)

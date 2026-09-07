@@ -260,3 +260,61 @@ Measures. Join to `IcrCoverage` on `report_id`.
 * select[1].select[0].column[3].name = "score"
 * select[1].select[0].column[3].path = "measureScore.value"
 * select[1].select[0].column[3].type = "decimal"
+
+Instance: IcrLocationStatus
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR location status"
+Description: """
+One row per location-status assertion (ICRLocationStatus Observation): the
+revisable, provenance-carrying properties of a place — endemicity per NTD
+first (`property` = lf-endemicity, oncho-endemicity, …; `status` = the JRSM
+ladder), with who asserted it, when, by what method, and the baseline
+prevalence or stop-survey figure it rests on (first two components). Read the
+newest row per (location_id, property) for the current classification; join
+`location_id` to the registry for "which LGAs are LF-endemic" maps.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrLocationStatus"
+* name = "IcrLocationStatus"
+* title = "ICR location status"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #Observation
+* where[0].path = "code.coding.exists(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-status-cs')"
+* where[0].description = "Only location-status assertions (the ICR location-status code system)"
+* select[0].column[0].name = "observation_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "location_id"
+* select[0].column[1].path = "subject.getReferenceKey(Location)"
+* select[0].column[1].type = "string"
+* select[0].column[2].name = "property"
+* select[0].column[2].path = "code.coding.first().code"
+* select[0].column[2].type = "code"
+* select[0].column[2].description = "lf-endemicity | oncho-endemicity | schisto-endemicity | sth-endemicity | trachoma-endemicity | …"
+* select[0].column[3].name = "status"
+* select[0].column[3].path = "value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[3].type = "code"
+* select[0].column[3].description = "endemic-mda-not-started | endemic-under-mda | post-mda-surveillance | elimination-validated | non-endemic | unknown"
+* select[0].column[4].name = "effective"
+* select[0].column[4].path = "effective.ofType(dateTime)"
+* select[0].column[4].type = "dateTime"
+* select[0].column[5].name = "performer"
+* select[0].column[5].path = "performer.first().display"
+* select[0].column[5].type = "string"
+* select[0].column[6].name = "method"
+* select[0].column[6].path = "method.text"
+* select[0].column[6].type = "string"
+* select[0].column[7].name = "evidence"
+* select[0].column[7].path = "derivedFrom.first().display"
+* select[0].column[7].type = "string"
+* select[0].column[8].name = "figure_label"
+* select[0].column[8].path = "component.first().code.text"
+* select[0].column[8].type = "string"
+* select[0].column[8].description = "What the first component measures (baseline prevalence at mapping, or the stop-survey result)"
+* select[0].column[9].name = "figure_value"
+* select[0].column[9].path = "component.first().value.ofType(Quantity).value"
+* select[0].column[9].type = "decimal"
+* select[0].column[10].name = "figure_unit"
+* select[0].column[10].path = "component.first().value.ofType(Quantity).unit"
+* select[0].column[10].type = "string"
