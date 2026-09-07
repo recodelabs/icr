@@ -44,6 +44,15 @@ or `KILN=`), `octofhir-sof` (the recodelabs/sof fork build, on the PATH or
 `tippecanoe` (`brew install tippecanoe`) for the tiles, and a sushi build of the
 IG (`ig/fsh-generated/`) for the ViewDefinitions.
 
+## Cloud mirror (Cloudflare R2)
+
+`tools/warehouse/refresh.sh --push` (or `tools/warehouse/push-r2.sh` on its own)
+mirrors `parquet/`, `tiles/`, `views/`, `manifest.json` and `catalog.sql` to the
+**`icr` R2 bucket** with the same paths, using the `r2` rclone remote. `raw/` is
+never pushed. The bucket is derived, like this directory: the sync deletes what
+no longer exists locally. The CampaignHQ dashboard lives in the same bucket under
+`_site/campaignhq/` (see `campaignhq/README.md`).
+
 ## Query
 
 ```bash

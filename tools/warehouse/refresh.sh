@@ -9,8 +9,10 @@
 #                  country (joined from the registry) into data/parquet/<view_name>/
 #   3. tiles:      admin boundaries → data/tiles/admin.pmtiles (tools/warehouse/tiles.sh)
 #   4. manifest:   data/manifest.json with counts and provenance
+#   5. push:       optional, --push: mirror data/ (minus raw/) to Cloudflare R2
+#                  (tools/warehouse/push-r2.sh; bucket R2_BUCKET, default icr)
 #
-# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles]   (default: all)
+# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push]   (default: all, no push)
 # Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
 #        KILN (~/github/kiln/target/debug/kiln)  SOF (octofhir-sof)  DATA (repo data/)
 set -euo pipefail
@@ -25,12 +27,13 @@ KILN="${KILN:-$HOME/github/kiln/target/debug/kiln}"
 SOF="${SOF:-octofhir-sof}"
 export PATH="$HOME/.local/bin:$PATH"
 
-DO_LOC=1; DO_VIEWS=1; DO_TILES=1
+DO_LOC=1; DO_VIEWS=1; DO_TILES=1; DO_PUSH=0
 for a in "$@"; do
   case "$a" in
     --views) DO_LOC=0; DO_TILES=0 ;;
     --locations) DO_VIEWS=0; DO_TILES=0 ;;
     --tiles) DO_LOC=0; DO_VIEWS=0 ;;
+    --push) DO_PUSH=1 ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
   esac
 done
@@ -120,3 +123,7 @@ json.dump(m, open(f"{data}/manifest.json", "w"), indent=2)
 print(json.dumps(m["tables"]))
 EOF
 echo "done → $DATA"
+
+if [ "$DO_PUSH" = 1 ]; then
+  DATA="$DATA" "$HERE/push-r2.sh"
+fi

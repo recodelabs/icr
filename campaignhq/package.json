@@ -3,18 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "CampaignHQ — the ICR campaign calendar dashboard (Observable Framework, DuckDB-WASM, MapLibre)",
+  "description": "CampaignHQ \u2014 the ICR campaign calendar dashboard (Observable Framework, DuckDB-WASM, MapLibre)",
   "scripts": {
     "clean": "rimraf src/.observablehq/cache",
     "dev": "observable preview",
     "build": "observable build",
-    "deploy": "observable deploy"
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "@observablehq/framework": "^1.13.0"
   },
   "devDependencies": {
-    "rimraf": "^6.0.0"
+    "rimraf": "^6.0.0",
+    "wrangler": "^4"
   },
   "engines": {
     "node": ">=20"

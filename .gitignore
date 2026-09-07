@@ -36,3 +36,5 @@ data/tiles/
 campaignhq/node_modules/
 campaignhq/dist/
 campaignhq/src/.observablehq/
+.wrangler/
+campaignhq/.wrangler/

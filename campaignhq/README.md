@@ -44,6 +44,24 @@ preview) time and their output is cached under `src/.observablehq/cache`.
   state, all sharing one time axis). Red dotted line is today.
 - **Table** — searchable, sortable LGA rounds.
 
+## Deploy — https://monitor.healthcampaigns.org
+
+The site is served by a small Cloudflare **Worker** (`worker/index.js`) straight
+from the **`icr` R2 bucket**, under the `_site/campaignhq/` prefix, next to the
+data hub it was built from. Cloudflare Pages was ruled out: it caps files at
+25 MiB and DuckDB-WASM's engine builds are ~35–40 MiB each. R2 has no such
+limit, and one bucket holds both site and data.
+
+```bash
+tools/warehouse/refresh.sh --push   # (repo root) regenerate data/ and mirror it to r2:icr/
+cd campaignhq && ./deploy.sh        # build → rclone sync dist/ → r2:icr/_site/campaignhq → wrangler deploy
+```
+
+`wrangler.toml` binds the bucket and declares `monitor.healthcampaigns.org` as a
+custom-domain route, so wrangler creates the DNS record and certificate on the
+first deploy. Needs `rclone` with the `r2` remote configured and a wrangler
+login on this account. `./deploy.sh --dry-run` shows what would change.
+
 ## Basemap
 
 `BASEMAP` at the top of `src/index.md` is the one setting. It accepts a raster XYZ
