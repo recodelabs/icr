@@ -1,17 +1,19 @@
-// ODK Locations static host: a Cloudflare Worker that serves the built site from
-// R2, the same pattern as campaignhq (see campaignhq/worker/index.js) — R2 has no
-// per-file size cap, and this keeps the site next to the data hub in one bucket.
+// ODK Locations static host: a Cloudflare Worker that serves the built site
+// from R2, same pattern as campaignhq (see campaignhq/worker/index.js) —
+// Cloudflare Pages caps files at 25 MiB, and DuckDB-WASM's engine builds
+// exceed it; R2 has no such limit, and keeping this next to the data hub in
+// the same bucket keeps one thing to manage.
 //
 // Bucket layout (see data/README.md):
-//   parquet/ tiles/ views/ manifest.json catalog.sql   ← the data hub
+//   parquet/ tiles/ views/ manifest.json catalog.sql   ← the data hub (read directly)
 //   _site/campaignhq/…                                 ← the campaign dashboards
 //   _site/odklocations/…                                ← this site (Framework dist/)
 //
-// Routing: /  → index.html (Framework cleanUrls). Immutable hashed assets under
-// _npm/, _import/, _observablehq/ and _file/ get a long cache; pages do not.
+// Routing: /  → index.html (Framework cleanUrls); everything else → the
+// object at that path. Immutable hashed assets under _npm/, _import/,
+// _observablehq/ and _file/ get a long cache; the page itself does not.
 
 const SITE_PREFIX = "_site/odklocations/";
-const CANONICAL_HOST = "odklocations.healthcampaigns.org";
 
 const TYPES = {
   html: "text/html; charset=utf-8", js: "text/javascript; charset=utf-8", css: "text/css; charset=utf-8",
@@ -29,10 +31,6 @@ export default {
   async fetch(request, env) {
     if (request.method !== "GET" && request.method !== "HEAD") return new Response("Method not allowed", {status: 405});
     const url = new URL(request.url);
-    if (url.hostname !== CANONICAL_HOST) {
-      url.hostname = CANONICAL_HOST;
-      return Response.redirect(url.toString(), 301);
-    }
     let path = decodeURIComponent(url.pathname).replace(/^\/+/, "");
     if (path === "" || path.endsWith("/")) path += "index.html";
 

@@ -1,5 +1,5 @@
-# ODK Locations on Cloudflare: a Worker that serves the Framework build from the
-# `icr` R2 bucket at https://odklocations.healthcampaigns.org.
+# ODK Locations on Cloudflare: a Worker that serves the Framework build from
+# the `icr` R2 bucket at https://odklocations.healthcampaigns.org.
 # Deploy with ./deploy.sh (build → sync dist/ to R2 → wrangler deploy).
 name = "odklocations"
 main = "worker/index.js"
@@ -11,6 +11,8 @@ workers_dev = false
 binding = "ICR"
 bucket_name = "icr"
 
+# Custom domain on the healthcampaigns.org zone (same account). Wrangler
+# creates the DNS record and certificate for a custom_domain route on deploy.
 [[routes]]
 pattern = "odklocations.healthcampaigns.org"
 custom_domain = true

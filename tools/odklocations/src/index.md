@@ -13,8 +13,8 @@ the registry parquet; the conversion (`odk-locations`, compiled to
 WebAssembly) runs in the same tab. Nothing is uploaded anywhere.
 
 ```js
-import {default as init, convert_to_entities} from "./components/odk-locations/odk_locations.js";
-await init({module_or_path: FileAttachment("./components/odk-locations/odk_locations_bg.wasm").href});
+import init, {convert_to_entities} from "./components/odk-locations/odk_locations.js";
+await init({module_or_path: FileAttachment("components/odk-locations/odk_locations_bg.wasm").href});
 
 const toRows = (table) => Array.from(table, (r) => {
   const o = typeof r.toJSON === "function" ? r.toJSON() : {...r};
@@ -61,7 +61,7 @@ const lga = Generators.input(lgaInput);
 ```
 
 ```js
-const {checkboxSelect} = await import("./components/filters.js");
+import {checkboxSelect} from "./components/filters.js";
 const levelInput = layer === "facility"
   ? checkboxSelect(facilityLevels, {label: "Facility level", emptyLabel: "All levels"})
   : html`<div></div>`;
@@ -180,7 +180,7 @@ const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.
 <div class="muted" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--theme-foreground-faintest); font-size: 12px">
   Geometry: points always export as ODK geopoints. LGA/state boundaries export as a geoshape (the
   polygon's exterior ring, simplified under the vertex cap) unless you choose Centroid. Labels:
-  the chosen column's value, or `feature-N` when blank; duplicates get " (2)", " (3)"….
+  the chosen column's value, or <code>feature-N</code> when blank; duplicates get " (2)", " (3)"….
   Property names are sanitized to ODK's rules; renamed columns are reported after export.
 </div>
 
