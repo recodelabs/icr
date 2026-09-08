@@ -27,7 +27,7 @@ description: |
 # -----------------------------------------------------------------------------
 
 contact:
-  name: "Ona — ICR team"
+  name: "Recode Labs — ICR team"
   email: "mberg@ona.io"
 
 license: "CC-BY-4.0"                # SPDX identifier (e.g., "CC-BY-4.0", "MIT")
@@ -55,11 +55,8 @@ providers:
     roles: ["producer", "licensor"]
     url: "https://icr.healthcampaigns.org"
   - name: "Recode Labs"
-    roles: ["processor"]
+    roles: ["processor", "host"]
     url: "https://recodelabs.org"
-  - name: "Ona"
-    roles: ["host"]
-    url: "https://ona.io"
 
 # -----------------------------------------------------------------------------
 # OPTIONAL: Discovery and citation

@@ -22,13 +22,13 @@ description: |
   groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 
 contact:
-  name: "Ona — ICR team"
+  name: "Recode Labs — ICR team"
   email: "mberg@ona.io"
 
 license: "CC-BY-4.0"
 
 keywords: ["health facilities", "settlements", "administrative boundaries", "Nigeria", "Sierra Leone", "FHIR", "immunization", "campaigns", "GRID3"]
-attribution: "UNICEF Integrated Campaign Registry · Ona · GRID3"
+attribution: "UNICEF Integrated Campaign Registry · Recode Labs · GRID3"
 
 source_url: "https://icr.healthcampaigns.org"
 processing_notes: |

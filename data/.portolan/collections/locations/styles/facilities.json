@@ -3,7 +3,7 @@
   "name": "Health facilities by level",
   "metadata": {"portolan:description": "Every health facility in the registry, coloured by facility_level, over faint boundaries. Sources are listed in the order of the collection's PMTiles assets (admin, facilities, settlements)."},
   "sources": {
-    "data": {"type": "vector", "url": "pmtiles://../../../tiles/admin.pmtiles", "minzoom": 4, "maxzoom": 11, "attribution": "UNICEF ICR · Ona · NHFR / GRID3"},
+    "data": {"type": "vector", "url": "pmtiles://../../../tiles/admin.pmtiles", "minzoom": 4, "maxzoom": 11, "attribution": "UNICEF ICR · Recode Labs · NHFR / GRID3"},
     "facilities": {"type": "vector", "url": "pmtiles://../../../tiles/facilities.pmtiles", "minzoom": 4, "maxzoom": 12},
     "settlements": {"type": "vector", "url": "pmtiles://../../../tiles/settlements.pmtiles", "minzoom": 8, "maxzoom": 13}
   },

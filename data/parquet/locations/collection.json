@@ -112,7 +112,7 @@
     "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
     "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-09-08T23:15:36Z",
+  "updated": "2026-09-08T23:23:44Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -163,16 +163,10 @@
     {
       "name": "Recode Labs",
       "roles": [
-        "processor"
-      ],
-      "url": "https://recodelabs.org"
-    },
-    {
-      "name": "Ona",
-      "roles": [
+        "processor",
         "host"
       ],
-      "url": "https://ona.io"
+      "url": "https://recodelabs.org"
     }
   ],
   "summaries": {
@@ -960,8 +954,8 @@
         "style",
         "default"
       ],
-      "file:size": 2094,
-      "file:checksum": "122038e7398a2e336336fb7b8cf99a554c5e20eb6ab9921afe1176d5cf3c1e01890d"
+      "file:size": 2102,
+      "file:checksum": "122068cef5e2dd2f8dfb7ebf75d2675b8caca1bc4bfbc2a12eb22f7059d58ea13183"
     },
     "facilities-tiles": {
       "href": "../../tiles/facilities.pmtiles",
@@ -980,8 +974,8 @@
       "roles": [
         "style"
       ],
-      "file:size": 1727,
-      "file:checksum": "1220f87a7c67f09543a4c05a8fa7a74cfa66cfc7e35f99eb5db577489bda766ad5d7"
+      "file:size": 1735,
+      "file:checksum": "12205e8e1881b115e161622cf7c6bba1da4335fb718ebd58c89eddc37c335252b66a"
     },
     "settlements-tiles": {
       "href": "../../tiles/settlements.pmtiles",
@@ -1000,8 +994,8 @@
       "roles": [
         "style"
       ],
-      "file:size": 1271,
-      "file:checksum": "1220d59bcc8702eed0c09d465f315e248f7d39d5fc690f9eb395459d4d3ca85e46ca"
+      "file:size": 1279,
+      "file:checksum": "12207ca43ee88b6b706cc73b8ce9506bc09a0818d8c6d321d066bd91a1ac14840827"
     },
     "thumbnail": {
       "href": "./thumbnail.png",

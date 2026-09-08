@@ -32,11 +32,11 @@ groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 | ./country=*/geom_type=*/type=*/*.parquet | - | - |
 | ./items.parquet | 50.7 KB | 122063b9e7f2... |
 | ../../tiles/admin.pmtiles | 2.8 MB | 12204aee68c1... |
-| ./styles/default.json | 2.0 KB | 122038e7398a... |
+| ./styles/default.json | 2.1 KB | 122068cef5e2... |
 | ../../tiles/facilities.pmtiles | 46.2 MB | 1220c3667f71... |
-| ./styles/facilities.json | 1.7 KB | 1220f87a7c67... |
+| ./styles/facilities.json | 1.7 KB | 12205e8e1881... |
 | ../../tiles/settlements.pmtiles | 129.8 MB | 12205a4588d4... |
-| ./styles/settlements.json | 1.2 KB | 1220d59bcc87... |
+| ./styles/settlements.json | 1.2 KB | 12207ca43ee8... |
 | ./thumbnail.png | 219.6 KB | 12202d21329a... |
 | country=NGA/geom_type=point/type=facility/part-0.parquet | 16.2 MB | 1220010e643a... |
 | country=NGA/geom_type=point/type=settlement/part-0.parquet | 71.1 MB | 122044531ce3... |
@@ -78,7 +78,7 @@ time of that snapshot.
 
 ## Attribution
 
-UNICEF Integrated Campaign Registry · Ona · GRID3
+UNICEF Integrated Campaign Registry · Recode Labs · GRID3
 
 ## License
 
@@ -86,7 +86,7 @@ CC-BY-4.0
 
 ## Contact
 
-Ona — ICR team <mberg@ona.io>
+Recode Labs — ICR team <mberg@ona.io>
 
 ## Known Issues
 

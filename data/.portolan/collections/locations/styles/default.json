@@ -3,7 +3,7 @@
   "name": "Administrative boundaries",
   "metadata": {"portolan:description": "Country, state and LGA boundaries with health facilities on top; settlements appear from zoom 8. Sources are listed in the order of the collection's PMTiles assets (admin, facilities, settlements)."},
   "sources": {
-    "data": {"type": "vector", "url": "pmtiles://../../../tiles/admin.pmtiles", "minzoom": 4, "maxzoom": 11, "attribution": "UNICEF ICR · Ona · GRID3"},
+    "data": {"type": "vector", "url": "pmtiles://../../../tiles/admin.pmtiles", "minzoom": 4, "maxzoom": 11, "attribution": "UNICEF ICR · Recode Labs · GRID3"},
     "facilities": {"type": "vector", "url": "pmtiles://../../../tiles/facilities.pmtiles", "minzoom": 4, "maxzoom": 12},
     "settlements": {"type": "vector", "url": "pmtiles://../../../tiles/settlements.pmtiles", "minzoom": 8, "maxzoom": 13}
   },
