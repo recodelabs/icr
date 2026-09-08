@@ -136,6 +136,8 @@ def load_config(config_dir: Path = CONFIG_DIR) -> Config:
 def _validate(cfg: Config) -> None:
     # Every endemicity name must exist; every programme/age band referenced must exist.
     for prog, by_state in cfg.endemicity.items():
+        if prog == "assertions":  # the endemicity-assertion model, not a programme's LGA lists
+            continue
         for code, block in by_state.items():
             state = cfg.states[code]
             for year, entry in block.get("by_year", {}).items():

@@ -1,0 +1,82 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrLocationStatus",
+  "title": "ICR location status",
+  "description": "One row per location-status assertion (ICRLocationStatus Observation): the\nrevisable, provenance-carrying properties of a place \u2014 endemicity per NTD\nfirst (`property` = lf-endemicity, oncho-endemicity, \u2026; `status` = the JRSM\nladder), with who asserted it, when, by what method, and the baseline\nprevalence or stop-survey figure it rests on (first two components). Read the\nnewest row per (location_id, property) for the current classification; join\n`location_id` to the registry for \"which LGAs are LF-endemic\" maps.",
+  "name": "IcrLocationStatus",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Observation",
+  "where": [
+    {
+      "path": "code.coding.exists(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-status-cs')",
+      "description": "Only location-status assertions (the ICR location-status code system)"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "observation_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "location_id",
+          "path": "subject.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "property",
+          "path": "code.coding.first().code",
+          "type": "code",
+          "description": "lf-endemicity | oncho-endemicity | schisto-endemicity | sth-endemicity | trachoma-endemicity | \u2026"
+        },
+        {
+          "name": "status",
+          "path": "value.ofType(CodeableConcept).coding.first().code",
+          "type": "code",
+          "description": "endemic-mda-not-started | endemic-under-mda | post-mda-surveillance | elimination-validated | non-endemic | unknown"
+        },
+        {
+          "name": "effective",
+          "path": "effective.ofType(dateTime)",
+          "type": "dateTime"
+        },
+        {
+          "name": "performer",
+          "path": "performer.first().display",
+          "type": "string"
+        },
+        {
+          "name": "method",
+          "path": "method.text",
+          "type": "string"
+        },
+        {
+          "name": "evidence",
+          "path": "derivedFrom.first().display",
+          "type": "string"
+        },
+        {
+          "name": "figure_label",
+          "path": "component.first().code.text",
+          "type": "string",
+          "description": "What the first component measures (baseline prevalence at mapping, or the stop-survey result)"
+        },
+        {
+          "name": "figure_value",
+          "path": "component.first().value.ofType(Quantity).value",
+          "type": "decimal"
+        },
+        {
+          "name": "figure_unit",
+          "path": "component.first().value.ofType(Quantity).unit",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

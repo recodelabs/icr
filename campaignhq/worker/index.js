@@ -1,4 +1,4 @@
-// CampaignHQ static host: a Cloudflare Worker that serves the built site from
+// Campaign Dashboards static host: a Cloudflare Worker that serves the built site from
 // R2. Cloudflare Pages caps files at 25 MiB, and DuckDB-WASM's two engine
 // builds (~35-40 MiB each) exceed it; R2 has no such limit, and keeping the
 // site next to the data hub in the same bucket keeps one thing to manage.
@@ -10,8 +10,12 @@
 // Routing: /  → index.html, /about → about.html (Framework cleanUrls),
 // everything else → the object at that path. Immutable hashed assets under
 // _npm/, _import/, _observablehq/ and _file/ get a long cache; pages do not.
+//
+// The site moved from monitor.healthcampaigns.org to dashboards.healthcampaigns.org;
+// the old host 301-redirects to the same path on the new one (see CANONICAL_HOST).
 
 const SITE_PREFIX = "_site/campaignhq/";
+const CANONICAL_HOST = "dashboards.healthcampaigns.org";
 
 const TYPES = {
   html: "text/html; charset=utf-8", js: "text/javascript; charset=utf-8", css: "text/css; charset=utf-8",
@@ -29,6 +33,10 @@ export default {
   async fetch(request, env) {
     if (request.method !== "GET" && request.method !== "HEAD") return new Response("Method not allowed", {status: 405});
     const url = new URL(request.url);
+    if (url.hostname !== CANONICAL_HOST) {
+      url.hostname = CANONICAL_HOST;
+      return Response.redirect(url.toString(), 301);
+    }
     let path = decodeURIComponent(url.pathname).replace(/^\/+/, "");
     if (path === "" || path.endsWith("/")) path += "index.html";
 

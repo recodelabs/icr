@@ -18,6 +18,14 @@ CREATE OR REPLACE VIEW coverage AS
 CREATE OR REPLACE VIEW coverage_strata AS
   SELECT * FROM read_parquet('parquet/coverage_strata/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
+CREATE OR REPLACE VIEW location_status AS
+  SELECT * FROM read_parquet('parquet/location_status/**/*.parquet', hive_partitioning = true, union_by_name = true);
+
+-- Convenience: the CURRENT classification per location × property (newest assertion wins).
+CREATE OR REPLACE VIEW location_status_current AS
+  SELECT * FROM location_status
+  QUALIFY row_number() OVER (PARTITION BY location_id, property ORDER BY effective DESC) = 1;
+
 -- Convenience: LGA-level calendar rows with their state and LGA names.
 CREATE OR REPLACE VIEW campaign_calendar_lga AS
   SELECT c.*, l.name AS lga, l.admin1_name AS state

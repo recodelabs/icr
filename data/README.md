@@ -23,9 +23,12 @@ data/
     target_population/                                                     (IcrTargetPopulation — denominators)
     coverage/                                                              (IcrCoverage — admin / survey / LQAS results)
     coverage_strata/                                                       (IcrCoverageStrata — sex, age band, strategy, disposition)
+    location_status/                                                       (IcrLocationStatus — endemicity per LGA × NTD, with provenance)
     _report.json           kiln's transform report (geometry issues etc.)
   tiles/
-    admin.pmtiles          admin boundaries (layers `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)
+    admin.pmtiles          admin boundaries (layers `country`, `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)
+    facilities.pmtiles     health facility points (layer `facilities`), no dropping, z4–12, full registry record per feature
+    settlements.pmtiles    settlement points (layer `settlements`), no dropping, z8–13, full registry record per feature
   views/                   the exact ViewDefinition JSON each table was built from (from the IG build)
   catalog.sql              CREATE VIEW per table over the parquet globs — `FROM campaign_calendar`
   manifest.json            when, from which server, row counts, view canonicals (written by the refresh)

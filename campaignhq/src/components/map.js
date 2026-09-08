@@ -26,8 +26,8 @@ export const DEFAULT_BASEMAP = {
   saturation: -0.9
 };
 
-// One pmtiles protocol shared by every map on the page.
-const protocol = new Protocol();
+// One pmtiles protocol shared by every map on the page (and by georegistry-map.js).
+export const protocol = new Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
 const registered = new WeakSet();
 
@@ -37,8 +37,14 @@ const METRICS = {
     label: "Campaign rounds per LGA",
     state: "count",
     colors: ["#eef2f7", "#c7dbef", "#8fbfe0", "#4a90c4", "#1f5fa3", "#0b3b7a"],
-    stops: () => [0, 1, 3, 6, 10, 18],
-    format: (v, i, arr) => i === arr.length - 1 ? `${v}+` : String(v)
+    // Rescales to the selection: 0..max when max is small, else 0, 1 and four evenly spaced
+    // integer stops up to the busiest LGA, so one year or one programme still shows contrast.
+    stops: (max) => {
+      const m = Math.max(1, Math.round(max));
+      if (m <= 5) return Array.from({length: m + 1}, (_, i) => i);
+      return [0, ...[0, 1, 2, 3, 4].map((k) => Math.round(1 + (k * (m - 1)) / 4))];
+    },
+    format: (v) => String(v)
   },
   coverage: {
     label: "Administrative coverage per LGA",
@@ -59,6 +65,23 @@ const METRICS = {
   }
 };
 
+/** Categorical metrics: a fixed colour per value of a string feature-state. */
+export const CATEGORIES = {
+  endemicity: {
+    label: "Endemicity classification",
+    state: "status",
+    categorical: true,
+    values: [
+      ["endemic-under-mda", "Endemic, under MDA", "#c2410c"],
+      ["endemic-mda-not-started", "Endemic, MDA not started", "#f97316"],
+      ["post-mda-surveillance", "Post-MDA surveillance", "#2563eb"],
+      ["elimination-validated", "Elimination validated", "#0f766e"],
+      ["non-endemic", "Non-endemic", "#d1d5db"],
+      ["unknown", "Unknown (mapping required)", "#fde68a"]
+    ]
+  }
+};
+
 function niceCeil(x) {
   if (!(x > 0)) return 1;
   const p = 10 ** Math.floor(Math.log10(x));
@@ -66,9 +89,21 @@ function niceCeil(x) {
   return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p;
 }
 
+/** Spread the metric's palette over however many stops the ramp has (fewer stops → skip shades). */
+function colorAt(metric, i, n) {
+  const last = metric.colors.length - 1;
+  return metric.colors[n <= 1 ? last : Math.round((i * last) / (n - 1))];
+}
+
 function rampExpression(metric, stops) {
+  if (metric.categorical) {
+    const match = ["match", ["coalesce", ["feature-state", metric.state], ""]];
+    for (const [value, , color] of metric.values) match.push(value, color);
+    match.push("#eef2f7");
+    return match;
+  }
   const ramp = ["interpolate", ["linear"], ["coalesce", ["feature-state", metric.state], 0]];
-  stops.forEach((v, i) => ramp.push(v, metric.colors[i]));
+  stops.forEach((v, i) => ramp.push(v, colorAt(metric, i, stops.length)));
   // No value (null feature-state) → neutral grey rather than the bottom of the ramp.
   return ["case", ["==", ["feature-state", metric.state], null], "#e5e7eb", ramp];
 }
@@ -101,7 +136,7 @@ export function syncMaps(a, b) {
 export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BASEMAP, labels = [], metric = "count"} = {}) {
   const container = document.createElement("div");
   container.style.cssText = `width:100%;height:${height}px;border-radius:8px;overflow:hidden;position:relative;background:#f8fafc`;
-  const M = METRICS[metric] ?? METRICS.count;
+  const M = METRICS[metric] ?? CATEGORIES[metric] ?? METRICS.count;
 
   if (!registered.has(pmtiles)) {
     protocol.add(new PMTiles(new BufferSource(pmtiles, "admin")));
@@ -130,7 +165,7 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   }
   layers.push(
     {id: "lga-fill", type: "fill", source: "admin", "source-layer": "lgas",
-     paint: {"fill-color": rampExpression(M, M.stops(1)), "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.95, 0.8]}},
+     paint: {"fill-color": rampExpression(M, M.categorical ? null : M.stops(1)), "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.95, 0.8]}},
     {id: "lga-line", type: "line", source: "admin", "source-layer": "lgas",
      paint: {"line-color": "#94a3b8", "line-width": 0.4}},
     {id: "state-line", type: "line", source: "admin", "source-layer": "states",
@@ -163,13 +198,20 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   // Legend
   const legend = document.createElement("div");
   legend.style.cssText = "position:absolute;left:8px;bottom:8px;background:rgba(255,255,255,.92);padding:6px 10px;border-radius:6px;font:12px system-ui;color:#334155;box-shadow:0 1px 3px rgba(0,0,0,.15)";
-  function renderLegend(stops) {
+  function renderLegend(stops, present) {
+    if (M.categorical) {
+      // Only the classes present in the current rows (all of them before the first update).
+      const values = present ? M.values.filter(([v]) => present.has(v)) : M.values;
+      legend.innerHTML = `<div style="margin-bottom:4px">${M.label}</div>` + values.map(([, label, color]) =>
+        `<div style="display:flex;align-items:center;gap:6px;line-height:1.5"><span style="display:inline-block;width:14px;height:12px;background:${color};border:1px solid #cbd5e1"></span>${label}</div>`).join("");
+      return;
+    }
     legend.innerHTML = `<div style="margin-bottom:4px">${M.label}</div>
       <div style="display:flex;align-items:center;gap:4px">
-        ${stops.map((v, i) => `<span style="display:inline-block;width:22px;height:12px;background:${M.colors[i]};border:1px solid #cbd5e1"></span><span style="margin-right:6px">${M.format(v, i, stops)}</span>`).join("")}
+        ${stops.map((v, i) => `<span style="display:inline-block;width:22px;height:12px;background:${colorAt(M, i, stops.length)};border:1px solid #cbd5e1"></span><span style="margin-right:6px">${M.format(v, i, stops)}</span>`).join("")}
       </div>`;
   }
-  renderLegend(M.stops(1));
+  renderLegend(M.categorical ? null : M.stops(1));
   container.appendChild(legend);
 
   // Hover popup
@@ -185,10 +227,13 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: true});
     const s = stats.get(f.id);
     const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("en");
+    const body = !s ? (M.categorical ? "no assertion" : "no campaigns in this selection")
+      : M.categorical
+        ? `${(M.values.find(([v]) => v === s.status) ?? [, s.status ?? "—"])[1]}${s.detail ? `<br>${s.detail}` : ""}`
+        : `${s.count} campaign round${s.count === 1 ? "" : "s"}<br>people targeted: ${fmt(s.targeted)}<br>people reached: ${s.reportedTargeted ? fmt(s.reached) : "no report"}` +
+          `${s.coverage != null ? `<br>admin coverage: ${Math.round(s.coverage * 100)}%` : ""}`;
     popup.setLngLat(e.lngLat).setHTML(
-      `<div style="font:12px system-ui;line-height:1.35"><b>${f.properties.name}</b> LGA, ${f.properties.admin1_name}<br>` +
-      `${s ? `${s.count} campaign round${s.count === 1 ? "" : "s"}<br>people targeted: ${fmt(s.targeted)}<br>people reached: ${s.reportedTargeted ? fmt(s.reached) : "no report"}` +
-        `${s.coverage != null ? `<br>admin coverage: ${Math.round(s.coverage * 100)}%` : ""}` : "no campaigns in this selection"}</div>`
+      `<div style="font:12px system-ui;line-height:1.35"><b>${f.properties.name}</b> LGA, ${f.properties.admin1_name}<br>${body}</div>`
     ).addTo(map);
   });
   map.on("mouseleave", "lga-fill", () => {
@@ -203,11 +248,14 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   let applied = new Set();
   function apply(rows) {
     // Clear previous counts, then set the new ones.
-    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null, coverage: null});
+    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null, coverage: null, status: null});
     applied = new Set();
     stats = new Map();
     for (const r of rows) {
       const cur = stats.get(r.location_id) ?? {count: 0, targeted: 0, reached: 0, reportedTargeted: 0, name: r.location_name, state: r.state};
+      if (r.status != null) cur.status = r.status;
+      if (r.detail != null) cur.detail = r.detail;
+      if (r.rounds != null) cur.count += Number(r.rounds) - 1;  // pre-aggregated rows
       cur.count += 1;
       cur.targeted += Number(r.targeted ?? 0);
       if (r.reached != null && r.targeted) {
@@ -218,9 +266,10 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     }
     for (const [id, s] of stats) {
       s.coverage = s.reportedTargeted > 0 ? s.reached / s.reportedTargeted : null;
-      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted, coverage: s.coverage});
+      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted, coverage: s.coverage, status: s.status ?? null});
       applied.add(id);
     }
+    if (M.categorical) { renderLegend(null, new Set(Array.from(stats.values(), (s) => s.status).filter((v) => v != null))); return; }
     // Rescale the ramp to the selection (matters for people targeted).
     const max = Math.max(0, ...Array.from(stats.values(), (s) => s[M.state] ?? 0));
     const stops = M.stops(max);

@@ -122,6 +122,23 @@ are proportions 0–1 (proportion-scored Measures are unit-less). Reports carry
 exactly the stratifiers their Measure declares (sex, age band, delivery
 strategy, geography, disposition), which the validator checks.
 
+## Endemicity
+
+`07-location-status.ndjson` holds the NTD programme's classification of every
+LGA for each of the five PC-NTDs as `ICRLocationStatus` Observations (the
+`assertions` block of `config/endemicity.yaml`): one baseline assertion per LGA ×
+disease dated to the JRSM 2022 submission — *endemic, under MDA* / *under
+post-MDA surveillance* / *non-endemic* / *unknown (mapping required)* for a few
+unmapped LGAs — carrying the baseline prevalence figure it rests on as a
+component (LF antigenaemia at mapping, onchocerciasis mf prevalence, trachoma TF
+in 1–9 year olds, schisto and STH prevalence in school-age children, in the
+published ranges for northern Nigeria), the method, and the evidence document.
+When an LGA leaves a programme's MDA list a second assertion records the
+transition to post-MDA surveillance with the stop-survey result (TAS positives
+against the critical cut-off; TF at the impact survey). Statuses derive from the
+same year-maps as the campaign schedule, so campaigns and endemicity never
+disagree.
+
 ## Not yet generated
 
 Tasks and delivery events (Immunization / MedicationAdministration), teams,

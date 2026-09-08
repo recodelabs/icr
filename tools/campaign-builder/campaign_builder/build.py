@@ -9,6 +9,7 @@ Outputs (in --out, default tools/campaign-builder/out/):
     04-target-populations.ndjson
     05-care-plans.ndjson
     06-coverage-reports.ndjson   results: administrative / realtime / survey / LQAS MeasureReports
+    07-location-status.ndjson    endemicity assertions per LGA × NTD (ICRLocationStatus Observations)
     calendar.csv       one row per LGA CarePlan (a quick preview of the calendar)
     report.md          counts by programme / year / state, plus overlaps
 """
@@ -25,6 +26,7 @@ from pathlib import Path
 from . import fhir
 from .config import CONFIG_DIR, Config, load_config
 from .population import band_population
+from .endemicity import build_endemicity
 from .results import build_results, load_results_config
 from .schedule import Round, expand
 
@@ -104,6 +106,7 @@ def build(cfg: Config, as_of: date) -> dict[str, list[dict]]:
                     round_number=r.round_number, part_of=state_cid, created_lead_days=45, activity_types=extra_types))
 
     reports, results_summary = build_results(cfg, load_results_config(cfg_dir(cfg)), rounds, populations, as_of, _short)
+    statuses, endemicity_summary = build_endemicity(cfg, cfg.endemicity, as_of, _short)
 
     return {
         "01-activity-definitions": activities,
@@ -112,8 +115,10 @@ def build(cfg: Config, as_of: date) -> dict[str, list[dict]]:
         "04-target-populations": list(populations.values()),
         "05-care-plans": care_plans,
         "06-coverage-reports": reports,
+        "07-location-status": statuses,
         "_rounds": rounds,  # not written as NDJSON; used by the report
         "_results_summary": results_summary,
+        "_endemicity_summary": endemicity_summary,
     }
 
 
@@ -179,6 +184,14 @@ def _report(cfg: Config, bundle: dict, as_of: date) -> str:
         lines += ["", "| admin coverage | p10 | p25 | median | p75 | p90 |", "|---|---|---|---|---|---|",
                   f"| all programmes | {q(.1):.0%} | {q(.25):.0%} | {q(.5):.0%} | {q(.75):.0%} | {q(.9):.0%} |"]
 
+    es = bundle.get("_endemicity_summary", {})
+    if es:
+        lines += ["", "## Endemicity assertions (ICRLocationStatus)", "",
+                  f"{es.get('baseline', 0)} baseline assertions (JRSM 2022: one per LGA × disease for LF, onchocerciasis, trachoma, "
+                  f"schistosomiasis, STH) and {es.get('transitions', 0)} transitions to post-MDA surveillance after a passed TAS / impact survey.",
+                  "", "| baseline status | LGA × disease |", "|---|---|"]
+        lines += [f"| {k} | {v} |" for k, v in sorted(es.get("by_status", {}).items(), key=lambda kv: -kv[1])]
+
     lines += ["", "## LGA rounds by programme and year", ""]
     years = sorted({r.year for r in rounds})
     progs = list(cfg.programmes)
@@ -239,7 +252,8 @@ def main(argv: list[str] | None = None) -> None:
     write_outputs(cfg, bundle, a.out, a.as_of)
     plans = bundle["05-care-plans"]
     print(f"Wrote {len(plans)} CarePlans, {len(bundle['04-target-populations'])} target-population Groups, "
-          f"{len(bundle['03-plan-definitions'])} PlanDefinitions, {len(bundle['06-coverage-reports'])} coverage MeasureReports to {a.out}")
+          f"{len(bundle['03-plan-definitions'])} PlanDefinitions, {len(bundle['06-coverage-reports'])} coverage MeasureReports, "
+          f"{len(bundle['07-location-status'])} endemicity assertions to {a.out}")
     print(f"Status split: {dict(Counter(cp['status'] for cp in plans))}")
     print(f"See {a.out / 'report.md'} and {a.out / 'calendar.csv'}")
 

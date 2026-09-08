@@ -9,13 +9,11 @@ sql:
 
 # Campaign calendar
 
-What is planned, running and done, where — from the Integrated Campaign Registry.
-Every row is one campaign round in one geography (a CarePlan), flattened by the IG's
-`IcrCampaignCalendar` view and joined to the location registry. Filter, then read the
-map, the timeline and the table together.
+Overview of campaigns by programme, state and year.  Powered by the [Integrated Campaign Registry](https://icr.healthcampaigns.org).
 
 ```js
 import {campaignMap, syncMaps, DEFAULT_BASEMAP} from "./components/map.js";
+import {constrain, available} from "./components/filters.js";
 
 // Basemap under the choropleth. DEFAULT_BASEMAP is OpenStreetMap as a placeholder;
 // replace with your tile layer, e.g. {tiles: ["https://…/{z}/{x}/{y}.png"], attribution: "…"}
@@ -39,6 +37,9 @@ const years = toRows(await sql`SELECT DISTINCT year FROM campaigns WHERE level =
 const states = toRows(await sql`SELECT DISTINCT state FROM campaigns WHERE level = 'lga' AND state IS NOT NULL ORDER BY state`).map((d) => d.state);
 const programmes = toRows(await sql`SELECT programme, count(*) n FROM campaigns WHERE level = 'lga' GROUP BY 1 ORDER BY 2 DESC`).map((d) => d.programme);
 const statuses = ["completed", "active", "draft"];
+// Every year × state × programme × status that has at least one LGA round — drives the smart pulldowns.
+const combos = toRows(await sql`SELECT year, state, programme, status, count(*) AS n FROM campaigns WHERE level = 'lga' AND state IS NOT NULL GROUP BY 1, 2, 3, 4`);
+const yearData = ["All", ...years], stateData = ["All", ...states], programmeData = ["All", ...programmes], statusData = ["All", ...statuses];
 ```
 
 <div class="grid grid-cols-4" style="gap: 12px; margin-bottom: 8px">
@@ -49,14 +50,25 @@ const statuses = ["completed", "active", "draft"];
 </div>
 
 ```js
-const yearInput = Inputs.select(["All", ...years], {label: "Year", value: 2026, format: (d) => String(d)});
+const yearInput = Inputs.select(yearData, {label: "Year", value: 2026, format: (d) => String(d)});
 const year = Generators.input(yearInput);
-const stateInput = Inputs.select(["All", ...states], {label: "State", value: "All"});
+const stateInput = Inputs.select(stateData, {label: "State", value: "All"});
 const state = Generators.input(stateInput);
-const programmeInput = Inputs.select(["All", ...programmes], {label: "Programme", value: "All"});
+const programmeInput = Inputs.select(programmeData, {label: "Programme", value: "All"});
 const programme = Generators.input(programmeInput);
-const statusInput = Inputs.select(["All", ...statuses], {label: "Status", value: "All", format: (s) => s === "draft" ? "planned (draft)" : s});
+const statusInput = Inputs.select(statusData, {label: "Status", value: "All", format: (s) => s === "draft" ? "planned (draft)" : s});
 const status = Generators.input(statusInput);
+```
+
+```js
+// Smart pulldowns: grey out the choices that have no rounds under the other three filters,
+// and fall back to "All" if the current choice just became one of them.
+{
+  constrain(yearInput, yearData, available(combos, "year", {state, programme, status}));
+  constrain(stateInput, stateData, available(combos, "state", {year, programme, status}));
+  constrain(programmeInput, programmeData, available(combos, "programme", {year, state, status}));
+  constrain(statusInput, statusData, available(combos, "status", {year, state, programme}));
+}
 ```
 
 ```js
@@ -104,7 +116,7 @@ kpi.coverage = kpi.reportedTargeted > 0 ? kpi.reportedReached / kpi.reportedTarg
   <div class="card"><h2>People reached</h2><span class="big">${kpi.reached ? fmtInt(kpi.reached) : "—"}</span><div class="muted">${kpi.coverage != null ? `${Math.round(kpi.coverage * 100)}% administrative coverage over ${fmtInt(kpi.reported)} reported round${kpi.reported === 1 ? "" : "s"}` : "no administrative reports in selection"}${kpi.noReport ? ` · ${fmtInt(kpi.noReport)} not reported` : ""}${kpi.inProgress ? ` · ${fmtInt(kpi.inProgress)} in progress` : ""}</div></div>
 </div>
 
-<div class="grid grid-cols-3" style="gap: 12px; margin-top: 12px">
+<div class="grid grid-cols-2" style="gap: 12px; margin-top: 12px">
   <div class="card" style="padding: 0; overflow: hidden">
     <div class="map-title">Campaign rounds per LGA</div>
     ${mapEl}
@@ -113,19 +125,12 @@ kpi.coverage = kpi.reportedTargeted > 0 ? kpi.reportedReached / kpi.reportedTarg
     <div class="map-title">People targeted per LGA</div>
     ${mapTargeted}
   </div>
-  <div class="card" style="padding: 0; overflow: hidden">
-    <div class="map-title">Administrative coverage per LGA <span class="muted">(reached ÷ targeted, reported rounds)</span></div>
-    ${mapCoverage}
-  </div>
 </div>
 
 <div class="card" style="margin-top: 12px">
   <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap">
     <div>
       <h2>Rounds over time</h2>
-      <div class="muted" style="margin-bottom: 6px">${timelineMode === "By state"
-        ? "One bar per state round, coloured by programme; overlapping bars are programmes in the same state at the same time."
-        : "One lane per LGA, grouped by state — click a state to collapse or expand it."} The red dotted line is today.</div>
     </div>
     <div>${timelineModeInput}</div>
   </div>
@@ -137,16 +142,13 @@ const pmtiles = await FileAttachment("data/admin.pmtiles").arrayBuffer();
 const stateLabels = toRows(await sql`SELECT id, name, lon, lat FROM admin_units WHERE admin_level = 1 AND country = 'NGA'`);
 const mapEl = campaignMap({pmtiles, height: 420, basemap: BASEMAP, labels: stateLabels, metric: "count"});
 const mapTargeted = campaignMap({pmtiles, height: 420, basemap: BASEMAP, labels: stateLabels, metric: "targeted"});
-const mapCoverage = campaignMap({pmtiles, height: 420, basemap: BASEMAP, labels: stateLabels, metric: "coverage"});
 syncMaps(mapEl, mapTargeted);
-syncMaps(mapTargeted, mapCoverage);
 ```
 
 ```js
 // Reactive: push the current selection into both maps' feature-state.
 mapEl.update(lgaRows);
 mapTargeted.update(lgaRows);
-mapCoverage.update(lgaRows);
 ```
 
 ```js
@@ -243,16 +245,6 @@ Inputs.table(search, {
   rows: 18
 })
 ```
-
-<div class="muted" style="margin-top: 8px">
-  ${fmtInt(search.length)} of ${fmtInt(lgaRows.length)} rounds shown. Status is derived from the registry as of the last refresh:
-  <em>completed</em> ended before the refresh date, <em>active</em> spans it, <em>planned</em> starts after it.
-  People targeted is the campaign's planning denominator (an ICRTargetPopulation Group). People reached and administrative
-  coverage come from the round's reconciled administrative coverage report (tallies ÷ denominator — above 100% where the
-  projection undercounts); LQAS is the lot verdict for polio and MR rounds; Survey is the coverage evaluation survey
-  estimate with its 95% confidence interval where one was done. State-level post-campaign surveys sit on the state
-  rows of the timeline.
-</div>
 
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; }

@@ -95,7 +95,10 @@ const matched = countRow?.n ?? 0;
 const isPolygonLayer = layer === "lga" || layer === "state";
 const labelInput = Inputs.select(["name", "pcode", "nhfr_code"].filter((c) => cols.includes(c) || c === "name"), {value: "name"});
 const labelColumn = Generators.input(labelInput);
-const geomInput = Inputs.radio(new Map([["Boundary (geoshape)", "boundary"], ["Centroid (geopoint)", "centroid"]]), {value: "boundary"});
+// Facility/settlement rows are already points — geoshape vs. centroid only means
+// anything for the LGA/state boundary layers, so point layers default to (and
+// stay pinned at) Centroid rather than showing a Boundary choice that's a no-op.
+const geomInput = Inputs.radio(new Map([["Boundary (geoshape)", "boundary"], ["Centroid (geopoint)", "centroid"]]), {value: isPolygonLayer ? "boundary" : "centroid", disabled: !isPolygonLayer});
 const geomMode = Generators.input(geomInput);
 const maxVerticesInput = Inputs.range([50, 2000], {value: 500, step: 50, label: "Max vertices"});
 const maxVertices = Generators.input(maxVerticesInput);

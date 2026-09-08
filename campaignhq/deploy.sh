@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build CampaignHQ and publish it to https://monitor.healthcampaigns.org.
+# Build Campaign Dashboards and publish it to https://dashboards.healthcampaigns.org.
 #
 #   observable build ──▶ dist/ ──rclone sync──▶ r2:icr/_site/campaignhq/ ──▶ wrangler deploy (Worker)
 #
@@ -36,5 +36,5 @@ rclone sync $DRY --checksum --fast-list --transfers 16 --exclude ".DS_Store" \
 if [ -z "$DRY" ]; then
   echo "== deploy worker"
   npx wrangler deploy
-  echo "== https://monitor.healthcampaigns.org"
+  echo "== https://dashboards.healthcampaigns.org"
 fi

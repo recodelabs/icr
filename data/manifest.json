@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-07T17:43:16+00:00",
+  "refreshed_at": "2026-09-07T18:40:17+00:00",
   "server": "http://localhost:3447/fhir",
   "server_name": "hapi-local",
   "tables": {
@@ -11,6 +11,9 @@
     },
     "coverage_strata": {
       "rows": 19853
+    },
+    "location_status": {
+      "rows": 670
     },
     "locations": {
       "rows": 344278
@@ -28,6 +31,11 @@
     "IcrCoverageStrata": {
       "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverageStrata",
       "resource": "MeasureReport",
+      "status": "draft"
+    },
+    "IcrLocationStatus": {
+      "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrLocationStatus",
+      "resource": "Observation",
       "status": "draft"
     },
     "IcrCampaignCalendar": {
