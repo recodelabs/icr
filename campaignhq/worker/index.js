@@ -1,4 +1,4 @@
-// CampaignHQ static host: a Cloudflare Worker that serves the built site from
+// Campaign Dashboards static host: a Cloudflare Worker that serves the built site from
 // R2. Cloudflare Pages caps files at 25 MiB, and DuckDB-WASM's two engine
 // builds (~35-40 MiB each) exceed it; R2 has no such limit, and keeping the
 // site next to the data hub in the same bucket keeps one thing to manage.

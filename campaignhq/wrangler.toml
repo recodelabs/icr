@@ -1,4 +1,4 @@
-# CampaignHQ on Cloudflare: a Worker that serves the Framework build from the
+# Campaign Dashboards on Cloudflare: a Worker that serves the Framework build from the
 # `icr` R2 bucket at https://monitor.healthcampaigns.org.
 # Deploy with ./deploy.sh (build → sync dist/ to R2 → wrangler deploy).
 name = "campaignhq"

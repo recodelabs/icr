@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build CampaignHQ and publish it to https://monitor.healthcampaigns.org.
+# Build Campaign Dashboards and publish it to https://monitor.healthcampaigns.org.
 #
 #   observable build ──▶ dist/ ──rclone sync──▶ r2:icr/_site/campaignhq/ ──▶ wrangler deploy (Worker)
 #

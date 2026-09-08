@@ -4,7 +4,7 @@ title: About the data
 
 # About the data
 
-CampaignHQ is a static site. Everything it shows was generated from the FHIR
+Campaign Dashboards is a static site. Everything it shows was generated from the FHIR
 registry ahead of time and shipped as parquet and PMTiles; the browser runs
 DuckDB (WebAssembly) over those files. Nothing here talks to a server at
 runtime.

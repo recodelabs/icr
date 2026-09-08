@@ -1,4 +1,4 @@
-# CampaignHQ
+# Campaign Dashboards
 
 The ICR campaign calendar dashboard: an [Observable Framework](https://observablehq.com/framework/)
 site that runs **DuckDB (WebAssembly) in the browser** over parquet files and draws the

@@ -1,7 +1,7 @@
-// CampaignHQ — Observable Framework configuration.
+// Campaign Dashboards — Observable Framework configuration.
 // https://observablehq.com/framework/config
 export default {
-  title: "CampaignHQ",
+  title: "Campaign Dashboards",
   root: "src",
   pages: [
     {name: "Campaign calendar", path: "/"},
