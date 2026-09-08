@@ -55,7 +55,7 @@
         "maximum": "2026-09-06T20:59:32.041+00:00"
       },
       "name": {
-        "minimum": "Dwelling — Rokupr block 4, house 12",
+        "minimum": "Dwelling \u2014 Rokupr block 4, house 12",
         "maximum": "Rokupr"
       },
       "status": {
@@ -131,7 +131,7 @@
         "maximum": "point"
       }
     },
-    "title": "country=SL Geom Type=point Type=null",
+    "title": "Sierra Leone \u2014 locations without a type",
     "vector:geometry_types": [
       "Point"
     ],

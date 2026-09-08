@@ -2,8 +2,8 @@
   "type": "Catalog",
   "id": "parquet",
   "stac_version": "1.1.0",
-  "title": "Parquet",
-  "description": "Catalog: parquet",
+  "title": "Location registry",
+  "description": "The ICR location registry as hive-partitioned GeoParquet — one collection, `locations`.",
   "links": [
     {
       "rel": "root",

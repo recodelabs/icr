@@ -19,43 +19,43 @@
       "rel": "item",
       "href": "./country=NGA/geom_type=point/type=facility/country=NGA_geom_type=point_type=facility.json",
       "type": "application/geo+json",
-      "title": "country=NGA Geom Type=point Type=facility"
+      "title": "Nigeria — health facilities"
     },
     {
       "rel": "item",
       "href": "./country=NGA/geom_type=point/type=settlement/country=NGA_geom_type=point_type=settlement.json",
       "type": "application/geo+json",
-      "title": "country=NGA Geom Type=point Type=settlement"
+      "title": "Nigeria — settlements"
     },
     {
       "rel": "item",
       "href": "./country=NGA/geom_type=polygon/type=admin-unit/country=NGA_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
-      "title": "country=NGA Geom Type=polygon Type=admin Unit"
+      "title": "Nigeria — administrative boundaries"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=facility/country=SL_geom_type=point_type=facility.json",
       "type": "application/geo+json",
-      "title": "country=SL Geom Type=point Type=facility"
+      "title": "Sierra Leone — health facilities"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=null/country=SL_geom_type=point_type=null.json",
       "type": "application/geo+json",
-      "title": "country=SL Geom Type=point Type=null"
+      "title": "Sierra Leone — locations without a type"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=school/country=SL_geom_type=point_type=school.json",
       "type": "application/geo+json",
-      "title": "country=SL Geom Type=point Type=school"
+      "title": "Sierra Leone — schools"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=polygon/type=admin-unit/country=SL_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
-      "title": "country=SL Geom Type=polygon Type=admin Unit"
+      "title": "Sierra Leone — administrative boundaries"
     },
     {
       "rel": "parent",
@@ -73,6 +73,35 @@
       "href": "./README.md",
       "type": "text/markdown",
       "title": "Human-readable documentation"
+    },
+    {
+      "rel": "pmtiles",
+      "href": "../../tiles/admin.pmtiles",
+      "type": "application/vnd.pmtiles",
+      "title": "Administrative boundaries (country, states, LGAs)",
+      "pmtiles:layers": [
+        "lgas",
+        "states",
+        "country"
+      ]
+    },
+    {
+      "rel": "pmtiles",
+      "href": "../../tiles/facilities.pmtiles",
+      "type": "application/vnd.pmtiles",
+      "title": "Health facilities",
+      "pmtiles:layers": [
+        "facilities"
+      ]
+    },
+    {
+      "rel": "pmtiles",
+      "href": "../../tiles/settlements.pmtiles",
+      "type": "application/vnd.pmtiles",
+      "title": "Settlements",
+      "pmtiles:layers": [
+        "settlements"
+      ]
     }
   ],
   "stac_extensions": [
@@ -80,9 +109,10 @@
     "https://stac-extensions.github.io/file/v2.1.0/schema.json",
     "https://stac-extensions.github.io/table/v1.2.0/schema.json",
     "https://stac-extensions.github.io/vector/v0.1.0/schema.json",
-    "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json"
+    "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
+    "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-09-08T22:13:12Z",
+  "updated": "2026-09-08T22:32:01Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -903,8 +933,39 @@
       "roles": [
         "collection-mirror"
       ],
-      "file:size": 51963,
-      "file:checksum": "12202c78ece44bf9619b207495803c04fe3692ea11a9a689bec331e79a8e80700bb3"
+      "file:size": 51944,
+      "file:checksum": "1220c55b3ab37a8c698b6e8bfb8b324319fb171da32d6094bfb7bab66f2316d4d5c4"
+    },
+    "style-default": {
+      "href": "./styles/default.json",
+      "type": "application/vnd.mapbox.style+json",
+      "title": "Administrative boundaries",
+      "roles": [
+        "style",
+        "default"
+      ],
+      "file:size": 1173,
+      "file:checksum": "1220d0357fab121a0e1bb3e9a2a7172a49fc3078e04525f25100df4861181cb0f367"
+    },
+    "style-facilities": {
+      "href": "./styles/facilities.json",
+      "type": "application/vnd.mapbox.style+json",
+      "title": "Health facilities by level",
+      "roles": [
+        "style"
+      ],
+      "file:size": 1188,
+      "file:checksum": "1220235eb6ce790ca14b55989dfe2535d8021d3dd37ac74224fd241d64f3be222c6e"
+    },
+    "style-settlements": {
+      "href": "./styles/settlements.json",
+      "type": "application/vnd.mapbox.style+json",
+      "title": "Settlements by type",
+      "roles": [
+        "style"
+      ],
+      "file:size": 694,
+      "file:checksum": "1220960cae1b9064709c6c88cccd286e43a34af6cfbc5f9b84cdd99d18cbc5c68518"
     }
   },
   "partition:glob": "./country=*/geom_type=*/type=*/*.parquet"

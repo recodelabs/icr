@@ -5,11 +5,14 @@
 // requests with Accept-Ranges/206, accurate Content-Length on HEAD, and CORS
 // that lets a browser read metadata and data directly.
 //
-// Bucket layout (see data/README.md):
-//   catalog.json README.md AGENTS.md       ← the Portolan catalog root
-//   parquet/<table>/collection.json + hive-partitioned parquet
-//   tiles/*.pmtiles views/ manifest.json catalog.sql
-//   _site/…                                ← the dashboards (served by their own Workers; hidden here)
+// The SDI is the location registry only. The bucket also holds the campaign
+// view tables, the dashboards and the DuckDB catalog (see data/README.md);
+// those are ICR-internal and are not served here — only what the Portolan
+// catalog links to:
+//   catalog.json README.md AGENTS.md versions.json   ← the catalog root
+//   parquet/{catalog,README,AGENTS}.*                ← the tables sub-catalog
+//   parquet/locations/**                             ← the collection (metadata + GeoParquet)
+//   tiles/*.pmtiles                                  ← MapLibre tiles of the same locations
 //
 // Routing: /  → the Portolan browser opened on this catalog; everything else →
 // the object at that path. Objects change in place on each refresh, so nothing
@@ -17,7 +20,8 @@
 
 const CATALOG_URL = "https://sdi.healthcampaigns.org/catalog.json";
 const BROWSER = "https://browser.portolan-sdi.org/#/external/";
-const HIDDEN = /^_site\/|(^|\/)\./;
+const SERVED = /^(catalog\.json|README\.md|AGENTS\.md|versions\.json|parquet\/(catalog\.json|README\.md|AGENTS\.md|locations\/.+)|tiles\/[^/]+\.pmtiles)$/;
+const HIDDEN = /(^|\/)\./;
 
 const TYPES = {
   json: "application/json", geojson: "application/geo+json", parquet: "application/vnd.apache.parquet",
@@ -53,7 +57,7 @@ export default {
     const url = new URL(request.url);
     const path = decodeURIComponent(url.pathname).replace(/^\/+/, "");
     if (path === "") return Response.redirect(BROWSER + encodeURIComponent(CATALOG_URL), 302);
-    if (HIDDEN.test(path) || path.endsWith("/")) return respond("Not found", {status: 404});
+    if (!SERVED.test(path) || HIDDEN.test(path)) return respond("Not found", {status: 404});
 
     const ranged = request.headers.has("range");
     const obj = await env.ICR.get(path, {range: ranged ? request.headers : undefined, onlyIf: request.headers});

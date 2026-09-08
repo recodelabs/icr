@@ -79,10 +79,18 @@ browsable at `https://browser.portolan-sdi.org/#/external/sdi.healthcampaigns.or
   `refresh.sh` after each kiln run (`portolan add parquet/locations/`). All of
   that metadata **is tracked in git** — it is the published catalog; only the
   parquet itself is ignored.
-- Human text lives in `.portolan/metadata.yaml` (catalog) and
-  `parquet/locations/.portolan/metadata.yaml` (collection). The collection's
-  README.md is generated from it by `portolan readme` — edit the yaml, not the
-  README. This file (the catalog root README) is hand-written and stays so.
+- Human text lives in `.portolan/metadata.yaml` (catalog), `parquet/.portolan/`
+  (the tables sub-catalog) and `.portolan/collections/locations/metadata.yaml`
+  (the collection — kept outside `parquet/locations/` because kiln replaces that
+  directory; `refresh.sh` copies it in). The collection's README.md is generated
+  from it by `portolan readme` — edit the yaml, not the README. This file (the
+  catalog root README) is hand-written and stays so.
+- `tools/warehouse/sdi-collection.py` finishes the collection after `portolan add`:
+  it links the three `tiles/*.pmtiles` as `rel: pmtiles` (web-map-links), copies the
+  MapLibre styles from `.portolan/collections/locations/styles/` into
+  `parquet/locations/styles/` as `style` assets (`default.json` = boundaries), and
+  gives each partition item a readable title ("Nigeria — health facilities") —
+  the CLI's own titles are the hive path. Edit the `COUNTRIES` / `TYPES` maps there.
 - kiln's files are never rewritten by the CLI: they are already GeoParquet
   (2.0: native `GEOMETRY` type, plus 1.1 `geo` metadata and a `bbox` covering
   column), zstd, 20k-row groups, Hilbert-ordered — and carry no `ARROW:schema`
@@ -90,9 +98,12 @@ browsable at `https://browser.portolan-sdi.org/#/external/sdi.healthcampaigns.or
   (kiln `src/write/parquet.rs`).
 - `portolan check --data-scope local` validates the tree; `portolan check --live`
   probes the deployed host for range requests and CORS.
-- Not yet in the catalog: the view tables. portolan-cli 0.8 collapses a
-  hive-partitioned plain-Parquet directory into a single wrongly-linked asset
-  (the tabular path has no partition detection), so they wait on an upstream fix.
+- **The SDI is the location registry only.** The campaign view tables
+  (`campaign_calendar`, `coverage`, …), `views/`, `catalog.sql` and
+  `manifest.json` are ICR-internal: they are not in the catalog and the SDI
+  Worker does not serve them (it allows only the catalog files,
+  `parquet/locations/**` and `tiles/*.pmtiles`). They reach the dashboards
+  through the bucket directly.
 
 ## Query
 

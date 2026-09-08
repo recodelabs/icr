@@ -1,0 +1,26 @@
+{
+  "version": 8,
+  "name": "Health facilities by level",
+  "metadata": {"portolan:description": "Every health facility in the registry, coloured by facility_level (tiles/facilities.pmtiles, no point dropped at any zoom)."},
+  "sources": {
+    "data": {"type": "vector", "url": "pmtiles://../../../tiles/facilities.pmtiles", "attribution": "UNICEF ICR · Ona · NHFR / GRID3"}
+  },
+  "layers": [
+    {"id": "background", "type": "background", "paint": {"background-color": "#f7f7f4"}},
+    {"id": "facilities", "type": "circle", "source": "data", "source-layer": "facilities",
+     "paint": {
+       "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 1.2, 8, 2.5, 12, 6],
+       "circle-color": ["match", ["get", "facility_level"],
+         "Teaching/Tertiary Hospital", "#6a1b9a",
+         "Specialized Hospital", "#ad1457",
+         "General Hospital", "#d84315",
+         "Primary Health Center", "#1565c0",
+         "Primary Health Clinic", "#0288d1",
+         "Health Post", "#2e7d32",
+         "#9e9e9e"],
+       "circle-opacity": 0.85,
+       "circle-stroke-color": "#ffffff",
+       "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 4, 0, 10, 0.6]
+     }}
+  ]
+}

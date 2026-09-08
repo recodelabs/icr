@@ -1,16 +1,24 @@
-# Parquet
+# Location registry
 
-Catalog: parquet
+The ICR location registry as hive-partitioned GeoParquet — one collection, `locations`.
 
 ## Collections
 
-### [parquet/location_status](parquet/parquet/location_status/)
+### [parquet/locations](parquet/parquet/locations/)
 
 ## Coverage
 
 **Spatial Extent**
 
-- West: -180.0000, South: -90.0000, East: 180.0000, North: 90.0000
+- West: -13.0500, South: 4.2702, East: 14.6780, North: 13.8857
+
+## License
+
+CC-BY-4.0
+
+## Contact
+
+Ona — ICR team <mberg@ona.io>
 
 ---
 

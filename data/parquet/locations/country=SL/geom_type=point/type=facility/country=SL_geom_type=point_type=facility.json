@@ -56,7 +56,7 @@
       },
       "name": {
         "minimum": "Rokupr Community Health Centre",
-        "maximum": "Rokupr Community Health Centre — fixed vaccination post"
+        "maximum": "Rokupr Community Health Centre \u2014 fixed vaccination post"
       },
       "status": {
         "minimum": "active",
@@ -172,7 +172,7 @@
         "maximum": "point"
       }
     },
-    "title": "country=SL Geom Type=point Type=facility",
+    "title": "Sierra Leone \u2014 health facilities",
     "vector:geometry_types": [
       "Point"
     ],

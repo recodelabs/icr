@@ -32,7 +32,7 @@ tools/campaign-builder/*.egg-info/
 # versions.json) is tracked — it is the published catalog, git-backed.
 data/raw/
 data/parquet/**/*.parquet
-data/parquet/**/.portolan/
+data/parquet/locations/.portolan/
 data/parquet/_report.json
 data/.portolan/.versions.lock
 data/tiles/

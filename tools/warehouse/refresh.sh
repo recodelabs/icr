@@ -133,8 +133,8 @@ EOF
 # Portolan catalog (data/ is the catalog root, published at https://sdi.healthcampaigns.org
 # by tools/sdi/). `add` writes the STAC metadata beside the parquet — collection.json, one
 # item per hive partition, items.parquet, README/AGENTS.md — and leaves kiln's files alone.
-# The snapshot time is the collection's datetime. Only the locations table for now: the CLI
-# mis-models hive-partitioned plain-Parquet tables (the views), see data/README.md.
+# The snapshot time is the collection's datetime. The SDI is the location registry only —
+# the view tables are ICR-internal and stay out of the catalog (see data/README.md).
 if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
   echo "== portolan catalog"
   refreshed=$(python3 -c "import json; print(json.load(open('$DATA/manifest.json'))['refreshed_at'])")
@@ -142,7 +142,13 @@ if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
   # human-written metadata is kept under .portolan/collections/ and copied in first.
   mkdir -p "$PARQUET/locations/.portolan"
   cp "$DATA/.portolan/collections/locations/metadata.yaml" "$PARQUET/locations/.portolan/metadata.yaml"
+  # Always build from a clean slate: re-adding over existing items loses their `collection` field
+  # (portolan-cli 0.8), and a --locations run without a kiln change would otherwise hit that path.
+  find "$PARQUET/locations" -type f \( -name '*.json' -o -name '*.md' -o -name 'items.parquet' \) -delete
+  rm -rf "$PARQUET/locations/styles"
   (cd "$DATA" && portolan add parquet/locations/ --no-thumbnails --datetime "$refreshed" \
+    && python3 "$HERE/sdi-collection.py" "$DATA" \
+    && portolan stac-geoparquet -c parquet/locations >/dev/null \
     && portolan readme parquet/locations --no-recursive >/dev/null \
     && portolan check --fix --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
 fi

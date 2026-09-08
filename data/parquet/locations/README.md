@@ -30,7 +30,10 @@ groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 | File | Size | Checksum |
 |------|------|----------|
 | ./country=*/geom_type=*/type=*/*.parquet | - | - |
-| ./items.parquet | 50.7 KB | 12202c78ece4... |
+| ./items.parquet | 50.7 KB | 1220c55b3ab3... |
+| ./styles/default.json | 1.1 KB | 1220d0357fab... |
+| ./styles/facilities.json | 1.2 KB | 1220235eb6ce... |
+| ./styles/settlements.json | 694 B | 1220960cae1b... |
 | country=NGA/geom_type=point/type=facility/../part-0.parquet | 16.2 MB | 1220010e643a... |
 | country=NGA/geom_type=point/type=settlement/../part-0.parquet | 71.1 MB | 122044531ce3... |
 | country=NGA/geom_type=polygon/type=admin-unit/../part-0.parquet | 2.3 MB | 1220625a13c3... |
@@ -86,9 +89,9 @@ Ona — ICR team <mberg@ona.io>
 1,653 Nigerian points fall outside the polygon of their `partOf` admin unit
 (source data quality; listed in parquet/_report.json). 3 facilities have no
 usable geometry and are dropped. `type=null` holds Locations without a type
-code. Sierra Leone is test data, not a registry. No PMTiles or thumbnail are
-linked from the collection yet — MapLibre tiles of the same data exist at
-/tiles/facilities.pmtiles, /tiles/settlements.pmtiles and /tiles/admin.pmtiles.
+code. Sierra Leone is test data, not a registry. The PMTiles (rel="pmtiles"
+links) cover Nigeria only and are rebuilt separately from the parquet
+(tools/warehouse/tiles.sh), so they can lag a refresh. No thumbnail yet.
 
 
 ---

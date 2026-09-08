@@ -15,12 +15,8 @@
 # title or a description from its parent.
 # -----------------------------------------------------------------------------
 
-title: "ICR — Integrated Campaign Registry"
-description: |
-  The location registry behind UNICEF's Integrated Campaign Registry (ICR):
-  administrative boundaries, health facilities and settlements used to plan and
-  run public-health campaigns, exported from the ICR FHIR server as GeoParquet.
-  Nigeria and Sierra Leone so far.
+title: "Location registry"
+description: "The ICR location registry as hive-partitioned GeoParquet — one collection, `locations`."
 
 # -----------------------------------------------------------------------------
 # REQUIRED: Accountability
@@ -30,7 +26,7 @@ contact:
   name: "Ona — ICR team"
   email: "mberg@ona.io"
 
-license: "CC-BY-4.0"                # SPDX identifier (e.g., "CC-BY-4.0", "MIT")
+license: "CC-BY-4.0"
 
 # -----------------------------------------------------------------------------
 # Providers: who made this data, and who maintains this copy of it
@@ -50,13 +46,13 @@ license: "CC-BY-4.0"                # SPDX identifier (e.g., "CC-BY-4.0", "MIT")
 # `source_url` below and records each sync.
 # -----------------------------------------------------------------------------
 
-providers:
-  - name: "UNICEF — Integrated Campaign Registry"
-    roles: ["producer", "licensor"]
-    url: "https://icr.healthcampaigns.org"
-  - name: "Ona"
-    roles: ["processor", "host"]
-    url: "https://ona.io"
+# providers:
+#   - name: "National Statistics Institute"
+#     roles: ["producer", "licensor"]
+#     url: "https://stats.example.org"
+#   - name: "City GIS Office"       # omit to derive this from `contact`
+#     roles: ["host"]
+#     url: "https://gis.example.org"   # a url or an email is required on the host
 
 # -----------------------------------------------------------------------------
 # OPTIONAL: Discovery and citation
