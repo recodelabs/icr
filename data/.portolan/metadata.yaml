@@ -54,8 +54,11 @@ providers:
   - name: "UNICEF — Integrated Campaign Registry"
     roles: ["producer", "licensor"]
     url: "https://icr.healthcampaigns.org"
+  - name: "Recode Labs"
+    roles: ["processor"]
+    url: "https://recodelabs.org"
   - name: "Ona"
-    roles: ["processor", "host"]
+    roles: ["host"]
     url: "https://ona.io"
 
 # -----------------------------------------------------------------------------

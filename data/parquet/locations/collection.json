@@ -2,7 +2,7 @@
   "type": "Collection",
   "id": "parquet/locations",
   "stac_version": "1.1.0",
-  "description": "Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened\nto one GeoParquet row per resource: administrative boundaries (country, states,\nLGAs \u2014 polygons), health facilities and settlements (points), with the\nadministrative hierarchy denormalised onto each row (admin0\u2026admin4 names and\ncodes, `path`, `ancestor_ids`) and the complete FHIR resource kept in\n`fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438\nsettlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a\nhandful of test records so far.\n\nHive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file\nper partition, 20,000-row groups in Hilbert order with a `bbox` covering column\nand native Parquet GEOMETRY statistics, so a reader can fetch only the row\ngroups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.",
+  "description": "Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened\nto one GeoParquet row per resource: administrative boundaries (country, states,\nLGAs — polygons), health facilities and settlements (points), with the\nadministrative hierarchy denormalised onto each row (admin0…admin4 names and\ncodes, `path`, `ancestor_ids`) and the complete FHIR resource kept in\n`fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438\nsettlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a\nhandful of test records so far.\n\nHive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file\nper partition, 20,000-row groups in Hilbert order with a `bbox` covering column\nand native Parquet GEOMETRY statistics, so a reader can fetch only the row\ngroups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.",
   "links": [
     {
       "rel": "root",
@@ -19,43 +19,43 @@
       "rel": "item",
       "href": "./country=NGA/geom_type=point/type=facility/country=NGA_geom_type=point_type=facility.json",
       "type": "application/geo+json",
-      "title": "Nigeria \u2014 health facilities"
+      "title": "Nigeria — health facilities"
     },
     {
       "rel": "item",
       "href": "./country=NGA/geom_type=point/type=settlement/country=NGA_geom_type=point_type=settlement.json",
       "type": "application/geo+json",
-      "title": "Nigeria \u2014 settlements"
+      "title": "Nigeria — settlements"
     },
     {
       "rel": "item",
       "href": "./country=NGA/geom_type=polygon/type=admin-unit/country=NGA_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
-      "title": "Nigeria \u2014 administrative boundaries"
+      "title": "Nigeria — administrative boundaries"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=facility/country=SL_geom_type=point_type=facility.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone \u2014 health facilities"
+      "title": "Sierra Leone — health facilities"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=null/country=SL_geom_type=point_type=null.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone \u2014 locations without a type"
+      "title": "Sierra Leone — locations without a type"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=school/country=SL_geom_type=point_type=school.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone \u2014 schools"
+      "title": "Sierra Leone — schools"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=polygon/type=admin-unit/country=SL_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone \u2014 administrative boundaries"
+      "title": "Sierra Leone — administrative boundaries"
     },
     {
       "rel": "parent",
@@ -112,7 +112,7 @@
     "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
     "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-09-08T23:00:52Z",
+  "updated": "2026-09-08T23:15:36Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -153,7 +153,7 @@
   "license": "CC-BY-4.0",
   "providers": [
     {
-      "name": "UNICEF \u2014 Integrated Campaign Registry",
+      "name": "UNICEF — Integrated Campaign Registry",
       "roles": [
         "producer",
         "licensor"
@@ -161,9 +161,15 @@
       "url": "https://icr.healthcampaigns.org"
     },
     {
+      "name": "Recode Labs",
+      "roles": [
+        "processor"
+      ],
+      "url": "https://recodelabs.org"
+    },
+    {
       "name": "Ona",
       "roles": [
-        "processor",
         "host"
       ],
       "url": "https://ona.io"
@@ -531,7 +537,7 @@
         },
         "name": {
           "minimum": "Rokupr Community Health Centre",
-          "maximum": "Rokupr Community Health Centre \u2014 fixed vaccination post"
+          "maximum": "Rokupr Community Health Centre — fixed vaccination post"
         },
         "status": {
           "minimum": "active",
@@ -661,7 +667,7 @@
           "maximum": "2026-09-06T20:59:32.041+00:00"
         },
         "name": {
-          "minimum": "Dwelling \u2014 Rokupr block 4, house 12",
+          "minimum": "Dwelling — Rokupr block 4, house 12",
           "maximum": "Rokupr"
         },
         "status": {
@@ -1000,7 +1006,7 @@
     "thumbnail": {
       "href": "./thumbnail.png",
       "type": "image/png",
-      "title": "Nigeria \u2014 administrative boundaries",
+      "title": "Nigeria — administrative boundaries",
       "roles": [
         "thumbnail"
       ],

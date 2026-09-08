@@ -4,7 +4,7 @@
   "versions": [
     {
       "version": "1.0.0",
-      "created": "2026-09-08T23:00:52.299482Z",
+      "created": "2026-09-08T23:15:36.430254Z",
       "breaking": false,
       "assets": {
         "country=NGA_geom_type=point_type=facility/part-0.parquet": {
@@ -53,7 +53,7 @@
           "sha256": "2c78ece44bf9619b207495803c04fe3692ea11a9a689bec331e79a8e80700bb3",
           "size_bytes": 51963,
           "href": "parquet/locations/items.parquet",
-          "mtime": 1788908452.368088
+          "mtime": 1788909336.511774
         }
       },
       "changes": [
@@ -69,7 +69,7 @@
     },
     {
       "version": "1.0.1",
-      "created": "2026-09-08T23:00:52.963483Z",
+      "created": "2026-09-08T23:15:37.122771Z",
       "breaking": false,
       "assets": {
         "country=NGA_geom_type=point_type=facility/part-0.parquet": {
@@ -118,7 +118,7 @@
           "sha256": "63b9e7f21e1d691df5e5ab4ab94ad405f65a29709f730b6d42db8cd7e1f70069",
           "size_bytes": 51939,
           "href": "parquet/locations/items.parquet",
-          "mtime": 1788908452.9624877
+          "mtime": 1788909337.1217098
         }
       },
       "changes": [
