@@ -31,7 +31,12 @@ data/
   manifest.json            when, from which server, row counts, view canonicals (written by the refresh)
 ```
 
-The dashboard that reads all of this is `campaignhq/` (Observable Framework, DuckDB-WASM, MapLibre).
+The dashboard that reads all of this is `campaignhq/` (Observable Framework,
+DuckDB-WASM, MapLibre). `tools/odklocations/` is a second, single-purpose site over
+the same `locations` table: filter facilities, settlements or admin
+boundaries and export an ODK entity CSV, conversion done in-browser by
+`odk-locations` (https://github.com/recodelabs/odk-locations) compiled to
+WebAssembly.
 
 ## Refresh
 
