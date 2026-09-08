@@ -9,10 +9,7 @@ sql:
 
 # Campaign calendar
 
-What is planned, running and done, where — from the Integrated Campaign Registry.
-Every row is one campaign round in one geography (a CarePlan), flattened by the IG's
-`IcrCampaignCalendar` view and joined to the location registry. Filter, then read the
-map, the timeline and the table together.
+Overview of campaigns by programme, state and year.  Powered by the [Integrated Campaign Registry](https://icr.healthcampaigns.org).
 
 ```js
 import {campaignMap, syncMaps, DEFAULT_BASEMAP} from "./components/map.js";
@@ -134,9 +131,6 @@ kpi.coverage = kpi.reportedTargeted > 0 ? kpi.reportedReached / kpi.reportedTarg
   <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap">
     <div>
       <h2>Rounds over time</h2>
-      <div class="muted" style="margin-bottom: 6px">${timelineMode === "By state"
-        ? "One bar per state round, coloured by programme; overlapping bars are programmes in the same state at the same time."
-        : "One lane per LGA, grouped by state — click a state to collapse or expand it."} The red dotted line is today.</div>
     </div>
     <div>${timelineModeInput}</div>
   </div>
