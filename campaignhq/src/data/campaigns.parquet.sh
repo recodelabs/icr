@@ -10,7 +10,7 @@ duckdb -c "
 COPY (
   WITH cal AS (SELECT * FROM read_parquet('$DATA/parquet/campaign_calendar/**/*.parquet', hive_partitioning=true, union_by_name=true)),
        pop AS (SELECT group_id, quantity FROM read_parquet('$DATA/parquet/target_population/**/*.parquet', hive_partitioning=true, union_by_name=true)),
-       loc AS (SELECT id, name, admin_level, admin1_name FROM read_parquet('$DATA/parquet/locations/**/*.parquet', hive_partitioning=true, union_by_name=true) WHERE type = 'admin-unit'),
+       loc AS (SELECT id, name, admin_level, admin1_name FROM read_parquet('$DATA/parquet/locations/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true) WHERE type = 'admin-unit'),
        cov AS (SELECT * FROM read_parquet('$DATA/parquet/coverage/**/*.parquet', hive_partitioning=true, union_by_name=true)),
        admin AS (SELECT campaign_id, numerator AS reached, denominator AS admin_denominator, score AS admin_coverage, reported AS admin_reported
                  FROM cov WHERE source = 'administrative' AND lineage = 'reconciled' QUALIFY row_number() OVER (PARTITION BY campaign_id ORDER BY reported DESC) = 1),

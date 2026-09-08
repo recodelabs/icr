@@ -1,0 +1,10 @@
+# Portolan CLI configuration for the ICR catalog (data/ ⇄ r2:icr ⇄ https://sdi.healthcampaigns.org).
+# The views (campaign_calendar, coverage, …) are plain Parquet, not GeoParquet.
+tabular.enabled: 'true'
+
+publish:
+  public_url: https://sdi.healthcampaigns.org/
+
+check:
+  disabled:
+    - PTL-VIZ-001   # no rendered thumbnails yet (needs chiitiler / Node 24); revisit

@@ -1,0 +1,37 @@
+{
+  "type": "Catalog",
+  "id": "icr",
+  "stac_version": "1.1.0",
+  "description": "Health-campaign data exported from UNICEF's Integrated Campaign Registry (ICR) FHIR server: the location registry (admin boundaries, health facilities, settlements) as GeoParquet, and every SQL-on-FHIR ViewDefinition in the ICR Implementation Guide (campaign calendar, target populations, coverage, endemicity) as Parquet. Nigeria and Sierra Leone so far.",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./catalog.json",
+      "type": "application/json",
+      "title": "ICR — Integrated Campaign Registry"
+    },
+    {
+      "rel": "agents",
+      "href": "./AGENTS.md",
+      "type": "text/markdown",
+      "title": "Agent/LLM usage guide"
+    },
+    {
+      "rel": "describedby",
+      "href": "./README.md",
+      "type": "text/markdown",
+      "title": "Human-readable documentation"
+    },
+    {
+      "rel": "child",
+      "href": "./parquet/catalog.json",
+      "type": "application/json",
+      "title": "Parquet"
+    }
+  ],
+  "title": "ICR — Integrated Campaign Registry",
+  "stac_extensions": [
+    "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json"
+  ],
+  "updated": "2026-09-08T22:13:12Z"
+}

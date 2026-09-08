@@ -1,0 +1,71 @@
+{
+  "spec_version": "1.0.0",
+  "current_version": "1.0.0",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "created": "2026-09-08T22:13:12.101103Z",
+      "breaking": false,
+      "assets": {
+        "country=NGA_geom_type=point_type=facility/part-0.parquet": {
+          "sha256": "010e643a4835fa44857d3a4f706de99894ee3c435715368c3d41e2dd7ede2149",
+          "size_bytes": 16976294,
+          "href": "parquet/locations/country=NGA_geom_type=point_type=facility/part-0.parquet",
+          "mtime": 1788905219.53839
+        },
+        "country=NGA_geom_type=point_type=settlement/part-0.parquet": {
+          "sha256": "44531ce30c275d2466ec3c26fc338cf70aca24d11581c391d4cee49965708a33",
+          "size_bytes": 74566057,
+          "href": "parquet/locations/country=NGA_geom_type=point_type=settlement/part-0.parquet",
+          "mtime": 1788905207.3998823
+        },
+        "country=NGA_geom_type=polygon_type=admin-unit/part-0.parquet": {
+          "sha256": "625a13c3a0c4195ea58a7ab1ead11c521ea6b40518d68040dd0eecc6486ddf39",
+          "size_bytes": 2408126,
+          "href": "parquet/locations/country=NGA_geom_type=polygon_type=admin-unit/part-0.parquet",
+          "mtime": 1788905221.4055898
+        },
+        "country=SL_geom_type=point_type=facility/part-0.parquet": {
+          "sha256": "ccb85345ec644ffc7015612ad700e85cb6f8abc901a09e611a1d9ed53efbb692",
+          "size_bytes": 16828,
+          "href": "parquet/locations/country=SL_geom_type=point_type=facility/part-0.parquet",
+          "mtime": 1788905221.4229717
+        },
+        "country=SL_geom_type=point_type=null/part-0.parquet": {
+          "sha256": "e5e8374b92c70633c1eba7920a1432b09ccc385d06eb651a2f40a5ce6f4ffe52",
+          "size_bytes": 15205,
+          "href": "parquet/locations/country=SL_geom_type=point_type=null/part-0.parquet",
+          "mtime": 1788905221.4121437
+        },
+        "country=SL_geom_type=point_type=school/part-0.parquet": {
+          "sha256": "b24af4ebd0e17b09e14e1547ffced22a834d61f7f2cf539349df3c79c4bdffe1",
+          "size_bytes": 14704,
+          "href": "parquet/locations/country=SL_geom_type=point_type=school/part-0.parquet",
+          "mtime": 1788905221.4176555
+        },
+        "country=SL_geom_type=polygon_type=admin-unit/part-0.parquet": {
+          "sha256": "ac885e516ec1c5f3cbe9882242bef80dc4de1de4aaa004b6b5665fa0b687538e",
+          "size_bytes": 14402,
+          "href": "parquet/locations/country=SL_geom_type=polygon_type=admin-unit/part-0.parquet",
+          "mtime": 1788905221.4277072
+        },
+        "items.parquet": {
+          "sha256": "2c78ece44bf9619b207495803c04fe3692ea11a9a689bec331e79a8e80700bb3",
+          "size_bytes": 51963,
+          "href": "parquet/locations/items.parquet",
+          "mtime": 1788905592.1519125
+        }
+      },
+      "changes": [
+        "country=NGA_geom_type=point_type=facility/part-0.parquet",
+        "country=NGA_geom_type=point_type=settlement/part-0.parquet",
+        "country=NGA_geom_type=polygon_type=admin-unit/part-0.parquet",
+        "country=SL_geom_type=point_type=facility/part-0.parquet",
+        "country=SL_geom_type=point_type=null/part-0.parquet",
+        "country=SL_geom_type=point_type=school/part-0.parquet",
+        "country=SL_geom_type=polygon_type=admin-unit/part-0.parquet",
+        "items.parquet"
+      ]
+    }
+  ]
+}

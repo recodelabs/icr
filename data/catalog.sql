@@ -2,24 +2,26 @@
 --   cd data && duckdb -init catalog.sql
 -- Paths are relative so the same file works against a bucket mirror
 -- (replace the globs with s3:// or https:// URLs, or set the working directory).
+-- Globs start at country=*/ so the Portolan metadata beside the data
+-- (collection.json, items.parquet) is never read as part of a table.
 
 CREATE OR REPLACE VIEW locations AS
-  SELECT * FROM read_parquet('parquet/locations/**/*.parquet', hive_partitioning = true, union_by_name = true);
+  SELECT * FROM read_parquet('parquet/locations/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
 CREATE OR REPLACE VIEW campaign_calendar AS
-  SELECT * FROM read_parquet('parquet/campaign_calendar/**/*.parquet', hive_partitioning = true, union_by_name = true);
+  SELECT * FROM read_parquet('parquet/campaign_calendar/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
 CREATE OR REPLACE VIEW target_population AS
-  SELECT * FROM read_parquet('parquet/target_population/**/*.parquet', hive_partitioning = true, union_by_name = true);
+  SELECT * FROM read_parquet('parquet/target_population/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
 CREATE OR REPLACE VIEW coverage AS
-  SELECT * FROM read_parquet('parquet/coverage/**/*.parquet', hive_partitioning = true, union_by_name = true);
+  SELECT * FROM read_parquet('parquet/coverage/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
 CREATE OR REPLACE VIEW coverage_strata AS
-  SELECT * FROM read_parquet('parquet/coverage_strata/**/*.parquet', hive_partitioning = true, union_by_name = true);
+  SELECT * FROM read_parquet('parquet/coverage_strata/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
 CREATE OR REPLACE VIEW location_status AS
-  SELECT * FROM read_parquet('parquet/location_status/**/*.parquet', hive_partitioning = true, union_by_name = true);
+  SELECT * FROM read_parquet('parquet/location_status/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
 -- Convenience: the CURRENT classification per location × property (newest assertion wins).
 CREATE OR REPLACE VIEW location_status_current AS

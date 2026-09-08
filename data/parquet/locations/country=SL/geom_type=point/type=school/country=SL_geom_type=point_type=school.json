@@ -1,0 +1,167 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=SL_geom_type=point_type=school",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -12.9458,
+          9.0152
+        ],
+        [
+          -12.9458,
+          9.0152
+        ],
+        [
+          -12.9458,
+          9.0152
+        ],
+        [
+          -12.9458,
+          9.0152
+        ],
+        [
+          -12.9458,
+          9.0152
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -12.9458,
+    9.0152,
+    -12.9458,
+    9.0152
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 1,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "example-school",
+        "maximum": "example-school"
+      },
+      "version_id": {
+        "minimum": "6",
+        "maximum": "6"
+      },
+      "last_updated": {
+        "minimum": "2026-09-07T17:37:53.492+00:00",
+        "maximum": "2026-09-07T17:37:53.492+00:00"
+      },
+      "name": {
+        "minimum": "Rokupr Primary School",
+        "maximum": "Rokupr Primary School"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "school",
+        "maximum": "school"
+      },
+      "physical_type": {
+        "minimum": "bu",
+        "maximum": "bu"
+      },
+      "part_of": {
+        "minimum": "example-settlement",
+        "maximum": "example-settlement"
+      },
+      "position_longitude": {
+        "minimum": "08f2a3b4c5d6e7f8-building-school-example",
+        "maximum": "08f2a3b4c5d6e7f8-building-school-example"
+      },
+      "position_latitude": {
+        "minimum": -12.9458,
+        "maximum": -12.9458
+      },
+      "pcode": {
+        "minimum": 9.0152,
+        "maximum": 9.0152
+      },
+      "settlement_type": {
+        "minimum": "08f2a3b4c5d6e7f8-building-school-example",
+        "maximum": "08f2a3b4c5d6e7f8-building-school-example"
+      },
+      "tier": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/example-country/example-district/example-settlement/example-sch",
+        "maximum": "/example-country/example-district/example-settlement/example-sci"
+      },
+      "admin1_name": {
+        "minimum": "example-country",
+        "maximum": "example-settlement"
+      },
+      "admin2_name": {
+        "minimum": "Sierra Leone",
+        "maximum": "Sierra Leone"
+      },
+      "admin3_name": {
+        "minimum": "Kambia District",
+        "maximum": "Kambia District"
+      },
+      "admin2_code": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "admin3_code": {
+        "minimum": "SL0201",
+        "maximum": "SL0201"
+      },
+      "lon": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "country=SL Geom Type=point Type=school",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 14704,
+      "file:checksum": "1220b24af4ebd0e17b09e14e1547ffced22a834d61f7f2cf539349df3c79c4bdffe1",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

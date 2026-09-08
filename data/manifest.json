@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-07T18:40:17+00:00",
+  "refreshed_at": "2026-09-08T22:07:01+00:00",
   "server": "http://localhost:3447/fhir",
   "server_name": "hapi-local",
   "tables": {
@@ -51,9 +51,9 @@
   },
   "kiln": {
     "kiln_version": "0.2.0",
-    "watermark": "2026-09-06T21:13:36.803+00:00",
+    "watermark": "2026-09-07T17:37:53.492+00:00",
     "count": 344281,
     "organization_count": 51023,
-    "completed_at": "2026-09-07T14:04:48Z"
+    "completed_at": "2026-09-08T22:05:40Z"
   }
 }

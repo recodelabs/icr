@@ -86,7 +86,7 @@ EOF
     # else via campaign_id through the campaign calendar table, else unpartitioned.
     cols=$(duckdb -noheader -csv -c "SELECT string_agg(column_name, ',') FROM (DESCRIBE SELECT * FROM read_parquet('$tmp'))" | tr -d '"')
     if [[ ",$cols," == *",location_id,"* ]]; then
-      country_join="LEFT JOIN (SELECT id AS _k, country FROM read_parquet('$PARQUET/locations/**/*.parquet', hive_partitioning=true, union_by_name=true)) l ON l._k = v.location_id"
+      country_join="LEFT JOIN (SELECT id AS _k, country FROM read_parquet('$PARQUET/locations/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true)) l ON l._k = v.location_id"
     elif [[ ",$cols," == *",campaign_id,"* ]] && [ -d "$PARQUET/campaign_calendar" ]; then
       country_join="LEFT JOIN (SELECT campaign_id AS _k, any_value(country) AS country FROM read_parquet('$PARQUET/campaign_calendar/**/*.parquet', hive_partitioning=true, union_by_name=true) GROUP BY 1) l ON l._k = v.campaign_id"
     else
@@ -97,7 +97,7 @@ EOF
         SELECT v.*, l.country FROM read_parquet('$tmp') v $country_join
       ) TO '$PARQUET/$table' (FORMAT PARQUET, PARTITION_BY (country), WRITE_PARTITION_COLUMNS TRUE, OVERWRITE_OR_IGNORE, FILENAME_PATTERN 'part-{i}');"
     rm -f "$tmp"
-    rows=$(duckdb -noheader -csv -c "SELECT count(*) FROM read_parquet('$PARQUET/$table/**/*.parquet', hive_partitioning=true)")
+    rows=$(duckdb -noheader -csv -c "SELECT count(*) FROM read_parquet('$PARQUET/$table/country=*/**/*.parquet', hive_partitioning=true)")
     echo "   $name → parquet/$table ($rows rows)"
   done
 fi
@@ -111,7 +111,8 @@ python3 - "$DATA" "$FHIR_BASE" "$SERVER_NAME" <<'EOF'
 import json, subprocess, sys, datetime, glob, os
 data, base, server = sys.argv[1:]
 def rows(table):
-    q = f"SELECT count(*) FROM read_parquet('{data}/parquet/{table}/**/*.parquet', hive_partitioning=true, union_by_name=true)"
+    # country=*/ keeps the Portolan metadata beside the data (items.parquet) out of the table
+    q = f"SELECT count(*) FROM read_parquet('{data}/parquet/{table}/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true)"
     return int(subprocess.check_output(["duckdb", "-noheader", "-csv", "-c", q]).decode().strip())
 tables = sorted(d for d in os.listdir(f"{data}/parquet") if os.path.isdir(f"{data}/parquet/{d}"))
 views = {}
@@ -128,6 +129,23 @@ m = {"refreshed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(time
 json.dump(m, open(f"{data}/manifest.json", "w"), indent=2)
 print(json.dumps(m["tables"]))
 EOF
+
+# Portolan catalog (data/ is the catalog root, published at https://sdi.healthcampaigns.org
+# by tools/sdi/). `add` writes the STAC metadata beside the parquet — collection.json, one
+# item per hive partition, items.parquet, README/AGENTS.md — and leaves kiln's files alone.
+# The snapshot time is the collection's datetime. Only the locations table for now: the CLI
+# mis-models hive-partitioned plain-Parquet tables (the views), see data/README.md.
+if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
+  echo "== portolan catalog"
+  refreshed=$(python3 -c "import json; print(json.load(open('$DATA/manifest.json'))['refreshed_at'])")
+  # kiln swaps in a fresh locations/ directory on every run, so the collection's
+  # human-written metadata is kept under .portolan/collections/ and copied in first.
+  mkdir -p "$PARQUET/locations/.portolan"
+  cp "$DATA/.portolan/collections/locations/metadata.yaml" "$PARQUET/locations/.portolan/metadata.yaml"
+  (cd "$DATA" && portolan add parquet/locations/ --no-thumbnails --datetime "$refreshed" \
+    && portolan readme parquet/locations --no-recursive >/dev/null \
+    && portolan check --fix --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
+fi
 echo "done → $DATA"
 
 if [ "$DO_PUSH" = 1 ]; then

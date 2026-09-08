@@ -35,10 +35,13 @@ rclone lsd "$REMOTE:" 2>/dev/null | awk '{print $NF}' | grep -qx "$BUCKET" || {
 echo "== push data/ → $REMOTE:$BUCKET ${DRY:+(dry run)}"
 for d in parquet tiles views; do
   [ -d "$DATA/$d" ] || continue
-  rclone sync $DRY --checksum --fast-list --transfers 8 --exclude ".DS_Store" \
+  rclone sync $DRY --checksum --fast-list --transfers 8 --exclude ".DS_Store" --exclude ".portolan/**" \
     "$DATA/$d" "$REMOTE:$BUCKET/$d" --stats-one-line -v 2>&1 | grep -v "^$" | tail -3
 done
-for f in manifest.json catalog.sql; do
+# The Portolan catalog root (catalog.json, README.md, AGENTS.md, versions.json)
+# rides along with manifest.json and catalog.sql; the collections' metadata
+# sits inside parquet/ and is synced above. .portolan/ is config, never pushed.
+for f in manifest.json catalog.sql catalog.json README.md AGENTS.md versions.json; do
   [ -f "$DATA/$f" ] && rclone copyto $DRY "$DATA/$f" "$REMOTE:$BUCKET/$f"
 done
 echo "== done"

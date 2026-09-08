@@ -1,0 +1,212 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=SL_geom_type=point_type=facility",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -12.9465,
+          9.014
+        ],
+        [
+          -12.9465,
+          9.014
+        ],
+        [
+          -12.9465,
+          9.014
+        ],
+        [
+          -12.9465,
+          9.014
+        ],
+        [
+          -12.9465,
+          9.014
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -12.9465,
+    9.014,
+    -12.9465,
+    9.014
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 2,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "example-facility",
+        "maximum": "example-fixed-post"
+      },
+      "version_id": {
+        "minimum": "5",
+        "maximum": "6"
+      },
+      "last_updated": {
+        "minimum": "2026-09-06T20:59:32.041+00:00",
+        "maximum": "2026-09-07T17:37:53.492+00:00"
+      },
+      "name": {
+        "minimum": "Rokupr Community Health Centre",
+        "maximum": "Rokupr Community Health Centre — fixed vaccination post"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "facility",
+        "maximum": "facility"
+      },
+      "physical_type": {
+        "minimum": "si",
+        "maximum": "si"
+      },
+      "part_of": {
+        "minimum": "example-settlement",
+        "maximum": "example-settlement"
+      },
+      "managing_organization": {
+        "minimum": "example-facility-org",
+        "maximum": "example-facility-org",
+        "null_count": 1
+      },
+      "position_longitude": {
+        "minimum": "08f2a3b4c5d6e7f8-building-chc-example",
+        "maximum": "08f2a3b4c5d6e7f8-place-chc-example"
+      },
+      "position_latitude": {
+        "minimum": -12.9465,
+        "maximum": -12.9465
+      },
+      "pcode": {
+        "minimum": 9.014,
+        "maximum": 9.014
+      },
+      "settlement_type": {
+        "minimum": "08f2a3b4c5d6e7f8-building-chc-example",
+        "maximum": "08f2a3b4c5d6e7f8-place-chc-example"
+      },
+      "quadkey_level": {
+        "minimum": "033321123102101100",
+        "maximum": "033321123102101100",
+        "null_count": 1
+      },
+      "facility_level": {
+        "minimum": 18,
+        "maximum": 18,
+        "null_count": 1
+      },
+      "ownership": {
+        "minimum": "primary",
+        "maximum": "primary",
+        "null_count": 1
+      },
+      "nhfr_code": {
+        "minimum": "public",
+        "maximum": "public",
+        "null_count": 1
+      },
+      "facility_level_text": {
+        "minimum": "https://icr.healthcampaigns.org/identifiers/registry-id",
+        "maximum": "https://icr.healthcampaigns.org/identifiers/registry-id",
+        "null_count": 1
+      },
+      "ownership_text": {
+        "minimum": "SL-MFL-0421",
+        "maximum": "SL-MFL-0421",
+        "null_count": 1
+      },
+      "depth": {
+        "minimum": "Community Health Centre",
+        "maximum": "Community Health Centre",
+        "null_count": 1
+      },
+      "tier": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/example-country/example-district/example-settlement/example-fac",
+        "maximum": "/example-country/example-district/example-settlement/example-fiy"
+      },
+      "admin1_name": {
+        "minimum": "example-country",
+        "maximum": "example-settlement"
+      },
+      "admin2_name": {
+        "minimum": "Sierra Leone",
+        "maximum": "Sierra Leone"
+      },
+      "admin3_name": {
+        "minimum": "Kambia District",
+        "maximum": "Kambia District"
+      },
+      "admin2_code": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "admin3_code": {
+        "minimum": "SL0201",
+        "maximum": "SL0201"
+      },
+      "geom_type": {
+        "minimum": "{\"resourceType\":\"Organization\",\"id\":\"example-facility-org\",\"meta",
+        "maximum": "{\"resourceType\":\"Organization\",\"id\":\"example-facility-org\",\"metb",
+        "null_count": 1
+      },
+      "lon": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "country=SL Geom Type=point Type=facility",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 16828,
+      "file:checksum": "1220ccb85345ec644ffc7015612ad700e85cb6f8abc901a09e611a1d9ed53efbb692",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

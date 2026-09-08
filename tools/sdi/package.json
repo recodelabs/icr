@@ -1,0 +1,12 @@
+{
+  "name": "icr-sdi",
+  "private": true,
+  "description": "Cloudflare Worker serving the ICR Portolan catalog from R2 at sdi.healthcampaigns.org",
+  "scripts": {
+    "deploy": "./deploy.sh",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

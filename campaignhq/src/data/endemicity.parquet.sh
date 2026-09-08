@@ -7,7 +7,7 @@ DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
 duckdb -c "
 COPY (
   WITH s AS (SELECT * FROM read_parquet('$DATA/parquet/location_status/**/*.parquet', hive_partitioning=true, union_by_name=true)),
-       loc AS (SELECT id, name, admin_level, admin1_name FROM read_parquet('$DATA/parquet/locations/**/*.parquet', hive_partitioning=true, union_by_name=true) WHERE type = 'admin-unit')
+       loc AS (SELECT id, name, admin_level, admin1_name FROM read_parquet('$DATA/parquet/locations/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true) WHERE type = 'admin-unit')
   SELECT s.observation_id, s.location_id, l.name AS location_name, l.admin1_name AS state, l.admin_level,
          s.property,
          regexp_replace(s.property, '-endemicity$', '') AS disease,

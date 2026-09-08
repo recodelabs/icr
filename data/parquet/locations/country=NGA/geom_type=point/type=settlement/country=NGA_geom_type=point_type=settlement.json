@@ -1,0 +1,179 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=NGA_geom_type=point_type=settlement",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          2.69902545516067,
+          4.2769499996428
+        ],
+        [
+          2.69902545516067,
+          13.878181712616
+        ],
+        [
+          14.6743199996683,
+          13.878181712616
+        ],
+        [
+          14.6743199996683,
+          4.2769499996428
+        ],
+        [
+          2.69902545516067,
+          4.2769499996428
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    2.69902545516067,
+    4.2769499996428,
+    14.6743199996683,
+    13.878181712616
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 292438,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "00005d7d-9488-4528-9582-2c720a7acafa",
+        "maximum": "ffffe4ba-d020-4042-956c-4f9e13974bd3"
+      },
+      "version_id": {
+        "minimum": "2",
+        "maximum": "2"
+      },
+      "last_updated": {
+        "minimum": "2026-09-06T21:08:57.716+00:00",
+        "maximum": "2026-09-06T21:13:36.803+00:00"
+      },
+      "name": {
+        "minimum": "10 10 Low Cost",
+        "maximum": "wajan Tsohuwa"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "settlement",
+        "maximum": "settlement"
+      },
+      "physical_type": {
+        "minimum": "si",
+        "maximum": "si"
+      },
+      "part_of": {
+        "minimum": "nga-ab-1001",
+        "maximum": "nga-za-814"
+      },
+      "position_longitude": {
+        "minimum": "00005d7d-9488-4528-9582-2c720a7acafa",
+        "maximum": "ffffe4ba-d020-4042-956c-4f9e13974bd3"
+      },
+      "position_latitude": {
+        "minimum": 2.69902545516067,
+        "maximum": 14.6743199996683
+      },
+      "pcode": {
+        "minimum": 4.2769499996428,
+        "maximum": 13.878181712616
+      },
+      "quadkey_level": {
+        "minimum": "122202301312133313",
+        "maximum": "122230220210201100"
+      },
+      "facility_level": {
+        "minimum": 18,
+        "maximum": 18
+      },
+      "tier": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/nga/nga-ab/nga-ab-1001/01691dc9-1f7f-404a-b8b9-6f99c702a0de",
+        "maximum": "/nga/nga-za/nga-za-814/ffba5bd2-3657-411f-939e-9f0839d1b1ba"
+      },
+      "admin1_name": {
+        "minimum": "nga",
+        "maximum": "nga-za-814"
+      },
+      "admin2_name": {
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
+      },
+      "admin3_name": {
+        "minimum": "Abia",
+        "maximum": "Zamfara"
+      },
+      "admin4_name": {
+        "minimum": "Aba North",
+        "maximum": "Zuru"
+      },
+      "admin2_code": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "admin3_code": {
+        "minimum": "AB",
+        "maximum": "ZA"
+      },
+      "admin4_code": {
+        "minimum": "10001",
+        "maximum": "9018"
+      },
+      "lon": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "country=NGA Geom Type=point Type=settlement",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 74566057,
+      "file:checksum": "122044531ce30c275d2466ec3c26fc338cf70aca24d11581c391d4cee49965708a33",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

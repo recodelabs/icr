@@ -1,0 +1,20 @@
+# ICR SDI on Cloudflare: a Worker that serves the Portolan catalog straight
+# from the `icr` R2 bucket at https://sdi.healthcampaigns.org — the bucket root
+# is the catalog root (data/ mirrors it 1:1; see data/README.md).
+# Deploy with ./deploy.sh (wrangler deploy; the data itself is pushed by
+# tools/warehouse/push-r2.sh).
+name = "sdi"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+account_id = "af8ac7eb1f7ec617e14702e69ce0d4c7"
+workers_dev = false
+
+[[r2_buckets]]
+binding = "ICR"
+bucket_name = "icr"
+
+# Custom domain on the healthcampaigns.org zone (same account). Wrangler
+# creates the DNS record and certificate for a custom_domain route on deploy.
+[[routes]]
+pattern = "sdi.healthcampaigns.org"
+custom_domain = true

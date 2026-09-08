@@ -1,0 +1,220 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=NGA_geom_type=point_type=facility",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          2.70779,
+          4.28171
+        ],
+        [
+          2.70779,
+          13.865239
+        ],
+        [
+          14.6363825736,
+          13.865239
+        ],
+        [
+          14.6363825736,
+          4.28171
+        ],
+        [
+          2.70779,
+          4.28171
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    2.70779,
+    4.28171,
+    14.6363825736,
+    13.865239
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 51022,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
+        "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
+      },
+      "version_id": {
+        "minimum": "2",
+        "maximum": "2"
+      },
+      "last_updated": {
+        "minimum": "2026-09-06T21:12:08.019+00:00",
+        "maximum": "2026-09-06T21:12:41.538+00:00"
+      },
+      "name": {
+        "minimum": "1 Brigade Medical Center",
+        "maximum": "Zwall Primary Health Center"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "facility",
+        "maximum": "facility"
+      },
+      "physical_type": {
+        "minimum": "si",
+        "maximum": "si"
+      },
+      "part_of": {
+        "minimum": "nga-ab",
+        "maximum": "nga-za-814"
+      },
+      "managing_organization": {
+        "minimum": "org-0001e040-0be2-4e0d-961e-cfb64f157554",
+        "maximum": "org-fffc6081-543c-4681-b94a-6d0d10d0854c"
+      },
+      "position_longitude": {
+        "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
+        "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
+      },
+      "position_latitude": {
+        "minimum": 2.70779,
+        "maximum": 14.6363825736
+      },
+      "pcode": {
+        "minimum": 4.28171,
+        "maximum": 13.865239
+      },
+      "quadkey_level": {
+        "minimum": "122202301313132330",
+        "maximum": "122230220210200133"
+      },
+      "facility_level": {
+        "minimum": 18,
+        "maximum": 18
+      },
+      "ownership": {
+        "minimum": "primary",
+        "maximum": "unknown"
+      },
+      "nhfr_code": {
+        "minimum": "private",
+        "maximum": "unknown"
+      },
+      "nhfr_uid": {
+        "minimum": "01/01/1/1/1/0004",
+        "maximum": "37/06/1/3/2/0358",
+        "null_count": 16481
+      },
+      "facility_level_text": {
+        "minimum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-code",
+        "maximum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-uid",
+        "null_count": 16481
+      },
+      "ownership_text": {
+        "minimum": "01/01/1/1/1/0004",
+        "maximum": "87654002",
+        "null_count": 16481
+      },
+      "depth": {
+        "minimum": "General Hospital",
+        "maximum": "Unknown"
+      },
+      "admin_level": {
+        "minimum": "Federal Government",
+        "maximum": "Unknown"
+      },
+      "tier": {
+        "minimum": 2,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/nga/nga-ab/004a19da-18a1-4808-bff9-332c99f98cc6",
+        "maximum": "/nga/nga-za/nga-za-814/ff3d087e-4e7d-4ec4-9e4a-498ab577c198"
+      },
+      "admin1_name": {
+        "minimum": "nga",
+        "maximum": "nga-za-814"
+      },
+      "admin2_name": {
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
+      },
+      "admin3_name": {
+        "minimum": "Abia",
+        "maximum": "Zamfara"
+      },
+      "admin4_name": {
+        "minimum": "Aba North",
+        "maximum": "Zuru",
+        "null_count": 2441
+      },
+      "admin2_code": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "admin3_code": {
+        "minimum": "AB",
+        "maximum": "ZA"
+      },
+      "admin4_code": {
+        "minimum": "10001",
+        "maximum": "9018",
+        "null_count": 2441
+      },
+      "geom_type": {
+        "minimum": "{\"resourceType\":\"Organization\",\"id\":\"org-0001e040-0be2-4e0d-961e",
+        "maximum": "{\"resourceType\":\"Organization\",\"id\":\"org-fffc6081-543c-4681-b94b"
+      },
+      "lon": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "country=NGA Geom Type=point Type=facility",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 16976294,
+      "file:checksum": "1220010e643a4835fa44857d3a4f706de99894ee3c435715368c3d41e2dd7ede2149",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

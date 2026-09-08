@@ -1,0 +1,171 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=SL_geom_type=point_type=null",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -12.9471,
+          9.0144
+        ],
+        [
+          -12.9471,
+          9.0149
+        ],
+        [
+          -12.9469,
+          9.0149
+        ],
+        [
+          -12.9469,
+          9.0144
+        ],
+        [
+          -12.9471,
+          9.0144
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -12.9471,
+    9.0144,
+    -12.9469,
+    9.0149
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 2,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "example-dwelling",
+        "maximum": "example-settlement"
+      },
+      "version_id": {
+        "minimum": "5",
+        "maximum": "5"
+      },
+      "last_updated": {
+        "minimum": "2026-09-06T20:59:32.041+00:00",
+        "maximum": "2026-09-06T20:59:32.041+00:00"
+      },
+      "name": {
+        "minimum": "Dwelling — Rokupr block 4, house 12",
+        "maximum": "Rokupr"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "physical_type": {
+        "minimum": "area",
+        "maximum": "ho"
+      },
+      "part_of": {
+        "minimum": "example-district",
+        "maximum": "example-settlement"
+      },
+      "position_longitude": {
+        "minimum": "08f2a3b4c5d6e7f8-building-example",
+        "maximum": "08f2a3b4c5d6e7f8-place-example"
+      },
+      "position_latitude": {
+        "minimum": -12.9471,
+        "maximum": -12.9469
+      },
+      "pcode": {
+        "minimum": 9.0144,
+        "maximum": 9.0149
+      },
+      "settlement_type": {
+        "minimum": "08f2a3b4c5d6e7f8-building-example",
+        "maximum": "08f2a3b4c5d6e7f8-place-example"
+      },
+      "quadkey_level": {
+        "minimum": "033321123102101100",
+        "maximum": "033321123102101100"
+      },
+      "facility_level": {
+        "minimum": 18,
+        "maximum": 18
+      },
+      "tier": {
+        "minimum": 2,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/example-country/example-district/example-settlement",
+        "maximum": "/example-country/example-district/example-settlement/example-dwf"
+      },
+      "admin1_name": {
+        "minimum": "example-country",
+        "maximum": "example-settlement"
+      },
+      "admin2_name": {
+        "minimum": "Sierra Leone",
+        "maximum": "Sierra Leone"
+      },
+      "admin3_name": {
+        "minimum": "Kambia District",
+        "maximum": "Kambia District"
+      },
+      "admin2_code": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "admin3_code": {
+        "minimum": "SL0201",
+        "maximum": "SL0201"
+      },
+      "lon": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "country=SL Geom Type=point Type=null",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 15205,
+      "file:checksum": "1220e5e8374b92c70633c1eba7920a1432b09ccc385d06eb651a2f40a5ce6f4ffe52",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

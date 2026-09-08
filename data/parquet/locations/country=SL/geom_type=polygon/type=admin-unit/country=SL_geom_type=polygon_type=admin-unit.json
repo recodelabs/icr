@@ -1,0 +1,167 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=SL_geom_type=polygon_type=admin-unit",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -13.05,
+          8.95
+        ],
+        [
+          -13.05,
+          9.15
+        ],
+        [
+          -12.85,
+          9.15
+        ],
+        [
+          -12.85,
+          8.95
+        ],
+        [
+          -13.05,
+          8.95
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -13.05,
+    8.95,
+    -12.85,
+    9.15
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Polygon",
+    "geoparquet:feature_count": 1,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "example-district",
+        "maximum": "example-district"
+      },
+      "version_id": {
+        "minimum": "4",
+        "maximum": "4"
+      },
+      "last_updated": {
+        "minimum": "2026-09-06T18:50:09.023+00:00",
+        "maximum": "2026-09-06T18:50:09.023+00:00"
+      },
+      "name": {
+        "minimum": "Kambia District",
+        "maximum": "Kambia District"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "admin-unit",
+        "maximum": "admin-unit"
+      },
+      "physical_type": {
+        "minimum": "jdn",
+        "maximum": "jdn"
+      },
+      "part_of": {
+        "minimum": "example-country",
+        "maximum": "example-country"
+      },
+      "position_longitude": {
+        "minimum": "08f2a3b4c5d6e7f8-division-example",
+        "maximum": "SL0201"
+      },
+      "gers_id": {
+        "minimum": "SL0201",
+        "maximum": "SL0201"
+      },
+      "settlement_type": {
+        "minimum": "08f2a3b4c5d6e7f8-division-example",
+        "maximum": "08f2a3b4c5d6e7f8-division-example"
+      },
+      "tier": {
+        "minimum": 1,
+        "maximum": 1
+      },
+      "path": {
+        "minimum": 1,
+        "maximum": 1
+      },
+      "admin0_name": {
+        "minimum": "/example-country/example-district",
+        "maximum": "/example-country/example-district"
+      },
+      "admin1_name": {
+        "minimum": "example-country",
+        "maximum": "example-country"
+      },
+      "admin2_name": {
+        "minimum": "Sierra Leone",
+        "maximum": "Sierra Leone"
+      },
+      "admin3_name": {
+        "minimum": "Kambia District",
+        "maximum": "Kambia District"
+      },
+      "admin2_code": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "admin3_code": {
+        "minimum": "SL0201",
+        "maximum": "SL0201"
+      },
+      "lon": {
+        "minimum": "SL",
+        "maximum": "SL"
+      },
+      "lat": {
+        "minimum": "polygon",
+        "maximum": "polygon"
+      }
+    },
+    "title": "country=SL Geom Type=polygon Type=admin Unit",
+    "vector:geometry_types": [
+      "Polygon"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 14402,
+      "file:checksum": "1220ac885e516ec1c5f3cbe9882242bef80dc4de1de4aaa004b6b5665fa0b687538e",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

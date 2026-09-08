@@ -1,0 +1,177 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=NGA_geom_type=polygon_type=admin-unit",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          2.69261253803825,
+          4.27020398622506
+        ],
+        [
+          2.69261253803825,
+          13.8857139871109
+        ],
+        [
+          14.6779677542086,
+          13.8857139871109
+        ],
+        [
+          14.6779677542086,
+          4.27020398622506
+        ],
+        [
+          2.69261253803825,
+          4.27020398622506
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    2.69261253803825,
+    4.27020398622506,
+    14.6779677542086,
+    13.8857139871109
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "MultiPolygon",
+    "geoparquet:feature_count": 812,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "nga",
+        "maximum": "nga-za-814"
+      },
+      "version_id": {
+        "minimum": "1",
+        "maximum": "1"
+      },
+      "last_updated": {
+        "minimum": "2026-09-06T18:58:31.676+00:00",
+        "maximum": "2026-09-06T18:58:33.127+00:00"
+      },
+      "name": {
+        "minimum": "Aba North",
+        "maximum": "Zuru"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "admin-unit",
+        "maximum": "admin-unit"
+      },
+      "physical_type": {
+        "minimum": "jdn",
+        "maximum": "jdn"
+      },
+      "part_of": {
+        "minimum": "nga",
+        "maximum": "nga-za",
+        "null_count": 1
+      },
+      "position_longitude": {
+        "minimum": "10001",
+        "maximum": "ZA"
+      },
+      "gers_id": {
+        "minimum": "10001",
+        "maximum": "ZA"
+      },
+      "tier": {
+        "minimum": 0,
+        "maximum": 2
+      },
+      "path": {
+        "minimum": 0,
+        "maximum": 2
+      },
+      "admin0_name": {
+        "minimum": "/nga",
+        "maximum": "/nga/nga-za/nga-za-814"
+      },
+      "admin1_name": {
+        "minimum": "nga",
+        "maximum": "nga-za",
+        "null_count": 1
+      },
+      "admin2_name": {
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
+      },
+      "admin3_name": {
+        "minimum": "Abia",
+        "maximum": "Zamfara",
+        "null_count": 1
+      },
+      "admin4_name": {
+        "minimum": "Aba North",
+        "maximum": "Zuru",
+        "null_count": 38
+      },
+      "admin2_code": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "admin3_code": {
+        "minimum": "AB",
+        "maximum": "ZA",
+        "null_count": 1
+      },
+      "admin4_code": {
+        "minimum": "10001",
+        "maximum": "9018",
+        "null_count": 38
+      },
+      "lon": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "lat": {
+        "minimum": "polygon",
+        "maximum": "polygon"
+      }
+    },
+    "title": "country=NGA Geom Type=polygon Type=admin Unit",
+    "vector:geometry_types": [
+      "MultiPolygon"
+    ],
+    "datetime": "2026-09-08T22:07:01Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "../part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 2408126,
+      "file:checksum": "1220625a13c3a0c4195ea58a7ab1ead11c521ea6b40518d68040dd0eecc6486ddf39",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}
