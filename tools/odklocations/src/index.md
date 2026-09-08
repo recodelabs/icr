@@ -111,8 +111,9 @@ const maxVertices = Generators.input(maxVerticesInput);
 
 ```js
 const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.parse(d.geometry_geojson).type})), {
-  columns: ["name", ...LAYERS[layer].props, "geometry"],
-  header: {name: "Name", geometry: "Geometry"},
+  columns: ["name", "id", ...LAYERS[layer].props, "geometry"],
+  header: {name: "Name", id: "Location id", geometry: "Geometry"},
+  width: {id: 220},
   rows: 12
 });
 ```
@@ -132,7 +133,9 @@ const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.
       const rows = all.map((d) => ({
         label: d[labelColumn] ?? null,
         geometry: d.geometry_geojson ? JSON.parse(d.geometry_geojson) : null,
-        properties: Object.fromEntries(LAYERS[layer].props.map((c) => [c, d[c] ?? null]))
+        // location_id is always included — labels are deduped ("Name (2)", "Name (3)"…)
+        // but only the registry id is a stable, unique key back to the FHIR store.
+        properties: {location_id: d.id, ...Object.fromEntries(LAYERS[layer].props.map((c) => [c, d[c] ?? null]))}
       }));
       const options = {geometry: geomMode, max_vertices: maxVertices ?? 500};
       status.textContent = "converting…";
