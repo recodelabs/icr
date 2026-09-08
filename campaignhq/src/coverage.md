@@ -197,7 +197,7 @@ mapCoverage.update(yearRows);
 
 <div class="grid grid-cols-2" style="gap: 12px; margin-top: 12px">
   <div class="card">
-    <h2>People targeted and reached by year${drilled ? `, ${state} State` : ""}</h2>
+    <h2>People targeted and reached by year${drilled ? `, ${state} State` : ""}${programme === "All" ? "" : ` — ${programme}`}</h2>
     ${peoplePlot}
   </div>
   <div class="card">

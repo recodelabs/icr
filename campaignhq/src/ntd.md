@@ -10,10 +10,7 @@ sql:
 
 # NTD endemicity and MDA coverage
 
-Where each neglected tropical disease is endemic, according to the NTD programme's
-classification of every LGA (an `ICRLocationStatus` assertion with its baseline prevalence
-and the survey that changed it), set against the mass drug administration rounds that
-targeted those LGAs and the coverage they reported.
+Show where each NTD is endemic according to NTD classifications based on the LGA level baseline compared against the administered NTD campaigns.
 
 ```js
 import {campaignMap, syncMaps, DEFAULT_BASEMAP} from "./components/map.js";
@@ -192,13 +189,11 @@ mapCoverage.update(rounds);
     <h2>Coverage by LGA, ${year}</h2>
     <div>${sortInput}</div>
   </div>
-  <div class="muted" style="margin-bottom: 6px">One row per reported LGA, grouped by state and sorted by ${sortMode === "coverage" ? "coverage" : "baseline prevalence"}: the filled dot is the administrative coverage of the year's ${D.label.toLowerCase()} round (coloured by the LGA's classification), the hollow diamond is the LGA's baseline ${D.label.toLowerCase()} prevalence from the mapping survey, on the same percent axis. Dashed line: ${D.targetLabel}.</div>
   ${coveragePlot}
 </div>
 
 <div class="card" style="margin-top: 12px">
   <h2>Classification by LGA and year</h2>
-  <div class="muted" style="margin-bottom: 6px">One dot per LGA and year, coloured by the LGA's ${D.label.toLowerCase()} classification at the end of that year. Hover a dot for the date and assessment behind a change. Within each state, LGAs are sorted by the year they transitioned, earliest first. Not filtered by the MDA year.</div>
   ${statusTimeline}
 </div>
 
@@ -325,12 +320,6 @@ Inputs.table(search, {
   rows: 22
 })
 ```
-
-<div class="muted" style="margin-top: 8px">
-  ${fmtInt(search.length)} LGAs. The classification is the newest assertion per LGA for the disease dated on or before the end of ${year}; the figure is the baseline
-  prevalence it rests on (or, after a transition, the stop-survey result). Flags mark an endemic LGA with no ${year} round
-  of ${D.label.toLowerCase()} treatment, or a round in an LGA the programme does not classify as under MDA.
-</div>
 
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; }

@@ -9,15 +9,12 @@ sql:
 
 # Georegistry
 
-Every layer the location registry exports — country, states, LGAs, health facilities and
-settlements — as it is on the map. Each layer is a PMTiles archive cut from the registry's
-GeoParquet by `tools/warehouse/tiles.sh`; the point layers are built with no dropping, so
-every facility and settlement in the registry is drawn at every zoom. Toggle layers, narrow
-to a state or LGA, and click any point or LGA to see its properties.
+Represents all the locations types and data stored in the ICR that serves as the georegistry.  All data captured in the health system for campaigns and routine health delivery can be linked to these resources in the FHIR store.
 
 ```js
 import {georegistryMap, LAYERS, FACILITY_LEVELS} from "./components/georegistry-map.js";
 import {DEFAULT_BASEMAP} from "./components/map.js";
+import {checkboxSelect} from "./components/filters.js";
 const BASEMAP = DEFAULT_BASEMAP;
 
 const toRows = (table) => Array.from(table, (r) => {
@@ -36,20 +33,22 @@ const lgasByState = d3.group(admin.filter((d) => d.admin_level === 2), (d) => d.
 const stateLabels = admin.filter((d) => d.admin_level === 1);
 ```
 
-<div class="grid grid-cols-4" style="gap: 12px; margin-bottom: 8px">
+<div class="grid grid-cols-3" style="gap: 12px; margin-bottom: 8px">
   <div>${layersInput}</div>
-  <div>${stateInput}</div>
-  <div id="lga-slot"></div>
+  <div>
+    <div>${stateInput}</div>
+    <div style="margin-top: 8px" id="lga-slot"></div>
+  </div>
   <div>${levelInput}</div>
 </div>
 
 ```js
-const layersInput = Inputs.checkbox(Object.keys(LAYERS), {label: "Layers", value: ["country", "states", "lgas", "facilities", "settlements"], format: (k) => LAYERS[k].label});
+const layersInput = checkboxSelect(Object.keys(LAYERS), {label: "Layers", value: Object.keys(LAYERS), format: (k) => LAYERS[k].label, emptyLabel: "None", fullLabel: "All layers"});
 const activeLayers = Generators.input(layersInput);
 const stateInput = Inputs.select(["All", ...states], {label: "State", value: "All"});
 const state = Generators.input(stateInput);
 // Multiple select; nothing selected means every level.
-const levelInput = Inputs.select(FACILITY_LEVELS.map(([l]) => l), {label: "Facility level", multiple: true, size: 4, value: []});
+const levelInput = checkboxSelect(FACILITY_LEVELS.map(([l]) => l), {label: "Facility level", emptyLabel: "All levels"});
 const levelsPicked = Generators.input(levelInput);
 ```
 
@@ -167,12 +166,6 @@ const inspectorEl = !selected
 if (fullscreen) mapEl.panel.replaceChildren(html`<div style="font-size:13px;font-weight:500;color:#64748b;margin-bottom:6px">Selected feature</div>`, inspectorEl);
 const inspector = fullscreen ? html`<div class="muted">Shown on the fullscreen map.</div>` : inspectorEl;
 ```
-
-<div class="muted" style="margin-top: 8px">
-  Boundaries are GRID3 administrative units; facilities carry their NHFR code, level and ownership; settlements
-  their GERS id and the state and LGA they fall in. The archives are served with HTTP range requests, so the browser
-  only fetches the tiles in view. Rebuild with <code>tools/warehouse/refresh.sh --tiles</code> after a registry refresh.
-</div>
 
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; }
