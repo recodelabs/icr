@@ -9,6 +9,8 @@ sql:
 
 # Campaign coverage
 
+How many people did the campaigns reach (administrative coverage) vs what was planned.
+
 ```js
 import {campaignMap, syncMaps, DEFAULT_BASEMAP} from "./components/map.js";
 import {constrain, available} from "./components/filters.js";
