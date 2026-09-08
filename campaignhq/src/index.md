@@ -246,17 +246,6 @@ Inputs.table(search, {
 })
 ```
 
-<div class="muted" style="margin-top: 8px">
-  ${fmtInt(search.length)} of ${fmtInt(lgaRows.length)} rounds shown. Status is derived from the registry as of the last refresh:
-  <em>completed</em> ended before the refresh date, <em>active</em> spans it, <em>planned</em> starts after it.
-  People targeted is the campaign's planning denominator (an ICRTargetPopulation Group). People reached and administrative
-  coverage come from the round's reconciled administrative coverage report (tallies ÷ denominator — above 100% where the
-  projection undercounts); LQAS is the lot verdict for polio and MR rounds; Survey is the coverage evaluation survey
-  estimate with its 95% confidence interval where one was done. State-level post-campaign surveys sit on the state
-  rows of the timeline. The <a href="./coverage">Campaign coverage</a> page breaks targeted and reached down by year,
-  state and LGA.
-</div>
-
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; }
 .map-title { font-size: 13px; font-weight: 500; color: var(--theme-foreground-muted); padding: 10px 14px 6px; }
