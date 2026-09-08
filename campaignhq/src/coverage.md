@@ -9,12 +9,6 @@ sql:
 
 # Campaign coverage
 
-How many people each campaign set out to reach and how many it did — by year, by state,
-and by LGA when you drill into a state. People targeted is the round's planning denominator
-(an `ICRTargetPopulation` Group); people reached and administrative coverage come from the
-round's reconciled administrative coverage report (`IcrCoverage` view); surveys are the
-independent post-campaign estimates.
-
 ```js
 import {campaignMap, syncMaps, DEFAULT_BASEMAP} from "./components/map.js";
 import {constrain, available} from "./components/filters.js";
@@ -172,7 +166,7 @@ const reportingNote = html`<span>${reportingParts.length ? reportingParts : "eve
     ${mapTargeted}
   </div>
   <div class="card" style="padding: 0; overflow: hidden">
-    <div class="map-title">Administrative coverage per LGA, ${year === "All" ? "all years" : year} <span class="muted">(reached ÷ targeted over reported rounds; grey = no report)</span></div>
+    <div class="map-title">Administrative coverage by LGA, ${year === "All" ? "all years" : year}</div>
     ${mapCoverage}
   </div>
 </div>
@@ -282,13 +276,22 @@ Inputs.table(search, {
 })
 ```
 
-<div class="muted" style="margin-top: 8px">
-  ${fmtInt(search.length)} of ${fmtInt(byYear.length)} ${unitWord} × year rows${drilled ? ` for ${state} State` : ""}.
-  Targeted sums every round's planning denominator${programme === "All" ? " across programmes, so a person targeted by two campaigns counts twice" : ""};
-  reached and administrative coverage use only the rounds with a reconciled report. Coverage above 100% means the
-  projection undercounted the population. Survey is the post-campaign coverage survey${drilled ? " (LGA coverage evaluation survey)" : " (state-level, on the state's campaign)"}
-  with its 95% confidence interval; LQAS counts the polio and MR lots that passed.
-</div>
+<footer class="muted" style="margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--theme-foreground-faintest); font-size: 12px; line-height: 1.6">
+  <p style="margin: 0 0 8px">
+    How many people each campaign set out to reach and how many it did — by year, by state,
+    and by LGA when you drill into a state. People targeted is the round's planning denominator
+    (an <code>ICRTargetPopulation</code> Group); people reached and administrative coverage come from the
+    round's reconciled administrative coverage report (<code>IcrCoverage</code> view); surveys are the
+    independent post-campaign estimates.
+  </p>
+  <p style="margin: 0">
+    ${fmtInt(search.length)} of ${fmtInt(byYear.length)} ${unitWord} × year rows${drilled ? ` for ${state} State` : ""}.
+    Targeted sums every round's planning denominator${programme === "All" ? " across programmes, so a person targeted by two campaigns counts twice" : ""};
+    reached and administrative coverage use only the rounds with a reconciled report. Coverage above 100% means the
+    projection undercounted the population. Survey is the post-campaign coverage survey${drilled ? " (LGA coverage evaluation survey)" : " (state-level, on the state's campaign)"}
+    with its 95% confidence interval; LQAS counts the polio and MR lots that passed.
+  </p>
+</footer>
 
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; }
