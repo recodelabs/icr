@@ -69,6 +69,16 @@ const levelsPicked = layer === "facility" ? Generators.input(levelInput) : [];
 ```
 
 ```js
+// Which columns become properties in the export, on top of the two that are
+// always there: location_id (the only stable, unique key — not offered as a
+// choice here, it's never optional) and label (picked separately below; it's
+// ODK's display name for the entity, not a stand-in for the data).
+const availableFields = ["name", ...LAYERS[layer].props];
+const fieldsInput = checkboxSelect(availableFields, {value: availableFields, emptyLabel: "None (location_id + label only)", fullLabel: "All fields"});
+const fieldsPicked = Generators.input(fieldsInput);
+```
+
+```js
 const where = [
   LAYERS[layer].where,
   state === "All" ? "TRUE" : `state = '${state.replace(/'/g, "''")}'`,
@@ -91,10 +101,11 @@ const maxVerticesInput = Inputs.range([50, 2000], {value: 500, step: 50, label: 
 const maxVertices = Generators.input(maxVerticesInput);
 ```
 
-<div class="grid grid-cols-3" style="gap: 12px">
+<div class="grid grid-cols-4" style="gap: 12px">
   <div class="card"><h2>Matching ${LAYERS[layer].label.toLowerCase()}</h2><span class="big">${fmtInt(matched)}</span><div class="muted">${state === "All" ? "Nigeria" : lga === "All" ? `${state} State` : `${lga} LGA, ${state}`}</div></div>
   <div class="card"><h2>Label column</h2>${labelInput}</div>
   <div class="card"><h2>Geometry</h2>${geomInput}${isPolygonLayer && geomMode === "boundary" ? maxVerticesInput : ""}</div>
+  <div class="card"><h2>Fields to export</h2>${fieldsInput}</div>
 </div>
 
 <div class="card" style="margin-top: 12px">
@@ -111,7 +122,7 @@ const maxVertices = Generators.input(maxVerticesInput);
 
 ```js
 const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.parse(d.geometry_geojson).type})), {
-  columns: ["name", "id", ...LAYERS[layer].props, "geometry"],
+  columns: ["name", "id", ...fieldsPicked.filter((f) => f !== "name"), "geometry"],
   header: {name: "Name", id: "Location id", geometry: "Geometry"},
   width: {id: 220},
   rows: 12
@@ -133,9 +144,11 @@ const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.
       const rows = all.map((d) => ({
         label: d[labelColumn] ?? null,
         geometry: d.geometry_geojson ? JSON.parse(d.geometry_geojson) : null,
-        // location_id is always included — labels are deduped ("Name (2)", "Name (3)"…)
-        // but only the registry id is a stable, unique key back to the FHIR store.
-        properties: {location_id: d.id, ...Object.fromEntries(LAYERS[layer].props.map((c) => [c, d[c] ?? null]))}
+        // location_id is always included, whatever's checked above — it's the only stable,
+        // unique key back to the FHIR store. Everything else is exactly what was picked in
+        // "Fields to export". ("name" collides with ODK's own reserved attribute of that
+        // name, so the converter renames it to "name_" when it's included.)
+        properties: {location_id: d.id, ...Object.fromEntries(fieldsPicked.map((c) => [c, d[c] ?? null]))}
       }));
       const options = {geometry: geomMode, max_vertices: maxVertices ?? 500};
       status.textContent = "converting…";
