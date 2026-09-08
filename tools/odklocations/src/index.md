@@ -1,7 +1,5 @@
 ---
 title: ODK Locations
-sql:
-  locations: data/locations.parquet
 ---
 
 # ODK Locations
@@ -16,26 +14,57 @@ WebAssembly) runs in the same tab. Nothing is uploaded anywhere.
 import init, {convert_to_entities} from "./components/odk-locations/odk_locations.js";
 await init({module_or_path: FileAttachment("components/odk-locations/odk_locations_bg.wasm").href});
 
+// One DuckDB instance for the whole page — created once, reused across every
+// layer switch below (spinning up a fresh instance would re-download and
+// re-instantiate the ~36 MB WASM engine every time).
+const db = await DuckDBClient.of();
+
 const toRows = (table) => Array.from(table, (r) => {
   const o = typeof r.toJSON === "function" ? r.toJSON() : {...r};
   for (const k in o) if (typeof o[k] === "bigint") o[k] = Number(o[k]);
   return o;
 });
 const fmtInt = (n) => n == null ? "—" : Math.round(Number(n)).toLocaleString("en");
+// Points ship as bare lon/lat (see src/data/locations-*.parquet.sh); polygons still
+// carry real geometry_geojson text. Build the GeoJSON object client-side either way.
+const toGeometry = (d) => d.geometry_geojson ? JSON.parse(d.geometry_geojson)
+  : (d.lon != null && d.lat != null ? {type: "Point", coordinates: [d.lon, d.lat]} : null);
 ```
 
 ```js
-// One row per layer: how it maps to the `type`/`admin_level` columns, and
-// which property columns are worth exporting (state/lga/ward for point
-// layers only make sense once the boundary itself isn't the export).
+// One parquet file per layer (see src/data/locations-*.parquet.sh — kiln already
+// partitions the registry this way). Picking "Health facilities" (the default)
+// fetches ~3.5 MB instead of the ~27 MB every-layer-combined file this used to be;
+// settlement/lga/state only get fetched if you switch to them.
+// FileAttachment() needs a literal path to be picked up by Framework's build-time
+// static analysis (a computed path like LAYERS[layer].file would be invisible to it,
+// and the loader would silently never run) — so every path is called out literally
+// here, once. The FileAttachment object itself is cheap; only .url() on the one for
+// the current layer, below, actually resolves/fetches anything.
 const LAYERS = {
-  facility: {label: "Health facilities", where: "type = 'facility'", props: ["state", "lga", "ward", "facility_level", "ownership", "pcode", "nhfr_code", "status"]},
-  settlement: {label: "Settlements", where: "type = 'settlement'", props: ["state", "lga", "ward", "settlement_type", "pcode", "status"]},
-  lga: {label: "LGA boundaries", where: "type = 'admin-unit' AND admin_level = 2", props: ["state", "pcode", "status"]},
-  state: {label: "State boundaries", where: "type = 'admin-unit' AND admin_level = 1", props: ["pcode", "status"]}
+  facility: {label: "Health facilities", file: FileAttachment("data/locations-facility.parquet"), props: ["state", "lga", "ward", "facility_level", "ownership", "pcode", "nhfr_code", "status"]},
+  settlement: {label: "Settlements", file: FileAttachment("data/locations-settlement.parquet"), props: ["state", "lga", "ward", "settlement_type", "pcode", "status"]},
+  lga: {label: "LGA boundaries", file: FileAttachment("data/locations-lga.parquet"), props: ["state", "pcode", "status"]},
+  state: {label: "State boundaries", file: FileAttachment("data/locations-state.parquet"), props: ["pcode", "status"]}
 };
-const states = toRows(await sql`SELECT DISTINCT state FROM locations WHERE state IS NOT NULL ORDER BY state`).map((d) => d.state);
-const facilityLevels = toRows(await sql`SELECT DISTINCT facility_level FROM locations WHERE type = 'facility' AND facility_level IS NOT NULL ORDER BY facility_level`).map((d) => d.facility_level);
+const layerInput = Inputs.radio(Object.keys(LAYERS), {label: "Export", value: "facility", format: (k) => LAYERS[k].label});
+const layer = Generators.input(layerInput);
+```
+
+```js
+// Swaps the "locations" table's source file whenever the layer changes, reusing
+// `db` above. Downstream cells depend on `loadedLayer` (not just `layer`) so they
+// don't run against a half-swapped table.
+const fileUrl = await LAYERS[layer].file.url();
+await db.query(`CREATE OR REPLACE TABLE locations AS SELECT * FROM parquet_scan('${fileUrl}')`);
+const loadedLayer = layer;
+```
+
+```js
+const states = toRows(await db.sql`SELECT DISTINCT state FROM locations WHERE state IS NOT NULL ORDER BY state`).map((d) => d.state);
+const facilityLevels = loadedLayer === "facility"
+  ? toRows(await db.sql`SELECT DISTINCT facility_level FROM locations WHERE facility_level IS NOT NULL ORDER BY facility_level`).map((d) => d.facility_level)
+  : [];
 ```
 
 <div class="grid grid-cols-4" style="gap: 12px; margin-bottom: 8px">
@@ -46,15 +75,13 @@ const facilityLevels = toRows(await sql`SELECT DISTINCT facility_level FROM loca
 </div>
 
 ```js
-const layerInput = Inputs.radio(Object.keys(LAYERS), {label: "Export", value: "facility", format: (k) => LAYERS[k].label});
-const layer = Generators.input(layerInput);
 const stateInput = Inputs.select(["All", ...states], {label: "State", value: "All"});
 const state = Generators.input(stateInput);
 ```
 
 ```js
 // LGA follows State — same cascading pattern as the campaign dashboards.
-const lgaOptions = state === "All" ? ["All"] : ["All", ...toRows(await sql([`SELECT DISTINCT lga FROM locations WHERE state = '${state.replace(/'/g, "''")}' AND lga IS NOT NULL ORDER BY lga`])).map((d) => d.lga)];
+const lgaOptions = state === "All" ? ["All"] : ["All", ...toRows(await db.sql([`SELECT DISTINCT lga FROM locations WHERE state = '${state.replace(/'/g, "''")}' AND lga IS NOT NULL ORDER BY lga`])).map((d) => d.lga)];
 const lgaInput = Inputs.select(lgaOptions, {label: "LGA", value: "All", disabled: state === "All"});
 document.getElementById("lga-slot").replaceChildren(lgaInput);
 const lga = Generators.input(lgaInput);
@@ -79,15 +106,16 @@ const fieldsPicked = Generators.input(fieldsInput);
 ```
 
 ```js
+// The layer itself is no longer a WHERE clause — the loaded file already only
+// contains that layer's rows (see LAYERS above). Only the remaining filters apply.
 const where = [
-  LAYERS[layer].where,
   state === "All" ? "TRUE" : `state = '${state.replace(/'/g, "''")}'`,
   lga === "All" ? "TRUE" : `lga = '${lga.replace(/'/g, "''")}'`,
   levelsPicked.length === 0 ? "TRUE" : `facility_level IN (${levelsPicked.map((l) => `'${l.replace(/'/g, "''")}'`).join(", ")})`
 ].join(" AND ");
-const cols = ["id", "name", "geometry_geojson", ...LAYERS[layer].props];
-const previewRows = toRows(await sql([`SELECT ${cols.join(", ")} FROM locations WHERE ${where} LIMIT 200`]));
-const countRow = toRows(await sql([`SELECT count(*) AS n FROM locations WHERE ${where}`]))[0];
+const cols = ["id", "name", "geometry_geojson", "lon", "lat", ...LAYERS[layer].props];
+const previewRows = toRows(await db.sql([`SELECT ${cols.join(", ")} FROM locations WHERE ${where} LIMIT 200`]));
+const countRow = toRows(await db.sql([`SELECT count(*) AS n FROM locations WHERE ${where}`]))[0];
 const matched = countRow?.n ?? 0;
 ```
 
@@ -124,7 +152,7 @@ const maxVertices = Generators.input(maxVerticesInput);
 </div>
 
 ```js
-const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.parse(d.geometry_geojson).type})), {
+const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: toGeometry(d)?.type})), {
   columns: ["name", "id", ...fieldsPicked.filter((f) => f !== "name"), "geometry"],
   header: {name: "Name", id: "Location id", geometry: "Geometry"},
   width: {id: 220},
@@ -142,11 +170,11 @@ const previewTable = Inputs.table(previewRows.map((d) => ({...d, geometry: JSON.
     btn.disabled = true;
     status.textContent = `fetching ${fmtInt(matched)} rows…`;
     try {
-      const allCols = ["id", "name", labelColumn, "geometry_geojson", ...LAYERS[layer].props];
-      const all = toRows(await sql([`SELECT ${[...new Set(allCols)].join(", ")} FROM locations WHERE ${where}`]));
+      const allCols = ["id", "name", labelColumn, "geometry_geojson", "lon", "lat", ...LAYERS[layer].props];
+      const all = toRows(await db.sql([`SELECT ${[...new Set(allCols)].join(", ")} FROM locations WHERE ${where}`]));
       const rows = all.map((d) => ({
         label: d[labelColumn] ?? null,
-        geometry: d.geometry_geojson ? JSON.parse(d.geometry_geojson) : null,
+        geometry: toGeometry(d),
         // location_id is always included, whatever's checked above — it's the only stable,
         // unique key back to the FHIR store. Everything else is exactly what was picked in
         // "Fields to export". ("name" collides with ODK's own reserved attribute of that
