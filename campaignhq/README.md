@@ -53,7 +53,7 @@ preview) time and their output is cached under `src/.observablehq/cache`.
 - **Table** — searchable, sortable LGA rounds with targeted, reached, administrative
   coverage, the LQAS verdict and the survey estimate with its confidence interval.
 
-## Deploy — https://monitor.healthcampaigns.org
+## Deploy — https://dashboards.healthcampaigns.org
 
 The site is served by a small Cloudflare **Worker** (`worker/index.js`) straight
 from the **`icr` R2 bucket**, under the `_site/campaignhq/` prefix, next to the
@@ -66,7 +66,7 @@ tools/warehouse/refresh.sh --push   # (repo root) regenerate data/ and mirror it
 cd campaignhq && ./deploy.sh        # build → rclone sync dist/ → r2:icr/_site/campaignhq → wrangler deploy
 ```
 
-`wrangler.toml` binds the bucket and declares `monitor.healthcampaigns.org` as a
+`wrangler.toml` binds the bucket and declares `dashboards.healthcampaigns.org` as a
 custom-domain route, so wrangler creates the DNS record and certificate on the
 first deploy. Needs `rclone` with the `r2` remote configured and a wrangler
 login on this account. `./deploy.sh --dry-run` shows what would change.

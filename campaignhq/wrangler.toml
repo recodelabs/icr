@@ -1,5 +1,5 @@
 # Campaign Dashboards on Cloudflare: a Worker that serves the Framework build from the
-# `icr` R2 bucket at https://monitor.healthcampaigns.org.
+# `icr` R2 bucket at https://dashboards.healthcampaigns.org.
 # Deploy with ./deploy.sh (build → sync dist/ to R2 → wrangler deploy).
 name = "campaignhq"
 main = "worker/index.js"
@@ -11,8 +11,14 @@ workers_dev = false
 binding = "ICR"
 bucket_name = "icr"
 
-# Custom domain on the healthcampaigns.org zone (same account). Wrangler creates
-# the DNS record and certificate for a custom_domain route on deploy.
+# Custom domains on the healthcampaigns.org zone (same account). Wrangler creates
+# the DNS record and certificate for a custom_domain route on deploy. The old
+# monitor.* host is kept attached so the Worker can 301-redirect it (see
+# CANONICAL_HOST in worker/index.js) rather than leaving it dangling.
+[[routes]]
+pattern = "dashboards.healthcampaigns.org"
+custom_domain = true
+
 [[routes]]
 pattern = "monitor.healthcampaigns.org"
 custom_domain = true
