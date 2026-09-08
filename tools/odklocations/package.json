@@ -1,0 +1,23 @@
+{
+  "name": "odklocations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ODK Locations — filter the ICR location registry and export an ODK entity CSV (Observable Framework, DuckDB-WASM, odk-locations compiled to WebAssembly)",
+  "scripts": {
+    "clean": "rimraf src/.observablehq/cache",
+    "dev": "observable preview",
+    "build": "observable build",
+    "deploy": "./deploy.sh"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.13.0"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.0",
+    "wrangler": "^4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

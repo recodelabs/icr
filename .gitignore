@@ -38,3 +38,9 @@ campaignhq/dist/
 campaignhq/src/.observablehq/
 .wrangler/
 campaignhq/.wrangler/
+
+# tools/odklocations (Observable Framework)
+tools/odklocations/node_modules/
+tools/odklocations/dist/
+tools/odklocations/src/.observablehq/
+tools/odklocations/.wrangler/
