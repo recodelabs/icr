@@ -106,9 +106,22 @@ def main(data: Path) -> None:
             "file:size": style_file.stat().st_size, "file:checksum": multihash(style_file),
         }
 
+    # The thumbnail is rendered once with chiitiler over the default style (see the
+    # portolan-thumbnails skill) and kept beside the styles; re-render when the tiles change.
+    src_thumb = src_styles.parent / "thumbnail.png"
+    coll["assets"].pop("thumbnail", None)
+    if src_thumb.exists():
+        thumb = coll_dir / "thumbnail.png"
+        shutil.copyfile(src_thumb, thumb)
+        coll["assets"]["thumbnail"] = {
+            "href": "./thumbnail.png", "type": "image/png", "title": "Nigeria — administrative boundaries",
+            "roles": ["thumbnail"], "file:size": thumb.stat().st_size, "file:checksum": multihash(thumb),
+        }
+
     coll_path.write_text(json.dumps(coll, indent=2) + "\n")
     print(f"   {titled} items titled, {len([l for l in coll['links'] if l['rel'] == 'pmtiles'])} pmtiles links, "
-          f"{len([k for k in coll['assets'] if k.startswith('style-')])} styles → {coll_path.relative_to(data)}")
+          f"{len([k for k in coll['assets'] if k.startswith('style-')])} styles, "
+          f"thumbnail={'yes' if src_thumb.exists() else 'no'} → {coll_path.relative_to(data)}")
 
 
 if __name__ == "__main__":

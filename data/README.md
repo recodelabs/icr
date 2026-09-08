@@ -88,9 +88,15 @@ browsable at `https://browser.portolan-sdi.org/#/external/sdi.healthcampaigns.or
 - `tools/warehouse/sdi-collection.py` finishes the collection after `portolan add`:
   it links the three `tiles/*.pmtiles` as `rel: pmtiles` (web-map-links), copies the
   MapLibre styles from `.portolan/collections/locations/styles/` into
-  `parquet/locations/styles/` as `style` assets (`default.json` = boundaries), and
+  `parquet/locations/styles/` as `style` assets (`default.json` = boundaries),
+  registers `.portolan/collections/locations/thumbnail.png` as the thumbnail, and
   gives each partition item a readable title ("Nigeria — health facilities") —
   the CLI's own titles are the hive path. Edit the `COUNTRIES` / `TYPES` maps there.
+- The thumbnail is the default style rendered over `tiles/admin.pmtiles` with
+  chiitiler (the `portolan:portolan-thumbnails` skill; frame
+  `0.641945,3.783934,16.728636,14.358456`, 1024 px, no basemap — Carto's now needs
+  a key). chiitiler needs Node ≤ 24 for the MapLibre native binary: run it with
+  `npx -y -p node@24 -- bash -c '…'`. Re-render when the boundaries change.
 - kiln's files are never rewritten by the CLI: they are already GeoParquet
   (2.0: native `GEOMETRY` type, plus 1.1 `geo` metadata and a `bbox` covering
   column), zstd, 20k-row groups, Hilbert-ordered — and carry no `ARROW:schema`

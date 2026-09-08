@@ -6,7 +6,6 @@
     "data": {"type": "vector", "url": "pmtiles://../../../tiles/settlements.pmtiles", "attribution": "UNICEF ICR · Ona · GRID3"}
   },
   "layers": [
-    {"id": "background", "type": "background", "paint": {"background-color": "#f7f7f4"}},
     {"id": "settlements", "type": "circle", "source": "data", "source-layer": "settlements",
      "paint": {
        "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 1.2, 13, 4],

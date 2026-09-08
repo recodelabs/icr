@@ -6,7 +6,6 @@
     "data": {"type": "vector", "url": "pmtiles://../../../tiles/admin.pmtiles", "attribution": "UNICEF ICR · Ona · GRID3"}
   },
   "layers": [
-    {"id": "background", "type": "background", "paint": {"background-color": "#f7f7f4"}},
     {"id": "lgas-fill", "type": "fill", "source": "data", "source-layer": "lgas",
      "paint": {"fill-color": "#dfe8f1", "fill-opacity": 0.7}},
     {"id": "lgas-line", "type": "line", "source": "data", "source-layer": "lgas",

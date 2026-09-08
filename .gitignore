@@ -33,6 +33,9 @@ tools/campaign-builder/*.egg-info/
 data/raw/
 data/parquet/**/*.parquet
 data/parquet/locations/.portolan/
+# copies made by tools/warehouse/sdi-collection.py; the sources are data/.portolan/collections/locations/
+data/parquet/locations/styles/
+data/parquet/locations/thumbnail.png
 data/parquet/_report.json
 data/.portolan/.versions.lock
 data/tiles/

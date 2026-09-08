@@ -2,7 +2,7 @@
   "type": "Collection",
   "id": "parquet/locations",
   "stac_version": "1.1.0",
-  "description": "Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened\nto one GeoParquet row per resource: administrative boundaries (country, states,\nLGAs — polygons), health facilities and settlements (points), with the\nadministrative hierarchy denormalised onto each row (admin0…admin4 names and\ncodes, `path`, `ancestor_ids`) and the complete FHIR resource kept in\n`fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438\nsettlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a\nhandful of test records so far.\n\nHive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file\nper partition, 20,000-row groups in Hilbert order with a `bbox` covering column\nand native Parquet GEOMETRY statistics, so a reader can fetch only the row\ngroups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.",
+  "description": "Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened\nto one GeoParquet row per resource: administrative boundaries (country, states,\nLGAs \u2014 polygons), health facilities and settlements (points), with the\nadministrative hierarchy denormalised onto each row (admin0\u2026admin4 names and\ncodes, `path`, `ancestor_ids`) and the complete FHIR resource kept in\n`fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438\nsettlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a\nhandful of test records so far.\n\nHive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file\nper partition, 20,000-row groups in Hilbert order with a `bbox` covering column\nand native Parquet GEOMETRY statistics, so a reader can fetch only the row\ngroups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.",
   "links": [
     {
       "rel": "root",
@@ -19,43 +19,43 @@
       "rel": "item",
       "href": "./country=NGA/geom_type=point/type=facility/country=NGA_geom_type=point_type=facility.json",
       "type": "application/geo+json",
-      "title": "Nigeria — health facilities"
+      "title": "Nigeria \u2014 health facilities"
     },
     {
       "rel": "item",
       "href": "./country=NGA/geom_type=point/type=settlement/country=NGA_geom_type=point_type=settlement.json",
       "type": "application/geo+json",
-      "title": "Nigeria — settlements"
+      "title": "Nigeria \u2014 settlements"
     },
     {
       "rel": "item",
       "href": "./country=NGA/geom_type=polygon/type=admin-unit/country=NGA_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
-      "title": "Nigeria — administrative boundaries"
+      "title": "Nigeria \u2014 administrative boundaries"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=facility/country=SL_geom_type=point_type=facility.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone — health facilities"
+      "title": "Sierra Leone \u2014 health facilities"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=null/country=SL_geom_type=point_type=null.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone — locations without a type"
+      "title": "Sierra Leone \u2014 locations without a type"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=point/type=school/country=SL_geom_type=point_type=school.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone — schools"
+      "title": "Sierra Leone \u2014 schools"
     },
     {
       "rel": "item",
       "href": "./country=SL/geom_type=polygon/type=admin-unit/country=SL_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
-      "title": "Sierra Leone — administrative boundaries"
+      "title": "Sierra Leone \u2014 administrative boundaries"
     },
     {
       "rel": "parent",
@@ -153,7 +153,7 @@
   "license": "CC-BY-4.0",
   "providers": [
     {
-      "name": "UNICEF — Integrated Campaign Registry",
+      "name": "UNICEF \u2014 Integrated Campaign Registry",
       "roles": [
         "producer",
         "licensor"
@@ -531,7 +531,7 @@
         },
         "name": {
           "minimum": "Rokupr Community Health Centre",
-          "maximum": "Rokupr Community Health Centre — fixed vaccination post"
+          "maximum": "Rokupr Community Health Centre \u2014 fixed vaccination post"
         },
         "status": {
           "minimum": "active",
@@ -661,7 +661,7 @@
           "maximum": "2026-09-06T20:59:32.041+00:00"
         },
         "name": {
-          "minimum": "Dwelling — Rokupr block 4, house 12",
+          "minimum": "Dwelling \u2014 Rokupr block 4, house 12",
           "maximum": "Rokupr"
         },
         "status": {
@@ -944,8 +944,8 @@
         "style",
         "default"
       ],
-      "file:size": 1173,
-      "file:checksum": "1220d0357fab121a0e1bb3e9a2a7172a49fc3078e04525f25100df4861181cb0f367"
+      "file:size": 1083,
+      "file:checksum": "1220f32c2d286365503b313c5f55b0cac498c35f75b99865100b4ba87cec37c1f9a9"
     },
     "style-facilities": {
       "href": "./styles/facilities.json",
@@ -954,8 +954,8 @@
       "roles": [
         "style"
       ],
-      "file:size": 1188,
-      "file:checksum": "1220235eb6ce790ca14b55989dfe2535d8021d3dd37ac74224fd241d64f3be222c6e"
+      "file:size": 1098,
+      "file:checksum": "122099049eb9876728f490abc2251caed86373f10002c8c09d089f75607f8bbcb4eb"
     },
     "style-settlements": {
       "href": "./styles/settlements.json",
@@ -964,8 +964,18 @@
       "roles": [
         "style"
       ],
-      "file:size": 694,
-      "file:checksum": "1220960cae1b9064709c6c88cccd286e43a34af6cfbc5f9b84cdd99d18cbc5c68518"
+      "file:size": 604,
+      "file:checksum": "1220bd1905288e22d944ab5d1e3ee35a4a9701fc924d98ee42e284961246af31c98e"
+    },
+    "thumbnail": {
+      "href": "./thumbnail.png",
+      "type": "image/png",
+      "title": "Nigeria \u2014 administrative boundaries",
+      "roles": [
+        "thumbnail"
+      ],
+      "file:size": 224890,
+      "file:checksum": "12202d21329aaa960ea6b9e0fbffb9e77ebff6170610c0b19aa66a3e11b786b7d449"
     }
   },
   "partition:glob": "./country=*/geom_type=*/type=*/*.parquet"

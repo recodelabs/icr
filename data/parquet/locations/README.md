@@ -31,9 +31,10 @@ groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 |------|------|----------|
 | ./country=*/geom_type=*/type=*/*.parquet | - | - |
 | ./items.parquet | 50.7 KB | 1220c55b3ab3... |
-| ./styles/default.json | 1.1 KB | 1220d0357fab... |
-| ./styles/facilities.json | 1.2 KB | 1220235eb6ce... |
-| ./styles/settlements.json | 694 B | 1220960cae1b... |
+| ./styles/default.json | 1.1 KB | 1220f32c2d28... |
+| ./styles/facilities.json | 1.1 KB | 122099049eb9... |
+| ./styles/settlements.json | 604 B | 1220bd190528... |
+| ./thumbnail.png | 219.6 KB | 12202d21329a... |
 | country=NGA/geom_type=point/type=facility/../part-0.parquet | 16.2 MB | 1220010e643a... |
 | country=NGA/geom_type=point/type=settlement/../part-0.parquet | 71.1 MB | 122044531ce3... |
 | country=NGA/geom_type=polygon/type=admin-unit/../part-0.parquet | 2.3 MB | 1220625a13c3... |
