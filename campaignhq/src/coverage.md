@@ -198,7 +198,6 @@ mapCoverage.update(yearRows);
 <div class="grid grid-cols-2" style="gap: 12px; margin-top: 12px">
   <div class="card">
     <h2>People targeted and reached by year${drilled ? `, ${state} State` : ""}</h2>
-    <div class="muted" style="margin-bottom: 6px">Per year${drilled ? "" : ", one panel per state"}: the grey bar is people targeted (planning denominators of every round), the green bar inside it is people reached in the reported rounds. Later years are still planned or in progress, so reached lags targeted and 2027 has none yet.</div>
     ${peoplePlot}
   </div>
   <div class="card">
