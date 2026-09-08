@@ -54,6 +54,17 @@ def item_title(item_id: str) -> str | None:
     return f"{country} — {what}"
 
 
+def fix_asset_hrefs(item: dict, item_dir: Path) -> None:
+    # portolan-cli 0.8 writes a hive partition item's data href as "../part-0.parquet",
+    # one directory above the item JSON; the file sits beside it.
+    for asset in item.get("assets", {}).values():
+        href = asset.get("href", "")
+        if href.startswith(("http://", "https://", "s3://")):
+            continue
+        if not (item_dir / href).exists() and (item_dir / Path(href).name).exists():
+            asset["href"] = f"./{Path(href).name}"
+
+
 def retitle_items(coll: dict, coll_dir: Path) -> int:
     n = 0
     for link in coll.get("links", []):
@@ -61,13 +72,13 @@ def retitle_items(coll: dict, coll_dir: Path) -> int:
             continue
         item_path = coll_dir / link["href"]
         item = json.loads(item_path.read_text())
+        fix_asset_hrefs(item, item_path.parent)
         title = item_title(item["id"])
-        if not title:
-            continue
-        item["properties"]["title"] = title
-        link["title"] = title
+        if title:
+            item["properties"]["title"] = title
+            link["title"] = title
+            n += 1
         item_path.write_text(json.dumps(item, indent=2) + "\n")
-        n += 1
     return n
 
 
@@ -87,17 +98,24 @@ def main(data: Path) -> None:
         exts.append(WEB_MAP_LINKS)
 
     coll["links"] = [l for l in coll.get("links", []) if l.get("rel") != "pmtiles"]
-    coll["assets"] = {k: v for k, v in coll.get("assets", {}).items() if not k.startswith("style-")}
+    coll["assets"] = {k: v for k, v in coll.get("assets", {}).items()
+                      if not k.startswith("style-") and not k.endswith("-tiles")}
 
     for name, (title, layers, style, style_title) in TILES.items():
         archive = data / "tiles" / f"{name}.pmtiles"
         if not archive.exists():
             print(f"   skip {name}: {archive} missing", file=sys.stderr)
             continue
+        href = f"../../tiles/{name}.pmtiles"
         coll["links"].append({
-            "rel": "pmtiles", "href": f"../../tiles/{name}.pmtiles", "type": PMTILES_TYPE,
-            "title": title, "pmtiles:layers": layers,
+            "rel": "pmtiles", "href": href, "type": PMTILES_TYPE, "title": title, "pmtiles:layers": layers,
         })
+        # The Portolan browser renders PMTiles from a `visual` asset, not from the link
+        # (the spec lets the two coexist).
+        coll["assets"][f"{name}-tiles"] = {
+            "href": href, "type": PMTILES_TYPE, "title": f"{title} (PMTiles)", "roles": ["visual"],
+            "file:size": archive.stat().st_size, "file:checksum": multihash(archive),
+        }
         style_file = styles_dir / f"{style}.json"
         shutil.copyfile(src_styles / f"{style}.json", style_file)
         coll["assets"][f"style-{style}"] = {

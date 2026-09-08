@@ -1,12 +1,18 @@
 {
   "version": 8,
   "name": "Health facilities by level",
-  "metadata": {"portolan:description": "Every health facility in the registry, coloured by facility_level (tiles/facilities.pmtiles, no point dropped at any zoom)."},
+  "metadata": {"portolan:description": "Every health facility in the registry, coloured by facility_level, over faint boundaries. Sources are listed in the order of the collection's PMTiles assets (admin, facilities, settlements)."},
   "sources": {
-    "data": {"type": "vector", "url": "pmtiles://../../../tiles/facilities.pmtiles", "attribution": "UNICEF ICR · Ona · NHFR / GRID3"}
+    "data": {"type": "vector", "url": "pmtiles://../../../tiles/admin.pmtiles", "minzoom": 4, "maxzoom": 11, "attribution": "UNICEF ICR · Ona · NHFR / GRID3"},
+    "facilities": {"type": "vector", "url": "pmtiles://../../../tiles/facilities.pmtiles", "minzoom": 4, "maxzoom": 12},
+    "settlements": {"type": "vector", "url": "pmtiles://../../../tiles/settlements.pmtiles", "minzoom": 8, "maxzoom": 13}
   },
   "layers": [
-    {"id": "facilities", "type": "circle", "source": "data", "source-layer": "facilities",
+    {"id": "lgas-line", "type": "line", "source": "data", "source-layer": "lgas",
+     "paint": {"line-color": "#c5d2de", "line-width": 0.5}},
+    {"id": "states-line", "type": "line", "source": "data", "source-layer": "states",
+     "paint": {"line-color": "#7f97ad", "line-width": 1}},
+    {"id": "facilities", "type": "circle", "source": "facilities", "source-layer": "facilities",
      "paint": {
        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 1.2, 8, 2.5, 12, 6],
        "circle-color": ["match", ["get", "facility_level"],

@@ -112,7 +112,7 @@
     "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
     "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-09-08T22:32:01Z",
+  "updated": "2026-09-08T23:00:52Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -933,8 +933,18 @@
       "roles": [
         "collection-mirror"
       ],
-      "file:size": 51944,
-      "file:checksum": "1220c55b3ab37a8c698b6e8bfb8b324319fb171da32d6094bfb7bab66f2316d4d5c4"
+      "file:size": 51939,
+      "file:checksum": "122063b9e7f21e1d691df5e5ab4ab94ad405f65a29709f730b6d42db8cd7e1f70069"
+    },
+    "admin-tiles": {
+      "href": "../../tiles/admin.pmtiles",
+      "type": "application/vnd.pmtiles",
+      "title": "Administrative boundaries (country, states, LGAs) (PMTiles)",
+      "roles": [
+        "visual"
+      ],
+      "file:size": 2949347,
+      "file:checksum": "12204aee68c191c654ea59db001bb62d3402f87deab4a3fddd0b8efecc7a479c8dfd"
     },
     "style-default": {
       "href": "./styles/default.json",
@@ -944,8 +954,18 @@
         "style",
         "default"
       ],
-      "file:size": 1083,
-      "file:checksum": "1220f32c2d286365503b313c5f55b0cac498c35f75b99865100b4ba87cec37c1f9a9"
+      "file:size": 2094,
+      "file:checksum": "122038e7398a2e336336fb7b8cf99a554c5e20eb6ab9921afe1176d5cf3c1e01890d"
+    },
+    "facilities-tiles": {
+      "href": "../../tiles/facilities.pmtiles",
+      "type": "application/vnd.pmtiles",
+      "title": "Health facilities (PMTiles)",
+      "roles": [
+        "visual"
+      ],
+      "file:size": 48459155,
+      "file:checksum": "1220c3667f716dd97891b5827caba3844531d48b87d13ddc6003ee9ff6929f7e2d32"
     },
     "style-facilities": {
       "href": "./styles/facilities.json",
@@ -954,8 +974,18 @@
       "roles": [
         "style"
       ],
-      "file:size": 1098,
-      "file:checksum": "122099049eb9876728f490abc2251caed86373f10002c8c09d089f75607f8bbcb4eb"
+      "file:size": 1727,
+      "file:checksum": "1220f87a7c67f09543a4c05a8fa7a74cfa66cfc7e35f99eb5db577489bda766ad5d7"
+    },
+    "settlements-tiles": {
+      "href": "../../tiles/settlements.pmtiles",
+      "type": "application/vnd.pmtiles",
+      "title": "Settlements (PMTiles)",
+      "roles": [
+        "visual"
+      ],
+      "file:size": 136140917,
+      "file:checksum": "12205a4588d441d041be64cb4dd45bcff30ca9f4c813988283abf40f655e8f7f0d48"
     },
     "style-settlements": {
       "href": "./styles/settlements.json",
@@ -964,8 +994,8 @@
       "roles": [
         "style"
       ],
-      "file:size": 604,
-      "file:checksum": "1220bd1905288e22d944ab5d1e3ee35a4a9701fc924d98ee42e284961246af31c98e"
+      "file:size": 1271,
+      "file:checksum": "1220d59bcc8702eed0c09d465f315e248f7d39d5fc690f9eb395459d4d3ca85e46ca"
     },
     "thumbnail": {
       "href": "./thumbnail.png",

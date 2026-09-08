@@ -15,8 +15,10 @@
 //   tiles/*.pmtiles                                  ← MapLibre tiles of the same locations
 //
 // Routing: /  → the Portolan browser opened on this catalog; everything else →
-// the object at that path. Objects change in place on each refresh, so nothing
-// is cached for long; ETag + conditional requests do the revalidation.
+// the object at that path. Objects change in place on each refresh, and
+// Cloudflare's edge kept serving stale JSON under a max-age, so responses are
+// no-cache: clients may keep them but must revalidate (ETag → 304), which is
+// cheap and keeps range readers correct.
 
 const CATALOG_URL = "https://sdi.healthcampaigns.org/catalog.json";
 const BROWSER = "https://browser.portolan-sdi.org/#/external/";
@@ -69,7 +71,7 @@ export default {
     headers.set("last-modified", obj.uploaded.toUTCString());
     headers.set("content-type", contentType(path));
     headers.set("accept-ranges", "bytes");
-    headers.set("cache-control", "public, max-age=300");
+    headers.set("cache-control", "public, no-cache");
     const hasBody = "body" in obj && obj.body;
     const partial = ranged && obj.range && hasBody;
     if (partial) {

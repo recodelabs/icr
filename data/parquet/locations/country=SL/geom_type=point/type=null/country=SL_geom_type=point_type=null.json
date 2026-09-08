@@ -158,7 +158,7 @@
   ],
   "assets": {
     "data": {
-      "href": "../part-0.parquet",
+      "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
       "file:size": 15205,
       "file:checksum": "1220e5e8374b92c70633c1eba7920a1432b09ccc385d06eb651a2f40a5ce6f4ffe52",
