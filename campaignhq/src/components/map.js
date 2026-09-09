@@ -58,7 +58,8 @@ const METRICS = {
   targeted: {
     label: "People targeted per LGA",
     state: "targeted",
-    colors: ["#fff5eb", "#fdd0a2", "#fdae6b", "#f16913", "#d94801", "#7f2704"],
+    // ColorBrewer YlGnBu, the same ramp as the WorldPop population map on the targeting page.
+    colors: ["#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8", "#253494"],
     stops: (max) => {
       const top = niceCeil(max);
       return [0, top * 0.1, top * 0.25, top * 0.5, top * 0.75, top];
