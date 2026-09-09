@@ -58,7 +58,7 @@ const statusInput = checkboxSelect(STATUS.map(([v]) => v), {label: "Settlement s
 const statusPicked = Generators.input(statusInput);
 const metricInput = Inputs.select(Object.keys(METRICS), {label: "Settlements", value: "status", format: (k) => METRICS[k].label});
 const metric = Generators.input(metricInput);
-const catchmentInput = Inputs.select(Object.keys(CATCHMENT_METRICS), {label: "Facility catchment fill", value: "progress", format: (k) => CATCHMENT_METRICS[k].label});
+const catchmentInput = Inputs.select(Object.keys(CATCHMENT_METRICS), {label: "Facility catchment", value: "progress", format: (k) => CATCHMENT_METRICS[k].label});
 const catchmentMetric = Generators.input(catchmentInput);
 ```
 
