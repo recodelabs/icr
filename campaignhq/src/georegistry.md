@@ -99,11 +99,8 @@ const scope = lga !== "All" ? `${lga} LGA, ${state}` : state !== "All" ? `${stat
   </div>
 </div>
 
-**Get the data.** The georegistry is published as an open [Portolan](https://www.portolan-sdi.org/) spatial data catalog at
-[sdi.healthcampaigns.org](https://sdi.healthcampaigns.org/): STAC metadata, the same admin boundaries, facilities and settlements as
-GeoParquet (one file per country / geometry / type, readable in place with DuckDB, GeoPandas or QGIS) and the PMTiles behind this map.
-[Browse the catalog ↗](https://browser.portolan-sdi.org/#/external/https://sdi.healthcampaigns.org/catalog.json) or
-[export an ODK entity list ↗](https://odklocations.healthcampaigns.org/).
+- [Portolan SDI (Spatial Data Infrastructure) Data Portal ↗](https://sdi.healthcampaigns.org/) — sdi.healthcampaigns.org
+- [ODK Locations ↗](https://odklocations.healthcampaigns.org/) — Extract locations from the ICR as ODK entities
 
 ```js
 const urls = {

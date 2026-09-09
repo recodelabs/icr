@@ -9,7 +9,6 @@ export default {
     {name: "Campaign targeting", path: "/targeting"},
     {name: "NTD endemicity", path: "/ntd"},
     {name: "Georegistry", path: "/georegistry"},
-    {name: "About the data", path: "/about"},
     {
       name: "Resources",
       path: null,
