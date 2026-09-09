@@ -9,12 +9,17 @@ title: "ICR location registry"
 description: |
   Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened
   to one GeoParquet row per resource: administrative boundaries (country, states,
-  LGAs — polygons), health facilities and settlements (points), with the
-  administrative hierarchy denormalised onto each row (admin0…admin4 names and
-  codes, `path`, `ancestor_ids`) and the complete FHIR resource kept in
-  `fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438
-  settlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a
-  handful of test records so far.
+  LGAs — polygons), health facilities and settlements (points), and catchment
+  areas (polygons: `facility-catchment`, one per health facility, partOf its
+  LGA; `settlement-catchment`, one per settlement, partOf its facility
+  catchment — each linked to its site through the `catchment-of` extension in
+  `fhir_json`), with the administrative hierarchy denormalised onto each row
+  (admin0…admin4 names and codes, `path`, `ancestor_ids`) and the complete FHIR
+  resource kept in `fhir_json`. Nigeria is complete for admin units, facilities
+  and settlements (812 admin units, 51,022 facilities, 292,438 settlements, from
+  GRID3 and the NHFR via the ICR); catchments cover Toro LGA, Bauchi so far
+  (159 facility + 2,087 settlement catchments, Crosscut, Sep 2026). Sierra
+  Leone holds a handful of test records.
 
   Hive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file
   per partition, 20,000-row groups in Hilbert order with a `bbox` covering column

@@ -47,12 +47,12 @@
         "maximum": "ffffe4ba-d020-4042-956c-4f9e13974bd3"
       },
       "version_id": {
-        "minimum": "2",
-        "maximum": "2"
+        "minimum": "3",
+        "maximum": "3"
       },
       "last_updated": {
-        "minimum": "2026-09-06T21:08:57.716+00:00",
-        "maximum": "2026-09-06T21:13:36.803+00:00"
+        "minimum": "2026-09-09T18:36:50.038+00:00",
+        "maximum": "2026-09-09T18:41:15.395+00:00"
       },
       "name": {
         "minimum": "10 10 Low Cost",
@@ -143,7 +143,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-09-08T22:07:01Z"
+    "datetime": "2026-09-09T19:02:44Z"
   },
   "links": [
     {
@@ -168,8 +168,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 74566057,
-      "file:checksum": "122044531ce30c275d2466ec3c26fc338cf70aca24d11581c391d4cee49965708a33",
+      "file:size": 74296923,
+      "file:checksum": "12201da1f59272b86c56bc21de9b0e89cecffccc40120c9633c0d0560d2a4027d7da",
       "roles": [
         "data"
       ]
