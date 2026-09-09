@@ -20,7 +20,7 @@ data/
   parquet/                 the warehouse: one folder per table, hive-partitioned, read in place
     locations/             country=NGA/geom_type=…/type=…/part-0.parquet   (kiln transform)
     campaign_calendar/     country=NGA/part-0.parquet                      (ViewDefinition IcrCampaignCalendar)
-    target_population/                                                     (IcrTargetPopulation — denominators)
+    target_population/                                                     (IcrTargetPopulation — denominators; `denominator_type`, `source` separate the WorldPop and census-projection totals)
     coverage/                                                              (IcrCoverage — admin / survey / LQAS results)
     coverage_strata/                                                       (IcrCoverageStrata — sex, age band, strategy, disposition)
     location_status/                                                       (IcrLocationStatus — endemicity per LGA × NTD, with provenance)
@@ -30,7 +30,8 @@ data/
     facilities.pmtiles     health facility points (layer `facilities`), no dropping, z4–12, full registry record per feature
     settlements.pmtiles    settlement points (layer `settlements`), no dropping, z8–13, full registry record per feature
   views/                   the exact ViewDefinition JSON each table was built from (from the IG build)
-  catalog.sql              CREATE VIEW per table over the parquet globs — `FROM campaign_calendar`
+  catalog.sql              CREATE VIEW per table over the parquet globs — `FROM campaign_calendar`; plus convenience views such as
+                           `target_population_worldpop_vs_census` (WorldPop vs census-projection total per admin unit and year, with the delta)
   manifest.json            when, from which server, row counts, view canonicals (written by the refresh)
 ```
 

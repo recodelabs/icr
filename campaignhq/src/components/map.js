@@ -62,6 +62,40 @@ const METRICS = {
       return [0, top * 0.1, top * 0.25, top * 0.5, top * 0.75, top];
     },
     format: (v) => v >= 1e6 ? `${+(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${Math.round(v / 1e3)}k` : String(Math.round(v))
+  },
+  // Denominator metrics (Campaign targeting page): rows carry one value per LGA,
+  // read straight from the row rather than accumulated across campaign rounds.
+  population: {
+    label: "Population per LGA (WorldPop)",
+    state: "population",
+    field: "worldpop",
+    // ColorBrewer YlGnBu, 6 classes.
+    colors: ["#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8", "#253494"],
+    stops: (max) => {
+      const top = niceCeil(max);
+      return [0, top * 0.1, top * 0.25, top * 0.5, top * 0.75, top];
+    },
+    format: (v) => v >= 1e6 ? `${+(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${Math.round(v / 1e3)}k` : String(Math.round(v)),
+    popup: (s, fmt) => `WorldPop: ${fmt(s.worldpop)}` + (s.census != null ? `<br>census projection: ${fmt(s.census)}` : "")
+  },
+  delta: {
+    label: "WorldPop vs census projection",
+    state: "delta",
+    field: "delta_share",
+    // Diverging: blue where WorldPop is below the census projection, orange where above; grey at zero.
+    colors: ["#2166ac", "#67a9cf", "#d1e5f0", "#f1f1f1", "#fddbc7", "#ef8a62", "#b2182b"],
+    stops: (max) => {
+      // Symmetric about 0, capped at ±50% so a single outlier does not flatten the ramp.
+      const m = Math.min(0.5, Math.max(0.05, niceCeil(max)));
+      return [-m, -m * 2 / 3, -m / 3, 0, m / 3, m * 2 / 3, m];
+    },
+    format: (v, i, arr) => {
+      const pct = `${v > 0 ? "+" : ""}${Math.round(v * 100)}%`;
+      return i === 0 ? `≤${pct}` : i === arr.length - 1 ? `≥${pct}` : pct;
+    },
+    popup: (s, fmt) => s.census == null
+      ? `WorldPop: ${fmt(s.worldpop)}<br>no census projection for this LGA`
+      : `WorldPop: ${fmt(s.worldpop)}<br>census projection: ${fmt(s.census)}<br>difference: ${s.delta > 0 ? "+" : ""}${fmt(s.delta)} (${s.delta_share > 0 ? "+" : ""}${(s.delta_share * 100).toFixed(1)}%)`
   }
 };
 
@@ -227,11 +261,13 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: true});
     const s = stats.get(f.id);
     const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("en");
-    const body = !s ? (M.categorical ? "no assertion" : "no campaigns in this selection")
+    const body = !s ? (M.categorical ? "no assertion" : M.popup ? "no estimate in this selection" : "no campaigns in this selection")
       : M.categorical
         ? `${(M.values.find(([v]) => v === s.status) ?? [, s.status ?? "—"])[1]}${s.detail ? `<br>${s.detail}` : ""}`
-        : `${s.count} campaign round${s.count === 1 ? "" : "s"}<br>people targeted: ${fmt(s.targeted)}<br>people reached: ${s.reportedTargeted ? fmt(s.reached) : "no report"}` +
-          `${s.coverage != null ? `<br>admin coverage: ${Math.round(s.coverage * 100)}%` : ""}`;
+        : M.popup
+          ? M.popup(s, fmt)
+          : `${s.count} campaign round${s.count === 1 ? "" : "s"}<br>people targeted: ${fmt(s.targeted)}<br>people reached: ${s.reportedTargeted ? fmt(s.reached) : "no report"}` +
+            `${s.coverage != null ? `<br>admin coverage: ${Math.round(s.coverage * 100)}%` : ""}`;
     popup.setLngLat(e.lngLat).setHTML(
       `<div style="font:12px system-ui;line-height:1.35"><b>${f.properties.name}</b> LGA, ${f.properties.admin1_name}<br>${body}</div>`
     ).addTo(map);
@@ -248,13 +284,18 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   let applied = new Set();
   function apply(rows) {
     // Clear previous counts, then set the new ones.
-    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null, coverage: null, status: null});
+    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null, coverage: null, status: null, population: null, delta: null});
     applied = new Set();
     stats = new Map();
     for (const r of rows) {
       const cur = stats.get(r.location_id) ?? {count: 0, targeted: 0, reached: 0, reportedTargeted: 0, name: r.location_name, state: r.state};
       if (r.status != null) cur.status = r.status;
       if (r.detail != null) cur.detail = r.detail;
+      // Denominator rows: one per LGA, values read as-is.
+      if (r.worldpop != null) cur.worldpop = Number(r.worldpop);
+      if (r.census != null) cur.census = Number(r.census);
+      if (r.delta != null) cur.delta = Number(r.delta);
+      if (r.delta_share != null) cur.delta_share = Number(r.delta_share);
       if (r.rounds != null) cur.count += Number(r.rounds) - 1;  // pre-aggregated rows
       cur.count += 1;
       cur.targeted += Number(r.targeted ?? 0);
@@ -266,12 +307,14 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     }
     for (const [id, s] of stats) {
       s.coverage = s.reportedTargeted > 0 ? s.reached / s.reportedTargeted : null;
-      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted, coverage: s.coverage, status: s.status ?? null});
+      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted, coverage: s.coverage, status: s.status ?? null,
+        population: s.worldpop ?? null, delta: s.delta_share ?? null});
       applied.add(id);
     }
     if (M.categorical) { renderLegend(null, new Set(Array.from(stats.values(), (s) => s.status).filter((v) => v != null))); return; }
-    // Rescale the ramp to the selection (matters for people targeted).
-    const max = Math.max(0, ...Array.from(stats.values(), (s) => s[M.state] ?? 0));
+    // Rescale the ramp to the selection (matters for people targeted); diverging ramps use the largest magnitude.
+    const stateValue = (s) => M.field ? s[M.field] : s[M.state];
+    const max = Math.max(0, ...Array.from(stats.values(), (s) => Math.abs(stateValue(s) ?? 0)));
     const stops = M.stops(max);
     if (map.getLayer("lga-fill")) map.setPaintProperty("lga-fill", "fill-color", rampExpression(M, stops));
     renderLegend(stops);

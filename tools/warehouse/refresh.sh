@@ -114,7 +114,8 @@ def rows(table):
     # country=*/ keeps the Portolan metadata beside the data (items.parquet) out of the table
     q = f"SELECT count(*) FROM read_parquet('{data}/parquet/{table}/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true)"
     return int(subprocess.check_output(["duckdb", "-noheader", "-csv", "-c", q]).decode().strip())
-tables = sorted(d for d in os.listdir(f"{data}/parquet") if os.path.isdir(f"{data}/parquet/{d}"))
+# Skip dot-directories: Portolan keeps its catalog state in parquet/.portolan/.
+tables = sorted(d for d in os.listdir(f"{data}/parquet") if os.path.isdir(f"{data}/parquet/{d}") and not d.startswith("."))
 views = {}
 for f in glob.glob(f"{data}/views/*.json"):
     v = json.load(open(f)); views[v["name"]] = {"url": v.get("url"), "resource": v.get("resource"), "status": v.get("status")}
