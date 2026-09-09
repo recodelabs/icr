@@ -35,6 +35,21 @@ CREATE OR REPLACE VIEW campaign_calendar_lga AS
   JOIN locations l ON l.id = c.location_id
   WHERE l.type = 'admin-unit' AND l.admin_level = 2;
 
+-- Convenience: two total-population denominators for the same admin unit and year, side by side
+-- (WorldPop grid summed over the boundary vs the census projection), with the delta. Feeds the
+-- Campaign Targeting dashboard.
+CREATE OR REPLACE VIEW target_population_worldpop_vs_census AS
+  SELECT w.location_id, l.name AS location_name, l.admin_level, l.admin1_name AS state, w.estimate_date,
+         w.quantity AS worldpop, c.quantity AS census_projection,
+         w.quantity - c.quantity AS delta,
+         (w.quantity - c.quantity) / c.quantity::DOUBLE AS delta_share
+  FROM target_population w
+  JOIN target_population c
+    ON c.location_id = w.location_id AND c.estimate_date = w.estimate_date
+   AND c.source = 'census-projection' AND c.denominator_type = 'total-population'
+  JOIN locations l ON l.id = w.location_id
+  WHERE w.source = 'worldpop' AND w.denominator_type = 'total-population';
+
 -- Convenience: administrative (reconciled) vs survey coverage for the same campaign, side by side.
 CREATE OR REPLACE VIEW coverage_admin_vs_survey AS
   SELECT a.campaign_id, a.location_id, a.score AS admin_coverage, s.score AS survey_coverage, s.ci_low, s.ci_high,

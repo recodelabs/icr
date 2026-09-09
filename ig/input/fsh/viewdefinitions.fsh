@@ -93,7 +93,12 @@ gives the denominator side of coverage.
 `location_id` is the geography characteristic; `age_low` / `age_high` are the
 age-band characteristic (units in `age_unit`, months or years); competing
 estimates for the same geography are distinguished by `source`, `estimate_date`
-and `is_planning`.
+and `is_planning`. `denominator_type` separates an all-ages figure
+(`total-population`, e.g. a WorldPop grid summed over the boundary) from an
+eligible subset (`at-risk`); `is_calculated` marks a rollup or interpolation
+rather than an independently sourced count. Two total-population rows for the
+same `location_id` and `estimate_date` from different `source`s are the
+comparison the Campaign Targeting dashboard draws.
 """
 * url = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
 * name = "IcrTargetPopulation"
@@ -136,6 +141,14 @@ and `is_planning`.
 * select[0].column[9].name = "is_planning"
 * select[0].column[9].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/is-planning-denominator').value.ofType(boolean)"
 * select[0].column[9].type = "boolean"
+* select[0].column[10].name = "denominator_type"
+* select[0].column[10].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/denominator-type').value.ofType(code)"
+* select[0].column[10].type = "code"
+* select[0].column[10].description = "total-population | at-risk; null on older Groups that predate the extension"
+* select[0].column[11].name = "is_calculated"
+* select[0].column[11].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/is-calculated').value.ofType(boolean)"
+* select[0].column[11].type = "boolean"
+* select[0].column[11].description = "True for a rollup or interpolation rather than an independently sourced count"
 
 Instance: IcrCoverage
 InstanceOf: $ViewDefinition

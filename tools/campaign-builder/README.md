@@ -57,6 +57,7 @@ Options: `--as-of YYYY-MM-DD` (default 2026-09-07) sets the line between
 | Group (definitional) | — | 9 | protocol eligibility cohorts (age bands, no count) |
 | PlanDefinition | ICRCampaignProtocol | 9 | protocols: nOPV2 SIA, measles catch-up, measles OBR, MR + nOPV2 (± NTD), LF/oncho MDA, oncho CDTI, trachoma MDA, schisto/STH school MDA |
 | Group | ICRTargetPopulation | ~2,000 | planning denominators per LGA / state × age band × year |
+| Group | ICRTargetPopulation | 124 | **total-population** census projection per LGA / state for one year (`python -m campaign_builder.totals --year 2026` → `08-total-populations.ndjson`; ids `pop-census-projection-YEAR-LOCATIONID`, the counterpart of `kiln population`'s `pop-worldpop-…` Groups for the Campaign Targeting dashboard) |
 | CarePlan | ICRCampaign | ~3,000 | national umbrella (multi-state rounds) → state umbrella → **one CarePlan per LGA** |
 | MeasureReport | ICRAdministrativeCoverage / ICRSurveyCoverage | ~2,900 | results — see below |
 
@@ -94,8 +95,14 @@ CarePlan?_tag=https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs|nga-
 - **Population.** 2006 census and 2022 NPC projection per LGA
   (citypopulation.de), interpolated geometrically to the round year, times a
   northern-Nigeria age-band share. Written as `denominator-source =
-  census-projection`, `is-calculated = true`. **WorldPop aggregation to LGA
-  boundaries is the planned replacement**; only `population.py` changes.
+  census-projection`, `is-calculated = true`. The WorldPop replacement now
+  exists as `kiln population` (2026-09-08): it writes `pop-worldpop-YEAR-…`
+  total-population Groups for all 774 LGAs from the WorldPop constrained grid,
+  and `campaign_builder.totals` writes the matching census-projection totals
+  for the five demo states, so the two can be compared (Campaign Targeting
+  dashboard). The age-band Groups the CarePlans point at still come from the
+  census projection; switching them to WorldPop × age-band share is the
+  remaining step and touches only `population.py`.
 
 ## Results
 

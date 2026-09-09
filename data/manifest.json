@@ -1,5 +1,5 @@
 {
-  "refreshed_at": "2026-09-08T22:07:01+00:00",
+  "refreshed_at": "2026-09-09T02:41:41+00:00",
   "server": "http://localhost:3447/fhir",
   "server_name": "hapi-local",
   "tables": {
@@ -19,7 +19,7 @@
       "rows": 344278
     },
     "target_population": {
-      "rows": 1959
+      "rows": 2895
     }
   },
   "views": {

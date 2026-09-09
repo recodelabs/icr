@@ -6,6 +6,7 @@ export default {
   pages: [
     {name: "Campaign calendar", path: "/"},
     {name: "Campaign coverage", path: "/coverage"},
+    {name: "Campaign targeting", path: "/targeting"},
     {name: "NTD endemicity", path: "/ntd"},
     {name: "Georegistry", path: "/georegistry"},
     {name: "About the data", path: "/about"},

@@ -49,6 +49,13 @@ tagged `nga-demo` in the registry. The four Sierra Leone campaigns are the IG's
 worked examples. See `tools/campaign-builder/README.md` for what is sourced and
 what is assumed.
 
+**Populations** come in two flavours. The planning denominators the campaigns
+point at are census projections (2006 census, 2022 NPC projection, interpolated
+and split into age bands). Alongside them, `kiln population` sums the WorldPop
+2026 constrained 100 m grid over every LGA boundary and writes a real
+total-population Group per LGA, state and country for all of Nigeria; the
+Campaign targeting page puts the two side by side where both exist.
+
 **Results** are synthetic too: one reconciled administrative coverage report per
 completed LGA round (tallies ÷ planning denominator, so above 100 % where the
 census projection undercounts a fast-growing LGA), daily realtime reports for

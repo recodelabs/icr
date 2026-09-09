@@ -2,7 +2,7 @@
   "resourceType": "ViewDefinition",
   "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation",
   "title": "ICR target populations",
-  "description": "One row per target-population estimate (ICRTargetPopulation Group): the\n**denominators** \u2014 how many people a campaign plans to reach, where, for which\nage band, from which source. Joined to the campaign calendar on\n`denominator_id` this gives \"people targeted\"; joined to coverage reports it\ngives the denominator side of coverage.\n\n`location_id` is the geography characteristic; `age_low` / `age_high` are the\nage-band characteristic (units in `age_unit`, months or years); competing\nestimates for the same geography are distinguished by `source`, `estimate_date`\nand `is_planning`.",
+  "description": "One row per target-population estimate (ICRTargetPopulation Group): the\n**denominators** \u2014 how many people a campaign plans to reach, where, for which\nage band, from which source. Joined to the campaign calendar on\n`denominator_id` this gives \"people targeted\"; joined to coverage reports it\ngives the denominator side of coverage.\n\n`location_id` is the geography characteristic; `age_low` / `age_high` are the\nage-band characteristic (units in `age_unit`, months or years); competing\nestimates for the same geography are distinguished by `source`, `estimate_date`\nand `is_planning`. `denominator_type` separates an all-ages figure\n(`total-population`, e.g. a WorldPop grid summed over the boundary) from an\neligible subset (`at-risk`); `is_calculated` marks a rollup or interpolation\nrather than an independently sourced count. Two total-population rows for the\nsame `location_id` and `estimate_date` from different `source`s are the\ncomparison the Campaign Targeting dashboard draws.",
   "name": "IcrTargetPopulation",
   "status": "draft",
   "fhirVersion": [
@@ -70,6 +70,18 @@
           "name": "is_planning",
           "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/is-planning-denominator').value.ofType(boolean)",
           "type": "boolean"
+        },
+        {
+          "name": "denominator_type",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/denominator-type').value.ofType(code)",
+          "type": "code",
+          "description": "total-population | at-risk; null on older Groups that predate the extension"
+        },
+        {
+          "name": "is_calculated",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/is-calculated').value.ofType(boolean)",
+          "type": "boolean",
+          "description": "True for a rollup or interpolation rather than an independently sourced count"
         }
       ]
     }
