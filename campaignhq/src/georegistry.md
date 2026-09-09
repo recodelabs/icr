@@ -99,8 +99,10 @@ const scope = lga !== "All" ? `${lga} LGA, ${state}` : state !== "All" ? `${stat
   </div>
 </div>
 
-- [Portolan SDI (Spatial Data Infrastructure) Data Portal ↗](https://sdi.healthcampaigns.org/) — sdi.healthcampaigns.org
-- [ODK Locations ↗](https://odklocations.healthcampaigns.org/) — Extract locations from the ICR as ODK entities
+<footer class="muted" style="margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--theme-foreground-faintest); font-size: 12px; line-height: 1.6">
+  <p style="margin: 0 0 4px"><a href="https://sdi.healthcampaigns.org/" target="_blank">Portolan SDI (Spatial Data Infrastructure) Data Portal</a> — sdi.healthcampaigns.org</p>
+  <p style="margin: 0"><a href="https://odklocations.healthcampaigns.org/" target="_blank">ODK Locations ↗</a> — Extract locations from the ICR as ODK entities</p>
+</footer>
 
 ```js
 const urls = {
