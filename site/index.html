@@ -82,26 +82,20 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .unlocks.tech{max-width:1000px}
 .unlocks figcaption{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:center;margin-top:10px;letter-spacing:.02em}
 .benefits{border-top:1px solid var(--rule)}
-.benefits .b{border-bottom:1px solid var(--rule)}
-.benefits .b summary{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:22px 0;cursor:pointer;list-style:none;align-items:baseline}
-.benefits .b summary::-webkit-details-marker{display:none}
-.benefits .b .h{font-family:var(--display);font-weight:600;font-size:19px;display:flex;align-items:baseline;gap:10px}
-.benefits .b .h::before{content:"+";font-family:var(--mono);font-weight:500;color:var(--ink-3);width:14px;flex:none}
-.benefits .b[open] .h::before{content:"−"}
-.benefits .b summary:hover .h{color:var(--reg)}
-.benefits .b .tease{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);align-self:center}
-.benefits .b[open] .tease{visibility:hidden}
-.benefits .b .body{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:0 0 26px}
-.benefits .b[open] summary{padding-bottom:6px}
-.benefits .b .body>*{grid-column:2}
-.benefits .b .claim{font-size:17px;margin:0}
+.benefits .b{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:22px 0;border-bottom:1px solid var(--rule)}
+.benefits .b .h{font-family:var(--display);font-weight:600;font-size:19px}
+.benefits .b .claim{font-size:17px}
 .benefits .b .why{font-size:15.5px;color:var(--ink-2)}
-.benefits .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
-.benefits .pair figure{margin:0}
-.benefits .pair a{display:block;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#F6F2E8}
-.benefits .pair a:hover{border-color:var(--ink-3)}
-.benefits .pair img{width:100%;height:auto;display:block}
-.benefits .pair figcaption{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:center;margin-top:8px;letter-spacing:.02em}
+.benefits details.b{display:block;padding:0}
+.benefits details.b summary{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:22px 0;cursor:pointer;list-style:none}
+.benefits details.b summary::-webkit-details-marker{display:none}
+.benefits details.b .h{display:flex;align-items:baseline;gap:10px}
+.benefits details.b .h::before{content:"+";font-family:var(--mono);font-weight:500;color:var(--ink-3);width:14px;flex:none;transition:color .15s}
+.benefits details.b[open] .h::before{content:"−"}
+.benefits details.b summary:hover .h::before{color:var(--reg)}
+.benefits .detail{display:grid;grid-template-columns:260px 1fr;gap:28px;padding:0 0 26px}
+.benefits .detail>*{grid-column:2}
+.benefits .detail p{font-size:16.5px;color:var(--ink-2);margin:0 0 12px;max-width:72ch}
 .benefits .head{display:grid;grid-template-columns:260px 1fr;gap:28px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 0}
 
 /* list */
@@ -139,10 +133,10 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
 
 @media (max-width:860px){
   body{font-size:17px}
-  .grow .r,.benefits .b summary,.benefits .b .body,.benefits .head,.obj .o{grid-template-columns:1fr;gap:6px}
-  .benefits .b .body>*{grid-column:1}
-  .benefits .pair{grid-template-columns:1fr}
-  .grow .r .c::before{content:attr(data-col);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .grow .r,.benefits .b,.benefits .head,.obj .o{grid-template-columns:1fr;gap:6px}
+  .benefits details.b summary,.benefits .detail{grid-template-columns:1fr;gap:6px}
+  .benefits .detail>*{grid-column:1}
+    .grow .r .c::before{content:attr(data-col);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
   .grow .head{display:none}
   .aud{grid-template-columns:1fr;gap:18px}
   .aud-img{max-width:280px}
@@ -155,12 +149,13 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
 .toggle{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;margin-bottom:16px}
 .toggle button{font-family:var(--display);font-size:14px;font-weight:600;background:transparent;border:0;padding:8px 16px;cursor:pointer;color:var(--ink-2)}
 .toggle button[aria-pressed=true]{background:var(--ink);color:#fff}
-#lens .campaign-layer,#lens .routine-layer{transition:opacity .3s}
-#lens[data-mode=routine] .campaign-layer{visibility:hidden}
-#lens[data-mode=campaign] .routine-layer{visibility:hidden}
-#lens[data-mode=campaign] .routine-layer{opacity:0}
-#lens[data-mode=routine] .campaign-layer{opacity:0}
-@media (prefers-reduced-motion:reduce){#lens .campaign-layer,#lens .routine-layer{transition:none}}
+.lens-imgs .campaign-layer,.lens-imgs .routine-layer{transition:opacity .3s}
+.lens-imgs[data-mode=routine] .campaign-layer{visibility:hidden}
+.lens-imgs[data-mode=campaign] .routine-layer{visibility:hidden}
+.lens-imgs[data-mode=campaign] .routine-layer{opacity:0}
+.lens-imgs[data-mode=routine] .campaign-layer{opacity:0}
+@media (prefers-reduced-motion:reduce){.lens-imgs .campaign-layer,.lens-imgs .routine-layer{transition:none}}
+.benefits .lens-fig{margin-top:4px}
 :focus-visible{outline:2px solid var(--reg);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="rounds.css">
@@ -240,58 +235,74 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
     </figure>
     <div class="benefits" style="margin-top:2rem">
       <details class="b">
-        <summary><div class="h">Common terminology</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">The ICR defines a shared vocabulary for campaigns: campaign types, delivery strategies, missed reasons, team roles, and more. A form built against these codes in ODK, DHIS2, or CommCare produces data the registry understands without a custom mapping. Adopting shared instruments instead of authoring them from scratch makes results easier to compare across programmes and countries.</p>
+        <summary>
+          <div class="h">Common terminology</div>
+          <div class="claim">The ICR defines a shared vocabulary for campaigns: campaign types, delivery strategies, missed reasons, team roles, and more. A form built against these codes in ODK, DHIS2, or CommCare produces data the registry understands without a custom mapping. Adopting shared instruments instead of authoring them from scratch makes results easier to compare across programmes and countries.</div>
+        </summary>
+        <div class="detail">
+          <!-- expanded content for "Common terminology" goes here -->
         </div>
       </details>
       <details class="b">
-        <summary><div class="h">Common places</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">One common source of locations across tools. Stable place IDs and administrative boundaries, linked to health data in FHIR, load straight into field data collection tools such as ODK and DHIS2, so that what each round collects adds to a living map.</p>
+        <summary>
+          <div class="h">Common places</div>
+          <div class="claim">One common source of locations across tools. Stable place IDs and administrative boundaries, linked to health data in FHIR, load straight into field data collection tools such as ODK and DHIS2, so that what each round collects adds to a living map.</div>
+        </summary>
+        <div class="detail">
+          <!-- expanded content for "Common places" goes here -->
         </div>
       </details>
       <details class="b">
-        <summary><div class="h">Better denominators</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">The ICR makes it easy to compare census, WorldPop, administrative, and last‑round figures side by side, so campaign teams choose their planning denominator with the alternatives in view.</p>
+        <summary>
+          <div class="h">Better denominators</div>
+          <div class="claim">The ICR makes it easy to compare census, WorldPop, administrative, and last‑round figures side by side, so campaign teams choose their planning denominator with the alternatives in view.</div>
+        </summary>
+        <div class="detail">
+          <!-- expanded content for "Better denominators" goes here -->
         </div>
       </details>
       <details class="b">
-        <summary><div class="h">Campaign visibility</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. When two campaigns are heading for the same wards within weeks of each other, the registry shows it making co‑delivery and integration practical.</p>
+        <summary>
+          <div class="h">Campaign visibility</div>
+          <div class="claim">Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. When two campaigns are heading for the same wards within weeks of each other, the registry shows it making co‑delivery and integration practical.</div>
+        </summary>
+        <div class="detail">
+          <!-- expanded content for "Campaign visibility" goes here -->
         </div>
       </details>
       <details class="b">
-        <summary><div class="h">Skip the pre‑census</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again.</p>
+        <summary>
+          <div class="h">Skip the pre‑census</div>
+          <div class="claim">Households, delivery units, and teams persist from one round to the next, so a campaign can target from last round's registers instead of enumerating everyone again.</div>
+        </summary>
+        <div class="detail">
+          <!-- expanded content for "Skip the pre‑census" goes here -->
         </div>
       </details>
       <details class="b">
-        <summary><div class="h">Effectiveness over time</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard.</p>
+        <summary>
+          <div class="h">Effectiveness over time</div>
+          <div class="claim">The ICR stores campaign records in a standard, comparable form, so coverage trends, cost per person reached, and data quality can be tracked per place and per campaign type, within a country and across countries that share the standard.</div>
+        </summary>
+        <div class="detail">
+          <!-- expanded content for "Effectiveness over time" goes here -->
         </div>
       </details>
       <details class="b">
-        <summary><div class="h">Campaign‑to‑routine bridge</div><div class="tease">Read more</div></summary>
-        <div class="body">
-          <p class="claim">Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care.</p>
-          <div class="pair">
-            <figure>
-              <a href="img/lens-campaign.jpg" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
-                <img src="img/lens-campaign.jpg" alt="Illustrative settlement map in campaign view: a house‑to‑house sweep area and two temporary posts at the primary school and the church" width="1400" height="808" loading="lazy">
-              </a>
-              <figcaption>Campaign view</figcaption>
-            </figure>
-            <figure>
-              <a href="img/lens-routine.jpg" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
-                <img src="img/lens-routine.jpg" alt="Illustrative settlement map in routine view: catchments around the health centre and the health post, over the same wards, facilities, and households" width="1400" height="789" loading="lazy">
-              </a>
-              <figcaption>Routine view</figcaption>
-            </figure>
+        <summary>
+          <div class="h">Campaign‑to‑routine bridge</div>
+          <div class="claim">Campaign and routine records share the same facilities, places, and denominators in one store, with a single flag separating campaign doses from routine ones. The ICR is built on the same HL7 FHIR data model used to represent routine care.</div>
+        </summary>
+        <div class="detail">
+          <div class="lens-fig">
+            <div class="toggle" role="group" aria-label="Choose a programme view">
+              <button aria-pressed="true" data-mode="campaign">Campaign</button>
+              <button aria-pressed="false" data-mode="routine">Routine</button>
+            </div>
+            <div data-mode="campaign" class="lens-imgs">
+              <img class="campaign-layer" src="img/lens-campaign.jpg" alt="Illustrative settlement map in campaign view: a house‑to‑house sweep area and two temporary posts at the primary school and the church, over the same wards, facilities, and households as the routine view" width="1400" height="808" loading="lazy">
+              <img class="routine-layer" src="img/lens-routine.jpg" alt="Illustrative settlement map in routine view: catchments around the health centre and the health post, over the same wards, facilities, and households as the campaign view" width="1400" height="789" loading="lazy">
+            </div>
           </div>
         </div>
       </details>
@@ -462,10 +473,12 @@ tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) re
   tabs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b));
   document.querySelectorAll('.aud').forEach(a=>a.classList.toggle('on',a.dataset.a===b.dataset.t)); });
 // beyond-campaigns lens toggle
-document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.toggle button').forEach(x=>x.setAttribute('aria-pressed',x===b));
-  document.getElementById('lens').dataset.mode=b.dataset.mode;
-}));
+document.querySelectorAll('.lens-fig').forEach(fig=>{
+  fig.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
+    fig.querySelectorAll('.toggle button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    fig.querySelector('.lens-imgs').dataset.mode=b.dataset.mode;
+  }));
+});
 </script>
 </body>
 </html>
