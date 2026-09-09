@@ -82,6 +82,12 @@
           "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/is-calculated').value.ofType(boolean)",
           "type": "boolean",
           "description": "True for a rollup or interpolation rather than an independently sourced count"
+        },
+        {
+          "name": "travel_time",
+          "path": "characteristic.where(code.coding.code = 'travel-time').first().value.ofType(CodeableConcept).coding.first().code",
+          "type": "code",
+          "description": "Accessibility stratum of the estimate (walk-lt-1h | walk-1h-4h | walk-gt-4h | drive-\u2026); null for an all-of-the-geography figure"
         }
       ]
     }

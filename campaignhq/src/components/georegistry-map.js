@@ -1,5 +1,5 @@
 // Georegistry map: every layer exported from the location registry (country, states, LGAs,
-// facilities, settlements) as PMTiles, streamed over HTTP range requests so the large
+// facilities, settlements, facility + settlement catchments) as PMTiles, streamed over HTTP range requests so the large
 // no-drop point archives are never downloaded whole. Layers can be toggled, filtered to a
 // state / LGA, and points clicked to inspect.
 import maplibregl from "npm:maplibre-gl@5";
@@ -23,8 +23,11 @@ export const LAYERS = {
   states: {label: "States", source: "admin", sourceLayer: "states", kind: "polygon"},
   lgas: {label: "LGAs", source: "admin", sourceLayer: "lgas", kind: "polygon"},
   facilities: {label: "Health facilities", source: "facilities", sourceLayer: "facilities", kind: "point", minzoom: 4},
-  settlements: {label: "Settlements", source: "settlements", sourceLayer: "settlements", kind: "point", minzoom: 8}
+  settlements: {label: "Settlements", source: "settlements", sourceLayer: "settlements", kind: "point", minzoom: 8},
+  facilityCatchments: {label: "Facility catchments", source: "catchments", sourceLayer: "facility_catchments", kind: "polygon", minzoom: 6},
+  settlementCatchments: {label: "Settlement catchments", source: "catchments", sourceLayer: "settlement_catchments", kind: "polygon", minzoom: 9}
 };
+const CATCHMENT_COLORS = {facility: "#7c3aed", settlement: "#d97706"};
 
 const registered = new Set();
 function pmtilesSource(url) {
@@ -34,7 +37,8 @@ function pmtilesSource(url) {
 }
 
 /**
- * @param urls   {admin, facilities, settlements} — PMTiles URLs (FileAttachment hrefs)
+ * @param urls   {admin, facilities, settlements, catchments?} — PMTiles URLs (FileAttachment hrefs);
+ *               without `catchments` the two catchment layers are not created
  * @param labels state centroids [{id, name, lon, lat}]
  * Returns the container with: setLayers(Set), setFilter({state, lga, level}), fit(bounds), and a
  * `value` ({layer, properties, lngLat}) updated + "input" event dispatched on click.
@@ -47,6 +51,7 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
     admin: pmtilesSource(urls.admin),
     facilities: pmtilesSource(urls.facilities),
     settlements: pmtilesSource(urls.settlements),
+    ...(urls.catchments ? {catchments: pmtilesSource(urls.catchments)} : {}),
     labels: {type: "geojson", data: {type: "FeatureCollection", features: labels.map((d) => ({
       type: "Feature", id: d.id, properties: {name: d.name}, geometry: {type: "Point", coordinates: [d.lon, d.lat]}}))}}
   };
@@ -60,6 +65,18 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
     {id: "lgas-line", type: "line", source: "admin", "source-layer": "lgas", paint: {"line-color": "#94a3b8", "line-width": 0.6}},
     {id: "states-line", type: "line", source: "admin", "source-layer": "states", paint: {"line-color": "#334155", "line-width": 1.4}},
     {id: "country-line", type: "line", source: "admin", "source-layer": "country", paint: {"line-color": "#0f172a", "line-width": 2.2, "line-dasharray": [3, 2]}},
+    // Catchment polygons sit between the admin boundaries and the points: facility catchments
+    // tile their LGA, settlement catchments nest inside them.
+    ...(urls.catchments ? [
+      {id: "facility-catchments-fill", type: "fill", source: "catchments", "source-layer": "facility_catchments", minzoom: 6,
+       paint: {"fill-color": CATCHMENT_COLORS.facility, "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.3, 0.1]}},
+      {id: "facility-catchments-line", type: "line", source: "catchments", "source-layer": "facility_catchments", minzoom: 6,
+       paint: {"line-color": CATCHMENT_COLORS.facility, "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.5, 12, 1.6], "line-opacity": 0.8}},
+      {id: "settlement-catchments-fill", type: "fill", source: "catchments", "source-layer": "settlement_catchments", minzoom: 9,
+       paint: {"fill-color": CATCHMENT_COLORS.settlement, "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.45, 0.2]}},
+      {id: "settlement-catchments-line", type: "line", source: "catchments", "source-layer": "settlement_catchments", minzoom: 9,
+       paint: {"line-color": CATCHMENT_COLORS.settlement, "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.3, 13, 1], "line-opacity": 0.7}}
+    ] : []),
     {id: "settlements-pt", type: "circle", source: "settlements", "source-layer": "settlements", minzoom: 8,
      paint: {"circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 1.6, 11, 3, 13, 5], "circle-color": "#6b7280", "circle-opacity": 0.75, "circle-stroke-color": "#fff", "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 8, 0, 11, 0.6]}},
     {id: "settlements-label", type: "symbol", source: "settlements", "source-layer": "settlements", minzoom: 12,
@@ -75,7 +92,10 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
      paint: {"text-color": "#1e293b", "text-halo-color": "#fff", "text-halo-width": 1.5}}
   );
   const LAYER_IDS = {country: ["country-line"], states: ["states-line", "state-label"], lgas: ["lgas-fill", "lgas-line"],
-                     facilities: ["facilities-pt", "facilities-label"], settlements: ["settlements-pt", "settlements-label"]};
+                     facilities: ["facilities-pt", "facilities-label"], settlements: ["settlements-pt", "settlements-label"],
+                     ...(urls.catchments ? {facilityCatchments: ["facility-catchments-fill", "facility-catchments-line"],
+                                            settlementCatchments: ["settlement-catchments-fill", "settlement-catchments-line"]} : {})};
+  const CATCHMENT_FILLS = urls.catchments ? ["settlement-catchments-fill", "facility-catchments-fill"] : [];
 
   const fit = bounds ?? [[2.5, 4.0], [14.8, 14.0]];
   const map = new maplibregl.Map({
@@ -131,17 +151,41 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
       container.dispatchEvent(new Event("input", {bubbles: true}));
     });
   }
+  // Catchments: hover highlights the polygon, click inspects it. Points win over polygons, and
+  // the smaller settlement catchment wins over the facility catchment it sits in.
+  const catchHover = {};
+  for (const id of CATCHMENT_FILLS) {
+    const kind = id.startsWith("facility") ? "facility" : "settlement";
+    const sourceLayer = `${kind}_catchments`;
+    const above = kind === "facility" ? [...POINT_LAYERS, "settlement-catchments-fill"] : POINT_LAYERS;
+    const clearHover = () => { if (catchHover[kind] != null) map.setFeatureState({source: "catchments", sourceLayer, id: catchHover[kind]}, {hover: false}); catchHover[kind] = null; };
+    map.on("mousemove", id, (e) => {
+      const f = e.features?.[0]; if (!f) return;
+      if (map.queryRenderedFeatures(e.point, {layers: above.filter((l) => map.getLayer(l))}).length) { clearHover(); return; }
+      if (catchHover[kind] !== f.id) { clearHover(); catchHover[kind] = f.id; map.setFeatureState({source: "catchments", sourceLayer, id: f.id}, {hover: true}); }
+      map.getCanvas().style.cursor = "pointer";
+      const p = f.properties;
+      popup.setLngLat(e.lngLat).setHTML(`<div style="font:12px system-ui;line-height:1.35"><b>${p.name ?? "—"}</b><br>${kind} catchment${p.admin2_name ? ` · ${p.admin2_name} LGA` : ""}${p.admin1_name ? `, ${p.admin1_name}` : ""}<br><span style="color:#64748b">click to inspect</span></div>`).addTo(map);
+    });
+    map.on("mouseleave", id, () => { clearHover(); map.getCanvas().style.cursor = ""; popup.remove(); });
+    map.on("click", id, (e) => {
+      if (map.queryRenderedFeatures(e.point, {layers: above.filter((l) => map.getLayer(l))}).length) return;
+      const f = e.features?.[0]; if (!f) return;
+      container.value = {layer: `${kind}-catchment`, properties: f.properties, lngLat: [e.lngLat.lng, e.lngLat.lat]};
+      container.dispatchEvent(new Event("input", {bubbles: true}));
+    });
+  }
   let hovered = null;
   map.on("mousemove", "lgas-fill", (e) => {
     const f = e.features?.[0]; if (!f) return;
-    if (map.queryRenderedFeatures(e.point, {layers: POINT_LAYERS}).length) return;  // points win
+    if (map.queryRenderedFeatures(e.point, {layers: [...POINT_LAYERS, ...CATCHMENT_FILLS]}).length) return;  // points and catchments win
     if (hovered !== null && hovered !== f.id) map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: false});
     hovered = f.id; map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: true});
     popup.setLngLat(e.lngLat).setHTML(`<div style="font:12px system-ui;line-height:1.35"><b>${f.properties.name}</b> LGA, ${f.properties.admin1_name}<br><span style="color:#64748b">${f.properties.pcode ?? ""}</span></div>`).addTo(map);
   });
   map.on("mouseleave", "lgas-fill", () => { if (hovered !== null) map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: false}); hovered = null; popup.remove(); });
   map.on("click", "lgas-fill", (e) => {
-    if (map.queryRenderedFeatures(e.point, {layers: POINT_LAYERS}).length) return;
+    if (map.queryRenderedFeatures(e.point, {layers: [...POINT_LAYERS, ...CATCHMENT_FILLS]}).length) return;
     const f = e.features?.[0]; if (!f) return;
     container.value = {layer: "lga", properties: f.properties, lngLat: [e.lngLat.lng, e.lngLat.lat]};
     container.dispatchEvent(new Event("input", {bubbles: true}));
@@ -156,6 +200,9 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
     if (active.has("facilities")) rows.push(`<div style="margin-bottom:2px">Health facilities</div>` + FACILITY_LEVELS.map(([l, c]) =>
       `<div style="display:flex;align-items:center;gap:6px;line-height:1.5"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c};border:1px solid #fff;box-shadow:0 0 0 1px #cbd5e1"></span>${l}</div>`).join(""));
     if (active.has("settlements")) rows.push(`<div style="display:flex;align-items:center;gap:6px;line-height:1.5;margin-top:4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280"></span>Settlement <span style="color:#64748b">(from z8)</span></div>`);
+    const swatch = (c) => `<span style="display:inline-block;width:12px;height:10px;background:${c}33;border:1.5px solid ${c}"></span>`;
+    if (active.has("facilityCatchments")) rows.push(`<div style="display:flex;align-items:center;gap:6px;line-height:1.5;margin-top:4px">${swatch(CATCHMENT_COLORS.facility)}Facility catchment <span style="color:#64748b">(from z6)</span></div>`);
+    if (active.has("settlementCatchments")) rows.push(`<div style="display:flex;align-items:center;gap:6px;line-height:1.5">${swatch(CATCHMENT_COLORS.settlement)}Settlement catchment <span style="color:#64748b">(from z9)</span></div>`);
     legend.innerHTML = rows.join("") || `<span style="color:#64748b">boundaries only</span>`;
     legend.style.display = rows.length || active.size ? "" : "none";
   }
@@ -175,6 +222,7 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
     const facilityFilter = [...pointFilter, ...(levels.length ? [["in", ["get", "facility_level"], ["literal", levels]]] : [])];
     for (const id of ["settlements-pt", "settlements-label"]) map.setFilter(id, pointFilter.length > 1 ? pointFilter : null);
     for (const id of ["facilities-pt", "facilities-label"]) map.setFilter(id, facilityFilter.length > 1 ? facilityFilter : null);
+    for (const id of Object.values(LAYER_IDS).flat().filter((l) => l.includes("catchments"))) map.setFilter(id, pointFilter.length > 1 ? pointFilter : null);
     const lgaFilter = ["all", ...(st ? [["==", ["get", "admin1_name"], st]] : []), ...(lga ? [["==", ["get", "name"], lga]] : [])];
     for (const id of ["lgas-fill", "lgas-line"]) map.setFilter(id, lgaFilter.length > 1 ? lgaFilter : null);
     map.setFilter("states-line", st ? ["==", ["get", "name"], st] : null);

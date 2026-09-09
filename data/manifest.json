@@ -1,10 +1,13 @@
 {
-  "refreshed_at": "2026-09-09T02:41:41+00:00",
+  "refreshed_at": "2026-09-09T19:38:13+00:00",
   "server": "http://localhost:3447/fhir",
   "server_name": "hapi-local",
   "tables": {
     "campaign_calendar": {
-      "rows": 3041
+      "rows": 3201
+    },
+    "campaign_task": {
+      "rows": 2108
     },
     "coverage": {
       "rows": 2890
@@ -16,13 +19,18 @@
       "rows": 670
     },
     "locations": {
-      "rows": 344278
+      "rows": 346524
     },
     "target_population": {
-      "rows": 2895
+      "rows": 14106
     }
   },
   "views": {
+    "IcrCampaignTask": {
+      "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTask",
+      "resource": "Task",
+      "status": "draft"
+    },
     "IcrTargetPopulation": {
       "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation",
       "resource": "Group",
@@ -51,9 +59,9 @@
   },
   "kiln": {
     "kiln_version": "0.2.0",
-    "watermark": "2026-09-07T17:37:53.492+00:00",
-    "count": 344281,
+    "watermark": "2026-09-09T18:59:00.960+00:00",
+    "count": 346528,
     "organization_count": 51023,
-    "completed_at": "2026-09-08T22:05:40Z"
+    "completed_at": "2026-09-09T18:59:59Z"
   }
 }

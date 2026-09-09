@@ -1,0 +1,148 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTask",
+  "title": "ICR campaign tasks",
+  "description": "One row per ICRCampaignTask \u2014 the **operational unit of work**: a site-session,\na house-to-house visit to a settlement, a household or school-cohort visit, or a\nperson-targeted follow-up. `campaign_id` (basedOn) joins the campaign calendar;\n`for_location_id` / `for_group_id` say what the task acts on and `location_id`\nwhere the work happens (join keys to the location registry); `owner_team_id`\nthe care team. `strategy` and `origin` are the task's delivery strategy and\nwhether it was pre-planned from the microplan or field-registered on discovery\n\u2014 the field-registered count per area measures how incomplete the microplan's\nenumeration was. The tally columns are the coded `Task.output` entries\n(`treated_count` is the scalar result; the house-to-house axes are\n`houses_visited`, `eligible_present`, `eligible_absent`,\n`children_already_marked`); `missed_reason` is the first missed-reason output.\nMicroplan-vs-monitoring dashboards are this table at two points in time.",
+  "name": "IcrCampaignTask",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Task",
+  "where": [
+    {
+      "path": "basedOn.exists()",
+      "description": "Tasks that execute a campaign \u2014 the ICRCampaignTask profile; excludes ad-hoc Tasks with no campaign"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "task_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code",
+          "description": "requested | in-progress | completed | failed | \u2026"
+        },
+        {
+          "name": "intent",
+          "path": "intent",
+          "type": "code"
+        },
+        {
+          "name": "code",
+          "path": "code.text",
+          "type": "string",
+          "description": "The activity being performed, human-readable"
+        },
+        {
+          "name": "campaign_id",
+          "path": "basedOn.first().getReferenceKey(CarePlan)",
+          "type": "string"
+        },
+        {
+          "name": "activity",
+          "path": "instantiatesCanonical",
+          "type": "canonical"
+        },
+        {
+          "name": "for_location_id",
+          "path": "for.getReferenceKey(Location)",
+          "type": "string",
+          "description": "The Location the task acts on (site, settlement, structure, area); null when `for` is a Group or Patient"
+        },
+        {
+          "name": "for_group_id",
+          "path": "for.getReferenceKey(Group)",
+          "type": "string",
+          "description": "The delivery-unit Group (household, community, school cohort) the task acts on; null otherwise"
+        },
+        {
+          "name": "location_id",
+          "path": "location.getReferenceKey(Location)",
+          "type": "string",
+          "description": "Where the work happens \u2014 join key to the location registry"
+        },
+        {
+          "name": "owner_team_id",
+          "path": "owner.getReferenceKey(CareTeam)",
+          "type": "string"
+        },
+        {
+          "name": "strategy",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy').value.ofType(CodeableConcept).coding.first().code",
+          "type": "code",
+          "description": "fixed-post | temporary-post | mobile | school | house-to-house | community-directed | outreach"
+        },
+        {
+          "name": "origin",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/task-origin').value.ofType(code)",
+          "type": "code",
+          "description": "pre-planned | field-registered"
+        },
+        {
+          "name": "lineage",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/data-lineage').value.ofType(code)",
+          "type": "code"
+        },
+        {
+          "name": "execution_start",
+          "path": "executionPeriod.start",
+          "type": "dateTime"
+        },
+        {
+          "name": "execution_end",
+          "path": "executionPeriod.end",
+          "type": "dateTime"
+        },
+        {
+          "name": "last_modified",
+          "path": "lastModified",
+          "type": "dateTime"
+        },
+        {
+          "name": "treated_count",
+          "path": "output.where(type.coding.code = 'treated-count').first().value.ofType(unsignedInt)",
+          "type": "unsignedInt",
+          "description": "Persons treated / vaccinated at this visit (scalar tally)"
+        },
+        {
+          "name": "houses_visited",
+          "path": "output.where(type.coding.code = 'houses-visited').first().value.ofType(unsignedInt)",
+          "type": "unsignedInt"
+        },
+        {
+          "name": "eligible_present",
+          "path": "output.where(type.coding.code = 'eligible-present').first().value.ofType(unsignedInt)",
+          "type": "unsignedInt"
+        },
+        {
+          "name": "eligible_absent",
+          "path": "output.where(type.coding.code = 'eligible-absent').first().value.ofType(unsignedInt)",
+          "type": "unsignedInt"
+        },
+        {
+          "name": "children_already_marked",
+          "path": "output.where(type.coding.code = 'children-already-marked').first().value.ofType(unsignedInt)",
+          "type": "unsignedInt"
+        },
+        {
+          "name": "missed_reason",
+          "path": "output.where(type.coding.code = 'missed-reason').first().value.ofType(CodeableConcept).coding.first().code",
+          "type": "code",
+          "description": "First missed-reason output: absent | sleeping | sick | refusal | inaccessible | \u2026"
+        },
+        {
+          "name": "status_reason",
+          "path": "statusReason.text",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
