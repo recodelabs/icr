@@ -4,11 +4,11 @@ title: ODK Locations
 
 # ODK Locations
 
-Filter the ICR location registry — health facilities, settlements, LGA and
-state boundaries — and export an ODK entity CSV, ready for ODK Central's or
-Ona Data's bulk entity upload. Filtering runs in DuckDB (WebAssembly) against
-the registry parquet; the conversion (`odk-locations`, compiled to
-WebAssembly) runs in the same tab. Nothing is uploaded anywhere.
+Select from available location data (health facilities, settlements, LGA and
+state boundaries) from the ICR location registry and export as ODK entities.
+These can be uploaded into platforms like Ona Data or ODK to enable field based
+data collection on these points. Data collected is linked to the unique ID
+provided for each point from the ICR.
 
 ```js
 import init, {convert_to_entities} from "./components/odk-locations/odk_locations.js";
