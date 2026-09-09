@@ -36,7 +36,9 @@ const METRICS = {
   count: {
     label: "Campaign rounds per LGA",
     state: "count",
-    colors: ["#eef2f7", "#c7dbef", "#8fbfe0", "#4a90c4", "#1f5fa3", "#0b3b7a"],
+    // ColorBrewer Purples, 6 classes — lighter at the top than the old blues, so the
+    // basemap still reads through the busiest LGAs.
+    colors: ["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"],
     // Rescales to the selection: 0..max when max is small, else 0, 1 and four evenly spaced
     // integer stops up to the busiest LGA, so one year or one programme still shows contrast.
     stops: (max) => {
