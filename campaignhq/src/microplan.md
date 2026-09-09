@@ -200,7 +200,7 @@ const inspector = !selected
 
 <div class="card" style="margin-top: 12px">
   <h2>Children targeted and vaccinated by ${facility === "All" ? "facility catchment" : "settlement"}${facility === "All" ? "" : `, ${facility} catchment`}</h2>
-  <div class="muted" style="margin-bottom: 6px">Children 0–59 months. Grey: targeted across the catchment. Green: vaccinated so far. Beside each bar: how many of the catchment’s settlements are complete, with a green tick once all of them are. Pick a facility catchment above to see its settlements.</div>
+  <div class="muted" style="margin-bottom: 6px">Children 0–59 months targeted (grey) and vaccinated so far (green). Beside each bar: ${facility === "All" ? "settlements completed" : "status"}.</div>
   <div style="max-height: 560px; overflow-y: auto">${targetPlot}</div>
 </div>
 
@@ -209,7 +209,7 @@ const inspector = !selected
 // facility catchment (or per settlement when one catchment is picked), largest target first.
 const barRows = (facility === "All"
   ? facilities.map((f) => ({unit: f.facility, targeted: f.u5, reached: f.treated, completed: f.completed, visits: f.visits, coverage: f.coverage,
-      progress: `${fmtInt(f.completed)} of ${fmtInt(f.visits)} settlements` + (f.completed === f.visits ? " \u2713" : ""), done: f.completed === f.visits}))
+      progress: `${fmtInt(f.completed)}/${fmtInt(f.visits)} settlements` + (f.completed === f.visits ? " \u2713" : ""), done: f.completed === f.visits}))
   : inFacility.map((d) => ({unit: d.settlement, targeted: d.u5 ?? 0, reached: d.status === "completed" ? d.treated ?? 0 : 0, coverage: d.coverage,
       progress: STATUS_LABEL[d.status] + (d.status === "completed" ? " \u2713" : "") + (d.origin === "field-registered" ? " \u00b7 found in the field" : ""), done: d.status === "completed"}))
 ).sort((a, b) => b.targeted - a.targeted);
@@ -218,15 +218,20 @@ const xMax = d3.max(barRows, (d) => Math.max(d.targeted, d.reached)) ?? 0;
 const targetPlot = Plot.plot({
   width: Math.max(600, width - 60),
   height: 30 + 16 * barRows.length,
-  marginLeft: 300, marginRight: 170, marginTop: 24, marginBottom: 10,
+  marginLeft: 180, marginRight: 200, marginTop: 24, marginBottom: 10,
   x: {label: null, axis: "top", grid: true, ticks: 8, tickFormat: (d) => d.toLocaleString("en"), domain: [0, xMax * 1.02]},
-  y: {label: null, domain: barRows.map((d) => d.unit), tickSize: 0},
+  y: {label: null, domain: barRows.map((d) => d.unit), tickSize: 0, tickFormat: (d) => d.length > 24 ? d.slice(0, 23) + "…" : d},
   color: {domain: ["targeted", "vaccinated"], range: ["#cbd5e1", "#238b45"], legend: true},
   marks: [
+    // "coverage" heading over the right-hand column, on the same line as the axis tick labels.
+    Plot.text([""], {frameAnchor: "top-right", dx: 190, dy: -13, textAnchor: "end", text: () => "Coverage", fontSize: 11, fontWeight: 600, fill: "#64748b"}),
     Plot.barX(barRows, {x: "targeted", y: "unit", fill: () => "targeted", tip: true, title: barTitle}),
     Plot.barX(barRows.filter((d) => d.reached > 0), {x: "reached", y: "unit", fill: () => "vaccinated", insetTop: 3, insetBottom: 3}),
     // Completion written beside each bar: "18 of 27 settlements"; green with a tick once every settlement is done.
     Plot.text(barRows, {x: "targeted", y: "unit", text: "progress", textAnchor: "start", dx: 6, fontSize: 11, fill: (d) => d.done ? "#15803d" : "#64748b"}),
+    // Coverage of the completed settlements, as a right-aligned column.
+    Plot.text(barRows, {y: "unit", frameAnchor: "right", dx: 190, textAnchor: "end", fontSize: 11, fontWeight: 600,
+      text: (d) => d.coverage != null ? fmtPct(d.coverage) : "", fill: (d) => d.coverage == null ? "#94a3b8" : d.coverage < 0.8 ? "#b91c1c" : "#15803d"}),
     Plot.ruleX([0])
   ]
 });
