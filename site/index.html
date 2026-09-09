@@ -60,19 +60,10 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .card h3{font-size:19px}
 .card p{font-size:16.5px;color:var(--ink-2);margin:0}
 
-/* compounding rows */
-.grow{border-top:1px solid var(--rule);margin-top:8px}
-.grow .r{display:grid;grid-template-columns:150px 1fr 1fr 1.3fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:start}
-.grow .r .h{font-family:var(--display);font-weight:600;font-size:18px}
-.grow .r .c{font-size:16.5px;color:var(--ink-2)}
-.grow .r .c.later{color:var(--ink)}
-.grow .head{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 0}
 .props{margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
 .props p{font-size:16.5px;color:var(--ink-2)}
 .props-4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:16px}
 .subhead{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:44px 0 0;padding-top:0;border-top:0}
-.note{background:var(--reg-2);border-left:3px solid var(--reg);padding:16px 20px;margin-top:36px;max-width:var(--measure);font-size:16.5px}
-.note p{margin:0}
 
 /* benefits */
 .unlocks{margin:28px auto 8px;max-width:820px}
@@ -137,11 +128,9 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
 
 @media (max-width:860px){
   body{font-size:17px}
-  .grow .r,.benefits .b,.benefits .head,.obj .o{grid-template-columns:1fr;gap:6px}
+  .benefits .b,.benefits .head,.obj .o{grid-template-columns:1fr;gap:6px}
   .benefits details.b summary,.benefits .detail{grid-template-columns:1fr;gap:6px}
   .benefits .detail>*{grid-column:1}
-    .grow .r .c::before{content:attr(data-col);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
-  .grow .head{display:none}
   .aud{grid-template-columns:1fr;gap:18px}
   .aud-img{max-width:280px}
   .bar nav{display:none}
@@ -179,7 +168,7 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
   <div class="bar">
     <div class="brand">Integrated Campaign Registry <span>UNICEF</span></div>
     <nav>
-      <a href="#why">Why campaigns</a><a href="#what">What it is</a><a href="#unlock">Benefits</a><a href="#compound">Compounding</a><a href="#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>
+      <a href="#why">Why campaigns</a><a href="#what">What it is</a><a href="#unlock">Benefits</a><a href="#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>
     </nav>
   </div>
 </div>
@@ -305,6 +294,19 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
       </details>
       <details class="b">
         <summary>
+          <div class="h">Data compounds</div>
+          <div class="claim">Every round leaves the next one with more to build on. Settlement names become a verified map with stable IDs and boundaries, a single census projection becomes several denominators each with its source recorded, and one coverage figure becomes a trend line per place and campaign type. Households, teams, and their histories persist alongside them.</div>
+        </summary>
+        <div class="detail">
+          <figure class="shot">
+            <a href="img/data-compounds-full.jpg" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
+              <img src="img/data-compounds.jpg" alt="Hand-drawn table comparing what a campaign starts with at round 1, round 2, and round 5 across places, denominators, people and households, teams, and coverage, growing from names and a single census figure to stable IDs, several sourced denominators, household registers, team histories, and coverage trends; below it four properties: resolution-agnostic, backfillable, sourced, and persistent" width="1400" height="788" loading="lazy">
+            </a>
+          </figure>
+        </div>
+      </details>
+      <details class="b">
+        <summary>
           <div class="h">Campaign visibility</div>
           <div class="claim">Every campaign is a record with geography, dates, and status, from microplan to completion. The ICR gives a centralized view of what is planned where that any programme can consult. When two campaigns are heading for the same wards within weeks of each other, the registry shows it making co‑delivery and integration practical.</div>
         </summary>
@@ -341,27 +343,6 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
 </section>
 
 
-<section id="compound">
-  <div class="wrap">
-    <div class="eyebrow">How value compounds</div>
-    <h2>Every campaign round contributes to shared registries</h2>
-    <div class="grow">
-      <div class="r head"><div>Record</div><div>Start of round 1</div><div>Start of round 2</div><div>Start of round 5</div></div>
-      <div class="r"><div class="h">Places</div><div class="c">A list of settlement names, some with GPS points, some without</div><div class="c">Every settlement visited last round, each with a GPS point and verified name.</div><div class="c later">A verified settlement map with stable IDs and boundaries, plus points of interest eg. the schools and churches that served as vaccination posts, etc.</div></div>
-      <div class="r"><div class="h">Denominators</div><div class="c">One estimate from the census projection</div><div class="c">The census projection and last round's headcount, side by side</div><div class="c later">Census, WorldPop, previous‑round enumeration, and administrative figures side by side, each with its source recorded</div></div>
-      <div class="r"><div class="h">People and households</div><div class="c">No register yet</div><div class="c">Last round's household register, ready for revisits</div><div class="c later">Household members including number of children and women of reproductive age known enabling further targeting and linkages to routine service delivery.</div></div>
-      <div class="r"><div class="h">Teams</div><div class="c">A list of names</div><div class="c">Last round's teams and the areas each one covered</div><div class="c later">Community drug distributors, vaccinators, and supervisors with a history of which areas they covered and how they performed</div></div>
-      <div class="r"><div class="h">Coverage</div><div class="c">No baseline for these places</div><div class="c">One coverage figure per place, from last round</div><div class="c later">A trend line per place per campaign type, with administrative and survey coverage kept separate</div></div>
-    </div>
-    <h3 class="subhead">Key properties</h3>
-    <div class="props props-4">
-      <div><h3>Resolution‑agnostic</h3><p>Household, village, or district: the ICR data model is designed to store however the data is captured.</p></div>
-      <div><h3>Backfillable</h3><p>The ICR is designed to take in past campaign data, so it can serve as the system of record for every round a country has run, not just the ones ahead.</p></div>
-      <div><h3>Sourced</h3><p>Every population figure and coverage result says where it came from, so a census projection is never mistaken for a field headcount.</p></div>
-      <div><h3>Persistent</h3><p>Places, households, and teams keep the same identifier from one round to the next.</p></div>
-    </div>
-  </div>
-</section>
 
 <section id="safe">
   <div class="wrap">
