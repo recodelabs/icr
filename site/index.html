@@ -157,11 +157,12 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
 @media (prefers-reduced-motion:reduce){.lens-imgs .campaign-layer,.lens-imgs .routine-layer{transition:none}}
 .benefits .lens-fig{margin-top:4px}
 .benefits .shot{margin:4px 0 0}
-.benefits .shot a{display:block;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#fff}
-.benefits .shot a:hover{border-color:var(--ink-3)}
+.benefits .shot>a{display:block;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#fff}
+.benefits .shot>a:hover{border-color:var(--ink-3)}
 .benefits .shot img{width:100%;height:auto;display:block}
-.benefits .shot figcaption{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:10px;letter-spacing:.02em}
-.benefits .shot figcaption a{color:var(--reg)}
+.benefits .shot figcaption{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:12px;font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:10px;letter-spacing:.02em}
+.benefits .shot figcaption .cap{grid-column:2}
+.benefits .shot figcaption .go{grid-column:3;justify-self:end;color:var(--reg);white-space:nowrap}
 :focus-visible{outline:2px solid var(--reg);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="rounds.css">
@@ -277,7 +278,7 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
             <a href="https://dashboards.healthcampaigns.org/" target="_blank" rel="noopener" title="Open the campaign calendar dashboard in a new tab">
               <img src="img/campaign-calendar.png" alt="Campaign calendar: a timeline of campaign rounds by Nigerian state from February 2026 to January 2027, with coloured bars for polio, mass drug administration, measles-rubella, and integrated rounds" width="2124" height="766" loading="lazy">
             </a>
-            <figcaption>Campaign calendar. <a href="https://dashboards.healthcampaigns.org/" target="_blank" rel="noopener">Open the dashboard ↗</a></figcaption>
+            <figcaption><span class="cap">Campaign Calendar</span><a class="go" href="https://dashboards.healthcampaigns.org/" target="_blank" rel="noopener">View dashboard ↗</a></figcaption>
           </figure>
         </div>
       </details>
