@@ -142,7 +142,7 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
   .aud-img{max-width:280px}
   .bar nav{display:none}
 }
-/* beyond-campaigns lens */
+/* campaign/routine lens (Campaign‑to‑routine bridge accordion row) */
 .lens-fig{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:22px 26px;margin-top:28px}
 .lens-imgs{position:relative;aspect-ratio:1400/808;background:#F6F2E8;border-radius:4px;overflow:hidden}
 .lens-imgs img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
@@ -370,23 +370,6 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
   </div>
 </section>
 
-<section id="beyond">
-  <div class="wrap">
-    <div class="eyebrow">Beyond campaigns</div>
-    <h2>ICR bridges campaigns to routine care.</h2>
-    <p class="lede">Campaigns share the same locations and underlying data that health systems need to deliver routine services. The HL7 FHIR data model the ICR is built on gives both a single, unified data model, bridging campaign and routine care.</p>
-    <div class="lens-fig">
-      <div class="toggle" role="group" aria-label="Choose a programme view">
-        <button aria-pressed="true" data-mode="campaign">Campaign</button>
-        <button aria-pressed="false" data-mode="routine">Routine</button>
-      </div>
-      <div id="lens" data-mode="campaign" class="lens-imgs">
-        <img class="campaign-layer" src="img/lens-campaign.jpg" alt="Illustrative settlement map in campaign view: a house‑to‑house sweep area and two temporary posts at the primary school and the church, over the same wards, facilities, and households as the routine view" width="1400" height="808">
-        <img class="routine-layer" src="img/lens-routine.jpg" alt="Illustrative settlement map in routine view: catchments around the health centre and the health post, over the same wards, facilities, and households as the campaign view" width="1400" height="789">
-      </div>
-    </div>
-  </div>
-</section>
 
 <section id="audience">
   <div class="wrap">
@@ -483,7 +466,7 @@ const tabs=document.getElementById('tabs');
 tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
   tabs.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b));
   document.querySelectorAll('.aud').forEach(a=>a.classList.toggle('on',a.dataset.a===b.dataset.t)); });
-// beyond-campaigns lens toggle
+// campaign/routine lens toggle
 document.querySelectorAll('.lens-fig').forEach(fig=>{
   fig.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',()=>{
     fig.querySelectorAll('.toggle button').forEach(x=>x.setAttribute('aria-pressed',x===b));
