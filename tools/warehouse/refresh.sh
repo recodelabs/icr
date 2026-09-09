@@ -143,6 +143,8 @@ if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
   # human-written metadata is kept under .portolan/collections/ and copied in first.
   mkdir -p "$PARQUET/locations/.portolan"
   cp "$DATA/.portolan/collections/locations/metadata.yaml" "$PARQUET/locations/.portolan/metadata.yaml"
+  # `check --metadata` validates the catalog only: without it `--fix` also converts every loose
+  # GeoJSON/CSV under data/ (imports/, exports/) into parquet + thumbnails beside the originals.
   # Always build from a clean slate: re-adding over existing items loses their `collection` field
   # (portolan-cli 0.8), and a --locations run without a kiln change would otherwise hit that path.
   find "$PARQUET/locations" -type f \( -name '*.json' -o -name '*.md' -o -name 'items.parquet' \) -delete
@@ -151,7 +153,7 @@ if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
     && python3 "$HERE/sdi-collection.py" "$DATA" \
     && portolan stac-geoparquet -c parquet/locations >/dev/null \
     && portolan readme parquet/locations --no-recursive >/dev/null \
-    && portolan check --fix --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
+    && portolan check --fix --metadata --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
 fi
 echo "done → $DATA"
 

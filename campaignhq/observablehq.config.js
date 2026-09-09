@@ -8,6 +8,7 @@ export default {
     {name: "Campaign coverage", path: "/coverage"},
     {name: "Campaign targeting", path: "/targeting"},
     {name: "NTD endemicity", path: "/ntd"},
+    {name: "Microplan (NIPDs, Toro)", path: "/microplan"},
     {name: "Georegistry", path: "/georegistry"},
     {
       name: "Resources",

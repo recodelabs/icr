@@ -56,3 +56,9 @@ tools/odklocations/node_modules/
 tools/odklocations/dist/
 tools/odklocations/src/.observablehq/
 tools/odklocations/.wrangler/
+
+# tools/catchments generated NDJSON (rebuilt from data/imports by build.py)
+tools/catchments/out/
+
+# tools/microplan-builder generated NDJSON (rebuilt by build.py from data/parquet)
+tools/microplan-builder/out/
