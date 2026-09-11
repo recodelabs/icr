@@ -1,18 +1,18 @@
 ---
-title: of-vault — login and access control for Observable Framework sites
+title: doorman — login and access control for static sites
 status: draft
 date: 2026-09-11
 ---
 
-# of-vault design
+# doorman design
 
-Login and access control for static Observable Framework sites, with the data files
-protected too. A Cloudflare Worker wraps a Framework build: Better Auth handles users
+Login and access control for static sites, Observable Framework first, with the data files
+protected too. A Cloudflare Worker wraps a static build: Better Auth handles users
 and sessions, D1 stores them, R2 holds the built site. The Framework site is a black
-box to the vault; it needs no changes.
+box to doorman; it needs no changes.
 
 First user: ICR's `campaignhq` at dashboards.healthcampaigns.org. Its current Worker
-(`icr/campaignhq/worker/index.js`) already serves the build from R2; of-vault lifts that
+(`icr/campaignhq/worker/index.js`) already serves the build from R2; doorman lifts that
 serving logic and puts a session gate in front of it.
 
 ## Goals
@@ -39,9 +39,9 @@ serving logic and puts a session gate in front of it.
 ```
 browser ──▶ Cloudflare Worker (Hono)
               ├─ /auth/*        Better Auth handler          (public)
-              ├─ /vault/login   login + signup pages         (public)
-              ├─ /vault/pending "awaiting approval" page     (public)
-              ├─ /vault/admin   user table + actions         (role: admin)
+              ├─ /_door/login   login + signup pages         (public)
+              ├─ /_door/pending "awaiting approval" page     (public)
+              ├─ /_door/admin   user table + actions         (role: admin)
               └─ /*             page rules → session gate → R2 static serve
 D1  ─ users, sessions, verification tokens (Better Auth schema + `status` field)
 R2  ─ `_site/<name>/…`  the Framework dist/
@@ -57,19 +57,19 @@ Static Assets because DuckDB-WASM's engine builds exceed the 25 MiB per-file cap
 Routes are matched in this order:
 
 1. `/auth/*` → Better Auth. Always public.
-2. `/vault/login`, `/vault/signup`, `/vault/pending` → rendered pages. Always public. A signed-in
-   active user hitting `/vault/login` is redirected to `next` or `/`.
-3. `/vault/admin` and its form-post actions → require session with role `admin`.
+2. `/_door/login`, `/_door/signup`, `/_door/pending` → rendered pages. Always public. A signed-in
+   active user hitting `/_door/login` is redirected to `next` or `/`.
+3. `/_door/admin` and its form-post actions → require session with role `admin`.
    Otherwise 404 (do not reveal the page exists).
 4. Everything else:
    1. Resolve the request path against the page rules (below). Result is `public`,
       `protected`, or `disabled`.
    2. `disabled` → 404 for everyone, including admins.
    3. `protected` → read session from cookie.
-      - No session → 302 to `/vault/login?next=<path>` for navigations
+      - No session → 302 to `/_door/login?next=<path>` for navigations
         (`Accept: text/html`); 401 with no body for asset and data fetches, so a
         stale tab fails visibly instead of caching a redirect into DuckDB.
-      - Session, user `status` is `pending` or `disabled` → 302 to `/vault/pending`
+      - Session, user `status` is `pending` or `disabled` → 302 to `/_door/pending`
         for navigations, 403 for fetches.
       - Session, `active` → serve.
    4. `public` → serve.
@@ -88,7 +88,7 @@ If D1 is unreachable, the gate fails closed: 503, never a served file.
 
 ## Page rules
 
-`vault.config.js` carries an ordered list. First match wins. Anything unmatched is
+`doorman.config.js` carries an ordered list. First match wins. Anything unmatched is
 `protected`. Patterns are path globs matched against the request path with no leading
 slash; `*` does not cross `/`, `**` does.
 
@@ -135,7 +135,7 @@ Extra user field `status`: `pending` | `active` | `disabled`.
 - The first user ever created gets role `admin` and status `active`, so the deployer
   can never be locked out.
 - Sign-in of a `pending` or `disabled` user succeeds at the Better Auth level but the
-  gate sends them to `/vault/pending`. This keeps Better Auth's flows untouched.
+  gate sends them to `/_door/pending`. This keeps Better Auth's flows untouched.
 
 Sessions: stored in D1, cookie `HttpOnly; Secure; SameSite=Lax`, lifetime
 `auth.sessionDays` (default 30). Rate limiting: Better Auth's built-in limiter on
@@ -150,26 +150,26 @@ account was approved", and an admin notification on new sign-up.
 Plain HTML templates as JavaScript template strings, one shared stylesheet, no
 client-side framework. Themed by `brand.title`, `brand.logo`, `brand.accent`.
 
-- **Login** (`/vault/login`): email + password form, a "email me a link" button, a
+- **Login** (`/_door/login`): email + password form, a "email me a link" button, a
   sign-up link. Auth errors render back into this page as a message.
-- **Sign up** (`/vault/signup`): email, password. On success, redirect to
-  `/vault/pending`.
-- **Pending** (`/vault/pending`): "your account is waiting for approval", sign-out.
+- **Sign up** (`/_door/signup`): email, password. On success, redirect to
+  `/_door/pending`.
+- **Pending** (`/_door/pending`): "your account is waiting for approval", sign-out.
   Also shown to `disabled` users with different wording.
-- **Admin** (`/vault/admin`): table of users — email, status, role, created, last
+- **Admin** (`/_door/admin`): table of users — email, status, role, created, last
   sign-in — with per-row form-post actions: approve, disable, make admin, remove
-  admin, delete. Actions POST to `/vault/admin/<action>` with a CSRF token bound to
+  admin, delete. Actions POST to `/_door/admin/<action>` with a CSRF token bound to
   the session. An admin cannot disable or delete themself.
 
 ## Config
 
 ```js
-// vault.config.js
+// doorman.config.js
 export default {
   site:  {name: "campaignhq", dist: "../icr/campaignhq/dist"},
   brand: {title: "Campaign Dashboards", accent: "#0b57d0", logo: null},
   auth:  {allowedDomains: ["ona.io", "unicef.org"], sessionDays: 30},
-  mail:  {from: "vault@healthcampaigns.org", adminNotify: "mberg@ona.io"},
+  mail:  {from: "doorman@healthcampaigns.org", adminNotify: "mberg@ona.io"},
   pages: [
     {match: "about", access: "public"},
   ],
@@ -183,11 +183,11 @@ script inlines the config into the bundle so the Worker never reads the filesyst
 ## Repo layout
 
 ```
-of-vault/
+doorman/
   README.md
   package.json          hono, better-auth, kysely, kysely-d1, wrangler, vitest
   wrangler.toml         bindings, routes (per deployment)
-  vault.config.js       per deployment
+  doorman.config.js       per deployment
   migrations/           D1 SQL from `better-auth generate` + the status column
   deploy.sh             build site → rclone sync dist → wrangler d1 migrations apply → wrangler deploy
   src/
@@ -211,7 +211,7 @@ of-vault/
 - D1 down: 503, fail closed.
 - Mail send failure: logged; sign-up still succeeds and the pending page tells the
   user to contact the admin.
-- Unknown `/vault/*` path: 404.
+- Unknown `/_door/*` path: 404.
 
 ## Testing
 
@@ -230,14 +230,14 @@ Vitest with `@cloudflare/vitest-pool-workers`.
 
 ## Rollout for ICR
 
-1. Create the `of-vault` repo from this spec. Deploy to `vault.healthcampaigns.org`
+1. Create the `doorman` repo from this spec. Deploy to `doorman.healthcampaigns.org`
    pointed at the campaignhq build (`_site/campaignhq/`, the prefix it already uses).
 2. Sign up as the first user (becomes admin). Verify pages and DuckDB queries work
    signed in and are blocked signed out.
 3. Move the `dashboards.healthcampaigns.org` custom-domain route from the
-   `campaignhq` Worker to of-vault. Keep `monitor.healthcampaigns.org`'s 301.
-4. Retire `campaignhq/worker/` and point `campaignhq/deploy.sh` at of-vault's
-   deploy, or delete it in favor of of-vault's.
+   `campaignhq` Worker to doorman. Keep `monitor.healthcampaigns.org`'s 301.
+4. Retire `campaignhq/worker/` and point `campaignhq/deploy.sh` at doorman's
+   deploy, or delete it in favor of doorman's.
 
 ## Open questions
 
