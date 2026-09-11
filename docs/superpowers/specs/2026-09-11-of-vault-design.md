@@ -39,7 +39,7 @@ serving logic and puts a session gate in front of it.
 ```
 browser ──▶ Cloudflare Worker (Hono)
               ├─ /auth/*        Better Auth handler          (public)
-              ├─ /vault/login   login page                   (public)
+              ├─ /vault/login   login + signup pages         (public)
               ├─ /vault/pending "awaiting approval" page     (public)
               ├─ /vault/admin   user table + actions         (role: admin)
               └─ /*             page rules → session gate → R2 static serve
@@ -57,7 +57,7 @@ Static Assets because DuckDB-WASM's engine builds exceed the 25 MiB per-file cap
 Routes are matched in this order:
 
 1. `/auth/*` → Better Auth. Always public.
-2. `/vault/login`, `/vault/pending` → rendered pages. Always public. A signed-in
+2. `/vault/login`, `/vault/signup`, `/vault/pending` → rendered pages. Always public. A signed-in
    active user hitting `/vault/login` is redirected to `next` or `/`.
 3. `/vault/admin` and its form-post actions → require session with role `admin`.
    Otherwise 404 (do not reveal the page exists).
