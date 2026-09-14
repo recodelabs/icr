@@ -1,0 +1,17 @@
+// The doorman Worker for Campaign Dashboards (https://doorman.healthcampaigns.org, moving to
+// dashboards.healthcampaigns.org at cutover — see README "Login (doorman)").
+// Secrets, set once with `npx wrangler secret put`: BETTER_AUTH_SECRET, RESEND_API_KEY.
+{
+  "name": "doorman",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "account_id": "af8ac7eb1f7ec617e14702e69ce0d4c7",
+  "vars": {"BASE_URL": "https://doorman.healthcampaigns.org"},
+  "d1_databases": [
+    {"binding": "DB", "database_name": "doorman", "database_id": "1886e059-47b6-40d4-b6c7-30fb234bfb1f", "migrations_dir": "node_modules/doorman/migrations"}
+  ],
+  "r2_buckets": [{"binding": "SITE", "bucket_name": "icr"}],
+  "routes": [{"pattern": "doorman.healthcampaigns.org", "custom_domain": true}]
+}

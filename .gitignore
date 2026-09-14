@@ -56,3 +56,6 @@ tools/odklocations/node_modules/
 tools/odklocations/dist/
 tools/odklocations/src/.observablehq/
 tools/odklocations/.wrangler/
+campaignhq/doorman/node_modules/
+campaignhq/doorman/.wrangler/
+campaignhq/doorman/.dev.vars

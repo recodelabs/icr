@@ -71,6 +71,44 @@ custom-domain route, so wrangler creates the DNS record and certificate on the
 first deploy. Needs `rclone` with the `r2` remote configured and a wrangler
 login on this account. `./deploy.sh --dry-run` shows what would change.
 
+## Login (doorman)
+
+Access control is [doorman](https://github.com/recodelabs/doorman), a Cloudflare Worker
+that serves the same `_site/campaignhq/` prefix from R2 behind a login (Better Auth,
+sessions in D1). This repo only holds the deployment: `doorman/` has `doorman.config.js`
+(site name, brand, `auth.allowedDomains`, mail addresses, page rules: `/about` is
+public, everything else needs an active account), `wrangler.jsonc` (account, D1 and R2
+bindings, `BASE_URL`, routes) and `worker.js`, which builds the Worker from that config.
+doorman itself is installed from git, pinned by tag in `doorman/package.json`.
+
+```bash
+cd campaignhq/doorman && npm install
+npx wrangler d1 migrations apply doorman --remote   # picks up new migrations after an upgrade
+npx wrangler deploy                                  # or `npm run deploy` = doorman-deploy, which also syncs dist/ with rclone
+```
+
+The site build is unchanged: `./deploy.sh` still syncs `dist/` to R2. doorman reads it
+from there. Secrets on the Worker (set once with `npx wrangler secret put`):
+`BETTER_AUTH_SECRET` and `RESEND_API_KEY` (mail from `doorman@healthcampaigns.org`, so
+healthcampaigns.org must be verified in Resend). The D1 database `doorman` already
+exists; its id is in `wrangler.jsonc`. To upgrade doorman, bump the tag in
+`doorman/package.json`, `npm install`, migrate, deploy.
+
+Staging is https://doorman.healthcampaigns.org. Sign in at `/_door/login`; the first
+account ever created is the admin, later sign-ups wait on `/_door/admin` unless their
+domain is in `allowedDomains`. Remaining cutover steps, in order:
+
+1. **Move the hostnames.** In `doorman/wrangler.jsonc` set `vars.BASE_URL` to
+   `https://dashboards.healthcampaigns.org` and list both hostnames in `routes`
+   (`dashboards.healthcampaigns.org` and `monitor.healthcampaigns.org`, both
+   `custom_domain: true`). Drop both routes from `wrangler.toml` and redeploy the old
+   Worker so it releases them (a custom domain can only point at one Worker; move them
+   one at a time if downtime matters). Deploy doorman. `monitor.*` then 301s to
+   `dashboards.*` as before, because doorman redirects every non-`BASE_URL` host.
+2. **Retire the old Worker.** Delete `worker/` and `wrangler.toml`, drop the
+   `wrangler deploy` step from `deploy.sh` (keep build and rclone sync), and update the
+   Deploy section above.
+
 ## Pages
 
 - **Campaign calendar** (`/`) — filters, KPIs, two synced maps, timeline, table.
