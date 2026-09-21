@@ -93,6 +93,14 @@ section .lede{font-size:21px;color:var(--ink-2);max-width:var(--measure);margin:
 .benefits .detail p{font-size:16.5px;color:var(--ink-2);margin:0 0 12px;max-width:72ch}
 .benefits .head{display:grid;grid-template-columns:260px 1fr;gap:28px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 0}
 
+/* image modal */
+.props .sep{color:var(--ink-3);margin:0 2px}
+dialog.modal{border:0;padding:0;background:transparent;max-width:min(1400px,94vw);max-height:92vh;overflow:visible}
+dialog.modal::backdrop{background:rgba(23,33,28,.72)}
+dialog.modal img{display:block;max-width:min(1400px,94vw);max-height:92vh;width:auto;height:auto;border-radius:6px;background:#F6F2E8}
+dialog.modal .close{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:6px 12px;cursor:pointer}
+dialog.modal .close:hover{border-color:var(--ink-3)}
+
 /* list */
 .list{list-style:none;padding:0;margin:0;max-width:72ch}
 .list li{padding:14px 0;border-bottom:1px solid var(--rule);font-size:17px}
@@ -177,7 +185,7 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
   <div class="wrap">
     <div class="kicker">Integrated Campaign Registry</div>
     <h1>Ensuring every campaign <em>builds on the last</em></h1>
-    <p class="sub">Health campaigns are expensive but essential to reaching the hard‑to‑reach. The ICR makes sure their data is reused and validated, so the investment <b>compounds</b> and every round that follows is <b>cheaper</b> and more <b>effective</b>.</p>
+    <p class="sub">Health campaigns are expensive but essential to reaching the hard‑to‑reach. The ICR makes sure campaign data is reused and validated <b>compounding</b> their value.  Every campaign can build upon the last, across programmes, helping to make them <b>cheaper</b> and more <b>effective</b> over time.</p>
   </div>
 </header>
 
@@ -220,8 +228,9 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
 <section id="what">
   <div class="wrap">
     <div class="eyebrow">What the ICR is</div>
-    <h2>The ICR is an open data standard for storing and integrating data across health campaigns</h2>
-    <p class="lede" style="margin-bottom:0">It has three parts: a FHIR Implementation Guide that defines a shared vocabulary for campaigns, a country‑owned FHIR based data registry where data across campaigns can be stored and analyzed, and an open‑source reference solution that connects the platforms countries already use, such as ODK, DHIS2, and CommCare, to that store.</p>
+    <h2>The Integrated Campaign Registry (ICR) is an open data standard for storing and integrating data across health campaigns</h2>
+    <p class="lede" style="margin-bottom:1rem">The ICR is a standards‑based system of record for campaign data. It gives countries a structured way to store all their health campaign data in one place. Data from one campaign can then be reused to plan the next, and results can be compared across campaigns and programmes.</p>
+    <p class="lede" style="margin:0">Technically, it consists of an HL7 FHIR Implementation Guide that defines a shared vocabulary and data model for campaigns, and an open‑source reference architecture for storing that data and connecting the platforms countries already use, such as ODK, DHIS2, and CommCare.</p>
   </div>
 </section>
 
@@ -239,20 +248,6 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
       <button type="button" class="expand-all" aria-expanded="false">Expand all</button>
     </div>
     <div class="benefits">
-      <details class="b">
-        <summary>
-          <div class="h">Common terminology and data model</div>
-          <div class="claim">The ICR defines the codes campaigns use, such as campaign types, missed reasons, and team roles, and the HL7 FHIR data model those records fit in. A form built on them in ODK, DHIS2, or CommCare feeds the registry without custom mapping, and results compare across programmes and countries.</div>
-        </summary>
-        <div class="detail">
-          <figure class="shot">
-            <a href="img/common-terminology-full.jpg" target="_blank" rel="noopener" title="Open the full-size image in a new tab">
-              <img src="img/common-terminology.jpg" alt="Hand-drawn diagram: an ICR terminology book defines codes such as vaccination-sia for campaign type, safety-concern for refusal reason, and radio for communication channel; the same codes flow into ODK, DHIS2, and CommCare with no custom mapping, then into a FHIR store that makes results comparable across programmes and countries" width="1400" height="788" loading="lazy">
-            </a>
-            <figcaption><a class="go" href="https://icr.healthcampaigns.org/artifacts#terminology-value-sets" target="_blank" rel="noopener">ICR terminology ↗</a></figcaption>
-          </figure>
-        </div>
-      </details>
       <details class="b">
         <summary>
           <div class="h">Common places</div>
@@ -362,12 +357,12 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
       <div><h3>Integration tools</h3><p>A suite of connectors that automates the exchange of ICR data with the platforms countries already use, including ODK, DHIS2, and CommCare.</p></div>
       <div><h3>Matching and enrichment</h3><p>Tools that deduplicate people, households, and places across sources, attach population figures to places, and find coordinates for settlement names.</p></div>
       <div><h3>FHIR‑based system of record</h3><p>The ICR provides a reference FHIR store that countries can run as their system of record, hosting and managing their campaign data in country.</p></div>
-      <div><h3>Analytics and reporting</h3><p>The registry keeps a historical record of every campaign, with services delivered measured against estimated populations. It serves as a data warehouse for analysis across campaigns and over time, and can feed results into tools like DHIS2 for partner reporting. <a href="img/data-warehouse-full.jpg" target="_blank" rel="noopener" title="Open the full-size diagram in a new tab">See how the data warehouse and GIS are built ↗</a></p></div>
+      <div><h3>Analytics and reporting</h3><p>The registry keeps a historical record of every campaign, with services delivered measured against estimated populations. It serves as a data warehouse for analysis across campaigns and over time, and can feed results into tools like DHIS2 for partner reporting. <a href="img/data-warehouse-full.jpg" data-modal data-alt="Diagram of how the ICR data warehouse and GIS are built" title="Open the diagram">See how the data warehouse and GIS are built</a></p></div>
     </div>
     <h3 class="subhead">The shared contract</h3>
     <div class="props props-4">
       <div><h3>FHIR Implementation Guide</h3><p>The ICR is based on a FHIR Implementation Guide. The IG uses FHIR profiles to adapt standard FHIR resources for campaigns: CarePlan for campaigns, Task for units of work, Location for places, and so on.</p></div>
-      <div><h3>Shared terminology</h3><p>Code systems and value sets cover campaign types, delivery strategies, missed reasons, team roles, and more, so forms and reports use the same codes everywhere.</p></div>
+      <div><h3>Shared terminology</h3><p>Code systems and value sets cover campaign types, delivery strategies, missed reasons, team roles, and more, so forms and reports use the same codes everywhere. A form built on them in ODK, DHIS2, or CommCare feeds the registry without custom mapping, and results compare across programmes and countries. <a href="img/common-terminology-full.jpg" data-modal data-alt="Hand-drawn diagram: an ICR terminology book defines codes such as vaccination-sia for campaign type, safety-concern for refusal reason, and radio for communication channel; the same codes flow into ODK, DHIS2, and CommCare with no custom mapping, then into a FHIR store that makes results comparable across programmes and countries" title="Open the diagram">See how shared terminology works</a> <span class="sep">·</span> <a href="https://icr.healthcampaigns.org/artifacts#terminology-value-sets" target="_blank" rel="noopener">ICR terminology ↗</a></p></div>
       <div><h3>Aligned with WHO SMART Guidelines</h3><p>The ICR is built with the same toolchain as the WHO SMART Guidelines and is designed to be fully compatible with the Immunization guideline.</p></div>
       <div><h3>Global good</h3><p>Developed by UNICEF with development partners, supported by the Gates Foundation, and released under an open licence.</p></div>
     </div>
@@ -391,20 +386,20 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
       <a class="aud-img" href="img/aud-donor-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-donor.jpg" alt="Illustration for donors and global partners" width="600" height="600" loading="lazy"></a>
       <div class="aud-body">
         <h3>Donors and global partners</h3>
-        <p class="who">Gavi, GPEI, the END Fund, foundations, WHO and UNICEF headquarters.</p>
-        <dl><dt>They care about</dt><dd>Cost per round, comparability across countries, equity outcomes, and not funding the same enumeration five times.</dd>
+        <p class="who">The END Fund, the Gates Foundation, Gavi, the Global Fund, GPEI, UNICEF, WHO, and others.</p>
+        <dl><dt>They care about</dt><dd>Cost per person reached, comparability across countries, equity outcomes, and not funding the same enumeration multiple times.</dd>
         <dt>Lead with</dt><dd>Skip the pre‑census · Effectiveness over time · Equity targeting · Validated aggregates</dd>
-        <dt>The story</dt><dd>The same two thousand villages received measles, polio, and lymphatic filariasis interventions within eighteen months and were enumerated three times. With the registry, the first campaign's enumeration is the second campaign's starting point, and the third campaign's coverage can be compared with the first.</dd></dl>
+        <dt>The story</dt><dd>A campaign digitization portfolio spans dozens of campaigns across many countries. Today each one stands alone. A strong result in one country says nothing about the next, and it is hard to see whether the portfolio is getting more effective over time. A shared registry gives donors and global partners comparable evidence of whether integration is working, and where.</dd></dl>
       </div>
     </article>
     <article class="aud" data-a="national" role="tabpanel">
       <a class="aud-img" href="img/aud-national-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-national.jpg" alt="Illustration for national programmes" width="600" height="600" loading="lazy"></a>
       <div class="aud-body">
         <h3>National programmes</h3>
-        <p class="who">EPI managers, NTD programme managers, health information system leads, planning directorates.</p>
-        <dl><dt>They care about</dt><dd>Ownership, denominators they can defend, and knowing what is happening in their own country.</dd>
+        <p class="who">EPI managers, health information system leads, NMCP managers, NTD programme managers, planning directorates, and others.</p>
+        <dl><dt>They care about</dt><dd>Ownership, denominators they can defend, and real‑time data for decision‑making.</dd>
         <dt>Lead with</dt><dd>Campaign visibility · Denominators you can defend · Campaign‑to‑routine bridge · Common places</dd>
-        <dt>The story</dt><dd>The national campaign calendar as a live map built from the registry, rather than a spreadsheet one person maintains. Two programmes discover they are planning the same districts a month apart, and combine.</dd></dl>
+        <dt>The story</dt><dd>Campaign data is often siloed across programmes and tools, which makes it difficult to pull together into a common view. Even when the data is obviously useful, such as when two campaigns have worked in the same area, it is so hard to get hold of that it is often not reused. When every campaign feeds its data into the ICR, the next campaign can start from it.</dd></dl>
       </div>
     </article>
     <article class="aud" data-a="district" role="tabpanel">
@@ -421,20 +416,20 @@ footer .support{flex-basis:100%;font-size:13px;margin-top:6px}
       <a class="aud-img" href="img/aud-implementer-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-implementer.jpg" alt="Illustration for implementers" width="600" height="600" loading="lazy"></a>
       <div class="aud-body">
         <h3>Implementers</h3>
-        <p class="who">NGOs, campaign contractors, ESPEN and similar programmes.</p>
-        <dl><dt>They care about</dt><dd>Not rebuilding forms, location lists, and pipelines for every client and every country.</dd>
+        <p class="who">Campaign contractors, civil society organisations, community health workers, health workers, NGOs, and others.</p>
+        <dl><dt>They care about</dt><dd>Not reconfiguring forms, location lists, and pipelines from scratch for every programme and every country.</dd>
         <dt>Lead with</dt><dd>Common places · Common model · Validated aggregates</dd>
-        <dt>The story</dt><dd>One form set and one integration pipeline that works in the next country because the target model is the same. The location list arrives from the registry instead of being built from scratch.</dd></dl>
+        <dt>The story</dt><dd>A new country or programme often means adapting forms, location lists, and reporting setups almost from zero, even when the underlying campaign logic is similar. With a shared standard, that work shrinks. Implementers configure and deploy against something already proven instead of working out the basics again each time.</dd></dl>
       </div>
     </article>
     <article class="aud" data-a="tech" role="tabpanel">
       <a class="aud-img" href="img/aud-tech-full.png" target="_blank" rel="noopener" title="Open the full-size illustration"><img src="img/aud-tech.jpg" alt="Illustration for technology partners" width="600" height="600" loading="lazy"></a>
       <div class="aud-body">
         <h3>Technology partners</h3>
-        <p class="who">Data collection, GIS, warehouse, and reporting tool builders.</p>
-        <dl><dt>They care about</dt><dd>Integration surface and not being locked out.</dd>
+        <p class="who">Developers and experts in campaign digitization, data collection, data warehouse, digital health, and GIS tools.</p>
+        <dl><dt>They care about</dt><dd>System efficiency, clean processes, and making sure development time goes into building something reusable.</dd>
         <dt>Lead with</dt><dd>Common model · Common places · Reference solution, not platform</dd>
-        <dt>The story</dt><dd>Implement one profile set and interoperate with every other component in the reference solution. The IG defines the interface. <a href="https://icr.healthcampaigns.org">Read the implementation guide ↗</a></dd></dl>
+        <dt>The story</dt><dd>Tools get replaced when governments change platforms or donors change priorities. A tool built to the shared standard stays connected regardless, because the standard stays the same when platforms change. <a href="https://icr.healthcampaigns.org">Read the implementation guide ↗</a></dd></dl>
       </div>
     </article>
     </div>
@@ -486,6 +481,21 @@ document.querySelectorAll('.expand-all').forEach(btn=>{
   rows.forEach(r=>r.addEventListener('toggle',sync));
   sync();
 });
+
+// image modal: links marked data-modal open their image in a dialog
+(()=>{
+  const links=document.querySelectorAll('a[data-modal]');
+  if(!links.length||!window.HTMLDialogElement) return;
+  const dlg=document.createElement('dialog'); dlg.className='modal';
+  dlg.innerHTML='<form method="dialog"><button class="close" aria-label="Close">Close ✕</button></form><img alt="">';
+  document.body.appendChild(dlg);
+  const img=dlg.querySelector('img');
+  dlg.addEventListener('click',e=>{ if(e.target===dlg||e.target===img) dlg.close(); });
+  links.forEach(a=>a.addEventListener('click',e=>{
+    if(e.metaKey||e.ctrlKey||e.shiftKey) return;
+    e.preventDefault(); img.src=a.href; img.alt=a.dataset.alt||''; dlg.showModal();
+  }));
+})();
 
 // campaign/routine lens toggle
 document.querySelectorAll('.lens-fig').forEach(fig=>{
