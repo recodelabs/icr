@@ -2,7 +2,7 @@
   "type": "Collection",
   "id": "parquet/locations",
   "stac_version": "1.1.0",
-  "description": "Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened\nto one GeoParquet row per resource: administrative boundaries (country, states,\nLGAs — polygons), health facilities and settlements (points), with the\nadministrative hierarchy denormalised onto each row (admin0…admin4 names and\ncodes, `path`, `ancestor_ids`) and the complete FHIR resource kept in\n`fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438\nsettlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a\nhandful of test records so far.\n\nHive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file\nper partition, 20,000-row groups in Hilbert order with a `bbox` covering column\nand native Parquet GEOMETRY statistics, so a reader can fetch only the row\ngroups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.",
+  "description": "Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened\nto one GeoParquet row per resource: administrative boundaries (country, states,\nLGAs — polygons), health facilities and settlements (points), and catchment\nareas (polygons: `facility-catchment`, one per health facility, partOf its\nLGA; `settlement-catchment`, one per settlement, partOf its facility\ncatchment — each linked to its site through the `catchment-of` extension in\n`fhir_json`), with the administrative hierarchy denormalised onto each row\n(admin0…admin4 names and codes, `path`, `ancestor_ids`) and the complete FHIR\nresource kept in `fhir_json`. Nigeria is complete for admin units, facilities\nand settlements (812 admin units, 51,022 facilities, 292,438 settlements, from\nGRID3 and the NHFR via the ICR); catchments cover Toro LGA, Bauchi so far\n(159 facility + 2,087 settlement catchments, Crosscut, Sep 2026). Sierra\nLeone holds a handful of test records.\n\nHive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file\nper partition, 20,000-row groups in Hilbert order with a `bbox` covering column\nand native Parquet GEOMETRY statistics, so a reader can fetch only the row\ngroups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.",
   "links": [
     {
       "rel": "root",
@@ -32,6 +32,18 @@
       "href": "./country=NGA/geom_type=polygon/type=admin-unit/country=NGA_geom_type=polygon_type=admin-unit.json",
       "type": "application/geo+json",
       "title": "Nigeria — administrative boundaries"
+    },
+    {
+      "rel": "item",
+      "href": "./country=NGA/geom_type=polygon/type=facility-catchment/country=NGA_geom_type=polygon_type=facility-catchment.json",
+      "type": "application/geo+json",
+      "title": "Nigeria — facility catchment"
+    },
+    {
+      "rel": "item",
+      "href": "./country=NGA/geom_type=polygon/type=settlement-catchment/country=NGA_geom_type=polygon_type=settlement-catchment.json",
+      "type": "application/geo+json",
+      "title": "Nigeria — settlement catchment"
     },
     {
       "rel": "item",
@@ -112,7 +124,7 @@
     "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
     "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-09-08T23:23:44Z",
+  "updated": "2026-09-09T19:02:45Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -128,7 +140,7 @@
       "type": "string"
     }
   ],
-  "partition:file_count": 7,
+  "partition:file_count": 9,
   "title": "ICR location registry",
   "extent": {
     "spatial": {
@@ -179,6 +191,8 @@
       51022,
       292438,
       812,
+      159,
+      2087,
       2,
       1
     ],
@@ -189,12 +203,12 @@
           "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
         },
         "version_id": {
-          "minimum": "2",
-          "maximum": "2"
+          "minimum": "3",
+          "maximum": "3"
         },
         "last_updated": {
-          "minimum": "2026-09-06T21:12:08.019+00:00",
-          "maximum": "2026-09-06T21:12:41.538+00:00"
+          "minimum": "2026-09-09T18:38:10.529+00:00",
+          "maximum": "2026-09-09T18:39:37.552+00:00"
         },
         "name": {
           "minimum": "1 Brigade Medical Center",
@@ -328,12 +342,12 @@
           "maximum": "ffffe4ba-d020-4042-956c-4f9e13974bd3"
         },
         "version_id": {
-          "minimum": "2",
-          "maximum": "2"
+          "minimum": "3",
+          "maximum": "3"
         },
         "last_updated": {
-          "minimum": "2026-09-06T21:08:57.716+00:00",
-          "maximum": "2026-09-06T21:13:36.803+00:00"
+          "minimum": "2026-09-09T18:36:50.038+00:00",
+          "maximum": "2026-09-09T18:41:15.395+00:00"
         },
         "name": {
           "minimum": "10 10 Low Cost",
@@ -426,12 +440,12 @@
           "maximum": "nga-za-814"
         },
         "version_id": {
-          "minimum": "1",
-          "maximum": "1"
+          "minimum": "2",
+          "maximum": "2"
         },
         "last_updated": {
-          "minimum": "2026-09-06T18:58:31.676+00:00",
-          "maximum": "2026-09-06T18:58:33.127+00:00"
+          "minimum": "2026-09-09T18:36:48.405+00:00",
+          "maximum": "2026-09-09T18:36:50.038+00:00"
         },
         "name": {
           "minimum": "Aba North",
@@ -506,6 +520,162 @@
           "minimum": "10001",
           "maximum": "9018",
           "null_count": 38
+        },
+        "lon": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "lat": {
+          "minimum": "polygon",
+          "maximum": "polygon"
+        }
+      },
+      {
+        "id": {
+          "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+          "maximum": "catchment-fe37c141-a033-434f-b74a-4d32d9f99c7d"
+        },
+        "version_id": {
+          "minimum": "2",
+          "maximum": "2"
+        },
+        "last_updated": {
+          "minimum": "2026-09-09T18:58:59.647+00:00",
+          "maximum": "2026-09-09T18:58:59.647+00:00"
+        },
+        "name": {
+          "minimum": "Al Huda Health Clinic catchment",
+          "maximum": "Zukku Health Post catchment"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "facility-catchment",
+          "maximum": "facility-catchment"
+        },
+        "physical_type": {
+          "minimum": "area",
+          "maximum": "area"
+        },
+        "part_of": {
+          "minimum": "nga-ba-5018",
+          "maximum": "nga-ba-5018"
+        },
+        "tier": {
+          "minimum": 3,
+          "maximum": 3
+        },
+        "admin0_name": {
+          "minimum": "/nga/nga-ba/nga-ba-5018/catchment-00bc2050-2ef5-40db-a8cd-c67c37",
+          "maximum": "/nga/nga-ba/nga-ba-5018/catchment-fe37c141-a033-434f-b74a-4d32d:"
+        },
+        "admin1_name": {
+          "minimum": "nga",
+          "maximum": "nga-ba-5018"
+        },
+        "admin2_name": {
+          "minimum": "Nigeria",
+          "maximum": "Nigeria"
+        },
+        "admin3_name": {
+          "minimum": "Bauchi",
+          "maximum": "Bauchi"
+        },
+        "admin4_name": {
+          "minimum": "Toro",
+          "maximum": "Toro"
+        },
+        "admin2_code": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "admin3_code": {
+          "minimum": "BA",
+          "maximum": "BA"
+        },
+        "admin4_code": {
+          "minimum": "5018",
+          "maximum": "5018"
+        },
+        "lon": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "lat": {
+          "minimum": "polygon",
+          "maximum": "polygon"
+        }
+      },
+      {
+        "id": {
+          "minimum": "catchment-001f61f2-8f41-4d59-b37b-eb9410f910b9",
+          "maximum": "catchment-ffca7de6-dd88-49ac-8b18-9006d757f474"
+        },
+        "version_id": {
+          "minimum": "2",
+          "maximum": "2"
+        },
+        "last_updated": {
+          "minimum": "2026-09-09T18:58:59.647+00:00",
+          "maximum": "2026-09-09T18:59:00.960+00:00"
+        },
+        "name": {
+          "minimum": "Abdulkareem Magama catchment",
+          "maximum": "Zungulmi catchment"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "settlement-catchment",
+          "maximum": "settlement-catchment"
+        },
+        "physical_type": {
+          "minimum": "area",
+          "maximum": "area"
+        },
+        "part_of": {
+          "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+          "maximum": "catchment-fe37c141-a033-434f-b74a-4d32d9f99c7d"
+        },
+        "tier": {
+          "minimum": 4,
+          "maximum": 4
+        },
+        "admin0_name": {
+          "minimum": "/nga/nga-ba/nga-ba-5018/catchment-00bc2050-2ef5-40db-a8cd-c67c37",
+          "maximum": "/nga/nga-ba/nga-ba-5018/catchment-fe37c141-a033-434f-b74a-4d32d:"
+        },
+        "admin1_name": {
+          "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+          "maximum": "nga-ba-5018"
+        },
+        "admin2_name": {
+          "minimum": "Nigeria",
+          "maximum": "Nigeria"
+        },
+        "admin3_name": {
+          "minimum": "Bauchi",
+          "maximum": "Bauchi"
+        },
+        "admin4_name": {
+          "minimum": "Toro",
+          "maximum": "Toro"
+        },
+        "admin2_code": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "admin3_code": {
+          "minimum": "BA",
+          "maximum": "BA"
+        },
+        "admin4_code": {
+          "minimum": "5018",
+          "maximum": "5018"
         },
         "lon": {
           "minimum": "NGA",
@@ -921,7 +1091,7 @@
       "href": "./country=*/geom_type=*/type=*/*.parquet",
       "type": "application/vnd.apache.parquet",
       "title": "Partitioned GeoParquet",
-      "description": "Glob pattern for 7 partitioned files",
+      "description": "Glob pattern for 9 partitioned files",
       "roles": [
         "data"
       ]
@@ -933,8 +1103,8 @@
       "roles": [
         "collection-mirror"
       ],
-      "file:size": 51939,
-      "file:checksum": "122063b9e7f21e1d691df5e5ab4ab94ad405f65a29709f730b6d42db8cd7e1f70069"
+      "file:size": 53540,
+      "file:checksum": "1220ebe5d117e157e4fef57d8d240ff0683f9cf98f930117c297a5a135111208b302"
     },
     "admin-tiles": {
       "href": "../../tiles/admin.pmtiles",
@@ -943,8 +1113,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 2949347,
-      "file:checksum": "12204aee68c191c654ea59db001bb62d3402f87deab4a3fddd0b8efecc7a479c8dfd"
+      "file:size": 2949348,
+      "file:checksum": "1220826824299be80226dc9ea01b78aec7e4eef42b1b779779a616965dc22e110b0c"
     },
     "style-default": {
       "href": "./styles/default.json",
@@ -964,8 +1134,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 48459155,
-      "file:checksum": "1220c3667f716dd97891b5827caba3844531d48b87d13ddc6003ee9ff6929f7e2d32"
+      "file:size": 48359222,
+      "file:checksum": "12203ce57ac50b83c0ad4e327a5f545a03bc489724605e2bcf68fbd49f5324624401"
     },
     "style-facilities": {
       "href": "./styles/facilities.json",
@@ -984,8 +1154,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 136140917,
-      "file:checksum": "12205a4588d441d041be64cb4dd45bcff30ca9f4c813988283abf40f655e8f7f0d48"
+      "file:size": 134972276,
+      "file:checksum": "1220ca9d2e0dadca6d8f76ec00a40f904202f64902d09204c42a40806b379863fa2f"
     },
     "style-settlements": {
       "href": "./styles/settlements.json",

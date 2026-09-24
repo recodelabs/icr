@@ -4,129 +4,111 @@
   "stac_extensions": [
     "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
   ],
-  "id": "country=NGA_geom_type=polygon_type=admin-unit",
+  "id": "country=NGA_geom_type=polygon_type=facility-catchment",
   "geometry": {
     "type": "Polygon",
     "coordinates": [
       [
         [
-          2.69261253803825,
-          4.27020398622506
+          8.74922,
+          9.846145
         ],
         [
-          2.69261253803825,
-          13.8857139871109
+          8.74922,
+          10.854351
         ],
         [
-          14.6779677542086,
-          13.8857139871109
+          9.696158,
+          10.854351
         ],
         [
-          14.6779677542086,
-          4.27020398622506
+          9.696158,
+          9.846145
         ],
         [
-          2.69261253803825,
-          4.27020398622506
+          8.74922,
+          9.846145
         ]
       ]
     ]
   },
   "bbox": [
-    2.69261253803825,
-    4.27020398622506,
-    14.6779677542086,
-    13.8857139871109
+    8.74922,
+    9.846145,
+    9.696158,
+    10.854351
   ],
   "properties": {
-    "geoparquet:geometry_type": "MultiPolygon",
-    "geoparquet:feature_count": 812,
+    "geoparquet:geometry_type": "Polygon",
+    "geoparquet:feature_count": 159,
     "table:column_statistics": {
       "id": {
-        "minimum": "nga",
-        "maximum": "nga-za-814"
+        "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+        "maximum": "catchment-fe37c141-a033-434f-b74a-4d32d9f99c7d"
       },
       "version_id": {
         "minimum": "2",
         "maximum": "2"
       },
       "last_updated": {
-        "minimum": "2026-09-09T18:36:48.405+00:00",
-        "maximum": "2026-09-09T18:36:50.038+00:00"
+        "minimum": "2026-09-09T18:58:59.647+00:00",
+        "maximum": "2026-09-09T18:58:59.647+00:00"
       },
       "name": {
-        "minimum": "Aba North",
-        "maximum": "Zuru"
+        "minimum": "Al Huda Health Clinic catchment",
+        "maximum": "Zukku Health Post catchment"
       },
       "status": {
         "minimum": "active",
         "maximum": "active"
       },
       "type": {
-        "minimum": "admin-unit",
-        "maximum": "admin-unit"
+        "minimum": "facility-catchment",
+        "maximum": "facility-catchment"
       },
       "physical_type": {
-        "minimum": "jdn",
-        "maximum": "jdn"
+        "minimum": "area",
+        "maximum": "area"
       },
       "part_of": {
-        "minimum": "nga",
-        "maximum": "nga-za",
-        "null_count": 1
-      },
-      "position_longitude": {
-        "minimum": "10001",
-        "maximum": "ZA"
-      },
-      "gers_id": {
-        "minimum": "10001",
-        "maximum": "ZA"
+        "minimum": "nga-ba-5018",
+        "maximum": "nga-ba-5018"
       },
       "tier": {
-        "minimum": 0,
-        "maximum": 2
-      },
-      "path": {
-        "minimum": 0,
-        "maximum": 2
+        "minimum": 3,
+        "maximum": 3
       },
       "admin0_name": {
-        "minimum": "/nga",
-        "maximum": "/nga/nga-za/nga-za-814"
+        "minimum": "/nga/nga-ba/nga-ba-5018/catchment-00bc2050-2ef5-40db-a8cd-c67c37",
+        "maximum": "/nga/nga-ba/nga-ba-5018/catchment-fe37c141-a033-434f-b74a-4d32d:"
       },
       "admin1_name": {
         "minimum": "nga",
-        "maximum": "nga-za",
-        "null_count": 1
+        "maximum": "nga-ba-5018"
       },
       "admin2_name": {
         "minimum": "Nigeria",
         "maximum": "Nigeria"
       },
       "admin3_name": {
-        "minimum": "Abia",
-        "maximum": "Zamfara",
-        "null_count": 1
+        "minimum": "Bauchi",
+        "maximum": "Bauchi"
       },
       "admin4_name": {
-        "minimum": "Aba North",
-        "maximum": "Zuru",
-        "null_count": 38
+        "minimum": "Toro",
+        "maximum": "Toro"
       },
       "admin2_code": {
         "minimum": "NGA",
         "maximum": "NGA"
       },
       "admin3_code": {
-        "minimum": "AB",
-        "maximum": "ZA",
-        "null_count": 1
+        "minimum": "BA",
+        "maximum": "BA"
       },
       "admin4_code": {
-        "minimum": "10001",
-        "maximum": "9018",
-        "null_count": 38
+        "minimum": "5018",
+        "maximum": "5018"
       },
       "lon": {
         "minimum": "NGA",
@@ -137,9 +119,9 @@
         "maximum": "polygon"
       }
     },
-    "title": "Nigeria \u2014 administrative boundaries",
+    "title": "Nigeria \u2014 facility catchment",
     "vector:geometry_types": [
-      "MultiPolygon"
+      "Polygon"
     ],
     "datetime": "2026-09-09T19:02:44Z"
   },
@@ -166,8 +148,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 2406625,
-      "file:checksum": "1220f765b3b5db71279eec01ee543aa1f1bdb74ce877df10d3193449fdbc447f0ac0",
+      "file:size": 173801,
+      "file:checksum": "122031b83350b11b49a9bf33c3c44447861215166dfc16b9c2dc92341f9bd5c8cf20",
       "roles": [
         "data"
       ]

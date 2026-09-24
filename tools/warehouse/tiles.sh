@@ -9,6 +9,9 @@
 #   facilities.pmtiles   points: `facilities` — every health facility, no point dropped at any zoom.
 #   settlements.pmtiles  points: `settlements` — every settlement, no point dropped at any zoom
 #                        (z8+; ~300k points, so it is kept out of the low zooms and loaded on demand).
+#   catchments.pmtiles   polygons: `facility_catchments`, `settlement_catchments` (z6–14) — the
+#                        catchment-area Locations (tools/catchments), where loaded; each carries
+#                        `catchment_of` (its site's Location id) and `part_of`.
 #
 # Point layers are built with --drop-rate=1 --no-feature-limit --no-tile-size-limit so tippecanoe
 # never thins them: what is in the registry is what is on the map.
@@ -90,5 +93,35 @@ tippecanoe --force -o "$OUT/settlements.pmtiles" \
   --drop-rate=1 --no-feature-limit --no-tile-size-limit \
   --quiet -l settlements "$TMP/settlements.geojson"
 ls -la "$OUT/settlements.pmtiles" | awk '{print "   " $5 " bytes"}'
+
+# Catchment areas (tools/catchments): one archive, two polygon layers. `catchment_of` is the
+# site (facility / settlement Location id) the polygon belongs to, from the catchment-of
+# extension; `part_of` is the LGA for a facility catchment and the facility catchment for a
+# settlement catchment.
+CATCH="$DATA/parquet/locations/country=$COUNTRY/geom_type=polygon/type=*-catchment/*.parquet"
+if ls $CATCH >/dev/null 2>&1; then
+  echo "== catchments → GeoJSON"
+  for t in facility settlement; do
+    duckdb -c "
+      LOAD spatial; SET geometry_always_xy = true;
+      COPY (
+        SELECT id, name, type, status, admin1_name, admin2_name, admin3_name, path, part_of,
+               json_extract_string(fhir_json, '\$.extension[*].valueReference.reference')[1] AS catchment_of,
+               last_updated, geometry
+        FROM read_parquet('$CATCH', hive_partitioning=true, union_by_name=true)
+        WHERE type = '$t-catchment' AND geometry IS NOT NULL
+      ) TO '$TMP/${t}_catchments.geojson' WITH (FORMAT GDAL, DRIVER 'GeoJSONSeq');"
+    echo "   ${t}_catchments: $(count "$TMP/${t}_catchments.geojson") features"
+  done
+  echo "== tippecanoe → $OUT/catchments.pmtiles"
+  tippecanoe --force -o "$OUT/catchments.pmtiles" \
+    --minimum-zoom=6 --maximum-zoom=14 \
+    --coalesce-densest-as-needed --extend-zooms-if-still-dropping \
+    --simplification=4 --no-tile-size-limit --no-feature-limit \
+    --quiet -L "facility_catchments:$TMP/facility_catchments.geojson" -L "settlement_catchments:$TMP/settlement_catchments.geojson"
+  ls -la "$OUT/catchments.pmtiles" | awk '{print "   " $5 " bytes"}'
+else
+  echo "== catchments: no *-catchment partitions for $COUNTRY, skipping"
+fi
 
 rm -rf "$TMP"

@@ -149,6 +149,116 @@ comparison the Campaign Targeting dashboard draws.
 * select[0].column[11].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/is-calculated').value.ofType(boolean)"
 * select[0].column[11].type = "boolean"
 * select[0].column[11].description = "True for a rollup or interpolation rather than an independently sourced count"
+* select[0].column[12].name = "travel_time"
+* select[0].column[12].path = "characteristic.where(code.coding.code = 'travel-time').first().value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[12].type = "code"
+* select[0].column[12].description = "Accessibility stratum of the estimate (walk-lt-1h | walk-1h-4h | walk-gt-4h | drive-…); null for an all-of-the-geography figure"
+
+Instance: IcrCampaignTask
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR campaign tasks"
+Description: """
+One row per ICRCampaignTask — the **operational unit of work**: a site-session,
+a house-to-house visit to a settlement, a household or school-cohort visit, or a
+person-targeted follow-up. `campaign_id` (basedOn) joins the campaign calendar;
+`for_location_id` / `for_group_id` say what the task acts on and `location_id`
+where the work happens (join keys to the location registry); `owner_team_id`
+the care team. `strategy` and `origin` are the task's delivery strategy and
+whether it was pre-planned from the microplan or field-registered on discovery
+— the field-registered count per area measures how incomplete the microplan's
+enumeration was. The tally columns are the coded `Task.output` entries
+(`treated_count` is the scalar result; the house-to-house axes are
+`houses_visited`, `eligible_present`, `eligible_absent`,
+`children_already_marked`); `missed_reason` is the first missed-reason output.
+Microplan-vs-monitoring dashboards are this table at two points in time.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTask"
+* name = "IcrCampaignTask"
+* title = "ICR campaign tasks"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #Task
+* where[0].path = "basedOn.exists()"
+* where[0].description = "Tasks that execute a campaign — the ICRCampaignTask profile; excludes ad-hoc Tasks with no campaign"
+* select[0].column[0].name = "task_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "status"
+* select[0].column[1].path = "status"
+* select[0].column[1].type = "code"
+* select[0].column[1].description = "requested | in-progress | completed | failed | …"
+* select[0].column[2].name = "intent"
+* select[0].column[2].path = "intent"
+* select[0].column[2].type = "code"
+* select[0].column[3].name = "code"
+* select[0].column[3].path = "code.text"
+* select[0].column[3].type = "string"
+* select[0].column[3].description = "The activity being performed, human-readable"
+* select[0].column[4].name = "campaign_id"
+* select[0].column[4].path = "basedOn.first().getReferenceKey(CarePlan)"
+* select[0].column[4].type = "string"
+* select[0].column[5].name = "activity"
+* select[0].column[5].path = "instantiatesCanonical"
+* select[0].column[5].type = "canonical"
+* select[0].column[6].name = "for_location_id"
+* select[0].column[6].path = "for.getReferenceKey(Location)"
+* select[0].column[6].type = "string"
+* select[0].column[6].description = "The Location the task acts on (site, settlement, structure, area); null when `for` is a Group or Patient"
+* select[0].column[7].name = "for_group_id"
+* select[0].column[7].path = "for.getReferenceKey(Group)"
+* select[0].column[7].type = "string"
+* select[0].column[7].description = "The delivery-unit Group (household, community, school cohort) the task acts on; null otherwise"
+* select[0].column[8].name = "location_id"
+* select[0].column[8].path = "location.getReferenceKey(Location)"
+* select[0].column[8].type = "string"
+* select[0].column[8].description = "Where the work happens — join key to the location registry"
+* select[0].column[9].name = "owner_team_id"
+* select[0].column[9].path = "owner.getReferenceKey(CareTeam)"
+* select[0].column[9].type = "string"
+* select[0].column[10].name = "strategy"
+* select[0].column[10].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy').value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[10].type = "code"
+* select[0].column[10].description = "fixed-post | temporary-post | mobile | school | house-to-house | community-directed | outreach"
+* select[0].column[11].name = "origin"
+* select[0].column[11].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/task-origin').value.ofType(code)"
+* select[0].column[11].type = "code"
+* select[0].column[11].description = "pre-planned | field-registered"
+* select[0].column[12].name = "lineage"
+* select[0].column[12].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/data-lineage').value.ofType(code)"
+* select[0].column[12].type = "code"
+* select[0].column[13].name = "execution_start"
+* select[0].column[13].path = "executionPeriod.start"
+* select[0].column[13].type = "dateTime"
+* select[0].column[14].name = "execution_end"
+* select[0].column[14].path = "executionPeriod.end"
+* select[0].column[14].type = "dateTime"
+* select[0].column[15].name = "last_modified"
+* select[0].column[15].path = "lastModified"
+* select[0].column[15].type = "dateTime"
+* select[0].column[16].name = "treated_count"
+* select[0].column[16].path = "output.where(type.coding.code = 'treated-count').first().value.ofType(unsignedInt)"
+* select[0].column[16].type = "unsignedInt"
+* select[0].column[16].description = "Persons treated / vaccinated at this visit (scalar tally)"
+* select[0].column[17].name = "houses_visited"
+* select[0].column[17].path = "output.where(type.coding.code = 'houses-visited').first().value.ofType(unsignedInt)"
+* select[0].column[17].type = "unsignedInt"
+* select[0].column[18].name = "eligible_present"
+* select[0].column[18].path = "output.where(type.coding.code = 'eligible-present').first().value.ofType(unsignedInt)"
+* select[0].column[18].type = "unsignedInt"
+* select[0].column[19].name = "eligible_absent"
+* select[0].column[19].path = "output.where(type.coding.code = 'eligible-absent').first().value.ofType(unsignedInt)"
+* select[0].column[19].type = "unsignedInt"
+* select[0].column[20].name = "children_already_marked"
+* select[0].column[20].path = "output.where(type.coding.code = 'children-already-marked').first().value.ofType(unsignedInt)"
+* select[0].column[20].type = "unsignedInt"
+* select[0].column[21].name = "missed_reason"
+* select[0].column[21].path = "output.where(type.coding.code = 'missed-reason').first().value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[21].type = "code"
+* select[0].column[21].description = "First missed-reason output: absent | sleeping | sick | refusal | inaccessible | …"
+* select[0].column[22].name = "status_reason"
+* select[0].column[22].path = "statusReason.text"
+* select[0].column[22].type = "string"
 
 Instance: IcrCoverage
 InstanceOf: $ViewDefinition

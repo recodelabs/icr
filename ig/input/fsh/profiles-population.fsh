@@ -67,11 +67,18 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * characteristic ^slicing.discriminator.type = #pattern
 * characteristic ^slicing.discriminator.path = "code"
 * characteristic ^slicing.rules = #open
-* characteristic contains geography 0..1 MS
+* characteristic contains
+    geography 0..1 MS and
+    travelTime 0..1 MS
 * characteristic[geography].code = $GroupCharacteristic#geography
 * characteristic[geography] ^short = "The Location this estimate is scoped to — any level: country, district, ward, settlement, or operational area. Makes estimates computably joinable to the location hierarchy, and searchable as Group?geography= (SearchParameter icr-target-population-geography, campaign-visibility)."
 * characteristic[geography].value[x] only Reference(ICRLocation)
 * characteristic[geography].exclude = false
+* characteristic[travelTime].code = $GroupCharacteristic#travel-time
+* characteristic[travelTime] ^short = "Accessibility stratum: the people of the geography within this travel-time band of the service point (walking / driving; under 1 h, 1–4 h, over 4 h). Absent on an all-of-the-geography estimate."
+* characteristic[travelTime].value[x] only CodeableConcept
+* characteristic[travelTime].valueCodeableConcept from ICRTravelTimeBandVS (required)
+* characteristic[travelTime].exclude = false
 * extension contains
     DenominatorSource named denominatorSource 1..1 MS and
     DenominatorType named denominatorType 0..1 MS and
@@ -121,7 +128,7 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * physicalType ^short = "jurisdiction / site / building / household"
 * type MS
 * type from ICRLocationTypeVS (extensible)
-* type ^short = "admin-unit / settlement / facility / school / community-distribution-point / temporary-post / household / supervisory-area / operational-area"
+* type ^short = "admin-unit / settlement / facility / school / community-distribution-point / temporary-post / household / supervisory-area / operational-area / facility-catchment / settlement-catchment"
 * position MS
 * position ^short = "GPS point (longitude/latitude/altitude)"
 * managingOrganization only Reference(ICRFacilityOrganization)
@@ -148,8 +155,12 @@ Description: "The most-customized ICR resource — the ICR's georegistry layer, 
 * extension contains
     LocationBoundaryGeoJson named boundary 0..1 MS and
     SettlementType named settlementType 0..1 MS and
-    SpatialIndex named spatialIndex 0..* MS
+    SpatialIndex named spatialIndex 0..* MS and
+    CatchmentOf named catchmentOf 0..1 MS and
+    BuildingCount named buildingCount 0..* MS
 * extension[boundary] ^short = "District polygon, settlement area, or catchment zone (GeoJSON)"
+* extension[buildingCount] ^short = "Building footprints inside the boundary, one entry per source dataset (+ confidence threshold) and date"
+* extension[catchmentOf] ^short = "On a facility-catchment / settlement-catchment Location: the facility or settlement site this area belongs to. Searchable: Location?catchment-of=Location/<site-id>"
 * extension[spatialIndex] ^short = "Spatial index cell(s) derived from position — scheme + level + cell (quadkey 18 first; h3 later). One per scheme and level. Searchable: Location?quadkey=<prefix> (tile containment), Location?h3=<cell> (spatial-index round)"
 * extension[settlementType] ^short = "Settlement / special-population type (urban-slum, refugee-IDP, nomad-pastoralist, security-compromised, hard-to-reach…) — vulnerability/equity attribute for HTRA targeting (v0.21.0)"
 
