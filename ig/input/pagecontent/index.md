@@ -1,150 +1,111 @@
 ### Integrated Campaign Registry (ICR) Implementation Guide
 
-Public health campaigns (measles–rubella SIAs, polio rounds, NTD mass drug
-administration, malaria ITN and IRS campaigns, vitamin A supplementation) often reach
-the same communities and the same people. Yet each program usually maps the villages
-again, registers the households again, and estimates the target population again every
-round. The Integrated Campaign Registry (ICR) is meant to let campaigns reuse that work.
-Data collected by one campaign is stored in a shared format so the next campaign, or a
-different program, can start from it.
+Health campaigns are expensive, and they are essential for reaching people that routine
+services miss. Many campaigns return to the same districts every year, often with the
+same teams. Each one maps places, registers households, sets a target population, and
+counts who was reached. Today most of that data stays with the campaign that collected
+it, and the next campaign starts again from zero.
 
-This Implementation Guide (IG) defines that shared format using **HL7 FHIR R4**. It
-describes how campaign data (protocols, microplans, target populations, households,
-delivery events, coverage, and cost) is represented as FHIR resources. Tools that follow
-the guide can exchange data with each other: data collection apps, transformation
-pipelines, FHIR servers, data quality tools, geospatial microplanning, and analytics.
+The Integrated Campaign Registry (ICR) is an open data standard for storing and
+integrating data across health campaigns: immunization, polio, NTD mass drug
+administration, malaria, vitamin A, and others. It gives countries one structured place
+to keep their campaign data, so each campaign can build on the last. Data from one round
+can be reused to plan the next, and results can be compared across campaigns,
+programmes, and countries.
+
+This Implementation Guide (IG) is the technical core of the ICR. It defines the shared
+data model and vocabulary for campaigns in **HL7 FHIR R4**. The open-source ICR
+reference solution stores data in this format and connects it to the tools countries
+already use, such as ODK, DHIS2, and CommCare.
 
 This guide is written for implementers who know the basics of FHIR (resources,
 references, profiles, extensions, search) but are not FHIR specialists.
 
-#### Relationship to WHO AFRO IDHC
+#### What this guide is for
 
-The ICR is the FHIR data layer for the **WHO AFRO Integrated Digitization of Health
-Campaigns (IDHC) reference architecture** (WHO:AFRO/ARD:2025-10). IDHC calls for shared
-registries: a georegistry and master lists of administrative boundaries, health
-facilities, schools, health workers, households, and beneficiaries, plus shared
-terminology. In this IG those registries map to `Location`, `Organization`,
-`Practitioner` and `CareTeam`, `Group`, `Patient`, and the IG's code systems. IDHC also
-calls for FHIR `Questionnaire` for data collection forms and FHIR-based aggregate
-reporting, and this IG uses both.
+The IG is designed so that campaign data can:
 
-The guide follows IDHC terminology:
+- **Use one model for every kind of campaign.** Immunization, mass drug administration,
+  bed net distribution, indoor residual spraying, and supplementation campaigns all use
+  the same resources. Campaigns differ mainly in how teams deliver (fixed post,
+  house-to-house, school, mobile), and the model records that as a coded delivery
+  strategy.
+- **Carry forward from one round to the next.** Places, households, communities, teams,
+  and their assigned areas are stored as lasting records. The next round can plan from
+  last round's lists instead of re-enumerating.
+- **Support defensible denominators.** Census, WorldPop, administrative, and last-round
+  figures are kept side by side, each with its source, date, and area, so planners can
+  choose a target population and show where it came from.
+- **Produce coverage that compares across campaigns.** Coverage is calculated with
+  shared `Measure` definitions against those denominators. Administrative and survey
+  coverage are kept separate.
+- **Show what is planned where.** Every campaign has a geography, dates, and status, and
+  can be found by searching on a place. Programmes can see when two campaigns are
+  heading for the same area.
+- **Flow between existing tools without custom mapping.** Shared code systems, value
+  sets, and FHIR `Questionnaire` forms let data collected in ODK, DHIS2, or CommCare
+  load into the registry. SQL-on-FHIR views turn the data into flat tables for analytics
+  and reporting.
+- **Connect campaigns to routine care.** Campaign doses use the same FHIR resources as
+  routine immunization and treatment records, and are flagged as campaign or routine.
+  The IG is built with the WHO SMART Guidelines toolchain and aligned with the SMART
+  Immunizations guideline.
 
-- **Beneficiary**: a person who receives an intervention. The FHIR resource is
-  `Patient`, but the guide says "beneficiary" in its explanations.
-- **Enumerator**: a front-line data collector.
-- **Refusal**: a beneficiary or household that declines the intervention.
-- **Campaign phases**: *campaign planning*, *campaign readiness and execution*, and
-  *campaign monitoring and response*.
+#### Key resources
 
-#### How a campaign is modeled
+FHIR has no `Campaign` resource, so the IG adapts standard FHIR resources with profiles.
+The main ones, grouped by what they are used for:
 
-FHIR has no `Campaign` resource, so the IG builds one out of existing resources in four
-layers:
+**Planning a campaign**
 
-1. **The protocol.** An [ICRCampaignProtocol](StructureDefinition-ICRCampaignProtocol.html)
-   (`PlanDefinition`) describes a type of campaign in general terms, such as "MR
-   follow-up SIA, children 9–59 months". It can be reused across countries and rounds.
-   Its individual interventions are
-   [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html)
-   (`ActivityDefinition`) resources.
-2. **The campaign.** An [ICRCampaign](StructureDefinition-ICRCampaign.html) (`CarePlan`)
-   is one actual round of that protocol in one place and time period. It starts as the
-   microplan and becomes the record of what happened. Its `subject` is the target
-   population for its reporting area, usually a district. Rounds of the same campaign
-   are linked to an umbrella campaign through `partOf`.
-3. **The work.** An [ICRCampaignTask](StructureDefinition-ICRCampaignTask.html) (`Task`)
-   is one unit of field work: one session at a site, or one visit to a household,
-   community, or school. Each Task records the **delivery strategy** used (fixed post,
-   mobile, house-to-house, school, and so on). Its results go in `Task.output`: tallies,
-   reasons for missed or refused doses, and optionally references to individual
-   delivery events.
-4. **The delivery events.** These record what each person or household received:
-   [ICRImmunizationEvent](StructureDefinition-ICRImmunizationEvent.html) (`Immunization`),
-   [ICRMedicationAdministration](StructureDefinition-ICRMedicationAdministration.html)
-   (`MedicationAdministration`, for example deworming tablets), and
-   [ICRSupplyDistribution](StructureDefinition-ICRSupplyDistribution.html)
-   (`SupplyDelivery`, for items handed out such as bed nets). Stock moving between
-   stores, facilities, and teams is recorded separately as
-   [ICRSupplyMovement](StructureDefinition-ICRSupplyMovement.html), so stock movements
-   are not counted as coverage. Each event links to its campaign through the
-   [`campaign` extension](StructureDefinition-campaign.html). It is also marked as a
-   campaign dose or a routine dose (the `record-origin` extension), so campaign data can
-   be combined with routine immunization data and still be told apart.
-
-References point toward the campaign, not away from it. Tasks, events, and reports
-each reference the `CarePlan`, so the `CarePlan` does not need to be updated as field
-data arrives.
-
-#### Places, people, and target populations
-
-| What it represents | Profile | FHIR resource |
+| Profile | FHIR resource | What it represents |
 |---|---|---|
-| Administrative areas, facilities, settlements, dwellings, and service points, with their hierarchy and map identity | [ICRLocation](StructureDefinition-ICRLocation.html) | `Location` |
-| A household, community, or school class that a team visits and whose members are known | [ICRDeliveryUnit](StructureDefinition-ICRDeliveryUnit.html) | `Group` |
-| A beneficiary | [ICRPatient](StructureDefinition-ICRPatient.html) | `Patient` |
-| A target population estimate (the denominator) for a place | [ICRTargetPopulation](StructureDefinition-ICRTargetPopulation.html) | `Group` |
-| A vaccination or drug distribution team and its supervisor | [ICRCareTeam](StructureDefinition-ICRCareTeam.html) | `CareTeam` |
-| A health facility as an organization | [ICRFacilityOrganization](StructureDefinition-ICRFacilityOrganization.html) | `Organization` |
-| A property of a place that changes over time, such as whether a district is endemic for a disease | [ICRLocationStatus](StructureDefinition-ICRLocationStatus.html) | `Observation` |
+| [ICRCampaignProtocol](StructureDefinition-ICRCampaignProtocol.html) | `PlanDefinition` | A reusable campaign design, such as "MR follow-up SIA, children 9–59 months" |
+| [ICRCampaignActivity](StructureDefinition-ICRCampaignActivity.html) | `ActivityDefinition` | One intervention within a protocol, such as a measles dose or an albendazole tablet |
+| [ICRCampaign](StructureDefinition-ICRCampaign.html) | `CarePlan` | One campaign round in a specific area and period. It starts as the microplan and becomes the record of what happened |
+| [ICRTargetPopulation](StructureDefinition-ICRTargetPopulation.html) | `Group` | A target population estimate (denominator) for a place, with its source and date |
 
-A few rules apply across these:
+**Places, people, and teams**
 
-- **Locations use shared identifiers.** Each `Location` can carry an Overture Maps
-  **GERS ID** alongside P-codes and national codes. The GERS ID gives different
-  campaigns and systems a common key for the same place.
-- **Every target population estimate states its source and date.** Censuses, microplan
-  headcounts, and modeled estimates often disagree. The IG keeps each estimate as its own
-  record, with where it came from, when it was made, and the geographic area it covers,
-  so users can see which number a coverage figure was based on.
-- **A Task targets a `Group` when it has members, and a `Location` when it does not.**
-  A household with registered members is a `Group`. A structure being sprayed in an IRS
-  campaign, or a market used as a temporary post, is a `Location`. The
-  [Background](background.html) page explains this rule in detail.
+| Profile | FHIR resource | What it represents |
+|---|---|---|
+| [ICRLocation](StructureDefinition-ICRLocation.html) | `Location` | Administrative areas, facilities, settlements, dwellings, and service points, with their hierarchy and boundaries |
+| [ICRDeliveryUnit](StructureDefinition-ICRDeliveryUnit.html) | `Group` | A household, community, or school class that teams visit |
+| [ICRPatient](StructureDefinition-ICRPatient.html) | `Patient` | A beneficiary: a person who receives an intervention |
+| [ICRCareTeam](StructureDefinition-ICRCareTeam.html) | `CareTeam` | A vaccination or distribution team and its supervisor |
 
-#### Coverage and cost
+**Delivering the campaign**
 
-Coverage is reported with `MeasureReport`. Administrative coverage (doses counted
-against the target population) and survey coverage (estimated from a post-campaign
-survey) use separate profiles,
-[ICRAdministrativeCoverage](StructureDefinition-ICRAdministrativeCoverage.html) and
-[ICRSurveyCoverage](StructureDefinition-ICRSurveyCoverage.html). The two methods often
-give different results and both are needed, so the IG never combines them into one
-figure. `Measure` definitions describe how each coverage indicator is calculated.
+| Profile | FHIR resource | What it represents |
+|---|---|---|
+| [ICRCampaignTask](StructureDefinition-ICRCampaignTask.html) | `Task` | One unit of field work, such as a session at a post or a visit to a household, with its delivery strategy and tallies |
+| [ICRImmunizationEvent](StructureDefinition-ICRImmunizationEvent.html) | `Immunization` | A vaccine dose given during a campaign |
+| [ICRMedicationAdministration](StructureDefinition-ICRMedicationAdministration.html) | `MedicationAdministration` | A drug given during a campaign, such as a deworming tablet |
+| [ICRSupplyDistribution](StructureDefinition-ICRSupplyDistribution.html) | `SupplyDelivery` | Items handed out to households or communities, such as bed nets |
+| [ICRCampaignFormResponse](StructureDefinition-ICRCampaignFormResponse.html) | `QuestionnaireResponse` | A completed campaign form, such as a readiness or supervision checklist |
 
-Campaign cost uses two profiles.
-[ICRCampaignCost](StructureDefinition-ICRCampaignCost.html) (`Observation`) is one
-budget or expenditure line, linked to a campaign round and a place.
-[ICRCostReport](StructureDefinition-ICRCostReport.html) (`MeasureReport`) holds the
-totals and the cost per person targeted, per person reached, and per dose. It uses the
-same target populations as the coverage reports.
+**Measuring results**
 
-The IG also includes profiles for adverse events following immunization or treatment
-([ICRAdverseEvent](StructureDefinition-ICRAdverseEvent.html)), consent and person-data
-governance ([ICRConsent](StructureDefinition-ICRConsent.html)), and completed campaign
-forms such as readiness and supervision checklists
-([ICRCampaignFormResponse](StructureDefinition-ICRCampaignFormResponse.html)).
+| Profile | FHIR resource | What it represents |
+|---|---|---|
+| [ICRAdministrativeCoverage](StructureDefinition-ICRAdministrativeCoverage.html) | `MeasureReport` | Coverage from doses counted against the target population |
+| [ICRSurveyCoverage](StructureDefinition-ICRSurveyCoverage.html) | `MeasureReport` | Coverage estimated from a post-campaign survey |
 
-#### Finding campaigns by place
+The [Artifacts](artifacts.html) page lists everything in the guide, including profiles
+for supply movements, adverse events, consent, and campaign cost, plus the extensions,
+code systems, value sets, and examples.
 
-A common question is which campaigns are planned for a given area and period, so
-programs can see overlaps and coordinate. The IG adds two
-[search parameters](artifacts.html#behavior-search-parameters) so a FHIR server can
-answer this directly:
+#### How the pieces fit together
 
-- `CarePlan?target-geography=Location/…` finds campaigns that target a place. It can
-  be chained through `Location.partOf` to include everything below a region.
-- `Group?geography=Location/…` finds target population estimates for a place.
+A campaign protocol is a template. Each time it is run in a place, it becomes a
+campaign (`CarePlan`) whose subject is the target population for that area. Field teams
+carry out tasks against households, communities, or sites, and each task records what
+the visit produced. Individual doses and distributions are recorded as delivery events.
+Coverage reports compare what was delivered with the target population.
 
-For example, "which campaigns cover this district between June and September" is a
-single search on a server that has loaded this IG.
-
-Point locations can also carry grid cell codes through the
-[spatial-index](StructureDefinition-spatial-index.html) extension (quadkey, H3, or
-geohash). Quadkey codes nest by prefix, so `Location?quadkey=0313131` returns every
-point inside that map tile without a spatial database.
-
-#### How the resources connect
+Every task, delivery event, and report points to its campaign. The campaign itself does
+not need to be updated as field data arrives, and a server can find everything that
+belongs to a campaign by searching for records that reference it.
 
 ```mermaid
 graph TD
@@ -174,6 +135,18 @@ graph TD
 <sub>Each edge label names the FHIR element that holds the reference. ▲ means the
 reference is stored on the resource at the other end of the arrow. For example, the
 Task holds `Task.basedOn`, which points to the CarePlan.</sub>
+
+#### Alignment with WHO AFRO IDHC
+
+The ICR is the FHIR data layer for the **WHO AFRO Integrated Digitization of Health
+Campaigns (IDHC) reference architecture** (WHO:AFRO/ARD:2025-10). The IDHC shared
+registries (a georegistry and master lists of administrative boundaries, health
+facilities, schools, health workers, households, and beneficiaries) map to `Location`,
+`Organization`, `Practitioner` and `CareTeam`, `Group`, and `Patient` in this IG. The
+guide uses IDHC terms: a **beneficiary** receives an intervention, an **enumerator**
+collects data in the field, a **refusal** is a decline, and the campaign lifecycle runs
+through *campaign planning*, *campaign readiness and execution*, and *campaign
+monitoring and response*.
 
 #### Status
 
