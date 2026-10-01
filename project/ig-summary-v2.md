@@ -201,52 +201,7 @@ File map (`ig/input/fsh/`): `aliases.fsh`, `codesystems.fsh`, `valuesets.fsh`, `
 ## 2. Architecture at a glance
 FHIR does not have a native `Campaign` resource. Thus ICR builds its campaign layer on the **CarePlan** resource. Around this layer, ICR adds profiles for population, geography, delivery events, teams, and coverage. The diagram below shows how the parts connect.
 
-```mermaid
-graph TD
-    PD["ICRCampaignProtocol<br/>(PlanDefinition)<br/><i>the reusable template</i>"]
-    AD["ICRCampaignActivity<br/>(ActivityDefinition)<br/><i>a discrete work type</i>"]
-    CP["ICRCampaign<br/>(CarePlan)<br/><i>one campaign execution / round</i>"]
-    CPU["ICRCampaign (umbrella)"]
-    T["ICRCampaignTask<br/>(Task)<br/><i>operational unit of work</i>"]
-    TP["ICRTargetPopulation<br/>(Group, actual=false)<br/><i>denominator w/ provenance</i>"]
-    HH["ICRDeliveryUnit<br/>(Group, actual=true)<br/><i>household / community / school cohort</i>"]
-    PT["ICRPatient<br/>(Patient)<br/><i>registered individual</i>"]
-    L["ICRLocation<br/><i>admin hierarchy + GERS identity</i>"]
-    IMM["ICRImmunizationEvent"]
-    MED["ICRMedicationAdministration"]
-    SUP["ICRSupplyDistribution /<br/>ICRSupplyMovement"]
-    AC["ICRAdministrativeCoverage<br/>(MeasureReport)"]
-    SC["ICRSurveyCoverage<br/>(MeasureReport)"]
-    CT["ICRCareTeam<br/>(CareTeam)<br/><i>vaccinator/CDD + supervisor</i>"]
-    LS["ICRLocationStatus<br/>(Observation)<br/><i>endemicity & other place assertions</i>"]
-
-    PD -- "action" --> AD
-    CP -- "instantiatesCanonical 1..1" --> PD
-    CP -- "partOf (rounds)" --> CPU
-    CP -- "subject" --> TP
-    CP -- "careTeam MS" --> CT
-    CT -- "owner/performer" --> T
-    AC -. "reporter-team ext" .-> CT
-    T -- "basedOn 1..1" --> CP
-    T -. "instantiatesCanonical" .-> AD
-    T -- "for: DeliveryUnit|Location|Patient" --> HH
-    T -- "location 1..1" --> L
-    T -- "output: tally / optional refs" --> IMM
-    T -- "output: tally / optional refs" --> MED
-    T -- "output: tally / optional refs" --> SUP
-    IMM -. "campaign ext" .-> CP
-    MED -. "campaign ext" .-> CP
-    AC -. "campaign ext" .-> CP
-    HH -- "member" --> PT
-    IMM -- "patient 1..1" --> PT
-    MED -. "subject (person)" .-> PT
-    HH -- "group-location ext" --> L
-    L -- "partOf" --> L
-    LS -. "subject" .-> L
-    CP -. "planning-denominator ext" .-> TP
-    CP -. "target-geography ext" .-> L
-    AC -. "never merged" .- SC
-```
+![[icr-architecture.svg]]
 ### 2.1 The three layers
 Read the IG as three layers that intersect:
 
