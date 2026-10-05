@@ -1,0 +1,70 @@
+# Hosted HAPI FHIR R4 dev server for ICR — the same stack as ../docker-compose.yml
+# (HAPI 8.12 + Postgres 15 + ../hapi.application.yaml), on a GCP VM behind Caddy.
+#
+#   https://hapi.healthcampaigns.org/fhir      FHIR base URL
+#   https://hapi.healthcampaigns.org/          web tester UI
+#
+# Only Caddy publishes ports (80/443). HAPI and Postgres stay on the compose network.
+# Settings that differ from the laptop stack come from the environment (.env), so
+# hapi.application.yaml stays shared. See README.md in this folder.
+name: icr-hapi
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    # e2-highmem-2 (16 GB): keep the registry's tables and indexes in memory
+    command: >
+      postgres
+      -c shared_buffers=4GB
+      -c effective_cache_size=10GB
+      -c work_mem=32MB
+      -c maintenance_work_mem=512MB
+      -c random_page_cost=1.1
+    shm_size: 1g
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  hapi:
+    image: hapiproject/hapi:v8.12.0-1
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_LOCATION: file:///app/config/application.yaml
+      spring.datasource.password: ${POSTGRES_PASSWORD:?set in .env}
+      # paging `next` links and Bundle fullUrls must carry the public address;
+      # dotted names because Spring can't map HAPI_FHIR_* onto the underscore keys
+      hapi.fhir.server_address: https://${FHIR_HOST:?set in .env}/fhir
+      hapi.fhir.tester.home.name: ICR dev HAPI
+      JAVA_TOOL_OPTIONS: -Xmx6g
+    volumes:
+      - ../hapi.application.yaml:/app/config/application.yaml:ro
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [hapi]
+    environment:
+      FHIR_HOST: ${FHIR_HOST}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
