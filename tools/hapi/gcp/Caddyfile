@@ -1,0 +1,5 @@
+# TLS via Let's Encrypt for $FHIR_HOST (the Cloudflare record must be DNS only, grey cloud).
+{$FHIR_HOST} {
+	encode gzip
+	reverse_proxy hapi:3447
+}
