@@ -47,12 +47,12 @@
         "maximum": "example-settlement"
       },
       "version_id": {
-        "minimum": "5",
-        "maximum": "5"
+        "minimum": "1",
+        "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-09-06T20:59:32.041+00:00",
-        "maximum": "2026-09-06T20:59:32.041+00:00"
+        "minimum": "2026-10-05T19:18:11.403+00:00",
+        "maximum": "2026-10-05T19:18:11.403+00:00"
       },
       "name": {
         "minimum": "Dwelling \u2014 Rokupr block 4, house 12",
@@ -135,7 +135,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-09-08T22:07:01Z"
+    "datetime": "2026-10-05T22:20:24Z"
   },
   "links": [
     {
@@ -161,7 +161,7 @@
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
       "file:size": 15205,
-      "file:checksum": "1220e5e8374b92c70633c1eba7920a1432b09ccc385d06eb651a2f40a5ce6f4ffe52",
+      "file:checksum": "12207630ec15e8906dc089bfac5ae1d5850c238465c8473432cd223879e9c2cb8e3f",
       "roles": [
         "data"
       ]

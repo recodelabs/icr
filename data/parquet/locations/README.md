@@ -30,21 +30,23 @@ groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 | File | Size | Checksum |
 |------|------|----------|
 | ./country=*/geom_type=*/type=*/*.parquet | - | - |
-| ./items.parquet | 50.7 KB | 122063b9e7f2... |
-| ../../tiles/admin.pmtiles | 2.8 MB | 12204aee68c1... |
+| ./items.parquet | 52.2 KB | 1220cbc394de... |
+| ../../tiles/admin.pmtiles | 2.8 MB | 1220f7d776ce... |
 | ./styles/default.json | 2.1 KB | 122068cef5e2... |
-| ../../tiles/facilities.pmtiles | 46.2 MB | 1220c3667f71... |
+| ../../tiles/facilities.pmtiles | 45.2 MB | 12206f9ff7d9... |
 | ./styles/facilities.json | 1.7 KB | 12205e8e1881... |
-| ../../tiles/settlements.pmtiles | 129.8 MB | 12205a4588d4... |
+| ../../tiles/settlements.pmtiles | 118.7 MB | 12209a8a0246... |
 | ./styles/settlements.json | 1.2 KB | 12207ca43ee8... |
 | ./thumbnail.png | 219.6 KB | 12202d21329a... |
-| country=NGA/geom_type=point/type=facility/part-0.parquet | 16.2 MB | 1220010e643a... |
-| country=NGA/geom_type=point/type=settlement/part-0.parquet | 71.1 MB | 122044531ce3... |
-| country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet | 2.3 MB | 1220625a13c3... |
-| country=SL/geom_type=point/type=facility/part-0.parquet | 16.4 KB | 1220ccb85345... |
-| country=SL/geom_type=point/type=null/part-0.parquet | 14.8 KB | 1220e5e8374b... |
-| country=SL/geom_type=point/type=school/part-0.parquet | 14.4 KB | 1220b24af4eb... |
-| country=SL/geom_type=polygon/type=admin-unit/part-0.parquet | 14.1 KB | 1220ac885e51... |
+| country=NGA/geom_type=point/type=facility/part-0.parquet | 16.0 MB | 122002444b0c... |
+| country=NGA/geom_type=point/type=settlement/part-0.parquet | 69.1 MB | 122063958303... |
+| country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet | 2.3 MB | 122081cd3988... |
+| country=NGA/geom_type=polygon/type=facility-catchment/part-0.parquet | 169.7 KB | 12200d96f25d... |
+| country=NGA/geom_type=polygon/type=settlement-catchment/part-0.parquet | 841.0 KB | 12202c479b13... |
+| country=SL/geom_type=point/type=facility/part-0.parquet | 16.4 KB | 12205325ce0b... |
+| country=SL/geom_type=point/type=null/part-0.parquet | 14.8 KB | 12207630ec15... |
+| country=SL/geom_type=point/type=school/part-0.parquet | 14.4 KB | 12200d0886e7... |
+| country=SL/geom_type=polygon/type=admin-unit/part-0.parquet | 14.1 KB | 1220a1700832... |
 
 ## Quick Start
 
