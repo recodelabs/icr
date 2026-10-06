@@ -35,23 +35,25 @@ groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 | File | Size | Checksum |
 |------|------|----------|
 | ./country=*/geom_type=*/type=*/*.parquet | - | - |
-| ./items.parquet | 52.3 KB | 1220ebe5d117... |
-| ../../tiles/admin.pmtiles | 2.8 MB | 122082682429... |
+| ./items.parquet | 53.3 KB | 12202e3facfa... |
+| ../../tiles/admin.pmtiles | 2.8 MB | 12200d8bec36... |
 | ./styles/default.json | 2.1 KB | 122068cef5e2... |
-| ../../tiles/facilities.pmtiles | 46.1 MB | 12203ce57ac5... |
+| ../../tiles/facilities.pmtiles | 45.2 MB | 12201dd8d27a... |
 | ./styles/facilities.json | 1.7 KB | 12205e8e1881... |
-| ../../tiles/settlements.pmtiles | 128.7 MB | 1220ca9d2e0d... |
+| ../../tiles/settlements.pmtiles | 118.7 MB | 12200d21608f... |
 | ./styles/settlements.json | 1.2 KB | 12207ca43ee8... |
 | ./thumbnail.png | 219.6 KB | 12202d21329a... |
-| country=NGA/geom_type=point/type=facility/part-0.parquet | 16.2 MB | 1220f9cff58b... |
-| country=NGA/geom_type=point/type=settlement/part-0.parquet | 70.9 MB | 12201da1f592... |
-| country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet | 2.3 MB | 1220f765b3b5... |
-| country=NGA/geom_type=polygon/type=facility-catchment/part-0.parquet | 169.7 KB | 122031b83350... |
-| country=NGA/geom_type=polygon/type=settlement-catchment/part-0.parquet | 845.3 KB | 1220391522c7... |
-| country=SL/geom_type=point/type=facility/part-0.parquet | 16.4 KB | 1220ccb85345... |
-| country=SL/geom_type=point/type=null/part-0.parquet | 14.8 KB | 1220e5e8374b... |
-| country=SL/geom_type=point/type=school/part-0.parquet | 14.4 KB | 1220b24af4eb... |
-| country=SL/geom_type=polygon/type=admin-unit/part-0.parquet | 14.1 KB | 1220ac885e51... |
+| country=NGA/geom_type=point/type=community-distribution-point/part-0.parquet | 39.8 KB | 12208f968bbe... |
+| country=NGA/geom_type=point/type=facility/part-0.parquet | 16.0 MB | 122002444b0c... |
+| country=NGA/geom_type=point/type=school/part-0.parquet | 24.5 KB | 1220cafbf841... |
+| country=NGA/geom_type=point/type=settlement/part-0.parquet | 69.1 MB | 122063958303... |
+| country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet | 2.3 MB | 122081cd3988... |
+| country=NGA/geom_type=polygon/type=facility-catchment/part-0.parquet | 169.7 KB | 1220716a13d8... |
+| country=NGA/geom_type=polygon/type=settlement-catchment/part-0.parquet | 846.6 KB | 12202648d1d6... |
+| country=SL/geom_type=point/type=facility/part-0.parquet | 16.4 KB | 12205325ce0b... |
+| country=SL/geom_type=point/type=null/part-0.parquet | 14.8 KB | 12207630ec15... |
+| country=SL/geom_type=point/type=school/part-0.parquet | 14.4 KB | 12200d0886e7... |
+| country=SL/geom_type=polygon/type=admin-unit/part-0.parquet | 14.1 KB | 1220a1700832... |
 
 ## Quick Start
 

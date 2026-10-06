@@ -51,8 +51,8 @@
         "maximum": "2"
       },
       "last_updated": {
-        "minimum": "2026-09-09T18:58:59.647+00:00",
-        "maximum": "2026-09-09T18:59:00.960+00:00"
+        "minimum": "2026-10-06T02:18:30.857+00:00",
+        "maximum": "2026-10-06T02:19:53.261+00:00"
       },
       "name": {
         "minimum": "Abdulkareem Magama catchment",
@@ -123,7 +123,7 @@
     "vector:geometry_types": [
       "Polygon"
     ],
-    "datetime": "2026-09-09T19:02:44Z"
+    "datetime": "2026-10-06T11:35:00Z"
   },
   "links": [
     {
@@ -148,8 +148,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 865571,
-      "file:checksum": "1220391522c7a679aacfecb284930d43ed97375a09e69285427c44abf4695dbdea6f",
+      "file:size": 866910,
+      "file:checksum": "12202648d1d644eb6658c658adda2053d910b4dcbb60d1fbecb4efd8c8b54cee7d0c",
       "roles": [
         "data"
       ]

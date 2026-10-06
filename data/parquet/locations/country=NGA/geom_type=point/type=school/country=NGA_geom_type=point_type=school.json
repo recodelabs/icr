@@ -4,124 +4,132 @@
   "stac_extensions": [
     "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
   ],
-  "id": "country=NGA_geom_type=polygon_type=facility-catchment",
+  "id": "country=NGA_geom_type=point_type=school",
   "geometry": {
     "type": "Polygon",
     "coordinates": [
       [
         [
-          8.74922,
-          9.846145
+          7.770792,
+          10.583213
         ],
         [
-          8.74922,
-          10.854351
+          7.770792,
+          12.065937
         ],
         [
-          9.696158,
-          10.854351
+          9.30874,
+          12.065937
         ],
         [
-          9.696158,
-          9.846145
+          9.30874,
+          10.583213
         ],
         [
-          8.74922,
-          9.846145
+          7.770792,
+          10.583213
         ]
       ]
     ]
   },
   "bbox": [
-    8.74922,
-    9.846145,
-    9.696158,
-    10.854351
+    7.770792,
+    10.583213,
+    9.30874,
+    12.065937
   ],
   "properties": {
-    "geoparquet:geometry_type": "Polygon",
-    "geoparquet:feature_count": 159,
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 80,
     "table:column_statistics": {
       "id": {
-        "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
-        "maximum": "catchment-fe37c141-a033-434f-b74a-4d32d9f99c7d"
+        "minimum": "nga-sup-site-kn-20002-school-01",
+        "maximum": "nga-sup-site-kn-20036-school-04"
       },
       "version_id": {
-        "minimum": "2",
-        "maximum": "2"
+        "minimum": "1",
+        "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-10-06T02:18:30.857+00:00",
-        "maximum": "2026-10-06T02:18:30.857+00:00"
+        "minimum": "2026-10-06T09:07:47.042+00:00",
+        "maximum": "2026-10-06T09:07:47.042+00:00"
       },
       "name": {
-        "minimum": "Al Huda Health Clinic catchment",
-        "maximum": "Zukku Health Post catchment"
+        "minimum": "Ajingi school site 01 (dummy)",
+        "maximum": "Wudil school site 04 (dummy)"
       },
       "status": {
         "minimum": "active",
         "maximum": "active"
       },
       "type": {
-        "minimum": "facility-catchment",
-        "maximum": "facility-catchment"
+        "minimum": "school",
+        "maximum": "school"
       },
       "physical_type": {
-        "minimum": "area",
-        "maximum": "area"
+        "minimum": "si",
+        "maximum": "si"
       },
       "part_of": {
-        "minimum": "nga-ba-5018",
-        "maximum": "nga-ba-5018"
+        "minimum": "nga-kn-20002",
+        "maximum": "nga-kn-20036"
+      },
+      "position_latitude": {
+        "minimum": 7.770792,
+        "maximum": 9.30874
+      },
+      "pcode": {
+        "minimum": 10.583213,
+        "maximum": 12.065937
       },
       "tier": {
         "minimum": 3,
         "maximum": 3
       },
       "admin0_name": {
-        "minimum": "/nga/nga-ba/nga-ba-5018/catchment-00bc2050-2ef5-40db-a8cd-c67c37",
-        "maximum": "/nga/nga-ba/nga-ba-5018/catchment-fe37c141-a033-434f-b74a-4d32d:"
+        "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-school-01",
+        "maximum": "/nga/nga-kn/nga-kn-20036/nga-sup-site-kn-20036-school-04"
       },
       "admin1_name": {
         "minimum": "nga",
-        "maximum": "nga-ba-5018"
+        "maximum": "nga-kn-20036"
       },
       "admin2_name": {
         "minimum": "Nigeria",
         "maximum": "Nigeria"
       },
       "admin3_name": {
-        "minimum": "Bauchi",
-        "maximum": "Bauchi"
+        "minimum": "Kano",
+        "maximum": "Kano"
       },
       "admin4_name": {
-        "minimum": "Toro",
-        "maximum": "Toro"
+        "minimum": "Ajingi",
+        "maximum": "Wudil"
       },
       "admin2_code": {
         "minimum": "NGA",
         "maximum": "NGA"
       },
       "admin3_code": {
-        "minimum": "BA",
-        "maximum": "BA"
+        "minimum": "KN",
+        "maximum": "KN"
       },
       "admin4_code": {
-        "minimum": "5018",
-        "maximum": "5018"
+        "minimum": "20002",
+        "maximum": "20036"
       },
       "lon": {
         "minimum": "NGA",
         "maximum": "NGA"
       },
       "lat": {
-        "minimum": "polygon",
-        "maximum": "polygon"
+        "minimum": "point",
+        "maximum": "point"
       }
     },
-    "title": "Nigeria \u2014 facility catchment",
+    "title": "Nigeria \u2014 schools",
     "vector:geometry_types": [
-      "Polygon"
+      "Point"
     ],
     "datetime": "2026-10-06T11:35:00Z"
   },
@@ -148,8 +156,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 173801,
-      "file:checksum": "1220716a13d801c4393c432a3ca4018fc87f0a20ee16dbed7181f2f231daa8968645",
+      "file:size": 25069,
+      "file:checksum": "1220cafbf8415cc57de4b63cb73cf6cbcee1998ad297998e7f51707942ae42324f1e",
       "roles": [
         "data"
       ]

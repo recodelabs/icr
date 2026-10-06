@@ -47,12 +47,12 @@
         "maximum": "nga-za-814"
       },
       "version_id": {
-        "minimum": "2",
-        "maximum": "2"
+        "minimum": "1",
+        "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-09-09T18:36:48.405+00:00",
-        "maximum": "2026-09-09T18:36:50.038+00:00"
+        "minimum": "2026-10-05T19:27:50.671+00:00",
+        "maximum": "2026-10-05T19:27:57.879+00:00"
       },
       "name": {
         "minimum": "Aba North",
@@ -141,7 +141,7 @@
     "vector:geometry_types": [
       "MultiPolygon"
     ],
-    "datetime": "2026-09-09T19:02:44Z"
+    "datetime": "2026-10-06T11:35:00Z"
   },
   "links": [
     {
@@ -166,8 +166,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 2406625,
-      "file:checksum": "1220f765b3b5db71279eec01ee543aa1f1bdb74ce877df10d3193449fdbc447f0ac0",
+      "file:size": 2406224,
+      "file:checksum": "122081cd3988c01a03a198aa53657555a23c12a49328f77f7a06b6c9c9753856f72c",
       "roles": [
         "data"
       ]

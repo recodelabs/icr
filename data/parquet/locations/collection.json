@@ -17,9 +17,21 @@
     },
     {
       "rel": "item",
+      "href": "./country=NGA/geom_type=point/type=community-distribution-point/country=NGA_geom_type=point_type=community-distribution-point.json",
+      "type": "application/geo+json",
+      "title": "Nigeria — community distribution point"
+    },
+    {
+      "rel": "item",
       "href": "./country=NGA/geom_type=point/type=facility/country=NGA_geom_type=point_type=facility.json",
       "type": "application/geo+json",
       "title": "Nigeria — health facilities"
+    },
+    {
+      "rel": "item",
+      "href": "./country=NGA/geom_type=point/type=school/country=NGA_geom_type=point_type=school.json",
+      "type": "application/geo+json",
+      "title": "Nigeria — schools"
     },
     {
       "rel": "item",
@@ -124,7 +136,7 @@
     "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
     "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-09-09T19:02:45Z",
+  "updated": "2026-10-06T11:35:02Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -140,7 +152,7 @@
       "type": "string"
     }
   ],
-  "partition:file_count": 9,
+  "partition:file_count": 11,
   "title": "ICR location registry",
   "extent": {
     "spatial": {
@@ -188,7 +200,9 @@
       "Polygon"
     ],
     "geoparquet:feature_count": [
+      210,
       51022,
+      80,
       292438,
       812,
       159,
@@ -199,16 +213,102 @@
     "table:column_statistics": [
       {
         "id": {
+          "minimum": "nga-sup-site-kn-20002-community-01",
+          "maximum": "nga-sup-site-kn-20042-community-03"
+        },
+        "version_id": {
+          "minimum": "1",
+          "maximum": "1"
+        },
+        "last_updated": {
+          "minimum": "2026-10-06T09:07:17.603+00:00",
+          "maximum": "2026-10-06T09:07:56.161+00:00"
+        },
+        "name": {
+          "minimum": "Ajingi community site 01 (dummy)",
+          "maximum": "Wudil community site 08 (dummy)"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "community-distribution-point",
+          "maximum": "community-distribution-point"
+        },
+        "physical_type": {
+          "minimum": "si",
+          "maximum": "si"
+        },
+        "part_of": {
+          "minimum": "nga-kn-20002",
+          "maximum": "nga-kn-20042"
+        },
+        "position_latitude": {
+          "minimum": 7.707301,
+          "maximum": 9.256813
+        },
+        "pcode": {
+          "minimum": 10.633327,
+          "maximum": 12.543923
+        },
+        "tier": {
+          "minimum": 3,
+          "maximum": 3
+        },
+        "admin0_name": {
+          "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-community-01",
+          "maximum": "/nga/nga-kn/nga-kn-20042/nga-sup-site-kn-20042-community-03"
+        },
+        "admin1_name": {
+          "minimum": "nga",
+          "maximum": "nga-kn-20042"
+        },
+        "admin2_name": {
+          "minimum": "Nigeria",
+          "maximum": "Nigeria"
+        },
+        "admin3_name": {
+          "minimum": "Kano",
+          "maximum": "Kano"
+        },
+        "admin4_name": {
+          "minimum": "Ajingi",
+          "maximum": "Wudil"
+        },
+        "admin2_code": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "admin3_code": {
+          "minimum": "KN",
+          "maximum": "KN"
+        },
+        "admin4_code": {
+          "minimum": "20002",
+          "maximum": "20042"
+        },
+        "lon": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "lat": {
+          "minimum": "point",
+          "maximum": "point"
+        }
+      },
+      {
+        "id": {
           "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
           "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
         },
         "version_id": {
-          "minimum": "3",
-          "maximum": "3"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-09T18:38:10.529+00:00",
-          "maximum": "2026-09-09T18:39:37.552+00:00"
+          "minimum": "2026-10-05T19:28:02.287+00:00",
+          "maximum": "2026-10-05T19:36:20.169+00:00"
         },
         "name": {
           "minimum": "1 Brigade Medical Center",
@@ -338,16 +438,102 @@
       },
       {
         "id": {
+          "minimum": "nga-sup-site-kn-20002-school-01",
+          "maximum": "nga-sup-site-kn-20036-school-04"
+        },
+        "version_id": {
+          "minimum": "1",
+          "maximum": "1"
+        },
+        "last_updated": {
+          "minimum": "2026-10-06T09:07:47.042+00:00",
+          "maximum": "2026-10-06T09:07:47.042+00:00"
+        },
+        "name": {
+          "minimum": "Ajingi school site 01 (dummy)",
+          "maximum": "Wudil school site 04 (dummy)"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "school",
+          "maximum": "school"
+        },
+        "physical_type": {
+          "minimum": "si",
+          "maximum": "si"
+        },
+        "part_of": {
+          "minimum": "nga-kn-20002",
+          "maximum": "nga-kn-20036"
+        },
+        "position_latitude": {
+          "minimum": 7.770792,
+          "maximum": 9.30874
+        },
+        "pcode": {
+          "minimum": 10.583213,
+          "maximum": 12.065937
+        },
+        "tier": {
+          "minimum": 3,
+          "maximum": 3
+        },
+        "admin0_name": {
+          "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-school-01",
+          "maximum": "/nga/nga-kn/nga-kn-20036/nga-sup-site-kn-20036-school-04"
+        },
+        "admin1_name": {
+          "minimum": "nga",
+          "maximum": "nga-kn-20036"
+        },
+        "admin2_name": {
+          "minimum": "Nigeria",
+          "maximum": "Nigeria"
+        },
+        "admin3_name": {
+          "minimum": "Kano",
+          "maximum": "Kano"
+        },
+        "admin4_name": {
+          "minimum": "Ajingi",
+          "maximum": "Wudil"
+        },
+        "admin2_code": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "admin3_code": {
+          "minimum": "KN",
+          "maximum": "KN"
+        },
+        "admin4_code": {
+          "minimum": "20002",
+          "maximum": "20036"
+        },
+        "lon": {
+          "minimum": "NGA",
+          "maximum": "NGA"
+        },
+        "lat": {
+          "minimum": "point",
+          "maximum": "point"
+        }
+      },
+      {
+        "id": {
           "minimum": "00005d7d-9488-4528-9582-2c720a7acafa",
           "maximum": "ffffe4ba-d020-4042-956c-4f9e13974bd3"
         },
         "version_id": {
-          "minimum": "3",
-          "maximum": "3"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-09T18:36:50.038+00:00",
-          "maximum": "2026-09-09T18:41:15.395+00:00"
+          "minimum": "2026-10-05T19:36:33.952+00:00",
+          "maximum": "2026-10-05T19:51:02.581+00:00"
         },
         "name": {
           "minimum": "10 10 Low Cost",
@@ -440,12 +626,12 @@
           "maximum": "nga-za-814"
         },
         "version_id": {
-          "minimum": "2",
-          "maximum": "2"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-09T18:36:48.405+00:00",
-          "maximum": "2026-09-09T18:36:50.038+00:00"
+          "minimum": "2026-10-05T19:27:50.671+00:00",
+          "maximum": "2026-10-05T19:27:57.879+00:00"
         },
         "name": {
           "minimum": "Aba North",
@@ -540,8 +726,8 @@
           "maximum": "2"
         },
         "last_updated": {
-          "minimum": "2026-09-09T18:58:59.647+00:00",
-          "maximum": "2026-09-09T18:58:59.647+00:00"
+          "minimum": "2026-10-06T02:18:30.857+00:00",
+          "maximum": "2026-10-06T02:18:30.857+00:00"
         },
         "name": {
           "minimum": "Al Huda Health Clinic catchment",
@@ -618,8 +804,8 @@
           "maximum": "2"
         },
         "last_updated": {
-          "minimum": "2026-09-09T18:58:59.647+00:00",
-          "maximum": "2026-09-09T18:59:00.960+00:00"
+          "minimum": "2026-10-06T02:18:30.857+00:00",
+          "maximum": "2026-10-06T02:19:53.261+00:00"
         },
         "name": {
           "minimum": "Abdulkareem Magama catchment",
@@ -692,12 +878,12 @@
           "maximum": "example-fixed-post"
         },
         "version_id": {
-          "minimum": "5",
-          "maximum": "6"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-06T20:59:32.041+00:00",
-          "maximum": "2026-09-07T17:37:53.492+00:00"
+          "minimum": "2026-10-05T19:18:11.403+00:00",
+          "maximum": "2026-10-05T19:18:11.403+00:00"
         },
         "name": {
           "minimum": "Rokupr Community Health Centre",
@@ -823,12 +1009,12 @@
           "maximum": "example-settlement"
         },
         "version_id": {
-          "minimum": "5",
-          "maximum": "5"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-06T20:59:32.041+00:00",
-          "maximum": "2026-09-06T20:59:32.041+00:00"
+          "minimum": "2026-10-05T19:18:11.403+00:00",
+          "maximum": "2026-10-05T19:18:11.403+00:00"
         },
         "name": {
           "minimum": "Dwelling — Rokupr block 4, house 12",
@@ -913,12 +1099,12 @@
           "maximum": "example-school"
         },
         "version_id": {
-          "minimum": "6",
-          "maximum": "6"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-07T17:37:53.492+00:00",
-          "maximum": "2026-09-07T17:37:53.492+00:00"
+          "minimum": "2026-10-05T19:18:11.403+00:00",
+          "maximum": "2026-10-05T19:18:11.403+00:00"
         },
         "name": {
           "minimum": "Rokupr Primary School",
@@ -999,12 +1185,12 @@
           "maximum": "example-district"
         },
         "version_id": {
-          "minimum": "4",
-          "maximum": "4"
+          "minimum": "1",
+          "maximum": "1"
         },
         "last_updated": {
-          "minimum": "2026-09-06T18:50:09.023+00:00",
-          "maximum": "2026-09-06T18:50:09.023+00:00"
+          "minimum": "2026-10-05T19:18:11.403+00:00",
+          "maximum": "2026-10-05T19:18:11.403+00:00"
         },
         "name": {
           "minimum": "Kambia District",
@@ -1091,7 +1277,7 @@
       "href": "./country=*/geom_type=*/type=*/*.parquet",
       "type": "application/vnd.apache.parquet",
       "title": "Partitioned GeoParquet",
-      "description": "Glob pattern for 9 partitioned files",
+      "description": "Glob pattern for 11 partitioned files",
       "roles": [
         "data"
       ]
@@ -1103,8 +1289,8 @@
       "roles": [
         "collection-mirror"
       ],
-      "file:size": 53540,
-      "file:checksum": "1220ebe5d117e157e4fef57d8d240ff0683f9cf98f930117c297a5a135111208b302"
+      "file:size": 54555,
+      "file:checksum": "12202e3facfa887d35d3109fcea1337090eae9e00cb4930af9f2ff4b567aa30f7aef"
     },
     "admin-tiles": {
       "href": "../../tiles/admin.pmtiles",
@@ -1113,8 +1299,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 2949348,
-      "file:checksum": "1220826824299be80226dc9ea01b78aec7e4eef42b1b779779a616965dc22e110b0c"
+      "file:size": 2949352,
+      "file:checksum": "12200d8bec36a93ab1ad936e6a4f5984f85a47186c50675c33c14d0e15904bdd8e0f"
     },
     "style-default": {
       "href": "./styles/default.json",
@@ -1134,8 +1320,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 48359222,
-      "file:checksum": "12203ce57ac50b83c0ad4e327a5f545a03bc489724605e2bcf68fbd49f5324624401"
+      "file:size": 47349702,
+      "file:checksum": "12201dd8d27a76a116c06cbb90b96fc996c1b77e00b92bc326566f0e22d5c6bded7c"
     },
     "style-facilities": {
       "href": "./styles/facilities.json",
@@ -1154,8 +1340,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 134972276,
-      "file:checksum": "1220ca9d2e0dadca6d8f76ec00a40f904202f64902d09204c42a40806b379863fa2f"
+      "file:size": 124440812,
+      "file:checksum": "12200d21608ff621cbb18e565a6a3da12807dc4d1f7d1ad5c1e0a6dff5710e9f0e59"
     },
     "style-settlements": {
       "href": "./styles/settlements.json",
