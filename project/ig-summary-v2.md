@@ -4,7 +4,7 @@ status: Simplified Technical English edition of ig-summary.md — same technical
   plain language (ASD-STE100 style)
 fhir_version: R4 (4.0.1)
 ig_version: 0.1.0
-last_modified: 2026-09-06T20:59:23Z
+last_modified: 2026-10-06T12:00:00Z
 tags:
   - icr
   - fhir
@@ -16,7 +16,7 @@ comments: true
 ---
 
 # Integrated Campaign Registry (ICR) FHIR Implementation Guide v0.1 — Summary & Companion (Simplified English)
-`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026 · campaign-visibility search parameters and spatial-index added Sep 6, 2026`
+`Simplified English edition · Derived from ig-summary.md · Aug 19, 2026 · cost-v1 added Sep 5, 2026 · campaign-visibility search parameters and spatial-index added Sep 6, 2026 · catchments added Oct 6, 2026`
 
 ⁠
 
@@ -186,10 +186,10 @@ The toolchain (FSH / SUSHI / IG Publisher) intentionally matches WHO SMART Guide
 | **Profiles — governance** | 1   | ICRConsent (Consent — person-data governance) |
 | **Measures** | 7   | `icr-admin-coverage`, `icr-survey-coverage`, `icr-mda-treatment-coverage`, `icr-geographic-coverage`, (forms-v1) `icr-zero-dose-coverage`, `icr-campaign-readiness`, and (cost-v1) `icr-campaign-cost` — the canonical definitions that the coverage, readiness, and cost MeasureReports instantiate (§7) |
 | **Questionnaire / ConceptMap** | 8 / 1 | The two canonical checklists — `icr-mda-supervision-checklist` (the structured supervision checklist, §4.6) and (forms-v1) `icr-campaign-readiness-checklist` (the pre-campaign readiness checklist, §4.7) — plus (espen-forms) six source-faithful ESPEN MDA example instruments `espen-mda-location-registration` / `-drug-receipt` / `-treatment` / `-case-management` / `-supervision-hf` / `-supervision-cdd` (§4.8); `icr-aefi-causality-to-immz` (ICR ↔ WHO IMMZ causality map, §6.5) |
-| **Extensions** | 37  | See §10 — cost-v1 added five; spatial-index (Sep 2026) added `spatial-index` |
-| **SearchParameters** *(campaign-visibility, spatial-index)* | 4   | `icr-location-quadkey` (`Location?quadkey=` — prefix = tile containment) and `icr-location-h3` (`Location?h3=`) on spatial-index cells (§10.2);  `icr-campaign-target-geography` (`CarePlan?target-geography=`) and `icr-target-population-geography` (`Group?geography=`) — the geography links become searchable, so "what is planned where" is one query (§10.1) |
-| **CodeSystems** | 41  | See §9 — cost-v1 added eight; spatial-index added `ICRSpatialIndexCS` |
-| **ValueSets** | 41  | Usually one per code system, plus purpose-built sets (§9) |
+| **Extensions** | 39  | See §10 — cost-v1 added five; spatial-index (Sep 2026) added `spatial-index`; catchments (Oct 2026) added `catchment-of` and `building-count` |
+| **SearchParameters** *(campaign-visibility, spatial-index, catchments)* | 5   | `icr-location-quadkey` (`Location?quadkey=` — prefix = tile containment) and `icr-location-h3` (`Location?h3=`) on spatial-index cells (§10.2);  `icr-campaign-target-geography` (`CarePlan?target-geography=`) and `icr-target-population-geography` (`Group?geography=`) — the geography links become searchable, so "what is planned where" is one query (§10.1); `icr-location-catchment-of` (`Location?catchment-of=Location/<site>`) — finds the catchment-area Location of a facility or settlement |
+| **CodeSystems** | 43  | See §9 — cost-v1 added eight; spatial-index added `ICRSpatialIndexCS`; catchments added `ICRTravelTimeBandCS` and `ICRBuildingSourceCS` |
+| **ValueSets** | 43  | Usually one per code system, plus purpose-built sets (§9) |
 | **Example instances** | 71  | A coherent measles–rubella SIA scenario, an activity gallery, a community-directed MDA scenario, adverse events, team & supervision, (forms-v1) a person-targeted follow-up revisit and a readiness validation, plus (v0.1) a supply-driven descoping trio (§11), (v0.1.1) the mCSD facility pair, a calculated ward-sum denominator, the STH-MDA campaign frame, the IRS chain, and zero-dose/readiness reports, and the school-based delivery trio (school / school cohort / school-session Task), a custom-national-identifier ward, and an LQAS lot assessment (§11) |
 | **Narrative pages** | 2   | `index.md` (home), `background.md` (design rationale & open questions) |
 

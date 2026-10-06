@@ -2,12 +2,17 @@
 
 Every Location in the Integrated Campaign Registry (ICR) FHIR server, flattened
 to one GeoParquet row per resource: administrative boundaries (country, states,
-LGAs — polygons), health facilities and settlements (points), with the
-administrative hierarchy denormalised onto each row (admin0…admin4 names and
-codes, `path`, `ancestor_ids`) and the complete FHIR resource kept in
-`fhir_json`. Nigeria is complete (812 admin units, 51,022 facilities, 292,438
-settlements, from GRID3 and the NHFR via the ICR); Sierra Leone holds a
-handful of test records so far.
+LGAs — polygons), health facilities and settlements (points), and catchment
+areas (polygons: `facility-catchment`, one per health facility, partOf its
+LGA; `settlement-catchment`, one per settlement, partOf its facility
+catchment — each linked to its site through the `catchment-of` extension in
+`fhir_json`), with the administrative hierarchy denormalised onto each row
+(admin0…admin4 names and codes, `path`, `ancestor_ids`) and the complete FHIR
+resource kept in `fhir_json`. Nigeria is complete for admin units, facilities
+and settlements (812 admin units, 51,022 facilities, 292,438 settlements, from
+GRID3 and the NHFR via the ICR); catchments cover Toro LGA, Bauchi so far
+(159 facility + 2,087 settlement catchments, Crosscut, Sep 2026). Sierra
+Leone holds a handful of test records.
 
 Hive-partitioned by `country` / `geom_type` / `type`, one zstd-compressed file
 per partition, 20,000-row groups in Hilbert order with a `bbox` covering column
@@ -30,21 +35,25 @@ groups it needs over HTTP range requests. Geometry is WGS 84 (OGC:CRS84) WKB.
 | File | Size | Checksum |
 |------|------|----------|
 | ./country=*/geom_type=*/type=*/*.parquet | - | - |
-| ./items.parquet | 50.7 KB | 122063b9e7f2... |
-| ../../tiles/admin.pmtiles | 2.8 MB | 12204aee68c1... |
+| ./items.parquet | 53.3 KB | 12202e3facfa... |
+| ../../tiles/admin.pmtiles | 2.8 MB | 12200d8bec36... |
 | ./styles/default.json | 2.1 KB | 122068cef5e2... |
-| ../../tiles/facilities.pmtiles | 46.2 MB | 1220c3667f71... |
+| ../../tiles/facilities.pmtiles | 45.2 MB | 12201dd8d27a... |
 | ./styles/facilities.json | 1.7 KB | 12205e8e1881... |
-| ../../tiles/settlements.pmtiles | 129.8 MB | 12205a4588d4... |
+| ../../tiles/settlements.pmtiles | 118.7 MB | 12200d21608f... |
 | ./styles/settlements.json | 1.2 KB | 12207ca43ee8... |
 | ./thumbnail.png | 219.6 KB | 12202d21329a... |
-| country=NGA/geom_type=point/type=facility/part-0.parquet | 16.2 MB | 1220010e643a... |
-| country=NGA/geom_type=point/type=settlement/part-0.parquet | 71.1 MB | 122044531ce3... |
-| country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet | 2.3 MB | 1220625a13c3... |
-| country=SL/geom_type=point/type=facility/part-0.parquet | 16.4 KB | 1220ccb85345... |
-| country=SL/geom_type=point/type=null/part-0.parquet | 14.8 KB | 1220e5e8374b... |
-| country=SL/geom_type=point/type=school/part-0.parquet | 14.4 KB | 1220b24af4eb... |
-| country=SL/geom_type=polygon/type=admin-unit/part-0.parquet | 14.1 KB | 1220ac885e51... |
+| country=NGA/geom_type=point/type=community-distribution-point/part-0.parquet | 39.8 KB | 12208f968bbe... |
+| country=NGA/geom_type=point/type=facility/part-0.parquet | 16.0 MB | 122002444b0c... |
+| country=NGA/geom_type=point/type=school/part-0.parquet | 24.5 KB | 1220cafbf841... |
+| country=NGA/geom_type=point/type=settlement/part-0.parquet | 69.1 MB | 122063958303... |
+| country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet | 2.3 MB | 122081cd3988... |
+| country=NGA/geom_type=polygon/type=facility-catchment/part-0.parquet | 169.7 KB | 1220716a13d8... |
+| country=NGA/geom_type=polygon/type=settlement-catchment/part-0.parquet | 846.6 KB | 12202648d1d6... |
+| country=SL/geom_type=point/type=facility/part-0.parquet | 16.4 KB | 12205325ce0b... |
+| country=SL/geom_type=point/type=null/part-0.parquet | 14.8 KB | 12207630ec15... |
+| country=SL/geom_type=point/type=school/part-0.parquet | 14.4 KB | 12200d0886e7... |
+| country=SL/geom_type=polygon/type=admin-unit/part-0.parquet | 14.1 KB | 1220a1700832... |
 
 ## Quick Start
 

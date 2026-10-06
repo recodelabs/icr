@@ -296,3 +296,17 @@ Title: "ICR Spatial Index Scheme"
 Description: "Tiling schemes a spatial-index cell may use. Binding: required on the spatial-index extension's system (spatial-index round)."
 * ^experimental = false
 * include codes from system ICRSpatialIndexCS
+
+ValueSet: ICRTravelTimeBandVS
+Id: icr-travel-time-band
+Title: "ICR Travel Time Band"
+Description: "Travel-time accessibility strata (walking / driving; under 1 h, 1–4 h, over 4 h) for the travel-time characteristic of a target-population estimate. Binding: required."
+* ^experimental = false
+* include codes from system ICRTravelTimeBandCS
+
+ValueSet: ICRBuildingSourceVS
+Id: icr-building-source
+Title: "ICR Building Footprint Source"
+Description: "Building-footprint datasets a building count can come from. Binding: extensible — countries may add national cadastres or other footprint sets."
+* ^experimental = false
+* include codes from system ICRBuildingSourceCS

@@ -4,59 +4,59 @@
   "stac_extensions": [
     "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
   ],
-  "id": "country=SL_geom_type=point_type=school",
+  "id": "country=NGA_geom_type=point_type=school",
   "geometry": {
     "type": "Polygon",
     "coordinates": [
       [
         [
-          -12.9458,
-          9.0152
+          7.770792,
+          10.583213
         ],
         [
-          -12.9458,
-          9.0152
+          7.770792,
+          12.065937
         ],
         [
-          -12.9458,
-          9.0152
+          9.30874,
+          12.065937
         ],
         [
-          -12.9458,
-          9.0152
+          9.30874,
+          10.583213
         ],
         [
-          -12.9458,
-          9.0152
+          7.770792,
+          10.583213
         ]
       ]
     ]
   },
   "bbox": [
-    -12.9458,
-    9.0152,
-    -12.9458,
-    9.0152
+    7.770792,
+    10.583213,
+    9.30874,
+    12.065937
   ],
   "properties": {
     "geoparquet:geometry_type": "Point",
-    "geoparquet:feature_count": 1,
+    "geoparquet:feature_count": 80,
     "table:column_statistics": {
       "id": {
-        "minimum": "example-school",
-        "maximum": "example-school"
+        "minimum": "nga-sup-site-kn-20002-school-01",
+        "maximum": "nga-sup-site-kn-20036-school-04"
       },
       "version_id": {
         "minimum": "1",
         "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-10-05T19:18:11.403+00:00",
-        "maximum": "2026-10-05T19:18:11.403+00:00"
+        "minimum": "2026-10-06T09:07:47.042+00:00",
+        "maximum": "2026-10-06T09:07:47.042+00:00"
       },
       "name": {
-        "minimum": "Rokupr Primary School",
-        "maximum": "Rokupr Primary School"
+        "minimum": "Ajingi school site 01 (dummy)",
+        "maximum": "Wudil school site 04 (dummy)"
       },
       "status": {
         "minimum": "active",
@@ -67,67 +67,67 @@
         "maximum": "school"
       },
       "physical_type": {
-        "minimum": "bu",
-        "maximum": "bu"
+        "minimum": "si",
+        "maximum": "si"
       },
       "part_of": {
-        "minimum": "example-settlement",
-        "maximum": "example-settlement"
-      },
-      "position_longitude": {
-        "minimum": "08f2a3b4c5d6e7f8-building-school-example",
-        "maximum": "08f2a3b4c5d6e7f8-building-school-example"
+        "minimum": "nga-kn-20002",
+        "maximum": "nga-kn-20036"
       },
       "position_latitude": {
-        "minimum": -12.9458,
-        "maximum": -12.9458
+        "minimum": 7.770792,
+        "maximum": 9.30874
       },
       "pcode": {
-        "minimum": 9.0152,
-        "maximum": 9.0152
-      },
-      "settlement_type": {
-        "minimum": "08f2a3b4c5d6e7f8-building-school-example",
-        "maximum": "08f2a3b4c5d6e7f8-building-school-example"
+        "minimum": 10.583213,
+        "maximum": 12.065937
       },
       "tier": {
         "minimum": 3,
         "maximum": 3
       },
       "admin0_name": {
-        "minimum": "/example-country/example-district/example-settlement/example-sch",
-        "maximum": "/example-country/example-district/example-settlement/example-sci"
+        "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-school-01",
+        "maximum": "/nga/nga-kn/nga-kn-20036/nga-sup-site-kn-20036-school-04"
       },
       "admin1_name": {
-        "minimum": "example-country",
-        "maximum": "example-settlement"
+        "minimum": "nga",
+        "maximum": "nga-kn-20036"
       },
       "admin2_name": {
-        "minimum": "Sierra Leone",
-        "maximum": "Sierra Leone"
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
       },
       "admin3_name": {
-        "minimum": "Kambia District",
-        "maximum": "Kambia District"
+        "minimum": "Kano",
+        "maximum": "Kano"
+      },
+      "admin4_name": {
+        "minimum": "Ajingi",
+        "maximum": "Wudil"
       },
       "admin2_code": {
-        "minimum": "SL",
-        "maximum": "SL"
+        "minimum": "NGA",
+        "maximum": "NGA"
       },
       "admin3_code": {
-        "minimum": "SL0201",
-        "maximum": "SL0201"
+        "minimum": "KN",
+        "maximum": "KN"
+      },
+      "admin4_code": {
+        "minimum": "20002",
+        "maximum": "20036"
       },
       "lon": {
-        "minimum": "SL",
-        "maximum": "SL"
+        "minimum": "NGA",
+        "maximum": "NGA"
       },
       "lat": {
         "minimum": "point",
         "maximum": "point"
       }
     },
-    "title": "Sierra Leone \u2014 schools",
+    "title": "Nigeria \u2014 schools",
     "vector:geometry_types": [
       "Point"
     ],
@@ -156,8 +156,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 14704,
-      "file:checksum": "12200d0886e7e39382b331157970ba783cc65ed5f0ad1d3c5fc87aa600a4fabd5edb",
+      "file:size": 25069,
+      "file:checksum": "1220cafbf8415cc57de4b63cb73cf6cbcee1998ad297998e7f51707942ae42324f1e",
       "roles": [
         "data"
       ]

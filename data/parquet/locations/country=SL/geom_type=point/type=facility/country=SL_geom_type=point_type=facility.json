@@ -47,12 +47,12 @@
         "maximum": "example-fixed-post"
       },
       "version_id": {
-        "minimum": "5",
-        "maximum": "6"
+        "minimum": "1",
+        "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-09-06T20:59:32.041+00:00",
-        "maximum": "2026-09-07T17:37:53.492+00:00"
+        "minimum": "2026-10-05T19:18:11.403+00:00",
+        "maximum": "2026-10-05T19:18:11.403+00:00"
       },
       "name": {
         "minimum": "Rokupr Community Health Centre",
@@ -176,7 +176,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-09-08T22:07:01Z"
+    "datetime": "2026-10-06T11:35:00Z"
   },
   "links": [
     {
@@ -201,8 +201,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 16828,
-      "file:checksum": "1220ccb85345ec644ffc7015612ad700e85cb6f8abc901a09e611a1d9ed53efbb692",
+      "file:size": 16763,
+      "file:checksum": "12205325ce0bbf3e90db6d30718439f3f553059661ff58b994cc726133681eeb424f",
       "roles": [
         "data"
       ]

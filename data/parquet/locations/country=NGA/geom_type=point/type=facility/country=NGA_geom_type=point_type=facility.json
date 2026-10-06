@@ -47,12 +47,12 @@
         "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
       },
       "version_id": {
-        "minimum": "2",
-        "maximum": "2"
+        "minimum": "1",
+        "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-09-06T21:12:08.019+00:00",
-        "maximum": "2026-09-06T21:12:41.538+00:00"
+        "minimum": "2026-10-05T19:28:02.287+00:00",
+        "maximum": "2026-10-05T19:36:20.169+00:00"
       },
       "name": {
         "minimum": "1 Brigade Medical Center",
@@ -184,7 +184,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-09-08T22:07:01Z"
+    "datetime": "2026-10-06T11:35:00Z"
   },
   "links": [
     {
@@ -209,8 +209,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 16976294,
-      "file:checksum": "1220010e643a4835fa44857d3a4f706de99894ee3c435715368c3d41e2dd7ede2149",
+      "file:size": 16763458,
+      "file:checksum": "122002444b0c35c5582a77d4b065515927405527debf3742b872c85566f4162f2e3b",
       "roles": [
         "data"
       ]
