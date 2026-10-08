@@ -60,11 +60,14 @@ token gets the whole FHIR API: `gateway/allowed-queries.json` lists every resour
 system operation from HAPI's CapabilityStatement, so the stock `list` access checker is never
 reached. No token → 401 (`/fhir/metadata` stays open).
 
-Manage keys on the VM, from `/opt/icr-hapi/gcp`:
+Manage keys on the VM, from `/opt/icr-hapi/gcp`. On a first deploy run `k setup` once to
+create the realm; the gateway reads the realm's public key at startup, so it restarts
+(`unless-stopped`) until the realm exists and then stays up.
 
 ```bash
 k() { sudo docker compose exec -T keycloak bash -s -- "$@" < gateway/api-key.sh; }
-k create nkw      # prints client_id key-nkw and its secret; the secret is shown once
+k setup          # first deploy only: creates realm icr
+k create nkw      # prints client_id key-nkw and its secret (also in the admin console)
 k list
 k rotate nkw      # new secret, the old one stops working
 k revoke nkw      # deletes the client; tokens already issued expire within the hour
