@@ -3,3 +3,13 @@
 	encode gzip
 	reverse_proxy hapi:3447
 }
+
+{$AUTH_HOST} {
+	encode gzip
+	reverse_proxy keycloak:8080
+}
+
+{$GATEWAY_HOST} {
+	encode gzip
+	reverse_proxy gateway:8080
+}
