@@ -3,8 +3,10 @@
 #
 #   https://hapi.healthcampaigns.org/fhir      FHIR base URL
 #   https://hapi.healthcampaigns.org/          web tester UI
+#   https://gateway.healthcampaigns.org/       FHIR Info Gateway in front of HAPI (token-checked)
+#   https://auth.healthcampaigns.org/          Keycloak, the gateway's token issuer (realm icr)
 #
-# Only Caddy publishes ports (80/443). HAPI and Postgres stay on the compose network.
+# Only Caddy publishes ports (80/443). Everything else stays on the compose network.
 # Settings that differ from the laptop stack come from the environment (.env), so
 # hapi.application.yaml stays shared. See README.md in this folder.
 name: icr-hapi
@@ -50,12 +52,84 @@ services:
     volumes:
       - ../hapi.application.yaml:/app/config/application.yaml:ro
 
+  # Keycloak's database: a second database in the same Postgres. initdb scripts only run
+  # on an empty volume, so this one-shot service creates it when missing.
+  keycloak-db:
+    image: postgres:15-alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint: ["sh", "-c", "psql -h db -U hapi -d hapi -tAc \"SELECT 1 FROM pg_database WHERE datname='keycloak'\" | grep -q 1 || createdb -h db -U hapi keycloak"]
+    restart: "no"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.0
+    restart: unless-stopped
+    command: start
+    depends_on:
+      keycloak-db:
+        condition: service_completed_successfully
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: hapi
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      # tokens carry iss=https://<AUTH_HOST>/realms/icr whichever way Keycloak is reached
+      KC_HOSTNAME: https://${AUTH_HOST:?set in .env}
+      AUTH_HOST: ${AUTH_HOST}   # for the token URL that gateway/api-key.sh prints
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set in .env}
+      JAVA_OPTS_KC_HEAP: -Xms256m -Xmx768m
+    healthcheck:
+      # no curl in the image; ask the management port over bash's /dev/tcp
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  # FHIR Info Gateway (github.com/google/fhir-gateway): verifies the Bearer token against
+  # Keycloak's realm key and forwards to HAPI. allowed-queries.json lists every path of the
+  # FHIR API, so any valid token (an API key, gateway/api-key.sh) gets full access and the
+  # `list` access checker is never reached; no token → 401 (metadata stays open). PROXY_TO is HAPI's
+  # public address (reached through Caddy on the compose network, see the aliases below) so
+  # the gateway can rewrite HAPI's paging and fullUrl links to its own base.
+  gateway:
+    image: us-docker.pkg.dev/fhir-proxy-build/stable/fhir-gateway:v0.5.0
+    restart: unless-stopped
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      hapi:
+        condition: service_started
+    environment:
+      PROXY_TO: https://${FHIR_HOST}/fhir
+      TOKEN_ISSUER: https://${AUTH_HOST}/realms/icr
+      BACKEND_TYPE: HAPI
+      ACCESS_CHECKER: list
+      RUN_MODE: PROD
+      ALLOWED_QUERIES_FILE: /config/allowed-queries.json
+      JAVA_TOOL_OPTIONS: -Xmx512m
+    volumes:
+      - ./gateway/allowed-queries.json:/config/allowed-queries.json:ro
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
     depends_on: [hapi]
     environment:
       FHIR_HOST: ${FHIR_HOST}
+      AUTH_HOST: ${AUTH_HOST}
+      GATEWAY_HOST: ${GATEWAY_HOST:?set in .env}
+    networks:
+      default:
+        # containers reach the public hostnames through Caddy without leaving the VM
+        aliases: ["${FHIR_HOST}", "${AUTH_HOST}"]
     ports:
       - "80:80"
       - "443:443"

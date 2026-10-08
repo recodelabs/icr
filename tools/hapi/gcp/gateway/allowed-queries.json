@@ -1,0 +1,970 @@
+{
+ "entries": [
+  {
+   "path": "",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "_history/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$diff/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$export/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$export-poll-status/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$expunge/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$get-resource-counts/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$hapi.fhir.reindex-status/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$hapi.fhir.replace-references/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$hapi.fhir.undo-replace-references/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$mark-all-resources-for-reindexing/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$meta/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$perform-reindexing-pass/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$reindex/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "$reindex-terminology/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Account/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ActivityDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "AdverseEvent/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "AllergyIntolerance/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Appointment/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "AppointmentResponse/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "AuditEvent/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Basic/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Binary/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "BiologicallyDerivedProduct/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "BodyStructure/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Bundle/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CapabilityStatement/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CarePlan/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CareTeam/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CatalogEntry/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ChargeItem/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ChargeItemDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Claim/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ClaimResponse/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ClinicalImpression/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CodeSystem/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Communication/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CommunicationRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CompartmentDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Composition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ConceptMap/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Condition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Consent/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Contract/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Coverage/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CoverageEligibilityRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "CoverageEligibilityResponse/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DetectedIssue/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Device/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DeviceDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DeviceMetric/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DeviceRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DeviceUseStatement/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DiagnosticReport/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DocumentManifest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "DocumentReference/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "EffectEvidenceSynthesis/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Encounter/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Endpoint/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "EnrollmentRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "EnrollmentResponse/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "EpisodeOfCare/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "EventDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Evidence/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "EvidenceVariable/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ExampleScenario/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ExplanationOfBenefit/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "FamilyMemberHistory/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Flag/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Goal/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "GraphDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Group/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "GuidanceResponse/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "HealthcareService/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ImagingStudy/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Immunization/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ImmunizationEvaluation/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ImmunizationRecommendation/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ImplementationGuide/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "InsurancePlan/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Invoice/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Library/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Linkage/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "List/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Location/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Measure/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MeasureReport/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Media/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Medication/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicationAdministration/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicationDispense/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicationKnowledge/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicationRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicationStatement/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProduct/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductAuthorization/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductContraindication/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductIndication/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductIngredient/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductInteraction/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductManufactured/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductPackaged/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductPharmaceutical/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MedicinalProductUndesirableEffect/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MessageDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MessageHeader/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "MolecularSequence/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "NamingSystem/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "NutritionOrder/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Observation/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ObservationDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "OperationDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "OperationOutcome/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Organization/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "OrganizationAffiliation/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Parameters/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Patient/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "PaymentNotice/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "PaymentReconciliation/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Person/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "PlanDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Practitioner/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "PractitionerRole/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Procedure/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Provenance/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Questionnaire/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "QuestionnaireResponse/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "RelatedPerson/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "RequestGroup/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ResearchDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ResearchElementDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ResearchStudy/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ResearchSubject/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "RiskAssessment/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "RiskEvidenceSynthesis/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Schedule/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SearchParameter/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ServiceRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Slot/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Specimen/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SpecimenDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "StructureDefinition/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "StructureMap/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Subscription/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Substance/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SubstanceNucleicAcid/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SubstancePolymer/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SubstanceProtein/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SubstanceReferenceInformation/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SubstanceSourceMaterial/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SubstanceSpecification/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SupplyDelivery/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "SupplyRequest/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "Task/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "TerminologyCapabilities/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "TestReport/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "TestScript/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "ValueSet/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "VerificationResult/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  },
+  {
+   "path": "VisionPrescription/ANY_VALUE",
+   "queryParams": {},
+   "allowExtraParams": true,
+   "allParamsRequired": false
+  }
+ ]
+}

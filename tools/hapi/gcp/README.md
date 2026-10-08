@@ -5,12 +5,15 @@ on one Compute Engine VM behind Caddy so others can reach it. Lightly used: demo
 occasional kiln exports.
 
 ```
-FHIR base URL   https://hapi.healthcampaigns.org/fhir
+FHIR base URL   https://hapi.healthcampaigns.org/fhir       open, no auth (as before)
 Web tester UI   https://hapi.healthcampaigns.org/
+Gateway         https://gateway.healthcampaigns.org/fhir    same server, API key required
+Token issuer    https://auth.healthcampaigns.org/realms/icr Keycloak
 ```
 
-Open for reads and writes, no auth yet (Keycloak + FHIR Info Gateway later). No backups:
-everything on it is regenerated from this repo (see "Seed" below).
+HAPI's own address stays open for reads and writes, so the warehouse refresh, kiln and
+`load.py` work unchanged. The FHIR Info Gateway in front of it requires an API key (see
+"API keys" below). No backups: everything on it is regenerated from this repo (see "Seed").
 
 ## Infrastructure
 
@@ -46,6 +49,45 @@ datasource password, heap), so `hapi.application.yaml` stays shared with `../`.
 HAPI's port is not published on the VM. To reach it without going through Caddy, run
 clients on the compose network, e.g.
 `sudo docker run --rm --network icr-hapi_default curlimages/curl -s http://hapi:3447/fhir/Location?_summary=count`.
+
+## API keys (FHIR Info Gateway)
+
+[FHIR Info Gateway](https://github.com/google/fhir-gateway) v0.5.0 runs beside HAPI and
+checks a Bearer token from Keycloak 26 (realm `icr`, database `keycloak` in the same
+Postgres). An API key is a Keycloak client: the holder trades its id and secret for a
+1-hour access token (OAuth client-credentials) and sends the token to the gateway. Any valid
+token gets the whole FHIR API: `gateway/allowed-queries.json` lists every resource type and
+system operation from HAPI's CapabilityStatement, so the stock `list` access checker is never
+reached. No token → 401 (`/fhir/metadata` stays open).
+
+Manage keys on the VM, from `/opt/icr-hapi/gcp`:
+
+```bash
+k() { sudo docker compose exec -T keycloak bash -s -- "$@" < gateway/api-key.sh; }
+k create nkw      # prints client_id key-nkw and its secret; the secret is shown once
+k list
+k rotate nkw      # new secret, the old one stops working
+k revoke nkw      # deletes the client; tokens already issued expire within the hour
+```
+
+Use a key:
+
+```bash
+TOKEN=$(curl -s https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token \
+  -d grant_type=client_credentials -d client_id=key-nkw --data-urlencode client_secret="$SECRET" \
+  | jq -r .access_token)
+curl -H "Authorization: Bearer $TOKEN" "https://gateway.healthcampaigns.org/fhir/Location?_count=5"
+```
+
+kiln takes the token as `--token` or `$KILN_TOKEN`. Paging links and `fullUrl`s come back with
+the gateway's address (the gateway's `PROXY_TO` is HAPI's public address, so it can rewrite
+them). Keycloak admin console: https://auth.healthcampaigns.org/admin (user `admin`,
+`KEYCLOAK_ADMIN_PASSWORD` in `.env`).
+
+Rollback: `sudo docker compose stop gateway keycloak` (HAPI, Postgres and Caddy keep running;
+the two extra hostnames return 502). To remove them for good, deploy the previous
+`docker-compose.yml`/`Caddyfile` and `sudo docker compose up -d --remove-orphans`;
+`DROP DATABASE keycloak` removes Keycloak's data.
 
 ## Seed
 
