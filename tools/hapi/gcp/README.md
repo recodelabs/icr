@@ -82,9 +82,17 @@ TOKEN=$(curl -s https://auth.healthcampaigns.org/realms/icr/protocol/openid-conn
 curl -H "Authorization: Bearer $TOKEN" "https://gateway.healthcampaigns.org/fhir/Location?_count=5"
 ```
 
-kiln takes the token as `--token` or `$KILN_TOKEN`. Paging links and `fullUrl`s come back with
-the gateway's address (the gateway's `PROXY_TO` is HAPI's public address, so it can rewrite
-them). Keycloak admin console: https://auth.healthcampaigns.org/admin (user `admin`,
+kiln takes the key itself and renews the token as it runs (`--client-id`, `--client-secret`,
+`--token-url`, or `KILN_CLIENT_ID`/`KILN_CLIENT_SECRET`/`KILN_TOKEN_URL`); `--token` still takes
+a fixed token. The warehouse refresh takes the key as `FHIR_CLIENT_ID`/`FHIR_CLIENT_SECRET`:
+
+```bash
+FHIR_BASE=https://gateway.healthcampaigns.org/fhir SERVER_NAME=hapi-gcp \
+  FHIR_CLIENT_ID=key-nkw FHIR_CLIENT_SECRET="$SECRET" tools/warehouse/refresh.sh
+```
+
+Paging links and `fullUrl`s come back with the gateway's address (the gateway's `PROXY_TO` is
+HAPI's public address, so it can rewrite them). Keycloak admin console: https://auth.healthcampaigns.org/admin (user `admin`,
 `KEYCLOAK_ADMIN_PASSWORD` in `.env`).
 
 Rollback: `sudo docker compose stop gateway keycloak` (HAPI, Postgres and Caddy keep running;
