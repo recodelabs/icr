@@ -50,7 +50,9 @@ tools/warehouse/refresh.sh --views    # views only (seconds)
 tools/warehouse/refresh.sh --tiles    # admin boundary PMTiles only
 ```
 
-Needs: the local HAPI (`tools/hapi`), `kiln` (`~/github/kiln/target/debug/kiln`
+Needs: the local HAPI (`tools/hapi`), or the hosted one through the FHIR Info
+Gateway with an API key (`FHIR_BASE`, `FHIR_CLIENT_ID`, `FHIR_CLIENT_SECRET`; see
+`tools/hapi/gcp/README.md`), `kiln` (`~/github/kiln/target/debug/kiln`
 or `KILN=`), `octofhir-sof` (the recodelabs/sof fork build, on the PATH or
 `SOF=`), `duckdb` (with the spatial extension, installed on first use),
 `tippecanoe` (`brew install tippecanoe`) for the tiles, and a sushi build of the
