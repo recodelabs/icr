@@ -31,7 +31,7 @@ not real campaign records.
 
 ## Get an API key
 
-Ask Matt Berg (Ona) for a key. You will receive two values:
+You will receive two values:
 
 - `client_id`, in the form `key-<name>`
 - `client_secret`
