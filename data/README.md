@@ -24,6 +24,8 @@ data/
     coverage/                                                              (IcrCoverage — admin / survey / LQAS results)
     coverage_strata/                                                       (IcrCoverageStrata — sex, age band, strategy, disposition)
     location_status/                                                       (IcrLocationStatus — endemicity per LGA × NTD, with provenance)
+    indicator/                                                             (IcrIndicator — the Measure catalogue, incl. DHIS2 indicators from `kiln dhis2 measures`)
+    indicator_value/                                                       (IcrIndicatorValue — DHIS2 indicator values per place × period, from `kiln dhis2 reports`)
     _report.json           kiln's transform report (geometry issues etc.)
   tiles/
     admin.pmtiles          admin boundaries (layers `country`, `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)

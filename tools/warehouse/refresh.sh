@@ -4,7 +4,7 @@
 #   1. locations:  kiln run  (incremental extract → data/raw/<server>/locations,
 #                             transform → data/parquet/locations)
 #   2. views:      for every ViewDefinition in the IG build, export its base
-#                  resource type (paged FHIR search → data/raw/<server>/<Type>.ndjson),
+#                  resource type (kiln export → data/raw/<server>/<Type>.ndjson),
 #                  run it in memory with octofhir-sof, partition the result by
 #                  country (joined from the registry) into data/parquet/<view_name>/
 #   3. tiles:      admin boundaries → data/tiles/admin.pmtiles (tools/warehouse/tiles.sh)
@@ -12,9 +12,11 @@
 #   5. push:       optional, --push: mirror data/ (minus raw/) to Cloudflare R2
 #                  (tools/warehouse/push-r2.sh; bucket R2_BUCKET, default icr)
 #
-# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push]   (default: all, no push)
+# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push] [--full]   (default: all, no push)
+#        --full re-extracts every Location instead of only the changed ones. The incremental
+#        extract cannot see deletions, so run it after Locations were deleted on the server.
 # Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
-#        KILN (~/github/kiln/target/debug/kiln)  SOF (octofhir-sof)  DATA (repo data/)
+#        KILN (~/github/kiln/target/debug/kiln; needs kiln export)  SOF (octofhir-sof)  DATA (repo data/)
 #        FHIR_CLIENT_ID, FHIR_CLIENT_SECRET: an API key for a server behind the FHIR Info
 #        Gateway (tools/hapi/gcp/README.md); FHIR_TOKEN_URL defaults to the ICR Keycloak.
 #        Without them requests carry no token, as the local HAPI needs.
@@ -31,22 +33,22 @@ SOF="${SOF:-octofhir-sof}"
 export PATH="$HOME/.local/bin:$PATH"
 
 # kiln gets and renews its own tokens from the KILN_* variables (kiln ≥ the
-# client-credentials release); the view export below reads the FHIR_* ones.
+# client-credentials release); both kiln run and kiln export use them.
 if [ -n "${FHIR_CLIENT_ID:-}" ]; then
   : "${FHIR_CLIENT_SECRET:?set FHIR_CLIENT_SECRET with FHIR_CLIENT_ID}"
-  export FHIR_TOKEN_URL="${FHIR_TOKEN_URL:-https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token}"
-  export FHIR_CLIENT_ID FHIR_CLIENT_SECRET
+  FHIR_TOKEN_URL="${FHIR_TOKEN_URL:-https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token}"
   export KILN_CLIENT_ID="$FHIR_CLIENT_ID" KILN_CLIENT_SECRET="$FHIR_CLIENT_SECRET" KILN_TOKEN_URL="$FHIR_TOKEN_URL"
   unset KILN_TOKEN
 fi
 
-DO_LOC=1; DO_VIEWS=1; DO_TILES=1; DO_PUSH=0
+DO_LOC=1; DO_VIEWS=1; DO_TILES=1; DO_PUSH=0; FULL=()
 for a in "$@"; do
   case "$a" in
     --views) DO_LOC=0; DO_TILES=0 ;;
     --locations) DO_VIEWS=0; DO_TILES=0 ;;
     --tiles) DO_LOC=0; DO_VIEWS=0 ;;
     --push) DO_PUSH=1 ;;
+    --full) FULL=(--full) ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
   esac
 done
@@ -58,12 +60,13 @@ mkdir -p "$RAW" "$PARQUET" "$VIEWS"
 
 if [ "$DO_LOC" = 1 ]; then
   echo "== locations: kiln run ($FHIR_BASE → $RAW/locations → $PARQUET/locations)"
-  "$KILN" run --server "$FHIR_BASE" --snapshot "$RAW/locations" --out "$PARQUET"
+  "$KILN" run --server "$FHIR_BASE" --snapshot "$RAW/locations" --out "$PARQUET" ${FULL[@]+"${FULL[@]}"}
 fi
 
 if [ "$DO_VIEWS" = 1 ]; then
   echo "== views"
   ls "$IG_RES"/Binary-*.json >/dev/null 2>&1 || { echo "no IG build found in $IG_RES (run sushi build in ig/)" >&2; exit 1; }
+  EXPORTED=""
   for f in "$IG_RES"/Binary-*.json; do
     # Only logical-model instances of the SoF ViewDefinition.
     python3 -c "import json,sys; v=json.load(open('$f')); sys.exit(0 if str(v.get('resourceType','')).endswith('/ViewDefinition') else 1)" || continue
@@ -75,29 +78,11 @@ if [ "$DO_VIEWS" = 1 ]; then
     "$SOF" validate "$view_json" >/dev/null
 
     ndjson="$RAW/$rtype.ndjson"
-    if [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; then
+    # Each resource type is downloaded once per run, however many views read it.
+    if [[ " $EXPORTED " != *" $rtype "* ]] && { [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; }; then
+      EXPORTED="$EXPORTED $rtype"
       echo "   export $rtype → $ndjson"
-      python3 - "$FHIR_BASE" "$rtype" "$ndjson" <<'EOF'
-import json, os, sys, urllib.parse, urllib.request
-base, rtype, out = sys.argv[1:]
-headers = {}
-if os.environ.get("FHIR_CLIENT_ID"):
-    # One token per export: it lasts an hour, longer than any one resource type takes.
-    form = urllib.parse.urlencode({"grant_type": "client_credentials",
-                                   "client_id": os.environ["FHIR_CLIENT_ID"],
-                                   "client_secret": os.environ["FHIR_CLIENT_SECRET"]}).encode()
-    token = json.load(urllib.request.urlopen(os.environ["FHIR_TOKEN_URL"], form))["access_token"]
-    headers["Authorization"] = f"Bearer {token}"
-url = f"{base}/{rtype}?_count=500"
-n = 0
-with open(out, "w") as fh:
-    while url:
-        b = json.load(urllib.request.urlopen(urllib.request.Request(url, headers=headers)))
-        for e in b.get("entry", []):
-            fh.write(json.dumps(e["resource"]) + "\n"); n += 1
-        url = next((l["url"] for l in b.get("link", []) if l["relation"] == "next"), None)
-print(f"      {n} {rtype}")
-EOF
+      "$KILN" export --server "$FHIR_BASE" --type "$rtype" --out "$RAW"
     fi
 
     tmp="$(mktemp -t "$table.XXXX").parquet"
@@ -164,6 +149,8 @@ if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
   # human-written metadata is kept under .portolan/collections/ and copied in first.
   mkdir -p "$PARQUET/locations/.portolan"
   cp "$DATA/.portolan/collections/locations/metadata.yaml" "$PARQUET/locations/.portolan/metadata.yaml"
+  # `check --metadata` validates the catalog only: without it `--fix` also converts every loose
+  # GeoJSON/CSV under data/ (imports/, exports/) into parquet + thumbnails beside the originals.
   # Always build from a clean slate: re-adding over existing items loses their `collection` field
   # (portolan-cli 0.8), and a --locations run without a kiln change would otherwise hit that path.
   find "$PARQUET/locations" -type f \( -name '*.json' -o -name '*.md' -o -name 'items.parquet' \) -delete
@@ -172,7 +159,7 @@ if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
     && python3 "$HERE/sdi-collection.py" "$DATA" \
     && portolan stac-geoparquet -c parquet/locations >/dev/null \
     && portolan readme parquet/locations --no-recursive >/dev/null \
-    && portolan check --fix --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
+    && portolan check --fix --metadata --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
 fi
 echo "done → $DATA"
 

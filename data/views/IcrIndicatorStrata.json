@@ -1,0 +1,97 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorStrata",
+  "title": "ICR indicator strata",
+  "description": "One row per stratum of a DHIS2 indicator value (`kiln dhis2 reports --breakdown`):\nthe value broken down by a DHIS2 dimension, such as a category (Fixed/Outreach) or an\norg unit group set (Facility Type). DHIS2 computes each stratum the way it computes the\ntotal. Join to `IcrIndicatorValue` on `report_id`.",
+  "name": "IcrIndicatorStrata",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "MeasureReport",
+  "where": [
+    {
+      "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').exists() and group.first().stratifier.exists()",
+      "description": "Only DHIS2 indicator values that carry a breakdown"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "report_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "measure",
+          "path": "measure",
+          "type": "canonical"
+        },
+        {
+          "name": "location_id",
+          "path": "subject.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "period",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').value.ofType(string)",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "forEach": "group.first().stratifier",
+      "column": [
+        {
+          "name": "dimension",
+          "path": "code.first().coding.first().code",
+          "type": "code",
+          "description": "DHIS2 uid of the dimension (category, org unit group set, data element group set)"
+        },
+        {
+          "name": "dimension_name",
+          "path": "code.first().text",
+          "type": "string"
+        }
+      ],
+      "select": [
+        {
+          "forEach": "stratum",
+          "column": [
+            {
+              "name": "option",
+              "path": "value.coding.first().code",
+              "type": "code"
+            },
+            {
+              "name": "option_name",
+              "path": "value.text",
+              "type": "string"
+            },
+            {
+              "name": "numerator",
+              "path": "population.where(code.coding.code = 'numerator').first().count",
+              "type": "integer"
+            },
+            {
+              "name": "denominator",
+              "path": "population.where(code.coding.code = 'denominator').first().count",
+              "type": "integer"
+            },
+            {
+              "name": "count",
+              "path": "population.where(code.coding.code = 'initial-population').first().count",
+              "type": "integer"
+            },
+            {
+              "name": "score",
+              "path": "measureScore.value",
+              "type": "decimal"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

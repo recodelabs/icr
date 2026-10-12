@@ -149,6 +149,116 @@ comparison the Campaign Targeting dashboard draws.
 * select[0].column[11].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/is-calculated').value.ofType(boolean)"
 * select[0].column[11].type = "boolean"
 * select[0].column[11].description = "True for a rollup or interpolation rather than an independently sourced count"
+* select[0].column[12].name = "travel_time"
+* select[0].column[12].path = "characteristic.where(code.coding.code = 'travel-time').first().value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[12].type = "code"
+* select[0].column[12].description = "Accessibility stratum of the estimate (walk-lt-1h | walk-1h-4h | walk-gt-4h | drive-…); null for an all-of-the-geography figure"
+
+Instance: IcrCampaignTask
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR campaign tasks"
+Description: """
+One row per ICRCampaignTask — the **operational unit of work**: a site-session,
+a house-to-house visit to a settlement, a household or school-cohort visit, or a
+person-targeted follow-up. `campaign_id` (basedOn) joins the campaign calendar;
+`for_location_id` / `for_group_id` say what the task acts on and `location_id`
+where the work happens (join keys to the location registry); `owner_team_id`
+the care team. `strategy` and `origin` are the task's delivery strategy and
+whether it was pre-planned from the microplan or field-registered on discovery
+— the field-registered count per area measures how incomplete the microplan's
+enumeration was. The tally columns are the coded `Task.output` entries
+(`treated_count` is the scalar result; the house-to-house axes are
+`houses_visited`, `eligible_present`, `eligible_absent`,
+`children_already_marked`); `missed_reason` is the first missed-reason output.
+Microplan-vs-monitoring dashboards are this table at two points in time.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTask"
+* name = "IcrCampaignTask"
+* title = "ICR campaign tasks"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #Task
+* where[0].path = "basedOn.exists()"
+* where[0].description = "Tasks that execute a campaign — the ICRCampaignTask profile; excludes ad-hoc Tasks with no campaign"
+* select[0].column[0].name = "task_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "status"
+* select[0].column[1].path = "status"
+* select[0].column[1].type = "code"
+* select[0].column[1].description = "requested | in-progress | completed | failed | …"
+* select[0].column[2].name = "intent"
+* select[0].column[2].path = "intent"
+* select[0].column[2].type = "code"
+* select[0].column[3].name = "code"
+* select[0].column[3].path = "code.text"
+* select[0].column[3].type = "string"
+* select[0].column[3].description = "The activity being performed, human-readable"
+* select[0].column[4].name = "campaign_id"
+* select[0].column[4].path = "basedOn.first().getReferenceKey(CarePlan)"
+* select[0].column[4].type = "string"
+* select[0].column[5].name = "activity"
+* select[0].column[5].path = "instantiatesCanonical"
+* select[0].column[5].type = "canonical"
+* select[0].column[6].name = "for_location_id"
+* select[0].column[6].path = "for.getReferenceKey(Location)"
+* select[0].column[6].type = "string"
+* select[0].column[6].description = "The Location the task acts on (site, settlement, structure, area); null when `for` is a Group or Patient"
+* select[0].column[7].name = "for_group_id"
+* select[0].column[7].path = "for.getReferenceKey(Group)"
+* select[0].column[7].type = "string"
+* select[0].column[7].description = "The delivery-unit Group (household, community, school cohort) the task acts on; null otherwise"
+* select[0].column[8].name = "location_id"
+* select[0].column[8].path = "location.getReferenceKey(Location)"
+* select[0].column[8].type = "string"
+* select[0].column[8].description = "Where the work happens — join key to the location registry"
+* select[0].column[9].name = "owner_team_id"
+* select[0].column[9].path = "owner.getReferenceKey(CareTeam)"
+* select[0].column[9].type = "string"
+* select[0].column[10].name = "strategy"
+* select[0].column[10].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy').value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[10].type = "code"
+* select[0].column[10].description = "fixed-post | temporary-post | mobile | school | house-to-house | community-directed | outreach"
+* select[0].column[11].name = "origin"
+* select[0].column[11].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/task-origin').value.ofType(code)"
+* select[0].column[11].type = "code"
+* select[0].column[11].description = "pre-planned | field-registered"
+* select[0].column[12].name = "lineage"
+* select[0].column[12].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/data-lineage').value.ofType(code)"
+* select[0].column[12].type = "code"
+* select[0].column[13].name = "execution_start"
+* select[0].column[13].path = "executionPeriod.start"
+* select[0].column[13].type = "dateTime"
+* select[0].column[14].name = "execution_end"
+* select[0].column[14].path = "executionPeriod.end"
+* select[0].column[14].type = "dateTime"
+* select[0].column[15].name = "last_modified"
+* select[0].column[15].path = "lastModified"
+* select[0].column[15].type = "dateTime"
+* select[0].column[16].name = "treated_count"
+* select[0].column[16].path = "output.where(type.coding.code = 'treated-count').first().value.ofType(unsignedInt)"
+* select[0].column[16].type = "unsignedInt"
+* select[0].column[16].description = "Persons treated / vaccinated at this visit (scalar tally)"
+* select[0].column[17].name = "houses_visited"
+* select[0].column[17].path = "output.where(type.coding.code = 'houses-visited').first().value.ofType(unsignedInt)"
+* select[0].column[17].type = "unsignedInt"
+* select[0].column[18].name = "eligible_present"
+* select[0].column[18].path = "output.where(type.coding.code = 'eligible-present').first().value.ofType(unsignedInt)"
+* select[0].column[18].type = "unsignedInt"
+* select[0].column[19].name = "eligible_absent"
+* select[0].column[19].path = "output.where(type.coding.code = 'eligible-absent').first().value.ofType(unsignedInt)"
+* select[0].column[19].type = "unsignedInt"
+* select[0].column[20].name = "children_already_marked"
+* select[0].column[20].path = "output.where(type.coding.code = 'children-already-marked').first().value.ofType(unsignedInt)"
+* select[0].column[20].type = "unsignedInt"
+* select[0].column[21].name = "missed_reason"
+* select[0].column[21].path = "output.where(type.coding.code = 'missed-reason').first().value.ofType(CodeableConcept).coding.first().code"
+* select[0].column[21].type = "code"
+* select[0].column[21].description = "First missed-reason output: absent | sleeping | sick | refusal | inaccessible | …"
+* select[0].column[22].name = "status_reason"
+* select[0].column[22].path = "statusReason.text"
+* select[0].column[22].type = "string"
 
 Instance: IcrCoverage
 InstanceOf: $ViewDefinition
@@ -331,3 +441,220 @@ newest row per (location_id, property) for the current classification; join
 * select[0].column[10].name = "figure_unit"
 * select[0].column[10].path = "component.first().value.ofType(Quantity).unit"
 * select[0].column[10].type = "string"
+
+Instance: IcrIndicator
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR indicators"
+Description: """
+One row per Measure: the indicator catalogue. Covers the ICR's own Measures and
+those imported from DHIS2 (`kiln dhis2 measures`), whose rows also carry the
+DHIS2 factor, indicator type and annualised flag. Join `url` to
+`IcrIndicatorValue.measure`.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicator"
+* name = "IcrIndicator"
+* title = "ICR indicators"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #Measure
+* select[0].column[0].name = "measure_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "url"
+* select[0].column[1].path = "url"
+* select[0].column[1].type = "uri"
+* select[0].column[2].name = "title"
+* select[0].column[2].path = "title"
+* select[0].column[2].type = "string"
+* select[0].column[3].name = "scoring"
+* select[0].column[3].path = "scoring.coding.first().code"
+* select[0].column[3].type = "code"
+* select[0].column[3].description = "proportion | ratio | cohort | continuous-variable"
+* select[0].column[4].name = "factor"
+* select[0].column[4].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator').extension('factor').value.ofType(decimal)"
+* select[0].column[4].type = "decimal"
+* select[0].column[4].description = "DHIS2 factor: multiply a score by it to show the value as DHIS2 does (100 for a percent)"
+* select[0].column[5].name = "indicator_type"
+* select[0].column[5].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator').extension('indicatorType').value.ofType(string)"
+* select[0].column[5].type = "string"
+* select[0].column[6].name = "annualized"
+* select[0].column[6].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator').extension('annualized').value.ofType(boolean)"
+* select[0].column[6].type = "boolean"
+* select[0].column[7].name = "topic"
+* select[0].column[7].path = "topic.first().text"
+* select[0].column[7].type = "string"
+* select[0].column[7].description = "First indicator group (DHIS2) or topic"
+* select[0].column[8].name = "source"
+* select[0].column[8].path = "meta.tag.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs').code.first()"
+* select[0].column[8].type = "code"
+* select[0].column[8].description = "The project or DHIS2 instance the Measure came from, e.g. sl-demo"
+* select[0].column[9].name = "publisher"
+* select[0].column[9].path = "publisher"
+* select[0].column[9].type = "string"
+* select[0].column[10].name = "description"
+* select[0].column[10].path = "description"
+* select[0].column[10].type = "string"
+* select[0].column[11].name = "numerator_description"
+* select[0].column[11].path = "group.first().population.where(code.coding.code = 'numerator').first().description"
+* select[0].column[11].type = "string"
+* select[0].column[12].name = "denominator_description"
+* select[0].column[12].path = "group.first().population.where(code.coding.code = 'denominator').first().description"
+* select[0].column[12].type = "string"
+
+Instance: IcrIndicatorValue
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR indicator values"
+Description: """
+One row per indicator value imported from DHIS2 (`kiln dhis2 reports`): one
+indicator, one place, one period. `score` is the DHIS2 value divided by the
+indicator's factor (a proportion 0–1 for a percent indicator); `numerator`
+and `denominator` are DHIS2's own, or `count` for a plain-number indicator.
+DHIS2 computes every value for its own place and period, so values are never
+summed across places or periods: read the level you want. Join `measure` to
+`IcrIndicator.url` and `location_id` to the registry.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorValue"
+* name = "IcrIndicatorValue"
+* title = "ICR indicator values"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #MeasureReport
+* where[0].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').exists()"
+* where[0].description = "Only indicator values imported from DHIS2"
+* select[0].column[0].name = "report_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "measure"
+* select[0].column[1].path = "measure"
+* select[0].column[1].type = "canonical"
+* select[0].column[2].name = "location_id"
+* select[0].column[2].path = "subject.getReferenceKey(Location)"
+* select[0].column[2].type = "string"
+* select[0].column[3].name = "location_name"
+* select[0].column[3].path = "subject.display"
+* select[0].column[3].type = "string"
+* select[0].column[4].name = "period"
+* select[0].column[4].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').value.ofType(string)"
+* select[0].column[4].type = "string"
+* select[0].column[4].description = "DHIS2 period code: 2025, 2025Q1, 202501, 2025W5, …"
+* select[0].column[5].name = "period_start"
+* select[0].column[5].path = "period.start"
+* select[0].column[5].type = "date"
+* select[0].column[6].name = "period_end"
+* select[0].column[6].path = "period.end"
+* select[0].column[6].type = "date"
+* select[0].column[7].name = "numerator"
+* select[0].column[7].path = "group.first().population.where(code.coding.code = 'numerator').first().count"
+* select[0].column[7].type = "integer"
+* select[0].column[8].name = "denominator"
+* select[0].column[8].path = "group.first().population.where(code.coding.code = 'denominator').first().count"
+* select[0].column[8].type = "integer"
+* select[0].column[9].name = "count"
+* select[0].column[9].path = "group.first().population.where(code.coding.code = 'initial-population').first().count"
+* select[0].column[9].type = "integer"
+* select[0].column[9].description = "The value of a plain-number (cohort) indicator"
+* select[0].column[10].name = "score"
+* select[0].column[10].path = "group.first().measureScore.value"
+* select[0].column[10].type = "decimal"
+* select[0].column[11].name = "reported"
+* select[0].column[11].path = "date"
+* select[0].column[11].type = "dateTime"
+* select[0].column[11].description = "When DHIS2 last rebuilt its analytics tables before the import"
+* select[0].column[12].name = "source"
+* select[0].column[12].path = "meta.tag.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs').code.first()"
+* select[0].column[12].type = "code"
+
+Instance: IcrIndicatorStrata
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR indicator strata"
+Description: """
+One row per stratum of a DHIS2 indicator value (`kiln dhis2 reports --breakdown`):
+the value broken down by a DHIS2 dimension, such as a category (Fixed/Outreach) or an
+org unit group set (Facility Type). DHIS2 computes each stratum the way it computes the
+total. Join to `IcrIndicatorValue` on `report_id`.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorStrata"
+* name = "IcrIndicatorStrata"
+* title = "ICR indicator strata"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #MeasureReport
+* where[0].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').exists() and group.first().stratifier.exists()"
+* where[0].description = "Only DHIS2 indicator values that carry a breakdown"
+* select[0].column[0].name = "report_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "measure"
+* select[0].column[1].path = "measure"
+* select[0].column[1].type = "canonical"
+* select[0].column[2].name = "location_id"
+* select[0].column[2].path = "subject.getReferenceKey(Location)"
+* select[0].column[2].type = "string"
+* select[0].column[3].name = "period"
+* select[0].column[3].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').value.ofType(string)"
+* select[0].column[3].type = "string"
+* select[1].forEach = "group.first().stratifier"
+* select[1].column[0].name = "dimension"
+* select[1].column[0].path = "code.first().coding.first().code"
+* select[1].column[0].type = "code"
+* select[1].column[0].description = "DHIS2 uid of the dimension (category, org unit group set, data element group set)"
+* select[1].column[1].name = "dimension_name"
+* select[1].column[1].path = "code.first().text"
+* select[1].column[1].type = "string"
+* select[1].select[0].forEach = "stratum"
+* select[1].select[0].column[0].name = "option"
+* select[1].select[0].column[0].path = "value.coding.first().code"
+* select[1].select[0].column[0].type = "code"
+* select[1].select[0].column[1].name = "option_name"
+* select[1].select[0].column[1].path = "value.text"
+* select[1].select[0].column[1].type = "string"
+* select[1].select[0].column[2].name = "numerator"
+* select[1].select[0].column[2].path = "population.where(code.coding.code = 'numerator').first().count"
+* select[1].select[0].column[2].type = "integer"
+* select[1].select[0].column[3].name = "denominator"
+* select[1].select[0].column[3].path = "population.where(code.coding.code = 'denominator').first().count"
+* select[1].select[0].column[3].type = "integer"
+* select[1].select[0].column[4].name = "count"
+* select[1].select[0].column[4].path = "population.where(code.coding.code = 'initial-population').first().count"
+* select[1].select[0].column[4].type = "integer"
+* select[1].select[0].column[5].name = "score"
+* select[1].select[0].column[5].path = "measureScore.value"
+* select[1].select[0].column[5].type = "decimal"
+
+Instance: IcrIndicatorGroup
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR indicator groups"
+Description: """
+One row per group a Measure belongs to (`Measure.topic`): for DHIS2 imports, its
+indicator groups, data element groups, and the groups of each data element group set
+(the system ends in `data-element-group-set/<set uid>`). Lets a reader regroup items
+the way DHIS2 does, e.g. morbidity counts by Diagnosis. Join `measure_url` to
+`IcrIndicator.url`.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorGroup"
+* name = "IcrIndicatorGroup"
+* title = "ICR indicator groups"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #Measure
+* where[0].path = "topic.coding.exists()"
+* select[0].column[0].name = "measure_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[1].name = "measure_url"
+* select[0].column[1].path = "url"
+* select[0].column[1].type = "uri"
+* select[1].forEach = "topic.coding"
+* select[1].column[0].name = "group_system"
+* select[1].column[0].path = "system"
+* select[1].column[0].type = "uri"
+* select[1].column[1].name = "group_code"
+* select[1].column[1].path = "code"
+* select[1].column[1].type = "code"
+* select[1].column[2].name = "group_name"
+* select[1].column[2].path = "display"
+* select[1].column[2].type = "string"

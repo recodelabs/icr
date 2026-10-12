@@ -1,0 +1,53 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorGroup",
+  "title": "ICR indicator groups",
+  "description": "One row per group a Measure belongs to (`Measure.topic`): for DHIS2 imports, its\nindicator groups, data element groups, and the groups of each data element group set\n(the system ends in `data-element-group-set/<set uid>`). Lets a reader regroup items\nthe way DHIS2 does, e.g. morbidity counts by Diagnosis. Join `measure_url` to\n`IcrIndicator.url`.",
+  "name": "IcrIndicatorGroup",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Measure",
+  "where": [
+    {
+      "path": "topic.coding.exists()"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "measure_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "measure_url",
+          "path": "url",
+          "type": "uri"
+        }
+      ]
+    },
+    {
+      "forEach": "topic.coding",
+      "column": [
+        {
+          "name": "group_system",
+          "path": "system",
+          "type": "uri"
+        },
+        {
+          "name": "group_code",
+          "path": "code",
+          "type": "code"
+        },
+        {
+          "name": "group_name",
+          "path": "display",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

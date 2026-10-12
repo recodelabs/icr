@@ -1,0 +1,87 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicator",
+  "title": "ICR indicators",
+  "description": "One row per Measure: the indicator catalogue. Covers the ICR's own Measures and\nthose imported from DHIS2 (`kiln dhis2 measures`), whose rows also carry the\nDHIS2 factor, indicator type and annualised flag. Join `url` to\n`IcrIndicatorValue.measure`.",
+  "name": "IcrIndicator",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Measure",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "measure_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "url",
+          "path": "url",
+          "type": "uri"
+        },
+        {
+          "name": "title",
+          "path": "title",
+          "type": "string"
+        },
+        {
+          "name": "scoring",
+          "path": "scoring.coding.first().code",
+          "type": "code",
+          "description": "proportion | ratio | cohort | continuous-variable"
+        },
+        {
+          "name": "factor",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator').extension('factor').value.ofType(decimal)",
+          "type": "decimal",
+          "description": "DHIS2 factor: multiply a score by it to show the value as DHIS2 does (100 for a percent)"
+        },
+        {
+          "name": "indicator_type",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator').extension('indicatorType').value.ofType(string)",
+          "type": "string"
+        },
+        {
+          "name": "annualized",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator').extension('annualized').value.ofType(boolean)",
+          "type": "boolean"
+        },
+        {
+          "name": "topic",
+          "path": "topic.first().text",
+          "type": "string",
+          "description": "First indicator group (DHIS2) or topic"
+        },
+        {
+          "name": "source",
+          "path": "meta.tag.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs').code.first()",
+          "type": "code",
+          "description": "The project or DHIS2 instance the Measure came from, e.g. sl-demo"
+        },
+        {
+          "name": "publisher",
+          "path": "publisher",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "path": "description",
+          "type": "string"
+        },
+        {
+          "name": "numerator_description",
+          "path": "group.first().population.where(code.coding.code = 'numerator').first().description",
+          "type": "string"
+        },
+        {
+          "name": "denominator_description",
+          "path": "group.first().population.where(code.coding.code = 'denominator').first().description",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
