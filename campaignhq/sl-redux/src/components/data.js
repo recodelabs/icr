@@ -84,9 +84,16 @@ export function periods(all, year, today = new Date()) {
   };
 }
 
-/** Years with values, newest last. */
+/**
+ * The years to offer in the year menu, newest last: years with values for periods within
+ * the year (months, quarters, halves, weeks). Earlier years that hold only yearly values,
+ * kept for the ten-year charts and last year's comparison, are left out. A page with only
+ * yearly values offers those years.
+ */
 export function yearsOf(all) {
-  return Array.from(new Set(all.filter((d) => d.period_type === "Yearly").map((d) => d.period))).sort();
+  const within = all.filter((d) => d.period_type !== "Yearly" && d.period_type !== "Other");
+  const rows = within.length ? within : all.filter((d) => d.period_type === "Yearly");
+  return Array.from(new Set(rows.map((d) => String(d.period).slice(0, 4)))).sort();
 }
 
 /**
