@@ -3,10 +3,11 @@
 #
 #   1. locations:  kiln run  (incremental extract → data/raw/<server>/locations,
 #                             transform → data/parquet/locations)
-#   2. views:      for every ViewDefinition in the IG build, export its base
-#                  resource type (kiln export → data/raw/<server>/<Type>.ndjson),
-#                  run it in memory with octofhir-sof, partition the result by
-#                  country (joined from the registry) into data/parquet/<view_name>/
+#   2. views:      for every resource type a ViewDefinition in the IG build reads,
+#                  export it (kiln export → data/raw/<server>/<Type>.ndjson) and run
+#                  that type's views in one octofhir-sof call (in memory, all CPUs);
+#                  partition each result by country (joined from the registry)
+#                  into data/parquet/<view_name>/
 #   3. tiles:      admin boundaries → data/tiles/admin.pmtiles (tools/warehouse/tiles.sh)
 #   4. manifest:   data/manifest.json with counts and provenance
 #   5. push:       optional, --push: mirror data/ (minus raw/) to Cloudflare R2
@@ -16,7 +17,8 @@
 #        --full re-extracts every Location instead of only the changed ones. The incremental
 #        extract cannot see deletions, so run it after Locations were deleted on the server.
 # Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
-#        KILN (~/github/kiln/target/debug/kiln; needs kiln export)  SOF (octofhir-sof)  DATA (repo data/)
+#        KILN (~/github/kiln/target/debug/kiln; needs kiln export)  SOF (octofhir-sof; the recodelabs
+#        fork, for --parquet-temporal native)  DATA (repo data/)
 #        FHIR_CLIENT_ID, FHIR_CLIENT_SECRET: an API key for a server behind the FHIR Info
 #        Gateway (tools/hapi/gcp/README.md); FHIR_TOKEN_URL defaults to the ICR Keycloak.
 #        Without them requests carry no token, as the local HAPI needs.
@@ -66,7 +68,9 @@ fi
 if [ "$DO_VIEWS" = 1 ]; then
   echo "== views"
   ls "$IG_RES"/Binary-*.json >/dev/null 2>&1 || { echo "no IG build found in $IG_RES (run sushi build in ig/)" >&2; exit 1; }
-  EXPORTED=""
+  WORK="$(mktemp -d -t icr-views)"
+  # 1. Collect the views: one line per view in $WORK/views.tsv (type, name, table), in IG
+  #    order, and a copy of each under $WORK/by-type/<Type>/ for running them together.
   for f in "$IG_RES"/Binary-*.json; do
     # Only logical-model instances of the SoF ViewDefinition.
     python3 -c "import json,sys; v=json.load(open('$f')); sys.exit(0 if str(v.get('resourceType','')).endswith('/ViewDefinition') else 1)" || continue
@@ -76,17 +80,28 @@ if [ "$DO_VIEWS" = 1 ]; then
     view_json="$VIEWS/$name.json"
     python3 -c "import json; v=json.load(open('$f')); v['resourceType']='ViewDefinition'; json.dump(v, open('$view_json','w'), indent=2)"
     "$SOF" validate "$view_json" >/dev/null
+    mkdir -p "$WORK/by-type/$rtype"
+    cp "$view_json" "$WORK/by-type/$rtype/"
+    printf '%s\t%s\t%s\n' "$rtype" "$name" "$table" >> "$WORK/views.tsv"
+  done
 
+  # 2. Per resource type: download it once, then run all of its views in one sof call, so
+  #    the file is read and parsed once however many views read it. sof uses every CPU.
+  for rtype in $(cut -f1 "$WORK/views.tsv" | sort -u); do
     ndjson="$RAW/$rtype.ndjson"
-    # Each resource type is downloaded once per run, however many views read it.
-    if [[ " $EXPORTED " != *" $rtype "* ]] && { [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; }; then
-      EXPORTED="$EXPORTED $rtype"
+    if [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; then
       echo "   export $rtype → $ndjson"
       "$KILN" export --server "$FHIR_BASE" --type "$rtype" --out "$RAW"
     fi
+    # sof reports each file it writes on stderr ("Name -> path"); keep only anything else.
+    "$SOF" run "$WORK/by-type/$rtype" --input "$ndjson" --output parquet --parquet-temporal native \
+      --out "$WORK/out" 2> >(grep -v ' -> ' >&2)
+  done
 
-    tmp="$(mktemp -t "$table.XXXX").parquet"
-    "$SOF" run "$view_json" --input "$ndjson" --output parquet --parquet-temporal native --out "$tmp"
+  # 3. Partition each view's rows by country, in IG order: campaign_calendar comes before
+  #    the views that find their country through it.
+  while IFS=$'\t' read -r rtype name table; do
+    tmp="$WORK/out/$name.parquet"
     rm -rf "$PARQUET/$table"; mkdir -p "$PARQUET/$table"
     # Partition by country: from the registry via location_id when the view has one,
     # else via campaign_id through the campaign calendar table, else unpartitioned.
@@ -102,10 +117,10 @@ if [ "$DO_VIEWS" = 1 ]; then
       COPY (
         SELECT v.*, l.country FROM read_parquet('$tmp') v $country_join
       ) TO '$PARQUET/$table' (FORMAT PARQUET, PARTITION_BY (country), WRITE_PARTITION_COLUMNS TRUE, OVERWRITE_OR_IGNORE, FILENAME_PATTERN 'part-{i}');"
-    rm -f "$tmp"
     rows=$(duckdb -noheader -csv -c "SELECT count(*) FROM read_parquet('$PARQUET/$table/country=*/**/*.parquet', hive_partitioning=true)")
-    echo "   $name → parquet/$table ($rows rows)"
-  done
+    echo "   $name ($rtype) → parquet/$table ($rows rows)"
+  done < "$WORK/views.tsv"
+  rm -rf "$WORK"
 fi
 
 if [ "$DO_TILES" = 1 ]; then
