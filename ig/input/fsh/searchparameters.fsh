@@ -84,3 +84,26 @@ Description: "Search Location by its H3 spatial-index cell (spatial-index extens
 * type = #string
 * expression = "Location.extension('https://icr.healthcampaigns.org/StructureDefinition/spatial-index').where(extension('system').value = 'h3').extension('cell').value.as(string)"
 * xpathUsage = #normal
+
+// Catchment areas (catchments round, Sep 2026). A catchment is its own Location
+// (type facility-catchment / settlement-catchment) carrying the polygon; the
+// catchment-of extension points back at the site. Reference-typed, so it chains
+// and reverse-includes:
+//   Location?catchment-of=Location/<facility-id>                  the facility's catchment
+//   Location?_id=<facility-id>&_revinclude=Location:catchment-of  facility + its catchment in one call
+//   Location?partof=Location/<facility-catchment-id>              settlement catchments inside it
+Instance: icr-location-catchment-of
+InstanceOf: SearchParameter
+Usage: #definition
+Title: "ICR Location — catchment of"
+Description: "Search catchment-area Locations (type facility-catchment or settlement-catchment) by the site they belong to — the catchment-of extension. Reference-typed, so it chains (catchment-of.type=facility) and reverse-includes (Location?_id=<site>&_revinclude=Location:catchment-of)."
+* name = "ICRLocationCatchmentOf"
+* status = #active
+* experimental = false
+* version = "1.0.0"
+* code = #catchment-of
+* base = #Location
+* type = #reference
+* expression = "Location.extension('https://icr.healthcampaigns.org/StructureDefinition/catchment-of').value.as(Reference)"
+* xpathUsage = #normal
+* target = #Location

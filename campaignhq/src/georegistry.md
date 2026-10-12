@@ -71,16 +71,19 @@ const kpi = {
   states: state === "All" ? d3.sum(countRows.filter((d) => d.layer === "admin-unit" && d.admin_level === 1), (d) => d.n) : 1,
   lgas: lga !== "All" ? 1 : new Set(inSel.filter((d) => d.layer === "admin-unit" && d.admin_level === 2).map((d) => d.lga ?? d.state)).size,
   facilities: d3.sum(inSel.filter((d) => d.layer === "facility" && levelOn(d.facility_level)), (d) => d.n),
-  settlements: n("settlement")
+  settlements: n("settlement"),
+  facilityCatchments: n("facility-catchment"),
+  settlementCatchments: n("settlement-catchment")
 };
 const scope = lga !== "All" ? `${lga} LGA, ${state}` : state !== "All" ? `${state} State` : "Nigeria";
 ```
 
-<div class="grid grid-cols-4" style="gap: 12px">
+<div class="grid" style="gap: 12px; grid-template-columns: repeat(5, minmax(0, 1fr))">
   <div class="card"><h2>States</h2><span class="big">${fmtInt(kpi.states)}</span><div class="muted">${scope}</div></div>
   <div class="card"><h2>LGAs</h2><span class="big">${fmtInt(kpi.lgas)}</span><div class="muted">admin level 2</div></div>
   <div class="card"><h2>Health facilities</h2><span class="big">${fmtInt(kpi.facilities)}</span><div class="muted">${levelSet.size === 0 ? "all levels" : `${levelLabel} · of ${fmtInt(n("facility"))} in ${scope}`}</div></div>
   <div class="card"><h2>Settlements</h2><span class="big">${fmtInt(kpi.settlements)}</span><div class="muted">GRID3 settlement points</div></div>
+  <div class="card"><h2>Catchments</h2><span class="big">${fmtInt(kpi.facilityCatchments)}</span><div class="muted">facility catchments · ${fmtInt(kpi.settlementCatchments)} settlement catchments${kpi.facilityCatchments === 0 ? " · none in " + scope + " yet" : ""}</div></div>
 </div>
 
 <div class="grid grid-cols-3" style="gap: 12px; margin-top: 12px; grid-template-columns: 2fr 1fr">
@@ -108,7 +111,8 @@ const scope = lga !== "All" ? `${lga} LGA, ${state}` : state !== "All" ? `${stat
 const urls = {
   admin: FileAttachment("data/admin.pmtiles").href,
   facilities: FileAttachment("data/facilities.pmtiles").href,
-  settlements: FileAttachment("data/settlements.pmtiles").href
+  settlements: FileAttachment("data/settlements.pmtiles").href,
+  catchments: FileAttachment("data/catchments.pmtiles").href
 };
 const mapEl = georegistryMap({urls, height: 640, basemap: BASEMAP, labels: stateLabels, bounds: [[2.5, 4.0], [14.8, 14.0]]});
 const selected = Generators.input(mapEl);
@@ -155,12 +159,14 @@ const levelChart = Plot.plot({
 const LABELS = {id: "Location id", name: "Name", type: "Type", status: "Status", admin1_name: "State", admin2_name: "LGA", admin3_name: "Ward",
   admin_level: "Admin level", path: "Path", pcode: "P-code", gers_id: "GERS id", nhfr_code: "NHFR code", nhfr_uid: "NHFR uid",
   facility_level: "Facility level", ownership: "Ownership", settlement_type: "Settlement type", managing_organization: "Managing organization",
-  part_of: "Part of", last_updated: "Last updated", lon: "Longitude", lat: "Latitude"};
+  part_of: "Part of", catchment_of: "Catchment of", last_updated: "Last updated", lon: "Longitude", lat: "Latitude"};
+const KIND = {lga: "LGA boundary", facility: "Health facility", settlement: "Settlement",
+  "facility-catchment": "Facility catchment area", "settlement-catchment": "Settlement catchment area"};
 const inspectorEl = !selected
-  ? html`<div class="muted">Click a facility, settlement or LGA on the map. Every property below comes straight from the feature in the PMTiles layer.</div>`
+  ? html`<div class="muted">Click a facility, settlement, catchment or LGA on the map. Every property below comes straight from the feature in the PMTiles layer.</div>`
   : html`<div>
       <div style="font-weight:600; font-size: 15px; margin-bottom: 2px">${selected.properties.name ?? "—"}</div>
-      <div class="muted" style="margin-bottom: 8px">${selected.layer === "lga" ? "LGA boundary" : selected.layer === "facility" ? "Health facility" : "Settlement"}${selected.properties.facility_level ? ` · ${selected.properties.facility_level}` : ""}</div>
+      <div class="muted" style="margin-bottom: 8px">${KIND[selected.layer] ?? selected.layer}${selected.properties.facility_level ? ` · ${selected.properties.facility_level}` : ""}</div>
       <table style="font-size: 12px; border-collapse: collapse; width: 100%">
         ${Object.entries(selected.properties).filter(([, v]) => v != null && v !== "").map(([k, v]) => html`<tr>
           <td style="color:#64748b; padding: 2px 8px 2px 0; vertical-align: top; white-space: nowrap">${LABELS[k] ?? k}</td>

@@ -127,6 +127,35 @@ Context: Location
 * value[x] only Attachment
 * valueAttachment.contentType = #"application/geo+json"
 
+Extension: BuildingCount
+Id: building-count
+Title: "Building Count"
+Description: "The number of building footprints inside a Location's boundary according to one footprint dataset — a locate/enumerate attribute of the area, like its boundary, not a programme figure. Repeatable: one entry per source (and, for detection datasets, per confidence threshold), each dated, so OSM, Overture and Google Open Buildings counts sit side by side and are never mistaken for one another. Used for microplanning sanity checks (buildings vs. population, households vs. buildings) on catchments, settlements and admin units (catchments round, Sep 2026)."
+Context: Location
+* ^experimental = false
+* extension contains
+    source 1..1 MS and
+    count 1..1 MS and
+    date 0..1 MS and
+    minConfidence 0..1
+* extension[source].value[x] only CodeableConcept
+* extension[source].valueCodeableConcept from ICRBuildingSourceVS (extensible)
+* extension[source] ^short = "osm | overture | google-open-buildings | microsoft | …"
+* extension[count].value[x] only unsignedInt
+* extension[count] ^short = "Footprints inside the boundary"
+* extension[date].value[x] only date
+* extension[date] ^short = "Dataset release / extraction date (YYYY-MM or YYYY-MM-DD)"
+* extension[minConfidence].value[x] only decimal
+* extension[minConfidence] ^short = "Detection confidence threshold applied (0–1), e.g. 0.6 / 0.7 / 0.8 for Google Open Buildings"
+
+Extension: CatchmentOf
+Id: catchment-of
+Title: "Catchment Of"
+Description: "On a catchment-area Location (type facility-catchment or settlement-catchment): the site Location — health facility or settlement point — whose service area or footprint this polygon is. The catchment is a separate Location from the site so that its boundary, its place in the containment tree (partOf) and the population / accessibility figures scoped to it stay distinct from the site's own point record. Searchable: Location?catchment-of=Location/<site-id>."
+Context: Location
+* ^experimental = false
+* value[x] only Reference(ICRLocation)
+
 Extension: DirectlyObservedConsumption
 Id: directly-observed-consumption
 Title: "Directly Observed Consumption"
