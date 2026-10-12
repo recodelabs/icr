@@ -1,0 +1,159 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=NGA_geom_type=polygon_type=settlement-catchment",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          8.74922,
+          9.846145
+        ],
+        [
+          8.74922,
+          10.854351
+        ],
+        [
+          9.696158,
+          10.854351
+        ],
+        [
+          9.696158,
+          9.846145
+        ],
+        [
+          8.74922,
+          9.846145
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    8.74922,
+    9.846145,
+    9.696158,
+    10.854351
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Polygon",
+    "geoparquet:feature_count": 2087,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "catchment-001f61f2-8f41-4d59-b37b-eb9410f910b9",
+        "maximum": "catchment-ffca7de6-dd88-49ac-8b18-9006d757f474"
+      },
+      "version_id": {
+        "minimum": "2",
+        "maximum": "2"
+      },
+      "last_updated": {
+        "minimum": "2026-10-06T02:18:30.857+00:00",
+        "maximum": "2026-10-06T02:19:53.261+00:00"
+      },
+      "name": {
+        "minimum": "Abdulkareem Magama catchment",
+        "maximum": "Zungulmi catchment"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "settlement-catchment",
+        "maximum": "settlement-catchment"
+      },
+      "physical_type": {
+        "minimum": "area",
+        "maximum": "area"
+      },
+      "part_of": {
+        "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+        "maximum": "catchment-fe37c141-a033-434f-b74a-4d32d9f99c7d"
+      },
+      "tier": {
+        "minimum": 4,
+        "maximum": 4
+      },
+      "admin0_name": {
+        "minimum": "/nga/nga-ba/nga-ba-5018/catchment-00bc2050-2ef5-40db-a8cd-c67c37",
+        "maximum": "/nga/nga-ba/nga-ba-5018/catchment-fe37c141-a033-434f-b74a-4d32d:"
+      },
+      "admin1_name": {
+        "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+        "maximum": "nga-ba-5018"
+      },
+      "admin2_name": {
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
+      },
+      "admin3_name": {
+        "minimum": "Bauchi",
+        "maximum": "Bauchi"
+      },
+      "admin4_name": {
+        "minimum": "Toro",
+        "maximum": "Toro"
+      },
+      "admin2_code": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "admin3_code": {
+        "minimum": "BA",
+        "maximum": "BA"
+      },
+      "admin4_code": {
+        "minimum": "5018",
+        "maximum": "5018"
+      },
+      "lon": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "lat": {
+        "minimum": "polygon",
+        "maximum": "polygon"
+      }
+    },
+    "title": "Nigeria \u2014 settlement catchment",
+    "vector:geometry_types": [
+      "Polygon"
+    ],
+    "datetime": "2026-10-06T11:35:00Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "./part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 866910,
+      "file:checksum": "12202648d1d644eb6658c658adda2053d910b4dcbb60d1fbecb4efd8c8b54cee7d0c",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}

@@ -47,12 +47,12 @@
         "maximum": "example-district"
       },
       "version_id": {
-        "minimum": "4",
-        "maximum": "4"
+        "minimum": "1",
+        "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-09-06T18:50:09.023+00:00",
-        "maximum": "2026-09-06T18:50:09.023+00:00"
+        "minimum": "2026-10-05T19:18:11.403+00:00",
+        "maximum": "2026-10-05T19:18:11.403+00:00"
       },
       "name": {
         "minimum": "Kambia District",
@@ -131,7 +131,7 @@
     "vector:geometry_types": [
       "Polygon"
     ],
-    "datetime": "2026-09-08T22:07:01Z"
+    "datetime": "2026-10-06T11:35:00Z"
   },
   "links": [
     {
@@ -156,8 +156,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 14402,
-      "file:checksum": "1220ac885e516ec1c5f3cbe9882242bef80dc4de1de4aaa004b6b5665fa0b687538e",
+      "file:size": 14403,
+      "file:checksum": "1220a1700832261b39e45760da4bbe949fa3f937dd51461037268966812e3803ee24",
       "roles": [
         "data"
       ]

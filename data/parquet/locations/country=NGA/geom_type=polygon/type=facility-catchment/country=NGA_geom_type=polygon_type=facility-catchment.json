@@ -1,0 +1,159 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=NGA_geom_type=polygon_type=facility-catchment",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          8.74922,
+          9.846145
+        ],
+        [
+          8.74922,
+          10.854351
+        ],
+        [
+          9.696158,
+          10.854351
+        ],
+        [
+          9.696158,
+          9.846145
+        ],
+        [
+          8.74922,
+          9.846145
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    8.74922,
+    9.846145,
+    9.696158,
+    10.854351
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Polygon",
+    "geoparquet:feature_count": 159,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "catchment-00bc2050-2ef5-40db-a8cd-c67c37426f08",
+        "maximum": "catchment-fe37c141-a033-434f-b74a-4d32d9f99c7d"
+      },
+      "version_id": {
+        "minimum": "2",
+        "maximum": "2"
+      },
+      "last_updated": {
+        "minimum": "2026-10-06T02:18:30.857+00:00",
+        "maximum": "2026-10-06T02:18:30.857+00:00"
+      },
+      "name": {
+        "minimum": "Al Huda Health Clinic catchment",
+        "maximum": "Zukku Health Post catchment"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "facility-catchment",
+        "maximum": "facility-catchment"
+      },
+      "physical_type": {
+        "minimum": "area",
+        "maximum": "area"
+      },
+      "part_of": {
+        "minimum": "nga-ba-5018",
+        "maximum": "nga-ba-5018"
+      },
+      "tier": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/nga/nga-ba/nga-ba-5018/catchment-00bc2050-2ef5-40db-a8cd-c67c37",
+        "maximum": "/nga/nga-ba/nga-ba-5018/catchment-fe37c141-a033-434f-b74a-4d32d:"
+      },
+      "admin1_name": {
+        "minimum": "nga",
+        "maximum": "nga-ba-5018"
+      },
+      "admin2_name": {
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
+      },
+      "admin3_name": {
+        "minimum": "Bauchi",
+        "maximum": "Bauchi"
+      },
+      "admin4_name": {
+        "minimum": "Toro",
+        "maximum": "Toro"
+      },
+      "admin2_code": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "admin3_code": {
+        "minimum": "BA",
+        "maximum": "BA"
+      },
+      "admin4_code": {
+        "minimum": "5018",
+        "maximum": "5018"
+      },
+      "lon": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "lat": {
+        "minimum": "polygon",
+        "maximum": "polygon"
+      }
+    },
+    "title": "Nigeria \u2014 facility catchment",
+    "vector:geometry_types": [
+      "Polygon"
+    ],
+    "datetime": "2026-10-06T11:35:00Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "./part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 173801,
+      "file:checksum": "1220716a13d801c4393c432a3ca4018fc87f0a20ee16dbed7181f2f231daa8968645",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}
