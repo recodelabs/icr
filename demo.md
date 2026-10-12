@@ -59,10 +59,35 @@ the browser when you finish.
 > Cinder can create, edit and delete resources on the server. This is a shared demo server,
 > so read only unless you have agreed a test with the ICR team.
 
-To use your own API key in Cinder instead, create your own org and add a project with
-**Server type** set to FHIR server, **FHIR base URL** `https://gateway.healthcampaigns.org/fhir`,
-**OAuth client credentials** turned on, the token URL above, and your client id and secret.
-Cinder stores the secret encrypted and never shows it again.
+### Set up an org and project for the demo server in Cinder
+
+Do this once to give a group access to the demo server in Cinder, or to use your own API key.
+You need the API key's client id and secret; the secret is not in this document.
+
+1. Sign in at https://cinder.recodelabs.org.
+2. Create the org. Open **Select Org** at the top right and choose **Create Organization**.
+   Enter a name, for example `ICR Demo`; the slug fills itself in. Leave the Google Cloud
+   Healthcare API settings as they are, because FHIR server projects don't use them. Choose
+   **Create Organization**. If Cinder then opens the **Credentials** tab, skip it.
+3. Create the project. Open **Select Project** and choose **Create Project**. Enter a name, for
+   example `ICR demo server`, and fill in:
+
+   | Field | Value |
+   | --- | --- |
+   | Server type | **FHIR server (HAPI, etc.)** (the form starts on Google Cloud Healthcare) |
+   | FHIR base URL | `https://gateway.healthcampaigns.org/fhir` |
+   | OAuth client credentials | on |
+   | Token URL | `https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token` |
+   | Client ID | `key-icrdemo` for the shared demo key, or your own `key-<name>` |
+   | Client secret | the key's secret |
+
+   Choose **Create Project**. Cinder stores the secret encrypted and never shows it again. To
+   use a different key later, edit the project and enter its client id and secret.
+4. Check it works. Pick `Location` in the left sidebar; you should see the location registry.
+5. Add people. Open **Select Org** and choose **Org Settings**. On the **Members** tab, enter a
+   person's email and choose **Add Member**. Someone who hasn't signed in to Cinder yet is
+   listed as **Invited** and gets access the first time they sign in with that email, with
+   ICR or Google.
 
 ## Get an API key
 
