@@ -127,6 +127,10 @@ login on this account. `./deploy.sh --dry-run` shows what would change.
 rebuilds the DHIS2 demo's Sierra Leone dashboards from the DHIS2 data in the registry.
 It is not part of this site's build or deploy. See `sldash/README.md`.
 
+`sl-redux/` is a second version of those dashboards with the same indicators, redrawn for
+comparing districts (filters, rankings, heatmaps, scorecards). Also a separate site; see
+`sl-redux/README.md`.
+
 ## Basemap
 
 `BASEMAP` at the top of `src/index.md` is the one setting. It accepts a raster XYZ
