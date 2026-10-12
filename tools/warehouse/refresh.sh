@@ -4,7 +4,7 @@
 #   1. locations:  kiln run  (incremental extract → data/raw/<server>/locations,
 #                             transform → data/parquet/locations)
 #   2. views:      for every ViewDefinition in the IG build, export its base
-#                  resource type (paged FHIR search → data/raw/<server>/<Type>.ndjson),
+#                  resource type (kiln export → data/raw/<server>/<Type>.ndjson),
 #                  run it in memory with octofhir-sof, partition the result by
 #                  country (joined from the registry) into data/parquet/<view_name>/
 #   3. tiles:      admin boundaries → data/tiles/admin.pmtiles (tools/warehouse/tiles.sh)
@@ -16,7 +16,7 @@
 #        --full re-extracts every Location instead of only the changed ones. The incremental
 #        extract cannot see deletions, so run it after Locations were deleted on the server.
 # Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
-#        KILN (~/github/kiln/target/debug/kiln)  SOF (octofhir-sof)  DATA (repo data/)
+#        KILN (~/github/kiln/target/debug/kiln; needs kiln export)  SOF (octofhir-sof)  DATA (repo data/)
 #        FHIR_CLIENT_ID, FHIR_CLIENT_SECRET: an API key for a server behind the FHIR Info
 #        Gateway (tools/hapi/gcp/README.md); FHIR_TOKEN_URL defaults to the ICR Keycloak.
 #        Without them requests carry no token, as the local HAPI needs.
@@ -33,11 +33,10 @@ SOF="${SOF:-octofhir-sof}"
 export PATH="$HOME/.local/bin:$PATH"
 
 # kiln gets and renews its own tokens from the KILN_* variables (kiln ≥ the
-# client-credentials release); the view export below reads the FHIR_* ones.
+# client-credentials release); both kiln run and kiln export use them.
 if [ -n "${FHIR_CLIENT_ID:-}" ]; then
   : "${FHIR_CLIENT_SECRET:?set FHIR_CLIENT_SECRET with FHIR_CLIENT_ID}"
-  export FHIR_TOKEN_URL="${FHIR_TOKEN_URL:-https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token}"
-  export FHIR_CLIENT_ID FHIR_CLIENT_SECRET
+  FHIR_TOKEN_URL="${FHIR_TOKEN_URL:-https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token}"
   export KILN_CLIENT_ID="$FHIR_CLIENT_ID" KILN_CLIENT_SECRET="$FHIR_CLIENT_SECRET" KILN_TOKEN_URL="$FHIR_TOKEN_URL"
   unset KILN_TOKEN
 fi
@@ -83,27 +82,7 @@ if [ "$DO_VIEWS" = 1 ]; then
     if [[ " $EXPORTED " != *" $rtype "* ]] && { [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; }; then
       EXPORTED="$EXPORTED $rtype"
       echo "   export $rtype → $ndjson"
-      python3 - "$FHIR_BASE" "$rtype" "$ndjson" <<'EOF'
-import json, os, sys, urllib.parse, urllib.request
-base, rtype, out = sys.argv[1:]
-headers = {}
-if os.environ.get("FHIR_CLIENT_ID"):
-    # One token per export: it lasts an hour, longer than any one resource type takes.
-    form = urllib.parse.urlencode({"grant_type": "client_credentials",
-                                   "client_id": os.environ["FHIR_CLIENT_ID"],
-                                   "client_secret": os.environ["FHIR_CLIENT_SECRET"]}).encode()
-    token = json.load(urllib.request.urlopen(os.environ["FHIR_TOKEN_URL"], form))["access_token"]
-    headers["Authorization"] = f"Bearer {token}"
-url = f"{base}/{rtype}?_count=500"
-n = 0
-with open(out, "w") as fh:
-    while url:
-        b = json.load(urllib.request.urlopen(urllib.request.Request(url, headers=headers)))
-        for e in b.get("entry", []):
-            fh.write(json.dumps(e["resource"]) + "\n"); n += 1
-        url = next((l["url"] for l in b.get("link", []) if l["relation"] == "next"), None)
-print(f"      {n} {rtype}")
-EOF
+      "$KILN" export --server "$FHIR_BASE" --type "$rtype" --out "$RAW"
     fi
 
     tmp="$(mktemp -t "$table.XXXX").parquet"
