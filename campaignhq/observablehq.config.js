@@ -8,6 +8,7 @@ export default {
     {name: "Campaign coverage", path: "/coverage"},
     {name: "Campaign targeting", path: "/targeting"},
     {name: "NTD endemicity", path: "/ntd"},
+    {name: "DHIS2 indicators", path: "/indicators"},
     {name: "Georegistry", path: "/georegistry"},
     {
       name: "Resources",

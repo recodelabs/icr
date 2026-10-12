@@ -421,3 +421,31 @@ Context: Location
 * extension[level] ^short = "Quadkey zoom (1–23), H3 resolution (0–15), geohash precision (1–12) — explicit even where recoverable from the cell, so 'every point indexed at level 18' is a plain query"
 * extension[cell].value[x] only string
 * extension[cell] ^short = "The cell key in the scheme's canonical string form (quadkey: base-4 digits; h3: 15 hex chars; geohash: base-32)"
+
+Extension: Dhis2Indicator
+Id: dhis2-indicator
+Title: "DHIS2 Indicator"
+Description: "How DHIS2 computes the indicator a Measure was imported from (`kiln dhis2 measures`): the indicator type's factor (100 for a percent, 1 for a plain number, 1000 for a rate per thousand), the type's name, whether the value is annualised, and the decimals DHIS2 displays. The reports' measureScore is the DHIS2 value divided by this factor, so multiply by it to show the figure as DHIS2 does."
+Context: Measure
+* ^experimental = false
+* extension contains
+    factor 1..1 MS and
+    indicatorType 0..1 MS and
+    annualized 0..1 MS and
+    decimals 0..1 MS
+* extension[factor].value[x] only decimal
+* extension[factor] ^short = "DHIS2 indicator type factor: value = numerator ÷ denominator × factor"
+* extension[indicatorType].value[x] only string
+* extension[indicatorType] ^short = "DHIS2 indicator type name, e.g. Per cent"
+* extension[annualized].value[x] only boolean
+* extension[annualized] ^short = "DHIS2 scales the value to a year for periods shorter than a year"
+* extension[decimals].value[x] only integer
+* extension[decimals] ^short = "Decimals DHIS2 displays"
+
+Extension: Dhis2Period
+Id: dhis2-period
+Title: "DHIS2 Period"
+Description: "The DHIS2 period code a MeasureReport's figures were computed for (e.g. 2025, 2025Q1, 202501, 2025W5). The period's dates are in MeasureReport.period; the code keeps the period type, which the dates alone do not say."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only string

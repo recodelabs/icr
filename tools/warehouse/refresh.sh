@@ -12,7 +12,9 @@
 #   5. push:       optional, --push: mirror data/ (minus raw/) to Cloudflare R2
 #                  (tools/warehouse/push-r2.sh; bucket R2_BUCKET, default icr)
 #
-# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push]   (default: all, no push)
+# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push] [--full]   (default: all, no push)
+#        --full re-extracts every Location instead of only the changed ones. The incremental
+#        extract cannot see deletions, so run it after Locations were deleted on the server.
 # Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
 #        KILN (~/github/kiln/target/debug/kiln)  SOF (octofhir-sof)  DATA (repo data/)
 #        FHIR_CLIENT_ID, FHIR_CLIENT_SECRET: an API key for a server behind the FHIR Info
@@ -40,13 +42,14 @@ if [ -n "${FHIR_CLIENT_ID:-}" ]; then
   unset KILN_TOKEN
 fi
 
-DO_LOC=1; DO_VIEWS=1; DO_TILES=1; DO_PUSH=0
+DO_LOC=1; DO_VIEWS=1; DO_TILES=1; DO_PUSH=0; FULL=()
 for a in "$@"; do
   case "$a" in
     --views) DO_LOC=0; DO_TILES=0 ;;
     --locations) DO_VIEWS=0; DO_TILES=0 ;;
     --tiles) DO_LOC=0; DO_VIEWS=0 ;;
     --push) DO_PUSH=1 ;;
+    --full) FULL=(--full) ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
   esac
 done
@@ -58,12 +61,13 @@ mkdir -p "$RAW" "$PARQUET" "$VIEWS"
 
 if [ "$DO_LOC" = 1 ]; then
   echo "== locations: kiln run ($FHIR_BASE → $RAW/locations → $PARQUET/locations)"
-  "$KILN" run --server "$FHIR_BASE" --snapshot "$RAW/locations" --out "$PARQUET"
+  "$KILN" run --server "$FHIR_BASE" --snapshot "$RAW/locations" --out "$PARQUET" ${FULL[@]+"${FULL[@]}"}
 fi
 
 if [ "$DO_VIEWS" = 1 ]; then
   echo "== views"
   ls "$IG_RES"/Binary-*.json >/dev/null 2>&1 || { echo "no IG build found in $IG_RES (run sushi build in ig/)" >&2; exit 1; }
+  EXPORTED=""
   for f in "$IG_RES"/Binary-*.json; do
     # Only logical-model instances of the SoF ViewDefinition.
     python3 -c "import json,sys; v=json.load(open('$f')); sys.exit(0 if str(v.get('resourceType','')).endswith('/ViewDefinition') else 1)" || continue
@@ -75,7 +79,9 @@ if [ "$DO_VIEWS" = 1 ]; then
     "$SOF" validate "$view_json" >/dev/null
 
     ndjson="$RAW/$rtype.ndjson"
-    if [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; then
+    # Each resource type is downloaded once per run, however many views read it.
+    if [[ " $EXPORTED " != *" $rtype "* ]] && { [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; }; then
+      EXPORTED="$EXPORTED $rtype"
       echo "   export $rtype → $ndjson"
       python3 - "$FHIR_BASE" "$rtype" "$ndjson" <<'EOF'
 import json, os, sys, urllib.parse, urllib.request

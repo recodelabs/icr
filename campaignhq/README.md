@@ -88,6 +88,15 @@ login on this account. `./deploy.sh --dry-run` shows what would change.
   year's MDA rounds and their coverage in the endemic LGAs, gaps (endemic LGAs
   with no round), a coverage-by-LGA chart against the WHO target, and the
   transitions to post-MDA surveillance by year.
+- **DHIS2 indicators** (`/indicators`) — indicator values imported from a DHIS2
+  instance with `kiln dhis2` (see `project/dhis2-indicators.md`): pick an indicator,
+  a map level (district / chiefdom for Sierra Leone) and a yearly or monthly period;
+  KPIs for the country and the highest and lowest unit, a choropleth of the level,
+  the trend of the country and every unit, and a table with DHIS2's numerator and
+  denominator. Values are shown as DHIS2 computes them (annualised indicators can
+  exceed 100% for months). The boundaries come from `indicator_units.geojson`
+  (the admin units that have values, simplified), not the Nigeria tiles, so any
+  country in the registry works. Reads `indicator_value` and `indicator`.
 - **Georegistry** (`/georegistry`) — every layer exported from the location
   registry as PMTiles: country, states and LGAs (`admin.pmtiles`), health
   facilities (`facilities.pmtiles`) and settlements (`settlements.pmtiles`, from
@@ -97,6 +106,12 @@ login on this account. `./deploy.sh --dry-run` shows what would change.
   map zooms to the unit), and a click on any facility, settlement or LGA lists the
   feature's properties straight from the tile (`src/components/georegistry-map.js`).
 - **About the data** (`/about`).
+
+## Sierra Leone dashboards (`sldash/`)
+
+`sldash/` is a separate Observable Framework site, with its own `package.json`, that
+rebuilds the DHIS2 demo's Sierra Leone dashboards from the DHIS2 data in the registry.
+It is not part of this site's build or deploy. See `sldash/README.md`.
 
 ## Basemap
 
