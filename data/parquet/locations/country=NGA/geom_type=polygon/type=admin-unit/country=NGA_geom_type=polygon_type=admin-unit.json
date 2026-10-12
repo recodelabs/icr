@@ -51,8 +51,8 @@
         "maximum": "1"
       },
       "last_updated": {
-        "minimum": "2026-09-06T18:58:31.676+00:00",
-        "maximum": "2026-09-06T18:58:33.127+00:00"
+        "minimum": "2026-10-05T19:27:50.671+00:00",
+        "maximum": "2026-10-05T19:27:57.879+00:00"
       },
       "name": {
         "minimum": "Aba North",
@@ -141,7 +141,7 @@
     "vector:geometry_types": [
       "MultiPolygon"
     ],
-    "datetime": "2026-09-08T22:07:01Z"
+    "datetime": "2026-10-06T11:35:00Z"
   },
   "links": [
     {
@@ -166,8 +166,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 2408126,
-      "file:checksum": "1220625a13c3a0c4195ea58a7ab1ead11c521ea6b40518d68040dd0eecc6486ddf39",
+      "file:size": 2406224,
+      "file:checksum": "122081cd3988c01a03a198aa53657555a23c12a49328f77f7a06b6c9c9753856f72c",
       "roles": [
         "data"
       ]

@@ -1,0 +1,167 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=NGA_geom_type=point_type=school",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          7.770792,
+          10.583213
+        ],
+        [
+          7.770792,
+          12.065937
+        ],
+        [
+          9.30874,
+          12.065937
+        ],
+        [
+          9.30874,
+          10.583213
+        ],
+        [
+          7.770792,
+          10.583213
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    7.770792,
+    10.583213,
+    9.30874,
+    12.065937
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 80,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "nga-sup-site-kn-20002-school-01",
+        "maximum": "nga-sup-site-kn-20036-school-04"
+      },
+      "version_id": {
+        "minimum": "1",
+        "maximum": "1"
+      },
+      "last_updated": {
+        "minimum": "2026-10-06T09:07:47.042+00:00",
+        "maximum": "2026-10-06T09:07:47.042+00:00"
+      },
+      "name": {
+        "minimum": "Ajingi school site 01 (dummy)",
+        "maximum": "Wudil school site 04 (dummy)"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "active"
+      },
+      "type": {
+        "minimum": "school",
+        "maximum": "school"
+      },
+      "physical_type": {
+        "minimum": "si",
+        "maximum": "si"
+      },
+      "part_of": {
+        "minimum": "nga-kn-20002",
+        "maximum": "nga-kn-20036"
+      },
+      "position_latitude": {
+        "minimum": 7.770792,
+        "maximum": 9.30874
+      },
+      "pcode": {
+        "minimum": 10.583213,
+        "maximum": 12.065937
+      },
+      "tier": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-school-01",
+        "maximum": "/nga/nga-kn/nga-kn-20036/nga-sup-site-kn-20036-school-04"
+      },
+      "admin1_name": {
+        "minimum": "nga",
+        "maximum": "nga-kn-20036"
+      },
+      "admin2_name": {
+        "minimum": "Nigeria",
+        "maximum": "Nigeria"
+      },
+      "admin3_name": {
+        "minimum": "Kano",
+        "maximum": "Kano"
+      },
+      "admin4_name": {
+        "minimum": "Ajingi",
+        "maximum": "Wudil"
+      },
+      "admin2_code": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "admin3_code": {
+        "minimum": "KN",
+        "maximum": "KN"
+      },
+      "admin4_code": {
+        "minimum": "20002",
+        "maximum": "20036"
+      },
+      "lon": {
+        "minimum": "NGA",
+        "maximum": "NGA"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "Nigeria \u2014 schools",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-10-06T11:35:00Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "./part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 25069,
+      "file:checksum": "1220cafbf8415cc57de4b63cb73cf6cbcee1998ad297998e7f51707942ae42324f1e",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}
