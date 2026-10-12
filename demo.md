@@ -1,8 +1,9 @@
 # ICR demo FHIR server
 
 The ICR demo server is a HAPI FHIR R4 server with the [ICR Implementation Guide](https://icr.healthcampaigns.org/)
-loaded and populated with a Nigerian location registry and demo campaign data. You reach it
-through the FHIR Info Gateway with an API key.
+loaded and populated with a Nigerian location registry and demo campaign data. You can browse
+it in a web browser with [Cinder](#browse-the-data-in-cinder), or reach it from code through
+the FHIR Info Gateway with an API key.
 
 | | |
 | --- | --- |
@@ -11,6 +12,7 @@ through the FHIR Info Gateway with an API key.
 | FHIR version | R4 (4.0.1), HAPI FHIR 8.12 |
 | Implementation Guide | https://icr.healthcampaigns.org/ |
 | CapabilityStatement | `https://gateway.healthcampaigns.org/fhir/metadata` (no key needed) |
+| Browse in a web browser | https://cinder.recodelabs.org |
 
 ## What is on the server
 
@@ -28,6 +30,39 @@ through the FHIR Info Gateway with an API key.
 
 The campaigns, coverage results and microplanning data are generated for the demo. They are
 not real campaign records.
+
+## Browse the data in Cinder
+
+[Cinder](https://cinder.recodelabs.org) is a FHIR browser. It shows the server's resources in
+a web browser, so you don't need an API key or any code. Cinder reads the server through the
+gateway with its own key.
+
+1. Get a Cinder login. You will receive either an ICR account or access for your Google
+   account.
+2. Open https://cinder.recodelabs.org and choose **Sign in with ICR** for an ICR account, or
+   **Sign in with Google**.
+3. Choose the org you were added to from **Select Org** at the top right, then the demo
+   server's project from **Select Project**.
+
+Then:
+
+- Pick a resource type in the left sidebar, for example `Location`, `CarePlan` or `Group`, to
+  list and search it. Open a resource to see its fields and follow its references, for
+  example from a health facility's `Location` to its LGA.
+- **Map** shows `Location` boundaries and points. Filter it by ICR location type and by
+  parent, for example the LGAs in one state.
+
+Signing out of Cinder doesn't sign you out of your ICR account. On a shared computer, close
+the browser when you finish.
+
+> [!warning] Cinder can also write
+> Cinder can create, edit and delete resources on the server. This is a shared demo server,
+> so read only unless you have agreed a test with the ICR team.
+
+To use your own API key in Cinder instead, create your own org and add a project with
+**Server type** set to FHIR server, **FHIR base URL** `https://gateway.healthcampaigns.org/fhir`,
+**OAuth client credentials** turned on, the token URL above, and your client id and secret.
+Cinder stores the secret encrypted and never shows it again.
 
 ## Get an API key
 
