@@ -4,59 +4,59 @@
   "stac_extensions": [
     "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
   ],
-  "id": "country=SL_geom_type=polygon_type=admin-unit",
+  "id": "country=SLE_geom_type=polygon_type=admin-unit",
   "geometry": {
     "type": "Polygon",
     "coordinates": [
       [
         [
-          -13.05,
-          8.95
+          -13.3035,
+          6.917599999547004
         ],
         [
-          -13.05,
-          9.15
+          -13.3035,
+          10.000400000452997
         ],
         [
-          -12.85,
-          9.15
+          -10.2658,
+          10.000400000452997
         ],
         [
-          -12.85,
-          8.95
+          -10.2658,
+          6.917599999547004
         ],
         [
-          -13.05,
-          8.95
+          -13.3035,
+          6.917599999547004
         ]
       ]
     ]
   },
   "bbox": [
-    -13.05,
-    8.95,
-    -12.85,
-    9.15
+    -13.3035,
+    6.917599999547004,
+    -10.2658,
+    10.000400000452997
   ],
   "properties": {
     "geoparquet:geometry_type": "Polygon",
-    "geoparquet:feature_count": 1,
+    "geoparquet:feature_count": 166,
     "table:column_statistics": {
       "id": {
-        "minimum": "example-district",
-        "maximum": "example-district"
+        "minimum": "sle-A3Fh37HWBWE",
+        "maximum": "sle-zSNUViKdkk3"
       },
       "version_id": {
         "minimum": "1",
-        "maximum": "1"
+        "maximum": "2"
       },
       "last_updated": {
-        "minimum": "2026-10-05T19:18:11.403+00:00",
-        "maximum": "2026-10-05T19:18:11.403+00:00"
+        "minimum": "2026-10-12T03:52:52.614+00:00",
+        "maximum": "2026-10-12T03:58:51.123+00:00"
       },
       "name": {
-        "minimum": "Kambia District",
-        "maximum": "Kambia District"
+        "minimum": "BMC",
+        "maximum": "Yoni"
       },
       "status": {
         "minimum": "active",
@@ -71,56 +71,57 @@
         "maximum": "jdn"
       },
       "part_of": {
-        "minimum": "example-country",
-        "maximum": "example-country"
+        "minimum": "sle-ImspTQPwCqd",
+        "maximum": "sle-qhqAxPSTUXp",
+        "null_count": 1
       },
       "position_longitude": {
-        "minimum": "08f2a3b4c5d6e7f8-division-example",
-        "maximum": "SL0201"
+        "minimum": "A3Fh37HWBWE",
+        "maximum": "zSNUViKdkk3"
       },
       "gers_id": {
-        "minimum": "SL0201",
-        "maximum": "SL0201"
-      },
-      "settlement_type": {
-        "minimum": "08f2a3b4c5d6e7f8-division-example",
-        "maximum": "08f2a3b4c5d6e7f8-division-example"
+        "minimum": "SLE",
+        "maximum": "SLE",
+        "null_count": 165
       },
       "tier": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": 0,
+        "maximum": 2
       },
       "path": {
-        "minimum": 1,
-        "maximum": 1
+        "minimum": 0,
+        "maximum": 2
       },
       "admin0_name": {
-        "minimum": "/example-country/example-district",
-        "maximum": "/example-country/example-district"
+        "minimum": "/sle-ImspTQPwCqd",
+        "maximum": "/sle-ImspTQPwCqd/sle-qhqAxPSTUXp/sle-vEvs2ckGNQj"
       },
       "admin1_name": {
-        "minimum": "example-country",
-        "maximum": "example-country"
+        "minimum": "sle-ImspTQPwCqd",
+        "maximum": "sle-qhqAxPSTUXp",
+        "null_count": 1
       },
       "admin2_name": {
         "minimum": "Sierra Leone",
         "maximum": "Sierra Leone"
       },
       "admin3_name": {
-        "minimum": "Kambia District",
-        "maximum": "Kambia District"
+        "minimum": "Bo",
+        "maximum": "Western Area",
+        "null_count": 1
+      },
+      "admin4_name": {
+        "minimum": "BMC",
+        "maximum": "Yoni",
+        "null_count": 14
       },
       "admin2_code": {
-        "minimum": "SL",
-        "maximum": "SL"
-      },
-      "admin3_code": {
-        "minimum": "SL0201",
-        "maximum": "SL0201"
+        "minimum": "SLE",
+        "maximum": "SLE"
       },
       "lon": {
-        "minimum": "SL",
-        "maximum": "SL"
+        "minimum": "SLE",
+        "maximum": "SLE"
       },
       "lat": {
         "minimum": "polygon",
@@ -131,7 +132,7 @@
     "vector:geometry_types": [
       "Polygon"
     ],
-    "datetime": "2026-10-06T11:35:00Z"
+    "datetime": "2026-10-12T05:33:02Z"
   },
   "links": [
     {
@@ -156,8 +157,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 14403,
-      "file:checksum": "1220a1700832261b39e45760da4bbe949fa3f937dd51461037268966812e3803ee24",
+      "file:size": 323977,
+      "file:checksum": "1220b30d663127fbad2a54d629fbf4f022608622bcbbc2644b3d1e2d43c5bc980c16",
       "roles": [
         "data"
       ]

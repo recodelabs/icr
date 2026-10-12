@@ -1,0 +1,92 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorValue",
+  "title": "ICR indicator values",
+  "description": "One row per indicator value imported from DHIS2 (`kiln dhis2 reports`): one\nindicator, one place, one period. `score` is the DHIS2 value divided by the\nindicator's factor (a proportion 0\u20131 for a percent indicator); `numerator`\nand `denominator` are DHIS2's own, or `count` for a plain-number indicator.\nDHIS2 computes every value for its own place and period, so values are never\nsummed across places or periods: read the level you want. Join `measure` to\n`IcrIndicator.url` and `location_id` to the registry.",
+  "name": "IcrIndicatorValue",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "MeasureReport",
+  "where": [
+    {
+      "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').exists()",
+      "description": "Only indicator values imported from DHIS2"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "report_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "measure",
+          "path": "measure",
+          "type": "canonical"
+        },
+        {
+          "name": "location_id",
+          "path": "subject.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "location_name",
+          "path": "subject.display",
+          "type": "string"
+        },
+        {
+          "name": "period",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').value.ofType(string)",
+          "type": "string",
+          "description": "DHIS2 period code: 2025, 2025Q1, 202501, 2025W5, \u2026"
+        },
+        {
+          "name": "period_start",
+          "path": "period.start",
+          "type": "date"
+        },
+        {
+          "name": "period_end",
+          "path": "period.end",
+          "type": "date"
+        },
+        {
+          "name": "numerator",
+          "path": "group.first().population.where(code.coding.code = 'numerator').first().count",
+          "type": "integer"
+        },
+        {
+          "name": "denominator",
+          "path": "group.first().population.where(code.coding.code = 'denominator').first().count",
+          "type": "integer"
+        },
+        {
+          "name": "count",
+          "path": "group.first().population.where(code.coding.code = 'initial-population').first().count",
+          "type": "integer",
+          "description": "The value of a plain-number (cohort) indicator"
+        },
+        {
+          "name": "score",
+          "path": "group.first().measureScore.value",
+          "type": "decimal"
+        },
+        {
+          "name": "reported",
+          "path": "date",
+          "type": "dateTime",
+          "description": "When DHIS2 last rebuilt its analytics tables before the import"
+        },
+        {
+          "name": "source",
+          "path": "meta.tag.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs').code.first()",
+          "type": "code"
+        }
+      ]
+    }
+  ]
+}

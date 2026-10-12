@@ -1,0 +1,179 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/vector/v0.1.0/schema.json"
+  ],
+  "id": "country=SLE_geom_type=point_type=facility",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -13.29096,
+          6.9679
+        ],
+        [
+          -13.29096,
+          9.9432
+        ],
+        [
+          -10.4887,
+          9.9432
+        ],
+        [
+          -10.4887,
+          6.9679
+        ],
+        [
+          -13.29096,
+          6.9679
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -13.29096,
+    6.9679,
+    -10.4887,
+    9.9432
+  ],
+  "properties": {
+    "geoparquet:geometry_type": "Point",
+    "geoparquet:feature_count": 601,
+    "table:column_statistics": {
+      "id": {
+        "minimum": "sle-ABM75Q1UfoP",
+        "maximum": "sle-zsqxu7ZZRpO"
+      },
+      "version_id": {
+        "minimum": "1",
+        "maximum": "2"
+      },
+      "last_updated": {
+        "minimum": "2026-10-12T03:53:03.917+00:00",
+        "maximum": "2026-10-12T05:02:52.354+00:00"
+      },
+      "name": {
+        "minimum": "Ahamadyya Mission Cl",
+        "maximum": "Zimmi CHC"
+      },
+      "status": {
+        "minimum": "active",
+        "maximum": "inactive"
+      },
+      "type": {
+        "minimum": "facility",
+        "maximum": "facility"
+      },
+      "physical_type": {
+        "minimum": "si",
+        "maximum": "si"
+      },
+      "part_of": {
+        "minimum": "sle-A3Fh37HWBWE",
+        "maximum": "sle-zSNUViKdkk3"
+      },
+      "managing_organization": {
+        "minimum": "org-sle-ABM75Q1UfoP",
+        "maximum": "org-sle-zsqxu7ZZRpO"
+      },
+      "position_longitude": {
+        "minimum": "ABM75Q1UfoP",
+        "maximum": "zsqxu7ZZRpO"
+      },
+      "position_latitude": {
+        "minimum": -13.29096,
+        "maximum": -10.4887
+      },
+      "pcode": {
+        "minimum": 6.9679,
+        "maximum": 9.9432
+      },
+      "facility_level_text": {
+        "minimum": "https://icr.healthcampaigns.org/identifiers/dhis2/sl-demo/orguni",
+        "maximum": "https://icr.healthcampaigns.org/identifiers/dhis2/sl-demo/orgunj"
+      },
+      "ownership_text": {
+        "minimum": "ABM75Q1UfoP",
+        "maximum": "zsqxu7ZZRpO"
+      },
+      "tier": {
+        "minimum": 3,
+        "maximum": 3
+      },
+      "admin0_name": {
+        "minimum": "/sle-ImspTQPwCqd/sle-O6uvpzGd5pu/sle-ARZ4y5i4reU/sle-UGVLYrO63mR",
+        "maximum": "/sle-ImspTQPwCqd/sle-qhqAxPSTUXp/sle-vEvs2ckGNQj/sle-K6oyIMh7Lee"
+      },
+      "admin1_name": {
+        "minimum": "sle-A3Fh37HWBWE",
+        "maximum": "sle-zSNUViKdkk3"
+      },
+      "admin2_name": {
+        "minimum": "Sierra Leone",
+        "maximum": "Sierra Leone"
+      },
+      "admin3_name": {
+        "minimum": "Bo",
+        "maximum": "Western Area"
+      },
+      "admin4_name": {
+        "minimum": "BMC",
+        "maximum": "Yoni"
+      },
+      "admin2_code": {
+        "minimum": "SLE",
+        "maximum": "SLE"
+      },
+      "geom_type": {
+        "minimum": "{\"resourceType\":\"Organization\",\"id\":\"org-sle-ABM75Q1UfoP\",\"meta\"",
+        "maximum": "{\"resourceType\":\"Organization\",\"id\":\"org-sle-zsqxu7ZZRpO\",\"meta#"
+      },
+      "lon": {
+        "minimum": "SLE",
+        "maximum": "SLE"
+      },
+      "lat": {
+        "minimum": "point",
+        "maximum": "point"
+      }
+    },
+    "title": "Sierra Leone \u2014 health facilities",
+    "vector:geometry_types": [
+      "Point"
+    ],
+    "datetime": "2026-10-12T05:33:02Z"
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "../../../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    },
+    {
+      "rel": "parent",
+      "href": "../../../collection.json",
+      "type": "application/json",
+      "title": "ICR location registry"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "./part-0.parquet",
+      "type": "application/vnd.apache.parquet",
+      "file:size": 159489,
+      "file:checksum": "12207399a479d36ba21829d3f2dac1c932d146bdd51beebe64a2c5e1de4a45627e41",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "parquet/locations"
+}
