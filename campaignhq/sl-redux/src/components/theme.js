@@ -1,23 +1,36 @@
-// Colours and number formats. Values are coloured on an orange → blue scale (worse → better),
-// which reads the same for the common forms of colour blindness; for items where lower is
-// better (drop-out, malnutrition, deaths) the scale is reversed. Counts use one blue ramp.
+// Colours and number formats. Values are coloured on a muted orange → slate blue scale
+// (worse → better), which reads the same for the common forms of colour blindness; for items
+// where lower is better (drop-out, malnutrition, deaths) the scale is reversed. Counts, where
+// neither is better, use plain greys. The palette is kept low in saturation, as in a printed figure.
 
 /** Series colours for categories that have no order (antigens, forms, facility types). */
-export const SERIES = ["#4263eb", "#12b886", "#f59f00", "#e64980", "#7950f2", "#15aabf", "#fd7e14", "#868e96",
-                       "#82c91e", "#be4bdb", "#1c7ed6", "#fab005", "#20c997", "#fa5252", "#5c7cfa", "#94d82d", "#cc5de8", "#ff922b"];
+export const SERIES = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#76b7b2", "#edc948", "#b07aa1", "#9c755f",
+                       "#bab0ac", "#a0cbe8", "#ffbe7d", "#8cd17d", "#ff9d9a", "#86bcb6", "#f1ce63", "#d4a6c8", "#d7b5a6", "#79706e"];
 
 /** Highlight colours for the districts picked in the filter. */
-export const FOCUS = ["#4263eb", "#e64980", "#12b886", "#f59f00", "#7950f2", "#15aabf", "#fd7e14", "#82c91e"];
+export const FOCUS = ["#4e79a7", "#e15759", "#59a14f", "#f28e2b", "#b07aa1", "#76b7b2", "#9c755f", "#edc948"];
 
 export const INK = "#1f2937";
 export const MUTED = "#6b7280";
 export const FAINT = "#d1d5db";
 export const NATIONAL = "#111827";
 
+/** Single-colour marks (sparklines, small multiples) and their fills. */
+export const ACCENT = "#4a6480";
+export const ACCENT_FILL = "#dde3ea";
+export const ACCENT_TINT = "#eef1f4";
+/** Target lines, and last year's mark where one is drawn beside this year's. */
+export const TARGET = "#5b8c5a";
+export const PREVIOUS = "#8064a2";
+/** Better / worse / neither, for changes. */
+export const BETTER = "#4a6480";
+export const WORSE = "#b4541f";
+export const NEUTRAL = "#a3abb5";
+
 /** Worse → better, six classes. */
-export const PERFORMANCE = ["#c2410c", "#f97316", "#fdba74", "#bfdbfe", "#60a5fa", "#1d4ed8"];
+export const PERFORMANCE = ["#b4541f", "#da8a5b", "#efc8a7", "#d2dae3", "#8fa3b7", "#4a6480"];
 /** Counts, low → high. */
-export const QUANTITY = ["#eef2ff", "#c7d2fe", "#a5b4fc", "#818cf8", "#6366f1", "#4338ca"];
+export const QUANTITY = ["#f3f3f2", "#dcdcda", "#bdbdba", "#969693", "#6e6e6b", "#474745"];
 
 /** Items where a lower value is better (by DHIS2 uid). */
 const LOWER_IS_BETTER = new Set([

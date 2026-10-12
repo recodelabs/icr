@@ -3,7 +3,8 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
 import {html} from "npm:htl";
-import {SERIES, FOCUS, NATIONAL, MUTED, FAINT, INK, colorOf, colorsFor, breaksFor, direction, ink,
+import {SERIES, FOCUS, NATIONAL, MUTED, FAINT, INK, ACCENT, ACCENT_FILL, ACCENT_TINT, TARGET, PREVIOUS,
+        BETTER, WORSE, NEUTRAL, PERFORMANCE, colorOf, colorsFor, breaksFor, direction, ink,
         fmt, fmtShort, fmtValue, unitOf} from "./theme.js";
 import {periodDate, periodName, COUNTRY} from "./data.js";
 
@@ -48,9 +49,9 @@ export function kpi({label, item, value, prev, prevLabel = "last year", spark = 
     width: 96, height: 32, margin: 2, axis: null, style: STYLE,
     y: {domain: d3.extent(spark, (s) => s.value), nice: false},
     marks: [
-      Plot.areaY(spark, {x: "date", y1: () => d3.min(spark, (s) => s.value), y2: "value", fill: "#e0e7ff", fillOpacity: 0.7, curve: "monotone-x"}),
-      Plot.lineY(spark, {x: "date", y: "value", stroke: "#4263eb", strokeWidth: 1.5, curve: "monotone-x"}),
-      Plot.dot(spark.slice(-1), {x: "date", y: "value", fill: "#4263eb", r: 2.5})
+      Plot.areaY(spark, {x: "date", y1: () => d3.min(spark, (s) => s.value), y2: "value", fill: ACCENT_FILL, fillOpacity: 0.7, curve: "monotone-x"}),
+      Plot.lineY(spark, {x: "date", y: "value", stroke: ACCENT, strokeWidth: 1.5, curve: "monotone-x"}),
+      Plot.dot(spark.slice(-1), {x: "date", y: "value", fill: ACCENT, r: 2.5})
     ]
   }) : "";
   return html`<div class="rx-kpi">
@@ -77,8 +78,8 @@ export function rank(rows, {item, national, focus = [], width = 400, valueLabel 
     x: {domain: [Math.min(0, d3.min(xs)), d3.max(xs) * 1.02], grid: true, label: null, tickFormat: (v) => fmtShort(v) + unitOf(item), ticks: 5},
     y: {domain: data.map((r) => r.name), label: null, tickSize: 0},
     marks: [
-      Plot.barX(data.filter((r) => focusSet.has(r.name)), {x1: () => Math.min(0, d3.min(xs)), x2: () => d3.max(xs) * 1.02, y: "name", fill: "#eef2ff", insetTop: -1, insetBottom: -1}),
-      target != null ? Plot.ruleX([target], {stroke: "#16a34a", strokeWidth: 1.5}) : null,
+      Plot.barX(data.filter((r) => focusSet.has(r.name)), {x1: () => Math.min(0, d3.min(xs)), x2: () => d3.max(xs) * 1.02, y: "name", fill: ACCENT_TINT, insetTop: -1, insetBottom: -1}),
+      target != null ? Plot.ruleX([target], {stroke: TARGET, strokeWidth: 1.5}) : null,
       national != null ? Plot.ruleX([national], {stroke: NATIONAL, strokeDasharray: "3,3", strokeWidth: 1}) : null,
       national != null ? Plot.text([national], {x: (v) => v, frameAnchor: "top", dy: -2, text: () => `${COUNTRY} ${fmtValue(item, national)}`, fill: MUTED, fontSize: 10, textAnchor: "start", dx: 3}) : null,
       Plot.link(data.filter((r) => r.prev != null), {x1: "prev", x2: "value", y1: "name", y2: "name", stroke: FAINT, strokeWidth: 2}),
@@ -136,7 +137,7 @@ export function trend(rows, {item, focus = [], width = 640, height = 200, xForma
     y: {label: null, grid: true, tickFormat: (v) => fmtShort(v) + unitOf(item), nice: true, zero: direction(item) == null},
     marks: [
       band && ext.length ? Plot.areaY(ext, {x: "date", y1: "lo", y2: "hi", fill: "#e5e7eb", fillOpacity: 0.7, curve: "monotone-x"}) : null,
-      target != null ? Plot.ruleY([target], {stroke: "#16a34a", strokeDasharray: "4,3"}) : null,
+      target != null ? Plot.ruleY([target], {stroke: TARGET, strokeDasharray: "4,3"}) : null,
       focus.length ? null : Plot.lineY(units, {x: "date", y: "value", z: "name", stroke: "#cbd5e1", strokeWidth: 0.8, curve: "monotone-x"}),
       Plot.lineY(picked, {x: "date", y: "value", z: "name", stroke: (r) => colorOfFocus(r.name), strokeWidth: 1.8, curve: "monotone-x"}),
       Plot.lineY(nat, {x: "date", y: "value", stroke: NATIONAL, strokeWidth: 2.2, curve: "monotone-x"}),
@@ -187,7 +188,7 @@ export function ladder(rows, {categoryOrder, seriesOrder, colors = SERIES, width
     y: {domain: cats, label: null, tickSize: 0},
     color: {domain: series, range: colors},
     marks: [
-      target != null ? Plot.ruleX([target], {stroke: "#16a34a", strokeDasharray: "4,3"}) : null,
+      target != null ? Plot.ruleX([target], {stroke: TARGET, strokeDasharray: "4,3"}) : null,
       Plot.link(range, {x1: "lo", x2: "hi", y1: "c", y2: "c", stroke: FAINT, strokeWidth: 3}),
       Plot.dot(data, {x: "value", y: "category", fill: "series", r: 5, stroke: "#fff", strokeWidth: 0.8}),
       Plot.tip(data, Plot.pointer({x: "value", y: "category", title: (r) => `${r.category}\n${r.series}: ${fmt(r.value)}${unit}`}))
@@ -254,7 +255,7 @@ export function bullet({item, value, prev, max = 120, width = 320, label}) {
       marks: [
         Plot.rectX(bands, {x1: "x0", x2: "x1", y1: 0, y2: 1, fill: "fill", fillOpacity: 0.35}),
         value != null ? Plot.rectX([value], {x1: 0, x2: (v) => Math.min(v, max), y1: 0.32, y2: 0.68, fill: INK}) : null,
-        prev != null ? Plot.ruleX([prev], {y1: 0.12, y2: 0.88, stroke: "#9333ea", strokeWidth: 2}) : null
+        prev != null ? Plot.ruleX([prev], {y1: 0.12, y2: 0.88, stroke: PREVIOUS, strokeWidth: 2}) : null
       ]
     })}
   </div>`;
@@ -319,7 +320,7 @@ export function slope(rows, {item, fromLabel, toLabel, focus = [], width = 320, 
   const gap = (hi - lo) / Math.max(8, (height - 30) / 12);
   const yFrom = spread(data.map((r) => r.from), gap), yTo = spread(data.map((r) => r.to), gap);
   const labelled = data.map((r, i) => ({...r, yFrom: yFrom[i], yTo: yTo[i]}));
-  const strokeOf = (r) => focus.length && !focus.includes(r.name) ? "#e5e7eb" : (r.to >= r.from) === (d !== "down") ? "#2563eb" : "#ea580c";
+  const strokeOf = (r) => focus.length && !focus.includes(r.name) ? "#e5e7eb" : (r.to >= r.from) === (d !== "down") ? BETTER : WORSE;
   return Plot.plot({
     width, height, marginLeft: 96, marginRight: 96, marginTop: 18, marginBottom: 8, style: STYLE,
     x: {domain: [fromLabel, toLabel], axis: "top", label: null, tickSize: 0, inset: 10},
@@ -388,8 +389,8 @@ export function multiples(rows, {item, names, columns = 5, width = 900, panelHei
     x: {axis: null},
     y: {label: null, ticks: 2, grid: true, domain: [Math.min(0, ext[0]), ext[1]], tickFormat: (v) => fmtShort(v)},
     marks: [
-      Plot.areaY(unitsPos, {x: "date", y: "value", fx: "fx", fy: "fy", fill: (r) => focus.includes(r.name) ? "#c7d2fe" : "#e0e7ff", curve: "monotone-x"}),
-      Plot.lineY(unitsPos, {x: "date", y: "value", fx: "fx", fy: "fy", stroke: (r) => focus.includes(r.name) ? FOCUS[focus.indexOf(r.name) % FOCUS.length] : "#4263eb", strokeWidth: 1.4, curve: "monotone-x"}),
+      Plot.areaY(unitsPos, {x: "date", y: "value", fx: "fx", fy: "fy", fill: (r) => focus.includes(r.name) ? ACCENT_FILL : ACCENT_TINT, curve: "monotone-x"}),
+      Plot.lineY(unitsPos, {x: "date", y: "value", fx: "fx", fy: "fy", stroke: (r) => focus.includes(r.name) ? FOCUS[focus.indexOf(r.name) % FOCUS.length] : ACCENT, strokeWidth: 1.4, curve: "monotone-x"}),
       Plot.lineY(natPos, {x: "date", y: "value", fx: "fx", fy: "fy", z: null, stroke: NATIONAL, strokeDasharray: "3,2", strokeWidth: 1}),
       Plot.text(labels, {fx: "fx", fy: "fy", frameAnchor: "top-left", dy: -13, text: "name", fontWeight: 600, fill: INK}),
       Plot.tip(unitsPos, Plot.pointerX({x: "date", y: "value", fx: "fx", fy: "fy", title: (r) => `${r.name}, ${periodName(r.period)}\n${fmtValue(item, r.value)}`}))
@@ -434,7 +435,7 @@ export function lines(rows, {seriesOrder, colors = SERIES, width = 640, height =
     y: {label: null, grid: true, nice: true, tickFormat: (v) => fmtShort(v) + unit},
     color: {domain: series, range: colors},
     marks: [
-      target != null ? Plot.ruleY([target], {stroke: "#16a34a", strokeDasharray: "4,3"}) : null,
+      target != null ? Plot.ruleY([target], {stroke: TARGET, strokeDasharray: "4,3"}) : null,
       Plot.lineY(data, {x: "date", y: "value", stroke: "series", strokeWidth: 1.8, curve: "monotone-x"}),
       Plot.dot(last, {x: "date", y: "value", fill: "series", r: 2.5}),
       Plot.text(last, {x: "date", y: "labelY", text: (r) => r.series.length > 22 ? r.series.slice(0, 21) + "…" : r.series, fill: "series", textAnchor: "start", dx: 6, fontWeight: 500}),
@@ -475,7 +476,7 @@ export function yearOnYear(rows, {item, width = 640, height = 200} = {}) {
     x: {domain: data.map((r) => r.month), label: null, tickSize: 0},
     y: {label: null, grid: true, tickFormat: (v) => `${v > 0 ? "+" : ""}${fmtShort(v)}${unit}`},
     marks: [
-      Plot.barY(data, {x: "month", y: "diff", fill: (r) => d == null ? "#94a3b8" : (r.diff >= 0) === (d === "up") ? "#60a5fa" : "#fb923c", rx: 2}),
+      Plot.barY(data, {x: "month", y: "diff", fill: (r) => d == null ? NEUTRAL : (r.diff >= 0) === (d === "up") ? PERFORMANCE[4] : PERFORMANCE[1], rx: 2}),
       Plot.ruleY([0]),
       Plot.tip(data, Plot.pointerX({x: "month", y: "diff", title: (r) => `${r.month}\nthis year ${fmtValue(item, r.now)}\nlast year ${fmtValue(item, r.before)}`}))
     ]

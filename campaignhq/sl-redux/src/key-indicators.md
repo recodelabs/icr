@@ -15,7 +15,7 @@ sql:
 import {load, rows, periods, yearsOf, namer, placeOf, DISTRICTS, COUNTRY} from "./components/data.js";
 import {filterBar, explore, headline, itemOf} from "./components/compare.js";
 import {panel, scorecard, ladder, shares, stackBars, swatches} from "./components/viz.js";
-import {SERIES} from "./components/theme.js";
+import {SERIES, PERFORMANCE} from "./components/theme.js";
 
 const DX = {
   morbidityRate: "eZDhcZi6FLP.REPORTING-RATE",
@@ -84,8 +84,8 @@ ${panel(`Antenatal care and delivery, ${P.year}`, resize((w) => ladder(ancRows, 
 ${panel(`Immunization coverage, ${P.year}`, resize((w) => ladder(immRows, {categoryOrder: immOrder, seriesOrder: immItems.map((dx) => short(itemOf(all, dx, nameOf))), width: w, target: 80})),
   {subtitle: "Sorted by Penta 3; green line at 80%", legend: swatches(immItems.map((dx) => short(itemOf(all, dx, nameOf))))})}
 ${panel(`Weight for height, ${P.year}`, resize((w) => shares(wfhRows, {categoryOrder: [COUNTRY, ...shown.slice().sort((a, b) => (at(DX.wfhBelow70, b) ?? 0) - (at(DX.wfhBelow70, a) ?? 0))],
-    seriesOrder: WFH.map((dx) => short(itemOf(all, dx, nameOf))), colors: ["#60a5fa", "#fdba74", "#c2410c"], width: w})),
-  {subtitle: "Children weighed, by weight for height; most under 70% first", legend: swatches(WFH.map((dx) => short(itemOf(all, dx, nameOf))), ["#60a5fa", "#fdba74", "#c2410c"])})}
+    seriesOrder: WFH.map((dx) => short(itemOf(all, dx, nameOf))), colors: [PERFORMANCE[4], PERFORMANCE[2], PERFORMANCE[0]], width: w})),
+  {subtitle: "Children weighed, by weight for height; most under 70% first", legend: swatches(WFH.map((dx) => short(itemOf(all, dx, nameOf))), [PERFORMANCE[4], PERFORMANCE[2], PERFORMANCE[0]])})}
 ${panel(`Cases by diagnosis, ${P.year}: ${place}`, caseRows.length ? resize((w) => stackBars(caseRows, {seriesOrder: MM.filter((t) => caseRows.some((r) => r.series === t)), colors: [SERIES[0], SERIES[1], SERIES[2], SERIES[9]], width: w})) : html`<p class="rx-sub">No case counts for ${P.year}.</p>`,
   {legend: swatches(MM, [SERIES[0], SERIES[1], SERIES[2], SERIES[9]])})}
 </div>

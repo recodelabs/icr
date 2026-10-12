@@ -14,13 +14,14 @@ sql:
 import {load, periods, yearsOf, namer, periodName, DISTRICTS, COUNTRY} from "./components/data.js";
 import {filterBar, explore, headline, itemOf} from "./components/compare.js";
 import {panel, shares, scatter, heatmap, swatches, scaleKey} from "./components/viz.js";
+import {PERFORMANCE} from "./components/theme.js";
 
 const DX = {
   childHealthRate: "BfMAe6Itzgt.REPORTING-RATE",
   wfh70: "vKWOc4itBo2", wfh7079: "nfG18MJZX5o", wfh80: "GQHKiAe3DHR"
 };
 const WFH = [DX.wfh80, DX.wfh7079, DX.wfh70];
-const WFH_COLORS = ["#60a5fa", "#fdba74", "#c2410c"];
+const WFH_COLORS = [PERFORMANCE[4], PERFORMANCE[2], PERFORMANCE[0]];
 const all = await load(sql, Object.values(DX));
 const nameOf = namer(all);
 const geojson = await FileAttachment("data/units.geojson").json();

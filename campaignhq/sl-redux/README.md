@@ -36,10 +36,11 @@ Every page has the same parts:
   dot ladders (several indicators per district), 100% bars (facility type, fixed/outreach),
   scatter plots (two indicators per district), slope charts, small multiples and scorecards.
 
-Charts are kept short and use one colour scale throughout: orange is worse and blue is
-better, reversed for indicators where lower is better (drop-out, malnutrition, maternal
-deaths, diarrhoea incidence). Counts use a single indigo ramp. Coverage-type percentages
-share fixed breaks (40, 55, 70, 80, 90); other values use quantile breaks.
+Charts are kept short and use one muted colour scale throughout: orange is worse and slate
+blue is better, reversed for indicators where lower is better (drop-out, malnutrition, maternal
+deaths, diarrhoea incidence). Counts, where neither is better, use plain greys. Coverage-type
+percentages share fixed breaks (40, 55, 70, 80, 90); other values use quantile breaks. All
+colours are in `src/components/theme.js`.
 
 | File | What it holds |
 |---|---|

@@ -15,7 +15,7 @@ sql:
 import {load, loadStrata, pick, periods, yearsOf, namer, periodName, periodDate, DIM, DISTRICTS, COUNTRY, COUNTRY_ID, districtIds} from "./components/data.js";
 import {filterBar, explore, headline, itemOf} from "./components/compare.js";
 import {panel, heatmap, trend, shares, backToBack, stackedArea, swatches, scaleKey} from "./components/viz.js";
-import {SERIES, fmt, fmtShort, colorOf} from "./components/theme.js";
+import {SERIES, PERFORMANCE, fmt, fmtShort, colorOf} from "./components/theme.js";
 
 const DX = {
   anc1Cov: "Uvn6LCg7dVU", anc2Cov: "OdiHJayrsKo", anc3Cov: "sB79w2hiLp8", ipt2Cov: "c8fABiNpT0B", llitnCov: "Tt5TAvdfdVK",
@@ -91,7 +91,7 @@ ${panel(`${anc1Item.name}: ${P.year} against ${P.prevYear}`, resize((w) => Plot.
   x: {domain: yoy.map((d) => d.month), label: null, tickSize: 0},
   y: {label: null, grid: true, tickFormat: (v) => `${v > 0 ? "+" : ""}${v} pts`},
   marks: [
-    Plot.barY(yoy, {x: "month", y: "diff", fill: (d) => d.diff >= 0 ? "#60a5fa" : "#fb923c", rx: 2}),
+    Plot.barY(yoy, {x: "month", y: "diff", fill: (d) => d.diff >= 0 ? PERFORMANCE[4] : PERFORMANCE[1], rx: 2}),
     Plot.ruleY([0]),
     Plot.tip(yoy, Plot.pointerX({x: "month", y: "diff", title: (d) => `${d.month}\n${P.year}: ${fmt(d.now)}%\n${P.prevYear}: ${fmt(d.before)}%`}))
   ]})), {subtitle: `${placeName}: each month's change on the same month last year (hover for the values)`})}

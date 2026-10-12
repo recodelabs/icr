@@ -3,11 +3,14 @@
 @import url("observablehq:theme-air.css");
 
 :root {
-  --rx-ink: #1f2937; --rx-muted: #6b7280; --rx-line: #e5e7eb; --rx-bg: #f5f6f8; --rx-accent: #4263eb;
+  --rx-ink: #1f2937; --rx-muted: #6b7280; --rx-line: #e5e7eb; --rx-bg: #f5f6f8; --rx-accent: #4a6480;
   --sans-serif: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --theme-foreground-focus: #4263eb;
+  --theme-foreground-focus: #4a6480;
+  /* The page background is the theme's (it paints html, so the whole page); a background on
+     body alone leaves white bands above and below the content. */
+  --theme-background: var(--rx-bg);
 }
-body { background: var(--rx-bg); font-family: var(--sans-serif); color: var(--rx-ink); }
+body { font-family: var(--sans-serif); color: var(--rx-ink); }
 #observablehq-main { max-width: 1320px; }
 h1 { font-weight: 700; letter-spacing: -0.02em; font-size: 26px; margin-bottom: 2px; max-width: none; }
 .rx-lede { color: var(--rx-muted); margin: 0 0 14px; max-width: 900px; font-size: 14px; }
@@ -23,7 +26,7 @@ h2.rx-section { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06
 .rx-filter-districts form { --label-width: 70px; max-width: none; }
 .rx-filter-districts form > div { display: flex; flex-wrap: wrap; gap: 4px; }
 .rx-filter-districts form > div label { border: 1px solid var(--rx-line); background: #fff; border-radius: 999px; padding: 2px 10px 2px 6px; font-size: 12px; color: var(--rx-ink); cursor: pointer; margin: 0; }
-.rx-filter-districts form > div label:has(input:checked) { background: #e7ecff; border-color: #a5b4fc; color: #3b4fd8; }
+.rx-filter-districts form > div label:has(input:checked) { background: #e6ebf0; border-color: #a9b6c4; color: #34465b; }
 .rx-filter-districts input[type=checkbox] { accent-color: var(--rx-accent); margin-right: 3px; }
 .rx-clear { font: 12px var(--sans-serif); border: 1px solid var(--rx-line); background: #fff; border-radius: 6px; padding: 3px 9px; cursor: pointer; color: var(--rx-muted); }
 .rx-clear:hover { color: var(--rx-ink); border-color: #c7cbd1; }
@@ -49,7 +52,7 @@ h2.rx-section { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06
 .rx-kpi-value { font-size: 24px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .rx-kpi-sub { font-size: 11.5px; color: var(--rx-muted); margin-top: 2px; }
 .rx-delta { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--rx-muted); }
-.rx-delta.up { color: #1d4ed8; } .rx-delta.down { color: #c2410c; }
+.rx-delta.up { color: #4a6480; } .rx-delta.down { color: #b4541f; }
 
 /* Comparison block */
 .rx-explore-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -60,7 +63,7 @@ h2.rx-section { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06
 .rx-stats span { font-size: 11.5px; color: var(--rx-muted); }
 .rx-stats b { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
 .rx-stats em { font-style: normal; font-size: 11.5px; color: var(--rx-muted); }
-.rx-stats em.up { color: #1d4ed8; font-weight: 600; } .rx-stats em.down { color: #c2410c; font-weight: 600; }
+.rx-stats em.up { color: #4a6480; font-weight: 600; } .rx-stats em.down { color: #b4541f; font-weight: 600; }
 .rx-stats-key { margin-left: auto; }
 .rx-two { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); align-items: start; }
 .rx-map { border-radius: 8px; overflow: hidden; }
@@ -87,12 +90,12 @@ h2.rx-section { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06
 .rx-scorecard td small { margin-left: 1px; font-size: 9px; opacity: .85; }
 .rx-scorecard tr.rx-country th { color: var(--rx-ink); font-weight: 650; }
 .rx-scorecard tr.rx-country td { font-weight: 650; outline: 1.5px solid #111827; outline-offset: -1px; }
-.rx-scorecard tr.rx-focus th { color: #3b4fd8; font-weight: 600; }
+.rx-scorecard tr.rx-focus th { color: #34465b; font-weight: 600; }
 
 /* Overview cards */
 .rx-cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .rx-card { background: #fff; border: 1px solid var(--rx-line); border-radius: 10px; padding: 12px 14px; text-decoration: none; color: inherit; display: block; }
-.rx-card:hover { border-color: #a5b4fc; box-shadow: 0 2px 10px rgba(66, 99, 235, .08); text-decoration: none; }
+.rx-card:hover { border-color: #a9b6c4; box-shadow: 0 2px 10px rgba(52, 70, 91, .08); text-decoration: none; }
 .rx-card h3 { font-size: 14px; margin: 0 0 2px; max-width: none; }
 .rx-card p { font-size: 12px; color: var(--rx-muted); margin: 0 0 6px; max-width: none; }
 
