@@ -1,0 +1,53 @@
+# fhir-warehouse settings for the ICR warehouse (data/). Paths are relative to this file.
+#
+#   fhir-warehouse refresh --config tools/warehouse/fhir-warehouse.toml \
+#     --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp
+#
+# Flags and their environment variables (FHIR_BASE, SERVER_NAME, DATA, KILN, …) override
+# this file. The API key comes only from FHIR_CLIENT_ID and FHIR_CLIENT_SECRET.
+
+data = "../../data"
+views = "../../ig/fsh-generated/resources"
+
+[server]
+base = "http://localhost:3447/fhir"
+name = "hapi-local"
+token_url = "https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token"
+
+[tables]
+# IcrIndicatorValue → indicator_value
+strip_prefix = ["icr_"]
+
+# Every view table is partitioned by country: from the registry through location_id when
+# the view has one, else through campaign_id via the campaign calendar, else unpartitioned.
+[partition]
+column = "country"
+
+[[partition.lookup]]
+key = "location_id"
+table = "locations"
+table_key = "id"
+
+[[partition.lookup]]
+key = "campaign_id"
+table = "campaign_calendar"
+
+# Map tiles for the campaign dashboards (Nigeria). Leave empty for every country in the
+# registry, all in the same archives.
+[tiles]
+countries = ["NGA"]
+
+[push]
+remote = "r2"
+bucket = "icr"
+dirs = ["parquet", "tiles", "views"]
+# The Portolan catalog root rides along with the manifest.
+files = ["manifest.json", "catalog.sql", "catalog.json", "README.md", "AGENTS.md", "versions.json"]
+exclude = [".DS_Store", ".portolan/**"]
+
+# The SDI catalog of the location registry (https://sdi.healthcampaigns.org), rebuilt when
+# the locations change.
+[[hooks]]
+name = "catalog"
+after = "locations"
+run = ["./catalog.sh"]

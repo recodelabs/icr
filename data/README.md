@@ -60,6 +60,22 @@ or `KILN=`), `octofhir-sof` (the recodelabs/sof fork build, on the PATH or
 `tippecanoe` (`brew install tippecanoe`) for the tiles, and a sushi build of the
 IG (`ig/fsh-generated/`) for the ViewDefinitions.
 
+The same refresh as one Rust binary,
+[fhir-warehouse](https://github.com/recodelabs/fhir-warehouse), with its ICR
+settings in `tools/warehouse/fhir-warehouse.toml`. It runs the views in process
+(no `octofhir-sof` binary or temp files), runs the tiles beside the views, and
+needs only `kiln`, plus `duckdb` and `tippecanoe` for the tiles and `rclone` to push:
+
+```bash
+fhir-warehouse refresh --config tools/warehouse/fhir-warehouse.toml \
+  --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp
+fhir-warehouse refresh --config tools/warehouse/fhir-warehouse.toml --only views --reuse-raw
+fhir-warehouse check --config tools/warehouse/fhir-warehouse.toml   # settings and tools found
+```
+
+It writes the same tables, partitions and manifest as `refresh.sh`. The
+Portolan catalog is its `catalog` hook (`tools/warehouse/catalog.sh`).
+
 ## Cloud mirror (Cloudflare R2)
 
 `tools/warehouse/refresh.sh --push` (or `tools/warehouse/push-r2.sh` on its own)
