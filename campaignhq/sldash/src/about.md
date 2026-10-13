@@ -37,12 +37,12 @@ It describes each kind of thing as a **resource**: a record with a fixed set of 
 every FHIR system understands. There are resources for patients, vaccinations, health
 facilities, and so on. These dashboards need only four:
 
-| Resource | What it holds | Example |
+| FHIR resource (DHIS2 term) | What it holds | Example |
 |---|---|---|
-| `Location` | A place: the country, a district, a chiefdom or a health facility | Bo district |
-| `Organization` | The organisation that runs a health facility, as distinct from the building and where it is | the provider at a clinic |
-| `Measure` | The definition of an indicator: what is counted and how the figure is worked out | Penta 3 coverage under one year |
-| `MeasureReport` | One result of that indicator, for one place and one period | Penta 3 coverage in Bo in 2025: 31.5 % |
+| `Location` (organisation unit) | A place: the country, a district, a chiefdom or a health facility | Bo district |
+| `Organization` (the facility's organisation unit) | The organisation that runs a health facility, as distinct from the building and where it is | the provider at a clinic |
+| `Measure` (indicator, data element or reporting rate) | The definition of an indicator: what is counted and how the figure is worked out | Penta 3 coverage under one year |
+| `MeasureReport` (analytics value) | One result of that indicator, for one location and one period | Penta 3 coverage in Bo in 2025: 31.5 % |
 
 Resources point to each other by reference. A MeasureReport names the Measure it is a
 result of and the Location it is about, much as a row in a spreadsheet might name a column
@@ -50,44 +50,100 @@ heading and a district.
 
 ## Measures and MeasureReports
 
-A **Measure** is the definition of an indicator. A **MeasureReport** is the value of that
-indicator for one place and one period.
-
-The Measure says what is counted and how the counts are combined. It holds no numbers.
-"Penta 3 coverage" is a Measure: the number of children under one who received their third
-pentavalent dose (the **numerator**), divided by the number of children under one (the
-**denominator**), shown as a percentage.
-
-A MeasureReport records the result for one place and one period: the numerator, the
-denominator and the score worked out from them. It names the Measure it reports on, the
-place and the period. Each district has its own MeasureReport for each year, quarter and
-month, so one Measure has many MeasureReports.
+A **Measure** (DHIS2: indicator) is the definition of an indicator. A **MeasureReport**
+(DHIS2: analytics value) is the value of that indicator for one location (DHIS2:
+organisation unit) and one period. The Measure holds no numbers; each MeasureReport
+holds the numbers for one location and period, and names the Measure it reports on.
 
 In this case DHIS2 calculated every value, and each MeasureReport is a copy of one DHIS2
 result. In other settings the MeasureReports are generated from individual records, such
-as vaccinations, by software that evaluates the Measure's definition.
+as vaccinations, by software that applies the Measure's definition.
+
+The examples below build up from the simplest case. All of them are real records from the
+import.
+
+### Example 1: a count
+
+The simplest Measure counts one thing. "Penta3 doses given" is the number of third doses of
+pentavalent vaccine given; in DHIS2 it is a **data element**. Its Measure has a single
+**population**, the thing counted, and no division. Its MeasureReport for Bo district in 2025 holds one number.
 
 ```mermaid
 flowchart LR
-  M["<b>Measure</b><br/>Penta 3 coverage &lt;1y<br/><br/>numerator: Penta 3 doses given &lt;1y<br/>denominator: population &lt;1y<br/>shown as a percentage"]
-  M --> R1["<b>MeasureReport</b><br/>Bo · 2025<br/>6,589 ÷ 20,924<br/>= 31.5 %"]
-  M --> R2["<b>MeasureReport</b><br/>Bo · 2024<br/>…"]
-  M --> R3["<b>MeasureReport</b><br/>Kenema · 2025<br/>…"]
-  M --> R4["<b>MeasureReport</b><br/>Sierra Leone · 2025<br/>…"]
+  M["<b>Measure</b> (data element)<br/>Penta3 doses given<br/><br/>counts: Penta 3 doses given"]
+  R["<b>MeasureReport</b> (analytics value)<br/>location: Bo<br/>period: 2025<br/><br/>count: 6,656"]
+  R -->|reports on| M
   classDef def fill:#eef2f7,stroke:#64748b,color:#1f2937
   classDef res fill:#ffffff,stroke:#94a3b8,color:#1f2937
   class M def
-  class R1,R2,R3,R4 res
+  class R res
 ```
 
-Some Measures have no division. "Penta 3 doses given" is simply a count, so its Measure has
-one population and its MeasureReports carry one number each. FHIR calls these Measures
-**cohort** Measures; the ones with a numerator and a denominator are **proportion** Measures.
+FHIR calls a Measure like this a **cohort** Measure (DHIS2: data element).
 
-A MeasureReport can also break its result down. The national measles figure for November
-2025, for example, carries one line per facility type (CHC, clinic, hospital, MCHP and so
-on), each with its own numerator and denominator. FHIR calls the breakdown a
-**stratifier** and each line a **stratum**.
+### Example 2: a rate, with a numerator and a denominator
+
+Most indicators divide one count by another, as a DHIS2 indicator's formula does. "Penta 3 coverage under one year" is the
+number of children under one who received their third dose (the **numerator**) divided by
+the number of children under one (the **denominator**). The Measure defines both counts
+and says the result is shown as a percentage.
+
+The MeasureReport holds both counts and the result of the division, the **score**
+(DHIS2: the indicator value).
+
+```mermaid
+flowchart LR
+  M["<b>Measure</b> (indicator)<br/>Penta 3 coverage &lt;1y<br/><br/>numerator: Penta 3 doses given &lt;1y<br/>denominator: population &lt;1y<br/>shown as a percentage"]
+  R["<b>MeasureReport</b> (analytics value)<br/>location: Bo<br/>period: 2025<br/><br/>numerator: 6,589<br/>denominator: 20,924<br/>score: 6,589 ÷ 20,924 = 31.5 %"]
+  R -->|reports on| M
+  classDef def fill:#eef2f7,stroke:#64748b,color:#1f2937
+  classDef res fill:#ffffff,stroke:#94a3b8,color:#1f2937
+  class M def
+  class R res
+```
+
+The numerator here (6,589) is smaller than the count in example 1 (6,656) because it
+includes only doses given to children under one. FHIR calls a Measure like this a
+**proportion** Measure (DHIS2: indicator of type per cent).
+
+### Example 3: a value broken down
+
+A MeasureReport can also break its value into parts. DHIS2 records whether each dose was
+given at a fixed health facility or at an outreach session, so the 6,656 doses from
+example 1 split into two parts. FHIR calls the breakdown a **stratifier** (DHIS2: category,
+or organisation unit group set) and each part a **stratum** (DHIS2: category option, or
+organisation unit group).
+
+```mermaid
+flowchart LR
+  R["<b>MeasureReport</b> (analytics value)<br/>Penta3 doses given<br/>Bo · 2025<br/><br/>count: 6,656"]
+  R --> S["<b>stratifier</b> (category)<br/>Fixed / Outreach"]
+  S --> F["<b>stratum</b> (category option)<br/>Fixed<br/>count: 5,421"]
+  S --> O["<b>stratum</b> (category option)<br/>Outreach<br/>count: 1,235"]
+  classDef res fill:#ffffff,stroke:#94a3b8,color:#1f2937
+  classDef part fill:#f8fafc,stroke:#cbd5e1,color:#1f2937
+  class R res
+  class S,F,O part
+```
+
+A rate can be broken down the same way, with each stratum holding its own numerator,
+denominator and score. The dashboards use breakdowns by Fixed/Outreach and by facility type
+(hospital, health centre, clinic and so on).
+
+### Example 4: one Measure, many MeasureReports
+
+There is one MeasureReport for each location and period that DHIS2 has a value for. These are
+four of the Penta 3 coverage MeasureReports:
+
+| Location | Period | Numerator | Denominator | Score |
+|---|---|---:|---:|---:|
+| Bo | 2025 | 6,589 | 20,924 | 31.5 % |
+| Bo | 2024 | 6,804 | 20,505 | 33.2 % |
+| Kenema | 2025 | 6,051 | 22,978 | 26.3 % |
+| Sierra Leone | 2025 | 62,045 | 221,781 | 28.0 % |
+
+A chart on these dashboards is a selection of rows like these: one Measure, the locations
+being compared and the periods shown.
 
 ## How the DHIS2 model maps to FHIR
 
