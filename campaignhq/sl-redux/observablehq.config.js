@@ -2,7 +2,7 @@
 // redrawn for comparing districts: filters, rankings, maps, heatmaps and trends.
 // https://observablehq.com/framework/config
 export default {
-  title: "Sierra Leone dashboards, redux",
+  title: "DHIS2 Demo Dashboards (powered by FHIR)",
   root: "src",
   pages: [
     {name: "Overview", path: "/"},

@@ -2,7 +2,7 @@
 // (play.dhis2.org), drawn from the DHIS2 data imported into the ICR with kiln dhis2.
 // https://observablehq.com/framework/config
 export default {
-  title: "Sierra Leone dashboards",
+  title: "DHIS2 Demo Dashboards (powered by FHIR)",
   root: "src",
   // One page per DHIS2 dashboard, under the dashboard's DHIS2 name.
   pages: [

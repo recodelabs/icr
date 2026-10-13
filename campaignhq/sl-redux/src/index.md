@@ -4,7 +4,7 @@ sql:
   values: data/values.parquet
 ---
 
-# Sierra Leone dashboards
+# Sierra Leone Demo Dashboards (DHIS2 ported to FHIR)
 
 <p class="rx-lede">The DHIS2 demo's Sierra Leone dashboards, with the same indicators as sldash, redrawn for comparing districts. Each card shows a dashboard's headline indicator for the country, its change on last year, and the 13 districts on one line (black tick: Sierra Leone). Pick districts to outline them here and to filter every page.</p>
 

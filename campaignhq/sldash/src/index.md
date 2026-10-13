@@ -1,10 +1,10 @@
 ---
-title: Sierra Leone dashboards
+title: Sierra Leone Demo Dashboards
 sql:
   values: data/values.parquet
 ---
 
-# Sierra Leone dashboards
+# Sierra Leone Demo Dashboards (DHIS2 ported to FHIR)
 
 ```js
 import {item, gauge, fmt} from "./components/dhis2.js";
