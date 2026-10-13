@@ -6,8 +6,8 @@
 .mapsvg{padding:22px 24px 8px}
 .mapsvg svg{width:100%;height:auto;display:block}
 .mapfig figcaption{font-size:16px;line-height:1.5;color:var(--ink-2);max-width:72ch;padding:4px 24px 22px}
-.play{font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;background:var(--reg);color:#fff;border:0;border-radius:4px;padding:6px 12px;cursor:pointer}
-.play:hover{background:#255740}
+.play{font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;background:#2B5A8A;color:#fff;border:0;border-radius:4px;padding:6px 12px;cursor:pointer}
+.play:hover{background:#224A73}
 @media (max-width:640px){
   .mhead{flex-wrap:wrap}
   .mapsvg{padding:14px 10px 4px}
