@@ -2,6 +2,11 @@
 title: About
 ---
 
+<style>
+/* Tables on this page in a slightly larger type than the theme's. */
+#observablehq-main table { font-size: 14px; }
+</style>
+
 # How DHIS2 data becomes FHIR
 
 These dashboards show the Sierra Leone figures from the DHIS2 demo server (play.dhis2.org).
