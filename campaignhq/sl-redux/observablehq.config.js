@@ -19,7 +19,8 @@ export default {
     {name: "Reporting Rates", path: "/reporting-rates"},
     {name: "Reporting Reproductive Health", path: "/reporting-reproductive-health"},
     {name: "Staffing", path: "/staffing"},
-    {name: "Visits ANC", path: "/visits-anc"}
+    {name: "Visits ANC", path: "/visits-anc"},
+    {name: "About", path: "/about"}
   ],
   head: `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

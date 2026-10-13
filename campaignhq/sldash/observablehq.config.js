@@ -20,7 +20,8 @@ export default {
     {name: "Reporting Rates", path: "/reporting-rates"},
     {name: "Reporting Reproductive Health", path: "/reporting-reproductive-health"},
     {name: "Staffing", path: "/staffing"},
-    {name: "Visits ANC", path: "/visits-anc"}
+    {name: "Visits ANC", path: "/visits-anc"},
+    {name: "About", path: "/about"}
   ],
   head: `<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">`,
   footer: "",
