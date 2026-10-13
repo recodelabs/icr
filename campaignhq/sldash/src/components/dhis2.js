@@ -8,10 +8,11 @@ import {html, svg} from "npm:htl";
 export const PALETTE = ["#5b7590", "#d08c55", "#7d9a6f", "#c06a62", "#79a3a0", "#d3b45f", "#9a83a3", "#97806c",
                         "#a9a5a0", "#9fb6cc", "#e3b591", "#b0c4a4", "#d9a19b", "#acc8c5"];
 
-/** Six classes from poor to good: rust through grey to slate blue. Every legend set uses it. */
-export const RAMP = ["#b4541f", "#da8a5b", "#efc8a7", "#d2dae3", "#8fa3b7", "#4a6480"];
+/** Six classes from poor to good: red through yellow to green, as DHIS2's legend sets, softened.
+    Every legend set uses it. */
+export const RAMP = ["#c8553d", "#e8925a", "#f2cf6b", "#cfdc8a", "#8fbf6a", "#4f9a5a"];
 /** The same in five classes. */
-export const RAMP5 = ["#b4541f", "#e3a47f", "#d2dae3", "#8fa3b7", "#4a6480"];
+export const RAMP5 = ["#c8553d", "#e8925a", "#f2cf6b", "#a9cc78", "#4f9a5a"];
 /** No valid value (over the legend's range). */
 export const INVALID = "#e5e7eb";
 /** Highlight and target lines. */
