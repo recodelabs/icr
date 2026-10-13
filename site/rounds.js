@@ -6,8 +6,8 @@
 (() => {
   const svg = document.querySelector('[data-living-map]');
   if (!svg) return;
-  const ORANGE = '#2F6B4F', INK = '#17211C', INK2 = '#4A554F', GREY = '#8A948E', OFF = '#D5DAD3';
-  const KNOWN = '#E4EDE6', NEW = '#C9E0D1';
+  const ORANGE = '#2B5A8A', INK = '#17211C', INK2 = '#4A554F', GREY = '#8A948E', OFF = '#D5DAD3';
+  const KNOWN = '#E3EAF2', NEW = '#C7D8EA';
   const ROUNDS = 4, T0 = 0.5, RD = 2.8, SWEEP = 1.7, TOTAL = T0 + ROUNDS * RD + 0.2;
   const X0 = 30, X1 = 820;
   const clamp = v => Math.min(1, Math.max(0, v));
