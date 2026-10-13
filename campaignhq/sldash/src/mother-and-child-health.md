@@ -11,7 +11,7 @@ sql:
 # Mother and Child Health
 
 ```js
-import {item, pie, pivot, legendKey, rows, fmt, PALETTE} from "./components/dhis2.js";
+import {item, pie, pivot, legendKey, rows, fmt, PALETTE, RAMP, INVALID, ALERT} from "./components/dhis2.js";
 import {columns, lines, thematic, periodName} from "./components/charts.js";
 import {load, loadStrata, pick, pickStrata, relative, DISTRICTS, DIM, COUNTRY_ID} from "./components/page.js";
 import {unitMap} from "./components/unit-map.js";
@@ -31,13 +31,13 @@ const geojson = await FileAttachment("data/units.geojson").json();
 const nameOf = (dx) => all.find((d) => d.dx === dx)?.name ?? dx;
 // The demo's "ANC Coverage" legend set (used on its ANC maps).
 const ANC_LEGEND = [
-  {name: "Low", start: 0, end: 30, color: "#BD0026"},
-  {name: "Medium", start: 30, end: 50, color: "#F03B20"},
-  {name: "Medium Pl.", start: 50, end: 70, color: "#FD8D3C"},
-  {name: "High", start: 70, end: 80, color: "#FEB24C"},
-  {name: "High Plus", start: 80, end: 90, color: "#FED976"},
-  {name: "Great", start: 90, end: 120, color: "#FFFFB2"},
-  {name: "Invalid", start: 120, end: 1000, color: "#CCCCCC"}
+  {name: "Low", start: 0, end: 30, color: RAMP[0]},
+  {name: "Medium", start: 30, end: 50, color: RAMP[1]},
+  {name: "Medium Pl.", start: 50, end: 70, color: RAMP[2]},
+  {name: "High", start: 70, end: 80, color: RAMP[3]},
+  {name: "High Plus", start: 80, end: 90, color: RAMP[4]},
+  {name: "Great", start: 90, end: 120, color: RAMP[5]},
+  {name: "Invalid", start: 120, end: 1000, color: INVALID}
 ];
 const TYPES = ["CHC", "CHP", "Clinic", "Hospital", "MCHP"];
 ```
@@ -120,8 +120,8 @@ const dropoutChart = Plot.plot({
   marks: [
     Plot.barY(dropoutRows, {x: "location_name", y: "value", fill: PALETTE[0], tip: true,
       title: (d) => `${d.location_name}\n${d.name}: ${fmt(d.value)}`}),
-    Plot.ruleY([25], {stroke: "#d74554", strokeDasharray: "4,3"}),
-    Plot.text([25], {x: DISTRICTS.at(-1), y: (d) => d, text: () => "Target 25", dy: -6, textAnchor: "end", fill: "#d74554"}),
+    Plot.ruleY([25], {stroke: ALERT, strokeDasharray: "4,3"}),
+    Plot.text([25], {x: DISTRICTS.at(-1), y: (d) => d, text: () => "Target 25", dy: -6, textAnchor: "end", fill: ALERT}),
     Plot.ruleY([0])
   ]
 });

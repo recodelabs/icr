@@ -4,23 +4,32 @@
 import * as d3 from "npm:d3";
 import {html, svg} from "npm:htl";
 
-/** DHIS2's default chart series colours, in order. */
-export const PALETTE = ["#a8bf24", "#518cc3", "#d74554", "#ff9e21", "#968f8f", "#ba3ba1", "#ffda54", "#45e7a6",
-                        "#b98037", "#76a6cc", "#c95c8d", "#9ccc65", "#6a5acd", "#f08080"];
+/** Chart series colours, in order: muted, so no one series stands out by its colour alone. */
+export const PALETTE = ["#5b7590", "#d08c55", "#7d9a6f", "#c06a62", "#79a3a0", "#d3b45f", "#9a83a3", "#97806c",
+                        "#a9a5a0", "#9fb6cc", "#e3b591", "#b0c4a4", "#d9a19b", "#acc8c5"];
 
-/** The demo's "Immunization Coverage" legend set (used on its coverage tables and maps). */
+/** Six classes from poor to good: rust through grey to slate blue. Every legend set uses it. */
+export const RAMP = ["#b4541f", "#da8a5b", "#efc8a7", "#d2dae3", "#8fa3b7", "#4a6480"];
+/** The same in five classes. */
+export const RAMP5 = ["#b4541f", "#e3a47f", "#d2dae3", "#8fa3b7", "#4a6480"];
+/** No valid value (over the legend's range). */
+export const INVALID = "#e5e7eb";
+/** Highlight and target lines. */
+export const ACCENT = "#4a6480", ALERT = "#b4541f";
+
+/** The demo's "Immunization Coverage" legend set (used on its coverage tables and maps), in RAMP's colours. */
 export const COVERAGE_LEGEND = [
-  {name: "Low", start: 0, end: 40, color: "#FF0000"},
-  {name: "Low Plus", start: 40, end: 55, color: "#FF6600"},
-  {name: "Medium", start: 55, end: 70, color: "#FF9900"},
-  {name: "Medium Plus", start: 70, end: 80, color: "#FFFF00"},
-  {name: "Good", start: 80, end: 90, color: "#99CC00"},
-  {name: "High", start: 90, end: 120, color: "#00FF00"},
-  {name: "Invalid", start: 120, end: 1000, color: "#CCCCCC"}
+  {name: "Low", start: 0, end: 40, color: RAMP[0]},
+  {name: "Low Plus", start: 40, end: 55, color: RAMP[1]},
+  {name: "Medium", start: 55, end: 70, color: RAMP[2]},
+  {name: "Medium Plus", start: 70, end: 80, color: RAMP[3]},
+  {name: "Good", start: 80, end: 90, color: RAMP[4]},
+  {name: "High", start: 90, end: 120, color: RAMP[5]},
+  {name: "Invalid", start: 120, end: 1000, color: INVALID}
 ];
 
-/** DHIS2 Maps' default thematic scale (five classes, yellow to brown). */
-export const MAP_CLASSES = ["#ffffd4", "#fed98e", "#fe9929", "#d95f0e", "#993404"];
+/** Thematic map classes for values with no legend set: five greys, light to dark. */
+export const MAP_CLASSES = ["#f3f3f2", "#d6d6d3", "#adadaa", "#7d7d7a", "#4f4f4d"];
 
 export function legendColor(v, legend = COVERAGE_LEGEND) {
   if (v == null) return null;
@@ -60,7 +69,7 @@ export function gauge(value, {max = 100, label = "", width = 300, legend = COVER
   const h = width * 0.62, r = width * 0.42, cx = width / 2, cy = h - 20;
   const arc = d3.arc().innerRadius(r * 0.62).outerRadius(r);
   const angle = d3.scaleLinear([0, max], [-Math.PI / 2, Math.PI / 2]).clamp(true);
-  const fill = legendColor(value, legend) ?? "#a8bf24";
+  const fill = legendColor(value, legend) ?? ACCENT;
   const dial = svg`<svg width=${width} height=${h} viewBox="0 0 ${width} ${h}" style="max-width:100%">
     <g transform="translate(${cx},${cy})">
       <path d=${arc({startAngle: -Math.PI / 2, endAngle: Math.PI / 2})} fill="#eef0f3"></path>

@@ -9,7 +9,7 @@ sql:
 # Reporting Rates
 
 ```js
-import {item, pivot, legendKey, COVERAGE_LEGEND} from "./components/dhis2.js";
+import {item, pivot, legendKey, COVERAGE_LEGEND, RAMP5, INVALID} from "./components/dhis2.js";
 import {columns, lines, thematic, periodName} from "./components/charts.js";
 import {load, pick, relative, DISTRICTS} from "./components/page.js";
 import {unitMap} from "./components/unit-map.js";
@@ -24,12 +24,12 @@ const DX = {
 const PHUF = [DX.morbidity, DX.childHealth, DX.rh];
 // The demo's "Reporting rates" legend set.
 const REPORTING_LEGEND = [
-  {name: "Non reporting", start: 0, end: 30, color: "#08519C"},
-  {name: "Low", start: 30, end: 60, color: "#3182BD"},
-  {name: "Medium", start: 60, end: 80, color: "#6baed6"},
-  {name: "High", start: 80, end: 90, color: "#BDD7E7"},
-  {name: "Excellent", start: 90, end: 100, color: "#EFF3FF"},
-  {name: "Invalid", start: 100, end: 1000, color: "#CCCCCC"}
+  {name: "Non reporting", start: 0, end: 30, color: RAMP5[0]},
+  {name: "Low", start: 30, end: 60, color: RAMP5[1]},
+  {name: "Medium", start: 60, end: 80, color: RAMP5[2]},
+  {name: "High", start: 80, end: 90, color: RAMP5[3]},
+  {name: "Excellent", start: 90, end: 100, color: RAMP5[4]},
+  {name: "Invalid", start: 100, end: 1000, color: INVALID}
 ];
 const all = await load(sql, Object.values(DX));
 const years = Array.from(new Set(all.filter((d) => d.period_type === "Yearly").map((d) => d.period))).sort();
