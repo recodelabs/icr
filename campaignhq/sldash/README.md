@@ -82,10 +82,8 @@ are summed only in the cumulative line, as DHIS2 does).
 
 ## Layout
 
-- `src/components/dhis2.js` — the colours, the legend sets, dashboard item card, gauge,
-  pie and pivot table. The colours are muted rather than DHIS2's: one series palette, and
-  one softened red (poor) to yellow to green (good) ramp that every legend set uses, in
-  place of the demo's bright red-to-green, yellow-to-red and blue legends.
+- `src/components/dhis2.js` — DHIS2's palette and legend set, dashboard item card, gauge,
+  pie and pivot table.
 - `src/components/charts.js` — column, stacked column, line and year-over-year charts, and the
   thematic map colouring (legend set, or DHIS2's five equal-interval classes).
 - `src/components/page.js` — loading a page's DHIS2 items, `pick()`, and the relative periods.

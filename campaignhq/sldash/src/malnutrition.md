@@ -11,7 +11,7 @@ sql:
 
 ```js
 import maplibregl from "npm:maplibre-gl@5";
-import {item, pivot, rows, ACCENT} from "./components/dhis2.js";
+import {item, pivot, rows} from "./components/dhis2.js";
 import {columns, thematic, periodName} from "./components/charts.js";
 import {load, pick, relative} from "./components/page.js";
 import {unitMap, DEFAULT_BASEMAP} from "./components/unit-map.js";
@@ -82,7 +82,7 @@ function boundaryMap({level, points = [], height = 380}) {
       layers: [
         {id: "basemap", type: "raster", source: "basemap", paint: {"raster-opacity": b.opacity, "raster-saturation": b.saturation}},
         {id: "lines", type: "line", source: "lines", paint: {"line-color": "#334155", "line-width": 1}},
-        {id: "dots", type: "circle", source: "dots", paint: {"circle-radius": 3, "circle-color": ACCENT, "circle-stroke-color": "#fff", "circle-stroke-width": 0.5}}
+        {id: "dots", type: "circle", source: "dots", paint: {"circle-radius": 3, "circle-color": "#518cc3", "circle-stroke-color": "#fff", "circle-stroke-width": 0.5}}
       ]}
   });
   map.scrollZoom.disable();

@@ -9,7 +9,7 @@ sql:
 # Delivery
 
 ```js
-import {item, pivot, legendKey, RAMP, INVALID} from "./components/dhis2.js";
+import {item, pivot, legendKey} from "./components/dhis2.js";
 import {columns, thematic, periodName} from "./components/charts.js";
 import {load, pick, relative, DISTRICTS} from "./components/page.js";
 import {unitMap} from "./components/unit-map.js";
@@ -28,13 +28,13 @@ const BIRTH_FACILITIES = ["Baoma Station CHP", "Blamawo MCHP", "Faabu CHP", "Ger
   "Kigbai MCHP", "Kpumbu MCHP", "Mbundorbu MCHP", "Pelewahun (Baoma) MCHP", "Tugbebu CHP", "Yakaji MCHP", "Yamandu CHC"];
 // The demo's "ANC Coverage" legend set (used on the chiefdom map).
 const ANC_LEGEND = [
-  {name: "Low", start: 0, end: 30, color: RAMP[0]},
-  {name: "Medium", start: 30, end: 50, color: RAMP[1]},
-  {name: "Medium Pl.", start: 50, end: 70, color: RAMP[2]},
-  {name: "High", start: 70, end: 80, color: RAMP[3]},
-  {name: "High Plus", start: 80, end: 90, color: RAMP[4]},
-  {name: "Great", start: 90, end: 120, color: RAMP[5]},
-  {name: "Invalid", start: 120, end: 1000, color: INVALID}
+  {name: "Low", start: 0, end: 30, color: "#BD0026"},
+  {name: "Medium", start: 30, end: 50, color: "#F03B20"},
+  {name: "Medium Pl.", start: 50, end: 70, color: "#FD8D3C"},
+  {name: "High", start: 70, end: 80, color: "#FEB24C"},
+  {name: "High Plus", start: 80, end: 90, color: "#FED976"},
+  {name: "Great", start: 90, end: 120, color: "#FFFFB2"},
+  {name: "Invalid", start: 120, end: 1000, color: "#CCCCCC"}
 ];
 const all = await load(sql, Object.values(DX));
 const years = Array.from(new Set(all.filter((d) => d.period_type === "Yearly").map((d) => d.period))).sort();
