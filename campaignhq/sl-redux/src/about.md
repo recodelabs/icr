@@ -30,6 +30,67 @@ flowchart LR
 4. The **dashboards** are built from those tables. Here they use DuckDB to draw the same
    charts the DHIS2 dashboards draw.
 
+## How indicators work in DHIS2
+
+DHIS2 keeps two kinds of thing apart: the raw counts that health facilities report, and the
+indicators worked out from them.
+
+**Organisation units.** Every place in DHIS2 is an organisation unit, arranged in a
+hierarchy: Sierra Leone, then 13 districts, then 152 chiefdoms, then 1,166 health
+facilities. Data is entered at the facilities.
+
+**Data elements and data sets.** A data element is one count that a facility reports, such
+as "Penta3 doses given". Data elements are collected on forms called data sets; "Penta3
+doses given" is on the monthly Child Health form. A data element can be split into parts.
+Penta3 doses given is recorded in four parts: fixed site or outreach session, each for
+children under one and over one. DHIS2 calls the dimensions **categories** (here "Location
+Fixed/Outreach" and "EPI/nutrition age") and each part a **category option combination**
+(such as "Fixed, <1y"). Population estimates, such as "Total population < 1 year", are
+data elements too.
+
+**Indicators.** An indicator is a formula over data elements: a numerator expression divided
+by a denominator expression, multiplied by a factor set by the indicator type (100 for a
+percentage). The formula can use a whole data element or only some of its parts. Penta 3
+coverage under one year is defined like this:
+
+| Part | Formula | Meaning |
+|---|---|---|
+| Numerator | Penta3 doses given (Fixed, <1y) + Penta3 doses given (Outreach, <1y) | doses given to children under one, at fixed sites and outreach |
+| Denominator | Total population < 1 year | children under one |
+| Factor | 100 (indicator type "Per cent") | shown as a percentage |
+
+```mermaid
+flowchart TB
+  FORM["<b>Data set</b><br/>Child Health form<br/>sent monthly by each facility"]
+  FORM --> DE["<b>Data element</b><br/>Penta3 doses given<br/><br/>Fixed, &lt;1y<br/>Fixed, &gt;1y<br/>Outreach, &lt;1y<br/>Outreach, &gt;1y"]
+  DE -->|"Fixed, &lt;1y + Outreach, &lt;1y"| N["<b>Numerator</b>"]
+  POP["<b>Data element</b><br/>Total population &lt; 1 year"] --> D["<b>Denominator</b>"]
+  N --> I["<b>Indicator</b><br/>Penta 3 Coverage &lt;1y<br/>numerator ÷ denominator × 100"]
+  D --> I
+  I -->|"analytics, for any organisation unit and period"| V["<b>Value</b><br/>Bo · 2025<br/>6,589 ÷ 20,924 × 100 = 31.5 %"]
+  classDef src fill:#ffffff,stroke:#94a3b8,color:#1f2937
+  classDef calc fill:#eef2f7,stroke:#64748b,color:#1f2937
+  class FORM,DE,POP src
+  class N,D,I,V calc
+```
+
+**Analytics.** DHIS2 does not store indicator values. Its analytics engine works them out
+when asked, for any organisation unit and any period. For Bo in 2025 it adds up the
+numerator over every facility in Bo and every month of 2025 (6,589 doses), does the same
+for the denominator (20,924 children), and then divides. Because the division comes last,
+indicator values cannot be added up or averaged across places or periods: the value for
+Sierra Leone is not the average of the districts' values.
+
+**Annualised indicators.** Penta 3 coverage is marked as annualised. The denominator is a
+yearly population, so for a period shorter than a year DHIS2 scales the result up to a
+yearly rate. In March 2025 Bo gave 392 doses: 392 ÷ 20,924 × 100 × 365 ÷ 31 days = 22.1 %.
+
+**Reporting rates.** DHIS2 also works out how many of the expected forms came in: a data
+set's reporting rate is the number of forms received divided by the number expected.
+
+**Groups.** Indicators and data elements are sorted into groups, such as Immunization or
+ANC, which DHIS2 uses to organise its menus.
+
 ## FHIR in brief
 
 FHIR (Fast Healthcare Interoperability Resources) is a standard for exchanging health data.
