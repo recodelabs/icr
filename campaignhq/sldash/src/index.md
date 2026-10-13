@@ -7,7 +7,7 @@ sql:
 # Sierra Leone Demo Dashboards (DHIS2 ported to FHIR)
 
 ```js
-import {item, gauge, fmt} from "./components/dhis2.js";
+import {item, gauge, fmt, COVERAGE_LEGEND} from "./components/dhis2.js";
 import {load, pick} from "./components/page.js";
 
 // One card per dashboard, in the menu's order: its page, a headline item (DHIS2 uid) and how to
@@ -28,6 +28,9 @@ const CARDS = [
   {name: "Staffing", href: "./staffing", dx: "Lzg9LtG1xg3", show: "figure", unit: ""},
   {name: "Visits ANC", href: "./visits-anc", dx: "OdiHJayrsKo", show: "gauge"}
 ];
+// The gauges use the coverage legend set's bands in softened colours (red, yellow, green), so the
+// cards read evenly side by side; the dashboard pages keep DHIS2's own colours.
+const GAUGE_LEGEND = COVERAGE_LEGEND.map((l, i) => ({...l, color: ["#c8553d", "#e8925a", "#f2cf6b", "#cfdc8a", "#8fbf6a", "#4f9a5a", "#e5e7eb"][i]}));
 const all = await load(sql, CARDS.map((c) => c.dx));
 const year = Math.max(...all.filter((d) => d.period_type === "Yearly" && d.admin_level === 0).map((d) => Number(d.period)));
 const national = (dx) => pick(all, {dx, level: 0, periods: [String(year)]})[0];
@@ -35,7 +38,7 @@ const card = (c) => {
   const d = national(c.dx);
   const label = d?.name ?? c.dx;
   const body = c.show === "gauge"
-    ? html`<div style="display:flex;justify-content:center">${gauge(d?.value, {max: c.max ?? 120, width: 220, label})}</div>`
+    ? html`<div style="display:flex;justify-content:center">${gauge(d?.value, {max: c.max ?? 120, width: 220, label, legend: GAUGE_LEGEND})}</div>`
     : html`<div style="text-align:center;padding:24px 0 12px"><div class="d2-kpi">${d ? `${fmt(d.value)}${c.unit}` : "—"}</div>
         <div class="muted" style="font-size:12px;margin-top:6px">${label}</div></div>`;
   return item(html`<a href=${c.href}>${c.name}</a>`, body);
