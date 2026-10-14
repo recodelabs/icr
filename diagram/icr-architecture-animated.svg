@@ -3,16 +3,16 @@
 <style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 .bg{fill:var(--d-paper,#F7F8F5)}
 .box{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1.25}
-.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#2F6B4F);stroke-width:1.75;stroke-dasharray:7 4}
+.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#F16427);stroke-width:1.75;stroke-dasharray:7 4}
 .cell{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1}
 .group{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1;stroke-dasharray:5 4}
 .chip{fill:var(--d-paper,#F7F8F5);stroke:var(--d-hair,#C9CFC7);stroke-width:1}
 .wire{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1.25}
 .rule{stroke:var(--d-hair,#C9CFC7);stroke-width:1}
-.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#2F6B4F)}
+.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#F16427)}
 .ah-out,.dot-out{fill:var(--d-ink,#17211C)}
-.hl{fill:none;stroke:var(--d-accent,#2F6B4F);stroke-width:2.5}
-.tint{fill:var(--d-tint,rgba(47,107,79,.14))}
+.hl{fill:none;stroke:var(--d-accent,#F16427);stroke-width:2.5}
+.tint{fill:var(--d-tint,rgba(241,100,39,.13))}
 .mk-off{fill:var(--d-faint,#D5DAD3)}
 .dg text{font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;fill:var(--d-ink,#17211C)}
 .dg .name{font-size:15.5px;font-weight:600}
@@ -22,7 +22,7 @@
 .dg .mono{font-size:9.5px;letter-spacing:.08em}
 .dg .code{font-size:9px;fill:var(--d-muted,#6F7A74)}
 .dg .muted{fill:var(--d-muted,#6F7A74)}
-.dg .h-in{fill:var(--d-accent,#2F6B4F);font-weight:500}
+.dg .h-in{fill:var(--d-accent-ink,#A13A10);font-weight:500}
 .dg .h-out{font-weight:500}
 .dg .title{font-weight:700;letter-spacing:-.01em}
 .dg .caption{font-size:15px;font-weight:600}
