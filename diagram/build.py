@@ -27,39 +27,40 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
-FONTS = ("https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600"
-         "&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap")
+FONTS = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700"
+         "&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400"
+         "&family=IBM+Plex+Mono:wght@400;500&display=swap")
 
-# Colours come from --d-* variables so the page can switch themes; the fallbacks are
-# the light palette used when an SVG file is opened on its own.
+# The look of www.healthcampaigns.org: its paper, ink and registry green, Bricolage
+# Grotesque and IBM Plex Mono. Colours come from --d-* variables, with these values as
+# the fallbacks used when an SVG file is opened on its own.
 CSS = """
-.bg{fill:var(--d-paper,#FAF8F3)}
-.grid{fill:none;stroke:var(--d-ghost,rgba(14,14,12,.055));stroke-width:1}
-.box{fill:var(--d-surface,#F4F1E9);stroke:var(--d-ink,#0E0E0C);stroke-width:1.25}
-.icr{fill:var(--d-paper,#FAF8F3);stroke:var(--d-accent,#F16427);stroke-width:1.5;stroke-dasharray:7 4}
-.cell{fill:var(--d-surface,#F4F1E9);stroke:var(--d-ink,#0E0E0C);stroke-width:1}
-.group{fill:none;stroke:var(--d-ink2,#45453F);stroke-width:1;stroke-dasharray:5 4}
-.chip{fill:var(--d-paper,#FAF8F3);stroke:var(--d-hair,rgba(14,14,12,.3));stroke-width:1}
-.wire{fill:none;stroke:var(--d-ink2,#45453F);stroke-width:1.25}
-.rule{stroke:var(--d-hair,rgba(14,14,12,.3));stroke-width:1}
-.ah-in,.dot-in,.mk-on,.bar{fill:var(--d-accent,#F16427)}
-.ah-out,.dot-out{fill:var(--d-ink,#0E0E0C)}
-.hl{fill:none;stroke:var(--d-accent,#F16427);stroke-width:2.5}
-.tint{fill:var(--d-tint,rgba(241,100,39,.13))}
-.mk-off{fill:var(--d-faint,#D6CFBD)}
-.dg text{font-family:Manrope,-apple-system,'Helvetica Neue',Arial,sans-serif;fill:var(--d-ink,#0E0E0C)}
-.dg .name{font-size:15px;font-weight:700}
-.dg .sub{font-size:11.5px;fill:var(--d-ink2,#45453F)}
-.dg .body{font-size:11px}
-.dg .mono,.dg .code{font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+.bg{fill:var(--d-paper,#F7F8F5)}
+.box{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1.25}
+.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#2F6B4F);stroke-width:1.75;stroke-dasharray:7 4}
+.cell{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1}
+.group{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1;stroke-dasharray:5 4}
+.chip{fill:var(--d-paper,#F7F8F5);stroke:var(--d-hair,#C9CFC7);stroke-width:1}
+.wire{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1.25}
+.rule{stroke:var(--d-hair,#C9CFC7);stroke-width:1}
+.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#2F6B4F)}
+.ah-out,.dot-out{fill:var(--d-ink,#17211C)}
+.hl{fill:none;stroke:var(--d-accent,#2F6B4F);stroke-width:2.5}
+.tint{fill:var(--d-tint,rgba(47,107,79,.14))}
+.mk-off{fill:var(--d-faint,#D5DAD3)}
+.dg text{font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;fill:var(--d-ink,#17211C)}
+.dg .name{font-size:15.5px;font-weight:600}
+.dg .sub{font-size:12px;fill:var(--d-ink2,#4A554F)}
+.dg .body{font-size:11.5px}
+.dg .mono,.dg .code{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
 .dg .mono{font-size:9.5px;letter-spacing:.08em}
-.dg .code{font-size:9px;fill:var(--d-muted,#6B6B63)}
-.dg .muted{fill:var(--d-muted,#6B6B63)}
-.dg .h-in{fill:var(--d-accent-ink,#A13A10);font-weight:500}
+.dg .code{font-size:9px;fill:var(--d-muted,#6F7A74)}
+.dg .muted{fill:var(--d-muted,#6F7A74)}
+.dg .h-in{fill:var(--d-accent,#2F6B4F);font-weight:500}
 .dg .h-out{font-weight:500}
-.dg .serif{font-family:'Source Serif 4','Times New Roman',serif;font-weight:600}
-.dg .caption{font-size:15px;font-weight:500}
-.dg .cellname{font-size:13px;font-weight:700}
+.dg .title{font-weight:700;letter-spacing:-.01em}
+.dg .caption{font-size:15px;font-weight:600}
+.dg .cellname{font-size:13.5px;font-weight:600}
 """
 
 
@@ -155,7 +156,7 @@ class Diagram:
             sh = hh + lh * len(lines)
             if hl:
                 self.add("chips", f'<g opacity="0"><rect class="tint" x="{x + 1:g}" y="{yy - 5:g}" '
-                                  f'width="{w - 2}" height="{sh + 8}"/><rect class="bar" x="{x + 1:g}" '
+                                  f'width="{w - 2}" height="{sh + 8}"/><rect class="hlbar" x="{x + 1:g}" '
                                   f'y="{yy - 5:g}" width="2.5" height="{sh + 8}"/>{self.opacity(hl)}</g>',
                          anim=True)
             parts = [f'<text class="mono h-{direction}" x="{x + 12:g}" y="{yy + 8:g}">{esc(header)}</text>']
@@ -237,15 +238,12 @@ class Diagram:
             out.append(f"<style><![CDATA[@import url('{FONTS}');{CSS}]]></style>")
         out.append(
             "<defs>"
-            f'<pattern id="{k}-grid" width="20" height="20" patternUnits="userSpaceOnUse">'
-            f'<path class="grid" d="M20 0H0V20"/></pattern>'
             f'<marker id="{k}-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" '
             f'orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker>'
             f'<marker id="{k}-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" '
             f'orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker>'
             "</defs>")
-        out.append(f'<rect class="bg" width="{self.w}" height="{h}"/>'
-                   f'<rect fill="url(#{k}-grid)" width="{self.w}" height="{h}"/>')
+        out.append(f'<rect class="bg" width="{self.w}" height="{h}"/>')
         for layer in self.LAYERS:
             for svg, anim in self.layers[layer]:
                 if animated or not anim:
@@ -310,7 +308,7 @@ def architecture():
     # the ICR
     ix, iy, iw, ih = 210, icr_top, 670, 200
     D.add("nodes", f'<rect class="icr" x="{ix}" y="{iy}" width="{iw}" height="{ih}" rx="4"/>')
-    D.add("nodes", f'<text class="serif" x="{ix + 20}" y="{iy + 34}" font-size="24">ICR</text>'
+    D.add("nodes", f'<text class="title" x="{ix + 20}" y="{iy + 34}" font-size="24">ICR</text>'
                    f'<text class="sub" x="{ix + 70}" y="{iy + 33}">Integrated Campaign Registry</text>'
                    f'<text class="mono h-in" x="{ix + iw - 20}" y="{iy + 32}" text-anchor="end">'
                    f'SYSTEM OF RECORD · HL7 FHIR R4</text>')
@@ -404,7 +402,7 @@ def country():
     # the ICR
     ix, iy, iw, ih = 470, 450, 340, 150
     D.add("nodes", f'<rect class="icr" x="{ix}" y="{iy}" width="{iw}" height="{ih}" rx="4"/>')
-    D.add("nodes", f'<text class="serif" x="{ix + 16}" y="{iy + 32}" font-size="24">ICR</text>'
+    D.add("nodes", f'<text class="title" x="{ix + 16}" y="{iy + 32}" font-size="24">ICR</text>'
                    f'<text class="sub" x="{ix + 66}" y="{iy + 31}">registry and system of record</text>')
     cw = (iw - 32 - 16) / 3
     for i, (lines, hl) in enumerate([
@@ -469,93 +467,93 @@ def country():
 # Page
 # ==========================================================================
 
-PAGE = """<title>ICR Solution Architecture</title>
+PAGE = """<title>ICR solution architecture</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="__FONTS__">
 <style>
-/* Layout: one reading column, diagrams break out to full width; blueprint paper. */
+/* Layout and type follow www.healthcampaigns.org: one 1120px column, light paper only. */
 :root {
-  --d-paper: #FAF8F3; --d-surface: #F4F1E9; --d-ink: #0E0E0C; --d-ink2: #45453F;
-  --d-muted: #6B6B63; --d-faint: #D6CFBD; --d-hair: rgba(14,14,12,.3); --d-ghost: rgba(14,14,12,.055);
-  --d-accent: #F16427; --d-accent-ink: #A13A10; --d-tint: rgba(241,100,39,.13);
-  --page: #EFEBE1;
-  --serif: 'Source Serif 4', 'Times New Roman', serif;
-  --sans: Manrope, -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  --mono: 'JetBrains Mono', Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --d-paper: #171715; --d-surface: #201F1C; --d-ink: #F1EEE6; --d-ink2: #C5C1B6;
-    --d-muted: #9A978D; --d-faint: #45443F; --d-hair: rgba(241,238,230,.28); --d-ghost: rgba(241,238,230,.045);
-    --d-accent: #F47A44; --d-accent-ink: #FFA57C; --d-tint: rgba(244,122,68,.17);
-    --page: #0F0F0E;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --d-paper: #171715; --d-surface: #201F1C; --d-ink: #F1EEE6; --d-ink2: #C5C1B6;
-  --d-muted: #9A978D; --d-faint: #45443F; --d-hair: rgba(241,238,230,.28); --d-ghost: rgba(241,238,230,.045);
-  --d-accent: #F47A44; --d-accent-ink: #FFA57C; --d-tint: rgba(244,122,68,.17);
-  --page: #0F0F0E;
+  --paper: #F7F8F5; --paper-2: #EEF1EB; --ink: #17211C; --ink-2: #4A554F; --ink-3: #8A948E; --rule: #D5DAD3;
+  --reg: #2F6B4F; --reg-2: #DDE9E0;
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --d-paper: var(--paper); --d-surface: var(--paper-2); --d-ink: var(--ink); --d-ink2: var(--ink-2);
+  --d-muted: #6F7A74; --d-faint: var(--rule); --d-hair: #C9CFC7;
+  --d-accent: var(--reg); --d-tint: rgba(47,107,79,.14);
 }
 __CSS__
-body { background: var(--page); color: var(--d-ink); font: 16px/1.55 var(--sans); padding: 0 20px; }
-main { max-width: 1240px; margin: 0 auto; padding-block: 48px 72px; display: grid; gap: 56px; }
-.eyebrow, .k { font: 500 11px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--d-muted); }
-h1, h2 { font-family: var(--serif); font-weight: 600; text-wrap: balance; margin: 0; }
-h1 { font-size: clamp(30px, 4.2vw, 46px); line-height: 1.08; max-width: 22ch; }
-h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; }
-p { margin: 0; max-width: 68ch; color: var(--d-ink2); }
-header, section { display: grid; gap: 14px; }
-header p { font-size: 18px; }
-.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-.roles > div { background: var(--d-paper); border: 1px solid var(--d-hair); padding: 18px 20px; display: grid; gap: 8px; align-content: start; }
-.roles ul { margin: 0; padding-left: 18px; color: var(--d-ink2); font-size: 15px; display: grid; gap: 4px; }
-.roles .k.in { color: var(--d-accent-ink); }
-figure { margin: 0; display: grid; gap: 10px; }
-.frame { overflow-x: auto; border: 1px solid var(--d-hair); background: var(--d-paper); }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: var(--reg); }
+h1, h2, h3 { font-family: var(--display); line-height: 1.05; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(36px, 5.2vw, 64px); font-weight: 700; letter-spacing: -0.025em; }
+h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; max-width: 28ch; }
+h3 { font-size: 19px; font-weight: 600; }
+p { margin: 0; max-width: 62ch; color: var(--ink-2); }
+.wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 22px; padding: 20px 0; font-family: var(--display); font-size: 15px; }
+.topbar .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+.topbar .brand span { color: var(--ink-3); font-weight: 400; margin-left: 10px; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.topbar nav a { color: var(--ink-2); text-decoration: none; }
+.topbar nav a:hover { color: var(--ink); }
+.hero { padding-block: 40px 56px; display: grid; gap: 14px; }
+.hero .kicker { font-family: var(--display); font-weight: 600; font-size: clamp(18px, 2vw, 22px); color: var(--ink-2); letter-spacing: -0.01em; }
+section { padding-block: 64px; border-top: 1px solid var(--rule); display: grid; gap: 16px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+.card { border-top: 2px solid var(--ink); padding-top: 14px; display: grid; gap: 6px; align-content: start; }
+.card.reg { border-top-color: var(--reg); }
+.card ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 16.5px; display: grid; gap: 4px; }
+figure { margin: 8px 0 0; display: grid; gap: 12px; }
+.frame { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
 .frame svg { display: block; width: 100%; height: auto; min-width: 820px; }
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.controls button { font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--d-ink);
-  background: var(--d-paper); border: 1px solid var(--d-hair); padding: 8px 11px; cursor: pointer; }
-.controls button:hover { border-color: var(--d-ink); }
-.controls button:focus-visible { outline: 2px solid var(--d-accent); outline-offset: 2px; }
-.controls button[aria-current="step"] { border-color: var(--d-accent); color: var(--d-accent-ink); }
-.controls .play { background: var(--d-ink); color: var(--d-paper); border-color: var(--d-ink); min-width: 74px; }
-.progress { flex: 1 1 120px; height: 2px; background: var(--d-faint); position: relative; }
-.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--d-accent); }
-figcaption { font-size: 14px; color: var(--d-muted); max-width: 80ch; }
-footer { font-size: 13px; color: var(--d-muted); border-top: 1px solid var(--d-hair); padding-top: 16px; }
-footer code { font-family: var(--mono); font-size: 12px; }
-footer a, .back { color: var(--d-ink2); }
-.back { font: 500 11px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
-.back:hover { color: var(--d-accent-ink); }
+.controls button { font-family: var(--display); font-size: 15px; font-weight: 600; background: transparent; border: 1px solid var(--rule);
+  color: var(--ink-2); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.controls button:hover { border-color: var(--ink-3); color: var(--ink); }
+.controls button:focus-visible { outline: 2px solid var(--reg); outline-offset: 2px; }
+.controls button[aria-current="step"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.controls .play { background: var(--reg); color: #fff; border-color: var(--reg); min-width: 84px; }
+.controls .play:hover { color: #fff; border-color: var(--reg); }
+.progress { flex: 1 1 120px; height: 2px; background: var(--rule); position: relative; }
+.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--reg); }
+figcaption { font-size: 15px; color: var(--ink-3); max-width: 80ch; }
+.files { font-size: 15px; color: var(--ink-2); }
+footer { border-top: 1px solid var(--rule); padding: 40px 0 60px; font-size: 14px; color: var(--ink-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer a { color: var(--ink-2); }
+footer code { font-family: var(--mono); font-size: 13px; }
+footer .support { flex-basis: 100%; font-size: 13px; margin-top: 6px; }
 </style>
 
-<main>
-  <header>
-    __BACK__
-    <h1>ICR solution architecture</h1>
-  </header>
+<div class="wrap">
+__BAR__
+<header class="hero">
+  <div class="kicker">Integrated Campaign Registry</div>
+  <h1>ICR solution architecture</h1>
+</header>
 
-  <section class="roles" aria-label="What the ICR does and does not do">
-    <div>
-      <div class="k in">The ICR holds</div>
-      <ul>
-        <li>The location registry: admin areas, facilities, catchments, settlements</li>
-        <li>Campaigns and rounds, targets and results</li>
-        <li>Shared codes, and how each tool's codes map to them</li>
-      </ul>
-    </div>
-    <div>
-      <div class="k">Other systems keep doing</div>
-      <ul>
-        <li>Data collection in CommCare, DIGIT, ODK and DHIS2 Tracker</li>
-        <li>Microplanning in Crosscut</li>
-        <li>Routine reporting in DHIS2, the national HMIS</li>
-      </ul>
+<main>
+  <section aria-label="What the ICR does and does not do">
+    <div class="cards">
+      <div class="card reg">
+        <h3>The ICR holds</h3>
+        <ul>
+          <li>The location registry: admin areas, facilities, catchments, settlements</li>
+          <li>Campaigns and rounds, targets and results</li>
+          <li>Shared codes, and how each tool's codes map to them</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Other systems keep doing</h3>
+        <ul>
+          <li>Data collection in CommCare, DIGIT, ODK and DHIS2 Tracker</li>
+          <li>Microplanning in Crosscut</li>
+          <li>Routine reporting in DHIS2, the national HMIS</li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -565,7 +563,7 @@ footer a, .back { color: var(--d-ink2); }
     <figure data-player>
       <div class="frame">__ARCH__</div>
       <div class="controls"></div>
-      <figcaption>Each step lights up the systems involved; dots show data moving. Orange arrowheads mark data going into the ICR.</figcaption>
+      <figcaption>Click a step to play it, or Play to run through them all. Green arrowheads mark data going into the ICR.</figcaption>
     </figure>
   </section>
 
@@ -577,10 +575,12 @@ footer a, .back { color: var(--d-ink2); }
       <div class="frame">__COUNTRY__</div>
       <div class="controls"></div>
     </figure>
+    __FILES__
   </section>
-
-  <footer>__FOOTER__</footer>
 </main>
+
+<footer>__FOOTER__</footer>
+</div>
 
 <script>
 // The diagrams carry SMIL timings so the SVG files animate on their own. On this page
@@ -690,13 +690,21 @@ footer a, .back { color: var(--d-ink2); }
 
 # The healthcampaigns.org copy lives at /architecture/, next to the files it links to.
 SITE = HERE.parent / "site" / "architecture"
-SITE_FOOTER = ("For slides: diagram 1 as <a href=\"icr-architecture.png\">PNG</a> or "
-               "<a href=\"icr-architecture.svg\">SVG</a>, diagram 2 as <a href=\"icr-country-flows.png\">PNG</a> or "
-               "<a href=\"icr-country-flows.svg\">SVG</a>. Animated SVGs: "
-               "<a href=\"icr-architecture-animated.svg\">diagram 1</a>, "
-               "<a href=\"icr-country-flows-animated.svg\">diagram 2</a>.")
-REPO_FOOTER = ("Static and animated SVG versions of both diagrams are in the ICR repository under "
-               "<code>diagram/</code>, built by <code>diagram/build.py</code>.")
+SITE_BAR = ('<div class="topbar"><a class="brand" href="/">Integrated Campaign Registry <span>UNICEF</span></a>'
+            '<nav><a href="/#why">Why campaigns</a><a href="/#what">What it is</a><a href="/#unlock">Benefits</a>'
+            '<a href="/#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>'
+            '</nav></div>')
+SITE_FILES = ('<p class="files">For slides: diagram 1 as <a href="icr-architecture.png">PNG</a> or '
+              '<a href="icr-architecture.svg">SVG</a>, diagram 2 as <a href="icr-country-flows.png">PNG</a> or '
+              '<a href="icr-country-flows.svg">SVG</a>. Animated SVGs: '
+              '<a href="icr-architecture-animated.svg">diagram 1</a>, '
+              '<a href="icr-country-flows-animated.svg">diagram 2</a>.</p>')
+SITE_FOOTER = ('<div>Integrated Campaign Registry</div>'
+               '<div><a href="https://icr.healthcampaigns.org">FHIR Implementation Guide</a> · '
+               '<a href="https://dashboards.healthcampaigns.org/">Dashboards</a></div>'
+               '<div class="support">With support from the Gates Foundation.</div>')
+REPO_FOOTER = ("<div>Static and animated SVG versions of both diagrams are in the ICR repository under "
+               "<code>diagram/</code>, built by <code>diagram/build.py</code>.</div>")
 CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 
 
@@ -718,16 +726,16 @@ def main():
             .replace("__ARCH__", arch.render(True, standalone=False, height=arch.h + 120))
             .replace("__COUNTRY__", ctry.render(True, standalone=False, height=ctry.h + 120)))
     # index.html is published as a claude.ai artifact, which supplies the <head>
-    (HERE / "index.html").write_text(page.replace("__BACK__\n", "").replace("__FOOTER__", REPO_FOOTER))
+    (HERE / "index.html").write_text(page.replace("__BAR__\n", "").replace("__FILES__\n", "")
+                                     .replace("__FOOTER__", REPO_FOOTER))
 
-    head, body = page.split("<main>", 1)
-    body = body.replace("__BACK__", '<a class="back" href="/">← Integrated Campaign Registry</a>')
+    head, body = page.split('<div class="wrap">', 1)
+    body = body.replace("__BAR__", SITE_BAR).replace("__FILES__", SITE_FILES).replace("__FOOTER__", SITE_FOOTER)
     SITE.mkdir(parents=True, exist_ok=True)
     (SITE / "index.html").write_text(
         '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-        + head + "<style>body { margin: 0; }</style>\n</head>\n<body>\n<main>"
-        + body.replace("__FOOTER__", SITE_FOOTER) + "\n</body>\n</html>\n")
+        + head + "</head>\n<body>\n<div class=\"wrap\">" + body + "\n</body>\n</html>\n")
     for f in HERE.glob("icr-*"):
         shutil.copy(f, SITE / f.name)
     print("wrote", ", ".join(p.name for p in sorted(HERE.glob("icr-*"))), "and index.html, and copied them to", SITE)
