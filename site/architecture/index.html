@@ -3,124 +3,122 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ICR Solution Architecture</title>
+<title>ICR solution architecture</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one reading column, diagrams break out to full width; blueprint paper. */
+/* Layout and type follow www.healthcampaigns.org: one 1120px column, light paper only. */
 :root {
-  --d-paper: #FAF8F3; --d-surface: #F4F1E9; --d-ink: #0E0E0C; --d-ink2: #45453F;
-  --d-muted: #6B6B63; --d-faint: #D6CFBD; --d-hair: rgba(14,14,12,.3); --d-ghost: rgba(14,14,12,.055);
-  --d-accent: #F16427; --d-accent-ink: #A13A10; --d-tint: rgba(241,100,39,.13);
-  --page: #EFEBE1;
-  --serif: 'Source Serif 4', 'Times New Roman', serif;
-  --sans: Manrope, -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  --mono: 'JetBrains Mono', Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --d-paper: #171715; --d-surface: #201F1C; --d-ink: #F1EEE6; --d-ink2: #C5C1B6;
-    --d-muted: #9A978D; --d-faint: #45443F; --d-hair: rgba(241,238,230,.28); --d-ghost: rgba(241,238,230,.045);
-    --d-accent: #F47A44; --d-accent-ink: #FFA57C; --d-tint: rgba(244,122,68,.17);
-    --page: #0F0F0E;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --d-paper: #171715; --d-surface: #201F1C; --d-ink: #F1EEE6; --d-ink2: #C5C1B6;
-  --d-muted: #9A978D; --d-faint: #45443F; --d-hair: rgba(241,238,230,.28); --d-ghost: rgba(241,238,230,.045);
-  --d-accent: #F47A44; --d-accent-ink: #FFA57C; --d-tint: rgba(244,122,68,.17);
-  --page: #0F0F0E;
+  --paper: #F7F8F5; --paper-2: #EEF1EB; --ink: #17211C; --ink-2: #4A554F; --ink-3: #8A948E; --rule: #D5DAD3;
+  --reg: #2F6B4F; --reg-2: #DDE9E0;
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --d-paper: var(--paper); --d-surface: var(--paper-2); --d-ink: var(--ink); --d-ink2: var(--ink-2);
+  --d-muted: #6F7A74; --d-faint: var(--rule); --d-hair: #C9CFC7;
+  --d-accent: var(--reg); --d-tint: rgba(47,107,79,.14);
 }
 
-.bg{fill:var(--d-paper,#FAF8F3)}
-.grid{fill:none;stroke:var(--d-ghost,rgba(14,14,12,.055));stroke-width:1}
-.box{fill:var(--d-surface,#F4F1E9);stroke:var(--d-ink,#0E0E0C);stroke-width:1.25}
-.icr{fill:var(--d-paper,#FAF8F3);stroke:var(--d-accent,#F16427);stroke-width:1.5;stroke-dasharray:7 4}
-.cell{fill:var(--d-surface,#F4F1E9);stroke:var(--d-ink,#0E0E0C);stroke-width:1}
-.group{fill:none;stroke:var(--d-ink2,#45453F);stroke-width:1;stroke-dasharray:5 4}
-.chip{fill:var(--d-paper,#FAF8F3);stroke:var(--d-hair,rgba(14,14,12,.3));stroke-width:1}
-.wire{fill:none;stroke:var(--d-ink2,#45453F);stroke-width:1.25}
-.rule{stroke:var(--d-hair,rgba(14,14,12,.3));stroke-width:1}
-.ah-in,.dot-in,.mk-on,.bar{fill:var(--d-accent,#F16427)}
-.ah-out,.dot-out{fill:var(--d-ink,#0E0E0C)}
-.hl{fill:none;stroke:var(--d-accent,#F16427);stroke-width:2.5}
-.tint{fill:var(--d-tint,rgba(241,100,39,.13))}
-.mk-off{fill:var(--d-faint,#D6CFBD)}
-.dg text{font-family:Manrope,-apple-system,'Helvetica Neue',Arial,sans-serif;fill:var(--d-ink,#0E0E0C)}
-.dg .name{font-size:15px;font-weight:700}
-.dg .sub{font-size:11.5px;fill:var(--d-ink2,#45453F)}
-.dg .body{font-size:11px}
-.dg .mono,.dg .code{font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+.bg{fill:var(--d-paper,#F7F8F5)}
+.box{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1.25}
+.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#2F6B4F);stroke-width:1.75;stroke-dasharray:7 4}
+.cell{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1}
+.group{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1;stroke-dasharray:5 4}
+.chip{fill:var(--d-paper,#F7F8F5);stroke:var(--d-hair,#C9CFC7);stroke-width:1}
+.wire{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1.25}
+.rule{stroke:var(--d-hair,#C9CFC7);stroke-width:1}
+.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#2F6B4F)}
+.ah-out,.dot-out{fill:var(--d-ink,#17211C)}
+.hl{fill:none;stroke:var(--d-accent,#2F6B4F);stroke-width:2.5}
+.tint{fill:var(--d-tint,rgba(47,107,79,.14))}
+.mk-off{fill:var(--d-faint,#D5DAD3)}
+.dg text{font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;fill:var(--d-ink,#17211C)}
+.dg .name{font-size:15.5px;font-weight:600}
+.dg .sub{font-size:12px;fill:var(--d-ink2,#4A554F)}
+.dg .body{font-size:11.5px}
+.dg .mono,.dg .code{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
 .dg .mono{font-size:9.5px;letter-spacing:.08em}
-.dg .code{font-size:9px;fill:var(--d-muted,#6B6B63)}
-.dg .muted{fill:var(--d-muted,#6B6B63)}
-.dg .h-in{fill:var(--d-accent-ink,#A13A10);font-weight:500}
+.dg .code{font-size:9px;fill:var(--d-muted,#6F7A74)}
+.dg .muted{fill:var(--d-muted,#6F7A74)}
+.dg .h-in{fill:var(--d-accent,#2F6B4F);font-weight:500}
 .dg .h-out{font-weight:500}
-.dg .serif{font-family:'Source Serif 4','Times New Roman',serif;font-weight:600}
-.dg .caption{font-size:15px;font-weight:500}
-.dg .cellname{font-size:13px;font-weight:700}
+.dg .title{font-weight:700;letter-spacing:-.01em}
+.dg .caption{font-size:15px;font-weight:600}
+.dg .cellname{font-size:13.5px;font-weight:600}
 
-body { background: var(--page); color: var(--d-ink); font: 16px/1.55 var(--sans); padding: 0 20px; }
-main { max-width: 1240px; margin: 0 auto; padding-block: 48px 72px; display: grid; gap: 56px; }
-.eyebrow, .k { font: 500 11px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--d-muted); }
-h1, h2 { font-family: var(--serif); font-weight: 600; text-wrap: balance; margin: 0; }
-h1 { font-size: clamp(30px, 4.2vw, 46px); line-height: 1.08; max-width: 22ch; }
-h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; }
-p { margin: 0; max-width: 68ch; color: var(--d-ink2); }
-header, section { display: grid; gap: 14px; }
-header p { font-size: 18px; }
-.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-.roles > div { background: var(--d-paper); border: 1px solid var(--d-hair); padding: 18px 20px; display: grid; gap: 8px; align-content: start; }
-.roles ul { margin: 0; padding-left: 18px; color: var(--d-ink2); font-size: 15px; display: grid; gap: 4px; }
-.roles .k.in { color: var(--d-accent-ink); }
-figure { margin: 0; display: grid; gap: 10px; }
-.frame { overflow-x: auto; border: 1px solid var(--d-hair); background: var(--d-paper); }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: var(--reg); }
+h1, h2, h3 { font-family: var(--display); line-height: 1.05; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(36px, 5.2vw, 64px); font-weight: 700; letter-spacing: -0.025em; }
+h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; max-width: 28ch; }
+h3 { font-size: 19px; font-weight: 600; }
+p { margin: 0; max-width: 62ch; color: var(--ink-2); }
+.wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 22px; padding: 20px 0; font-family: var(--display); font-size: 15px; }
+.topbar .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+.topbar .brand span { color: var(--ink-3); font-weight: 400; margin-left: 10px; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.topbar nav a { color: var(--ink-2); text-decoration: none; }
+.topbar nav a:hover { color: var(--ink); }
+.hero { padding-block: 40px 56px; display: grid; gap: 14px; }
+.hero .kicker { font-family: var(--display); font-weight: 600; font-size: clamp(18px, 2vw, 22px); color: var(--ink-2); letter-spacing: -0.01em; }
+section { padding-block: 64px; border-top: 1px solid var(--rule); display: grid; gap: 16px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+.card { border-top: 2px solid var(--ink); padding-top: 14px; display: grid; gap: 6px; align-content: start; }
+.card.reg { border-top-color: var(--reg); }
+.card ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 16.5px; display: grid; gap: 4px; }
+figure { margin: 8px 0 0; display: grid; gap: 12px; }
+.frame { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
 .frame svg { display: block; width: 100%; height: auto; min-width: 820px; }
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.controls button { font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--d-ink);
-  background: var(--d-paper); border: 1px solid var(--d-hair); padding: 8px 11px; cursor: pointer; }
-.controls button:hover { border-color: var(--d-ink); }
-.controls button:focus-visible { outline: 2px solid var(--d-accent); outline-offset: 2px; }
-.controls button[aria-current="step"] { border-color: var(--d-accent); color: var(--d-accent-ink); }
-.controls .play { background: var(--d-ink); color: var(--d-paper); border-color: var(--d-ink); min-width: 74px; }
-.progress { flex: 1 1 120px; height: 2px; background: var(--d-faint); position: relative; }
-.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--d-accent); }
-figcaption { font-size: 14px; color: var(--d-muted); max-width: 80ch; }
-footer { font-size: 13px; color: var(--d-muted); border-top: 1px solid var(--d-hair); padding-top: 16px; }
-footer code { font-family: var(--mono); font-size: 12px; }
-footer a, .back { color: var(--d-ink2); }
-.back { font: 500 11px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
-.back:hover { color: var(--d-accent-ink); }
+.controls button { font-family: var(--display); font-size: 15px; font-weight: 600; background: transparent; border: 1px solid var(--rule);
+  color: var(--ink-2); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.controls button:hover { border-color: var(--ink-3); color: var(--ink); }
+.controls button:focus-visible { outline: 2px solid var(--reg); outline-offset: 2px; }
+.controls button[aria-current="step"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.controls .play { background: var(--reg); color: #fff; border-color: var(--reg); min-width: 84px; }
+.controls .play:hover { color: #fff; border-color: var(--reg); }
+.progress { flex: 1 1 120px; height: 2px; background: var(--rule); position: relative; }
+.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--reg); }
+figcaption { font-size: 15px; color: var(--ink-3); max-width: 80ch; }
+.files { font-size: 15px; color: var(--ink-2); }
+footer { border-top: 1px solid var(--rule); padding: 40px 0 60px; font-size: 14px; color: var(--ink-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer a { color: var(--ink-2); }
+footer code { font-family: var(--mono); font-size: 13px; }
+footer .support { flex-basis: 100%; font-size: 13px; margin-top: 6px; }
 </style>
 
-<style>body { margin: 0; }</style>
 </head>
 <body>
-<main>
-  <header>
-    <a class="back" href="/">← Integrated Campaign Registry</a>
-    <h1>ICR solution architecture</h1>
-  </header>
+<div class="wrap">
+<div class="topbar"><a class="brand" href="/">Integrated Campaign Registry <span>UNICEF</span></a><nav><a href="/#why">Why campaigns</a><a href="/#what">What it is</a><a href="/#unlock">Benefits</a><a href="/#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a></nav></div>
+<header class="hero">
+  <div class="kicker">Integrated Campaign Registry</div>
+  <h1>ICR solution architecture</h1>
+</header>
 
-  <section class="roles" aria-label="What the ICR does and does not do">
-    <div>
-      <div class="k in">The ICR holds</div>
-      <ul>
-        <li>The location registry: admin areas, facilities, catchments, settlements</li>
-        <li>Campaigns and rounds, targets and results</li>
-        <li>Shared codes, and how each tool's codes map to them</li>
-      </ul>
-    </div>
-    <div>
-      <div class="k">Other systems keep doing</div>
-      <ul>
-        <li>Data collection in CommCare, DIGIT, ODK and DHIS2 Tracker</li>
-        <li>Microplanning in Crosscut</li>
-        <li>Routine reporting in DHIS2, the national HMIS</li>
-      </ul>
+<main>
+  <section aria-label="What the ICR does and does not do">
+    <div class="cards">
+      <div class="card reg">
+        <h3>The ICR holds</h3>
+        <ul>
+          <li>The location registry: admin areas, facilities, catchments, settlements</li>
+          <li>Campaigns and rounds, targets and results</li>
+          <li>Shared codes, and how each tool's codes map to them</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Other systems keep doing</h3>
+        <ul>
+          <li>Data collection in CommCare, DIGIT, ODK and DHIS2 Tracker</li>
+          <li>Microplanning in Crosscut</li>
+          <li>Routine reporting in DHIS2, the national HMIS</li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -130,8 +128,8 @@ footer a, .back { color: var(--d-ink2); }
     <figure data-player>
       <div class="frame"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="dg" viewBox="0 0 1280 930" width="1280" height="930" role="img" aria-label="The ICR in a country&#x27;s campaign systems: campaign tools plan and collect, the ICR keeps the registry and the record, DHIS2 and the warehouse report." data-loop="26" data-stages="[[0.3, &quot;LOAD&quot;], [5, &quot;PLAN&quot;], [10, &quot;DELIVER&quot;], [16, &quot;REPORT&quot;], [21.5, &quot;NEXT ROUND&quot;]]">
 <title>The ICR in a country&#x27;s campaign systems: campaign tools plan and collect, the ICR keeps the registry and the record, DHIS2 and the warehouse report.</title>
-<defs><pattern id="a-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid" d="M20 0H0V20"/></pattern><marker id="a-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="a-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
-<rect class="bg" width="1280" height="930"/><rect fill="url(#a-grid)" width="1280" height="930"/>
+<defs><marker id="a-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="a-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
+<rect class="bg" width="1280" height="930"/>
 <text class="mono muted" x="40" y="44">THE ICR IN A COUNTRY&#x27;S CAMPAIGN SYSTEMS</text>
 <text class="mono" x="40" y="116">PLAN AND COLLECT</text>
 <text class="sub" x="40" y="136">Countries keep the</text>
@@ -208,7 +206,7 @@ footer a, .back { color: var(--d-ink2); }
 <rect class="box" x="906" y="90" width="162" height="70" rx="3"/><text class="name" x="920" y="117">Other tools</text><text class="sub" x="920" y="136">ODK, DHIS2 Tracker</text>
 <rect class="box" x="1080" y="90" width="162" height="70" rx="3"/><text class="name" x="1094" y="117">Dashboards</text><text class="sub" x="1094" y="136">Campaign monitoring</text>
 <rect class="icr" x="210" y="330" width="670" height="200" rx="4"/>
-<text class="serif" x="230" y="364" font-size="24">ICR</text><text class="sub" x="280" y="363">Integrated Campaign Registry</text><text class="mono h-in" x="860" y="362" text-anchor="end">SYSTEM OF RECORD · HL7 FHIR R4</text>
+<text class="title" x="230" y="364" font-size="24">ICR</text><text class="sub" x="280" y="363">Integrated Campaign Registry</text><text class="mono h-in" x="860" y="362" text-anchor="end">SYSTEM OF RECORD · HL7 FHIR R4</text>
 <rect class="cell" x="230" y="384" width="202" height="130" rx="2"/><text class="name" x="244" y="410">Location registry</text><text class="sub" x="244" y="432">Admin areas, health facilities,</text><text class="sub" x="244" y="448">catchments, settlements</text><text class="code" x="244" y="501">Location · Organization</text>
 <rect class="cell" x="444" y="384" width="202" height="130" rx="2"/><text class="name" x="458" y="410">Campaign data</text><text class="sub" x="458" y="432">Campaigns, rounds, targets,</text><text class="sub" x="458" y="448">doses given, coverage</text><text class="code" x="458" y="501">CarePlan · Group · MeasureReport</text>
 <rect class="cell" x="658" y="384" width="202" height="130" rx="2"/><text class="name" x="672" y="410">Terminology</text><text class="sub" x="672" y="432">Shared codes, and how each</text><text class="sub" x="672" y="448">tool&#x27;s own codes map to them</text><text class="code" x="672" y="501">CodeSystem · ValueSet · ConceptMap</text>
@@ -216,18 +214,18 @@ footer a, .back { color: var(--d-ink2); }
 <rect class="box" x="990" y="660" width="250" height="70" rx="3"/><text class="name" x="1004" y="687">Dashboards and BI</text><text class="sub" x="1004" y="706">Superset, Metabase, Power BI</text>
 <rect class="box" x="210" y="660" width="230" height="70" rx="3"/><text class="name" x="224" y="687">DHIS2</text><text class="sub" x="224" y="706">National HMIS</text>
 <rect class="chip" x="301" y="224" width="230" height="92" rx="2"/>
-<g opacity="0"><rect class="tint" x="302" y="228" width="228" height="82"/><rect class="bar" x="302" y="228" width="2.5" height="82"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1962;0.2077;0.2692;0.2808;0.3885;0.4;0.4769;0.4885;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="302" y="228" width="228" height="82"/><rect class="hlbar" x="302" y="228" width="2.5" height="82"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1962;0.2077;0.2692;0.2808;0.3885;0.4;0.4769;0.4885;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></g>
 <text class="mono h-out" x="313" y="241">ICR → TOOLS</text><text class="body" x="313" y="256">locations and catchments</text><text class="body" x="313" y="271">target populations</text><text class="body" x="313" y="286">campaign plans and targets</text><text class="body" x="313" y="301">shared codes</text>
 <rect class="chip" x="559" y="224" width="230" height="92" rx="2"/>
-<g opacity="0"><rect class="tint" x="560" y="228" width="228" height="82"/><rect class="bar" x="560" y="228" width="2.5" height="82"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2846;0.2962;0.3654;0.3769;0.4923;0.5038;0.5962;0.6077;1" values="0.0;0;1;1;0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="560" y="228" width="228" height="82"/><rect class="hlbar" x="560" y="228" width="2.5" height="82"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2846;0.2962;0.3654;0.3769;0.4923;0.5038;0.5962;0.6077;1" values="0.0;0;1;1;0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="571" y="241">TOOLS → ICR</text><text class="body" x="571" y="256">doses and treatments given</text><text class="body" x="571" y="271">coverage</text><text class="body" x="571" y="286">supervision findings</text><text class="body" x="571" y="301">stock</text>
 <rect class="chip" x="350" y="545.5" width="216" height="99" rx="2"/>
-<g opacity="0"><rect class="tint" x="351" y="549.5" width="214" height="37"/><rect class="bar" x="351" y="549.5" width="2.5" height="37"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0192;0.0308;0.1731;0.1846;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="351" y="549.5" width="214" height="37"/><rect class="hlbar" x="351" y="549.5" width="2.5" height="37"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0192;0.0308;0.1731;0.1846;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="362" y="562.5">DHIS2 → ICR · FIRST LOAD</text><text class="body" x="362" y="577.5">org units, facilities, history</text>
-<g opacity="0"><rect class="tint" x="351" y="586.5" width="214" height="52"/><rect class="bar" x="351" y="586.5" width="2.5" height="52"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4962;0.5077;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="351" y="586.5" width="214" height="52"/><rect class="hlbar" x="351" y="586.5" width="2.5" height="52"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4962;0.5077;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="362" y="599.5">DHIS2 → ICR · AFTER THAT</text><text class="body" x="362" y="614.5">changes, e.g. a new facility</text><text class="body" x="362" y="629.5">campaign data entered in DHIS2</text>
 <rect class="chip" x="581" y="564" width="210" height="62" rx="2"/>
-<g opacity="0"><rect class="tint" x="582" y="568" width="208" height="52"/><rect class="bar" x="582" y="568" width="2.5" height="52"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="582" y="568" width="208" height="52"/><rect class="hlbar" x="582" y="568" width="2.5" height="52"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-out" x="593" y="581">ICR → DHIS2</text><text class="body" x="593" y="596">campaign results</text><text class="body" x="593" y="611">as aggregate data</text>
 <rect class="hl" x="210" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1962;0.2077;0.3654;0.3769;1" values="0.0;0;1;1;0;0"/></rect>
 <rect class="hl" x="384" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></rect>
@@ -254,7 +252,7 @@ footer a, .back { color: var(--d-ink2); }
 <g opacity="0"><text class="caption" x="40" y="882">The next round starts from the registry: locations, populations and past results</text><text class="caption" x="40" y="904">don&#x27;t have to be collected again.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8269;0.8404;0.9865;1;1" values="0.0;0;1;1;0;0"/></g>
 </svg></div>
       <div class="controls"></div>
-      <figcaption>Each step lights up the systems involved; dots show data moving. Orange arrowheads mark data going into the ICR.</figcaption>
+      <figcaption>Click a step to play it, or Play to run through them all. Green arrowheads mark data going into the ICR.</figcaption>
     </figure>
   </section>
 
@@ -265,8 +263,8 @@ footer a, .back { color: var(--d-ink2); }
     <figure data-player>
       <div class="frame"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="dg" viewBox="0 0 1280 960" width="1280" height="960" role="img" aria-label="Example of one country&#x27;s NTD programme: what each system sends to the ICR and what it gets back." data-loop="27" data-stages="[[0.3, &quot;EXISTING DATA&quot;], [5.5, &quot;PLAN&quot;], [11, &quot;SHARE&quot;], [15, &quot;RUN CAMPAIGNS&quot;], [21.5, &quot;NEXT ROUND&quot;]]">
 <title>Example of one country&#x27;s NTD programme: what each system sends to the ICR and what it gets back.</title>
-<defs><pattern id="c-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid" d="M20 0H0V20"/></pattern><marker id="c-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="c-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
-<rect class="bg" width="1280" height="960"/><rect fill="url(#c-grid)" width="1280" height="960"/>
+<defs><marker id="c-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="c-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
+<rect class="bg" width="1280" height="960"/>
 <text class="mono muted" x="40" y="44">EXAMPLE · DATA IN AND OUT OF THE ICR IN ONE COUNTRY&#x27;S NTD PROGRAMME</text>
 <rect class="group" x="560" y="64" width="676" height="216" rx="6"/>
 <text class="mono" x="580" y="90">SIGHTSAVERS</text>
@@ -322,33 +320,33 @@ footer a, .back { color: var(--d-ink2); }
 <rect class="box" x="40" y="720" width="230" height="60" rx="3"/><text class="name" x="54" y="747">DIGIT</text><text class="sub" x="54" y="766">Malaria</text>
 <rect class="box" x="1000" y="720" width="230" height="60" rx="3"/><text class="name" x="1014" y="747">DHIS2</text><text class="sub" x="1014" y="766">National HMIS</text>
 <rect class="icr" x="470" y="450" width="340" height="150" rx="4"/>
-<text class="serif" x="486" y="482" font-size="24">ICR</text><text class="sub" x="536" y="481">registry and system of record</text>
+<text class="title" x="486" y="482" font-size="24">ICR</text><text class="sub" x="536" y="481">registry and system of record</text>
 <rect class="cell" x="486.0" y="506" width="97.33333333333333" height="78" rx="2"/><text class="cellname" x="534.6666666666666" y="541.0" text-anchor="middle">Location</text><text class="cellname" x="534.6666666666666" y="557.0" text-anchor="middle">registry</text>
 <rect class="cell" x="591.3333333333334" y="506" width="97.33333333333333" height="78" rx="2"/><text class="cellname" x="640.0" y="541.0" text-anchor="middle">Campaign</text><text class="cellname" x="640.0" y="557.0" text-anchor="middle">data</text>
 <rect class="cell" x="696.6666666666666" y="506" width="97.33333333333333" height="78" rx="2"/><text class="cellname" x="745.3333333333333" y="549.0" text-anchor="middle">Terminology</text>
 <rect class="chip" x="252" y="257.5" width="236" height="99" rx="2"/>
-<g opacity="0"><rect class="tint" x="253" y="261.5" width="234" height="52"/><rect class="bar" x="253" y="261.5" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4148;0.4259;0.537;0.5481;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="253" y="261.5" width="234" height="52"/><rect class="hlbar" x="253" y="261.5" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4148;0.4259;0.537;0.5481;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-out" x="264" y="274.5">ICR → ICF</text><text class="body" x="264" y="289.5">locations · populations</text><text class="body" x="264" y="304.5">indicators · Crosscut catchments</text>
-<g opacity="0"><rect class="tint" x="253" y="313.5" width="234" height="37"/><rect class="bar" x="253" y="313.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="253" y="313.5" width="234" height="37"/><rect class="hlbar" x="253" y="313.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="264" y="326.5">ICF → ICR</text><text class="body" x="264" y="341.5">campaign data</text>
 <rect class="chip" x="254" y="612.5" width="216" height="99" rx="2"/>
-<g opacity="0"><rect class="tint" x="255" y="616.5" width="214" height="52"/><rect class="bar" x="255" y="616.5" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4148;0.4259;0.537;0.5481;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="255" y="616.5" width="214" height="52"/><rect class="hlbar" x="255" y="616.5" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4148;0.4259;0.537;0.5481;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-out" x="266" y="629.5">ICR → DIGIT</text><text class="body" x="266" y="644.5">locations · populations</text><text class="body" x="266" y="659.5">indicators</text>
-<g opacity="0"><rect class="tint" x="255" y="668.5" width="214" height="37"/><rect class="bar" x="255" y="668.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="255" y="668.5" width="214" height="37"/><rect class="hlbar" x="255" y="668.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="266" y="681.5">DIGIT → ICR</text><text class="body" x="266" y="696.5">campaign data</text>
 <rect class="chip" x="594" y="288" width="252" height="114" rx="2"/>
-<g opacity="0"><rect class="tint" x="595" y="292" width="250" height="37"/><rect class="bar" x="595" y="292" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2074;0.2185;0.2926;0.3037;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="595" y="292" width="250" height="37"/><rect class="hlbar" x="595" y="292" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2074;0.2185;0.2926;0.3037;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-out" x="606" y="305">ICR → CROSSCUT</text><text class="body" x="606" y="320">locations · populations · indicators</text>
-<g opacity="0"><rect class="tint" x="595" y="329" width="250" height="67"/><rect class="bar" x="595" y="329" width="2.5" height="67"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3074;0.3185;0.3889;0.4;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="595" y="329" width="250" height="67"/><rect class="hlbar" x="595" y="329" width="2.5" height="67"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3074;0.3185;0.3889;0.4;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="606" y="342">CROSSCUT → ICR</text><text class="body" x="606" y="357">catchment areas, added to</text><text class="body" x="606" y="372">the location registry</text><text class="body" x="606" y="387">hard-to-reach communities</text>
 <rect class="chip" x="891" y="323" width="210" height="62" rx="2"/>
-<g opacity="0"><rect class="tint" x="892" y="327" width="208" height="52"/><rect class="bar" x="892" y="327" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="892" y="327" width="208" height="52"/><rect class="hlbar" x="892" y="327" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="903" y="340">COMMCARE → ICR</text><text class="body" x="903" y="355">campaign data</text><text class="body" x="903" y="370">supervision coverage</text>
 <rect class="chip" x="950" y="541.5" width="160" height="47" rx="2"/>
-<g opacity="0"><rect class="tint" x="951" y="545.5" width="158" height="37"/><rect class="bar" x="951" y="545.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0222;0.0333;0.1852;0.1963;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="951" y="545.5" width="158" height="37"/><rect class="hlbar" x="951" y="545.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0222;0.0333;0.1852;0.1963;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="962" y="558.5">METABASE → ICR</text><text class="body" x="962" y="573.5">historical data</text>
 <rect class="chip" x="782" y="651.5" width="196" height="47" rx="2"/>
-<g opacity="0"><rect class="tint" x="783" y="655.5" width="194" height="37"/><rect class="bar" x="783" y="655.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0185;0.0296;0.1852;0.1963;1" values="0.0;0;1;1;0;0"/></g>
+<g opacity="0"><rect class="tint" x="783" y="655.5" width="194" height="37"/><rect class="hlbar" x="783" y="655.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0185;0.0296;0.1852;0.1963;1" values="0.0;0;1;1;0;0"/></g>
 <text class="mono h-in" x="794" y="668.5">DHIS2 → ICR</text><text class="body" x="794" y="683.5">org units · routine data</text>
 <rect class="hl" x="980" y="80" width="230" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0148;0.0259;0.0926;0.1037;0.5778;0.5889;0.7778;0.7889;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
 <rect class="hl" x="600" y="180" width="240" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2074;0.2185;0.3889;0.4;0.5778;0.5889;0.7778;0.7889;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
@@ -373,10 +371,12 @@ footer a, .back { color: var(--d-ink2); }
 </svg></div>
       <div class="controls"></div>
     </figure>
+    <p class="files">For slides: diagram 1 as <a href="icr-architecture.png">PNG</a> or <a href="icr-architecture.svg">SVG</a>, diagram 2 as <a href="icr-country-flows.png">PNG</a> or <a href="icr-country-flows.svg">SVG</a>. Animated SVGs: <a href="icr-architecture-animated.svg">diagram 1</a>, <a href="icr-country-flows-animated.svg">diagram 2</a>.</p>
   </section>
-
-  <footer>For slides: diagram 1 as <a href="icr-architecture.png">PNG</a> or <a href="icr-architecture.svg">SVG</a>, diagram 2 as <a href="icr-country-flows.png">PNG</a> or <a href="icr-country-flows.svg">SVG</a>. Animated SVGs: <a href="icr-architecture-animated.svg">diagram 1</a>, <a href="icr-country-flows-animated.svg">diagram 2</a>.</footer>
 </main>
+
+<footer><div>Integrated Campaign Registry</div><div><a href="https://icr.healthcampaigns.org">FHIR Implementation Guide</a> · <a href="https://dashboards.healthcampaigns.org/">Dashboards</a></div><div class="support">With support from the Gates Foundation.</div></footer>
+</div>
 
 <script>
 // The diagrams carry SMIL timings so the SVG files animate on their own. On this page
