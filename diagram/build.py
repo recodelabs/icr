@@ -488,7 +488,7 @@ __CSS__
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
 a { color: var(--reg); }
 h1, h2, h3 { font-family: var(--display); line-height: 1.05; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
-h1 { font-size: clamp(36px, 5.2vw, 64px); font-weight: 700; letter-spacing: -0.025em; }
+h1 { font-size: clamp(28px, 3.6vw, 42px); font-weight: 700; letter-spacing: -0.025em; }
 h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; max-width: 28ch; }
 h3 { font-size: 19px; font-weight: 600; }
 p { margin: 0; max-width: 62ch; color: var(--ink-2); }
@@ -692,7 +692,8 @@ __BAR__
 SITE = HERE.parent / "site" / "architecture"
 SITE_BAR = ('<div class="topbar"><a class="brand" href="/">Integrated Campaign Registry <span>UNICEF</span></a>'
             '<nav><a href="/#why">Why campaigns</a><a href="/#what">What it is</a><a href="/#unlock">Benefits</a>'
-            '<a href="/#audience">Who benefits</a><a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>'
+            '<a href="/#audience">Who benefits</a><a href="/architecture/">Architecture</a>'
+            '<a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>'
             '</nav></div>')
 SITE_FILES = ('<p class="files">For slides: diagram 1 as <a href="icr-architecture.png">PNG</a> or '
               '<a href="icr-architecture.svg">SVG</a>, diagram 2 as <a href="icr-country-flows.png">PNG</a> or '
@@ -701,7 +702,8 @@ SITE_FILES = ('<p class="files">For slides: diagram 1 as <a href="icr-architectu
               '<a href="icr-country-flows-animated.svg">diagram 2</a>.</p>')
 SITE_FOOTER = ('<div>Integrated Campaign Registry</div>'
                '<div><a href="https://icr.healthcampaigns.org">FHIR Implementation Guide</a> · '
-               '<a href="https://dashboards.healthcampaigns.org/">Dashboards</a></div>'
+               '<a href="https://dashboards.healthcampaigns.org/">Dashboards</a> · '
+               '<a href="/architecture/">Solution architecture</a></div>'
                '<div class="support">With support from the Gates Foundation.</div>')
 REPO_FOOTER = ("<div>Static and animated SVG versions of both diagrams are in the ICR repository under "
                "<code>diagram/</code>, built by <code>diagram/build.py</code>.</div>")
