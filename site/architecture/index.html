@@ -17,21 +17,21 @@
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --d-paper: var(--paper); --d-surface: var(--paper-2); --d-ink: var(--ink); --d-ink2: var(--ink-2);
   --d-muted: #6F7A74; --d-faint: var(--rule); --d-hair: #C9CFC7;
-  --d-accent: var(--reg); --d-tint: rgba(47,107,79,.14);
+  --d-accent: #F16427; --d-accent-ink: #A13A10; --d-tint: rgba(241,100,39,.13);
 }
 
 .bg{fill:var(--d-paper,#F7F8F5)}
 .box{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1.25}
-.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#2F6B4F);stroke-width:1.75;stroke-dasharray:7 4}
+.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#F16427);stroke-width:1.75;stroke-dasharray:7 4}
 .cell{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1}
 .group{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1;stroke-dasharray:5 4}
 .chip{fill:var(--d-paper,#F7F8F5);stroke:var(--d-hair,#C9CFC7);stroke-width:1}
 .wire{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1.25}
 .rule{stroke:var(--d-hair,#C9CFC7);stroke-width:1}
-.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#2F6B4F)}
+.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#F16427)}
 .ah-out,.dot-out{fill:var(--d-ink,#17211C)}
-.hl{fill:none;stroke:var(--d-accent,#2F6B4F);stroke-width:2.5}
-.tint{fill:var(--d-tint,rgba(47,107,79,.14))}
+.hl{fill:none;stroke:var(--d-accent,#F16427);stroke-width:2.5}
+.tint{fill:var(--d-tint,rgba(241,100,39,.13))}
 .mk-off{fill:var(--d-faint,#D5DAD3)}
 .dg text{font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;fill:var(--d-ink,#17211C)}
 .dg .name{font-size:15.5px;font-weight:600}
@@ -41,7 +41,7 @@
 .dg .mono{font-size:9.5px;letter-spacing:.08em}
 .dg .code{font-size:9px;fill:var(--d-muted,#6F7A74)}
 .dg .muted{fill:var(--d-muted,#6F7A74)}
-.dg .h-in{fill:var(--d-accent,#2F6B4F);font-weight:500}
+.dg .h-in{fill:var(--d-accent-ink,#A13A10);font-weight:500}
 .dg .h-out{font-weight:500}
 .dg .title{font-weight:700;letter-spacing:-.01em}
 .dg .caption{font-size:15px;font-weight:600}
@@ -68,7 +68,7 @@ p { margin: 0; max-width: 62ch; color: var(--ink-2); }
 section { padding-block: 64px; border-top: 1px solid var(--rule); display: grid; gap: 16px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
 .card { border-top: 2px solid var(--ink); padding-top: 14px; display: grid; gap: 6px; align-content: start; }
-.card.reg { border-top-color: var(--reg); }
+.card.reg { border-top-color: var(--d-accent); }
 .card ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 16.5px; display: grid; gap: 4px; }
 figure { margin: 8px 0 0; display: grid; gap: 12px; }
 .frame { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
@@ -77,12 +77,12 @@ figure { margin: 8px 0 0; display: grid; gap: 12px; }
 .controls button { font-family: var(--display); font-size: 15px; font-weight: 600; background: transparent; border: 1px solid var(--rule);
   color: var(--ink-2); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
 .controls button:hover { border-color: var(--ink-3); color: var(--ink); }
-.controls button:focus-visible { outline: 2px solid var(--reg); outline-offset: 2px; }
+.controls button:focus-visible { outline: 2px solid var(--d-accent); outline-offset: 2px; }
 .controls button[aria-current="step"] { background: var(--ink); color: #fff; border-color: var(--ink); }
-.controls .play { background: var(--reg); color: #fff; border-color: var(--reg); min-width: 84px; }
-.controls .play:hover { color: #fff; border-color: var(--reg); }
+.controls .play { background: var(--d-accent); color: #fff; border-color: var(--d-accent); min-width: 84px; }
+.controls .play:hover { color: #fff; border-color: var(--d-accent-ink); }
 .progress { flex: 1 1 120px; height: 2px; background: var(--rule); position: relative; }
-.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--reg); }
+.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--d-accent); }
 figcaption { font-size: 15px; color: var(--ink-3); max-width: 80ch; }
 .files { font-size: 15px; color: var(--ink-2); }
 footer { border-top: 1px solid var(--rule); padding: 40px 0 60px; font-size: 14px; color: var(--ink-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
@@ -252,7 +252,7 @@ footer .support { flex-basis: 100%; font-size: 13px; margin-top: 6px; }
 <g opacity="0"><text class="caption" x="40" y="882">The next round starts from the registry: locations, populations and past results</text><text class="caption" x="40" y="904">don&#x27;t have to be collected again.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8269;0.8404;0.9865;1;1" values="0.0;0;1;1;0;0"/></g>
 </svg></div>
       <div class="controls"></div>
-      <figcaption>Click a step to play it, or Play to run through them all. Green arrowheads mark data going into the ICR.</figcaption>
+      <figcaption>Click a step to play it, or Play to run through them all. Orange arrowheads mark data going into the ICR.</figcaption>
     </figure>
   </section>
 
