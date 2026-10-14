@@ -327,7 +327,7 @@ def architecture():
            hl=[(16.8, S4[1] - 0.2)])
     wh = D.wire("wh", [(ix + iw, 430), (990, 430)], end="out")
     D.text("wires", 935, 421, "PARQUET EXPORT", "mono muted", anchor="middle")
-    D.node(990, 660, 250, 70, "Dashboards and BI", "Superset, Metabase, Power BI",
+    D.node(990, 660, 250, 70, "Dashboards and BI", "DuckDB, Superset, Metabase, Power BI",
            hl=[(18.0, S4[1] - 0.2)])
     bi = D.wire("bi", [(1115, 480), (1115, 660)], end="out")
 
