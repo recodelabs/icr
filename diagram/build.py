@@ -457,7 +457,7 @@ def country():
                        "and hard-to-reach communities go back into the location registry."]),
         (*S3, "SHARE", ["Other programmes' tools, ICF and DIGIT for malaria, get the same locations, populations",
                         "and indicators. ICF also gets Crosscut's catchments."]),
-        (*S4, "RUN THE CAMPAIGN", ["CommCare sends delivery data to Crosscut and Metabase, and campaign data and",
+        (*S4, "RUN CAMPAIGNS", ["CommCare sends delivery data to Crosscut and Metabase, and campaign data and",
                                    "supervision coverage to the ICR. ICF and DIGIT send their campaign data too."]),
         (*S5, "NEXT ROUND", ["The next round starts from what the ICR holds: locations, catchments, populations",
                              "and past results are already there."]),
