@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="dg" viewBox="0 0 1280 810" width="1280" height="810" role="img" aria-label="The ICR in a country&#x27;s campaign systems: campaign tools plan and collect, the ICR keeps the registry and the record, DHIS2 and the warehouse report.">
+<title>The ICR in a country&#x27;s campaign systems: campaign tools plan and collect, the ICR keeps the registry and the record, DHIS2 and the warehouse report.</title>
+<style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap');
+.bg{fill:var(--d-paper,#FAF8F3)}
+.grid{fill:none;stroke:var(--d-ghost,rgba(14,14,12,.055));stroke-width:1}
+.box{fill:var(--d-surface,#F4F1E9);stroke:var(--d-ink,#0E0E0C);stroke-width:1.25}
+.icr{fill:var(--d-paper,#FAF8F3);stroke:var(--d-accent,#F16427);stroke-width:1.5;stroke-dasharray:7 4}
+.cell{fill:var(--d-surface,#F4F1E9);stroke:var(--d-ink,#0E0E0C);stroke-width:1}
+.group{fill:none;stroke:var(--d-ink2,#45453F);stroke-width:1;stroke-dasharray:5 4}
+.chip{fill:var(--d-paper,#FAF8F3);stroke:var(--d-hair,rgba(14,14,12,.3));stroke-width:1}
+.wire{fill:none;stroke:var(--d-ink2,#45453F);stroke-width:1.25}
+.rule{stroke:var(--d-hair,rgba(14,14,12,.3));stroke-width:1}
+.ah-in,.dot-in,.mk-on,.bar{fill:var(--d-accent,#F16427)}
+.ah-out,.dot-out{fill:var(--d-ink,#0E0E0C)}
+.hl{fill:none;stroke:var(--d-accent,#F16427);stroke-width:2.5}
+.tint{fill:var(--d-tint,rgba(241,100,39,.13))}
+.mk-off{fill:var(--d-faint,#D6CFBD)}
+.dg text{font-family:Manrope,-apple-system,'Helvetica Neue',Arial,sans-serif;fill:var(--d-ink,#0E0E0C)}
+.dg .name{font-size:15px;font-weight:700}
+.dg .sub{font-size:11.5px;fill:var(--d-ink2,#45453F)}
+.dg .body{font-size:11px}
+.dg .mono,.dg .code{font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+.dg .mono{font-size:9.5px;letter-spacing:.08em}
+.dg .code{font-size:9px;fill:var(--d-muted,#6B6B63)}
+.dg .muted{fill:var(--d-muted,#6B6B63)}
+.dg .h-in{fill:var(--d-accent-ink,#A13A10);font-weight:500}
+.dg .h-out{font-weight:500}
+.dg .serif{font-family:'Source Serif 4','Times New Roman',serif;font-weight:600}
+.dg .caption{font-size:15px;font-weight:500}
+.dg .cellname{font-size:13px;font-weight:700}
+]]></style>
+<defs><pattern id="a-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid" d="M20 0H0V20"/></pattern><marker id="a-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="a-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
+<rect class="bg" width="1280" height="810"/><rect fill="url(#a-grid)" width="1280" height="810"/>
+<text class="mono muted" x="40" y="44">THE ICR IN A COUNTRY&#x27;S CAMPAIGN SYSTEMS</text>
+<text class="mono" x="40" y="116">PLAN AND COLLECT</text>
+<text class="sub" x="40" y="136">Countries keep the</text>
+<text class="sub" x="40" y="152">tools they use</text>
+<text class="mono" x="40" y="412">RECORD</text>
+<text class="sub" x="40" y="432">One registry and</text>
+<text class="sub" x="40" y="448">system of record</text>
+<text class="mono" x="40" y="687">REPORT AND ANALYSE</text>
+<text class="sub" x="40" y="707">National reporting</text>
+<text class="sub" x="40" y="723">and analysis</text>
+<path class="wire" d="M210,772 h34" marker-end="url(#a-in)"/><text class="sub" x="254" y="776">data going into the ICR</text><path class="wire" d="M420,772 h34" marker-end="url(#a-out)"/><text class="sub" x="464" y="776">data going out of the ICR, or between tools</text>
+<path id="a-crosscut" class="wire" d="M291,160 L291,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-commcare" class="wire" d="M465,160 L465,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-digit" class="wire" d="M639,160 L639,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-icf" class="wire" d="M813,160 L813,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-other" class="wire" d="M987,160 L987,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-cdash" class="wire" d="M1161,160 L1161,210 L545,210 L545,330" marker-start="url(#a-out)"/>
+<path id="a-wh" class="wire" d="M880,430 L990,430" marker-end="url(#a-out)"/>
+<text class="mono muted" x="935" y="421" text-anchor="middle">PARQUET EXPORT</text>
+<path id="a-bi" class="wire" d="M1115,480 L1115,660" marker-end="url(#a-out)"/>
+<path id="a-dhis2" class="wire" d="M325,660 L325,530" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<rect class="box" x="210" y="90" width="162" height="70" rx="3"/><text class="name" x="224" y="117">Crosscut</text><text class="sub" x="224" y="136">Microplanning</text>
+<rect class="box" x="384" y="90" width="162" height="70" rx="3"/><text class="name" x="398" y="117">CommCare</text><text class="sub" x="398" y="136">Delivery, supervision</text>
+<rect class="box" x="558" y="90" width="162" height="70" rx="3"/><text class="name" x="572" y="117">DIGIT</text><text class="sub" x="572" y="136">Malaria campaigns</text>
+<rect class="box" x="732" y="90" width="162" height="70" rx="3"/><text class="name" x="746" y="130.0">ICF</text>
+<rect class="box" x="906" y="90" width="162" height="70" rx="3"/><text class="name" x="920" y="117">Other tools</text><text class="sub" x="920" y="136">ODK, DHIS2 Tracker</text>
+<rect class="box" x="1080" y="90" width="162" height="70" rx="3"/><text class="name" x="1094" y="117">Dashboards</text><text class="sub" x="1094" y="136">Campaign monitoring</text>
+<rect class="icr" x="210" y="330" width="670" height="200" rx="4"/>
+<text class="serif" x="230" y="364" font-size="24">ICR</text><text class="sub" x="280" y="363">Integrated Campaign Registry</text><text class="mono h-in" x="860" y="362" text-anchor="end">SYSTEM OF RECORD · HL7 FHIR R4</text>
+<rect class="cell" x="230" y="384" width="202" height="130" rx="2"/><text class="name" x="244" y="410">Location registry</text><text class="sub" x="244" y="432">Admin areas, health facilities,</text><text class="sub" x="244" y="448">catchments, settlements</text><text class="code" x="244" y="501">Location · Organization</text>
+<rect class="cell" x="444" y="384" width="202" height="130" rx="2"/><text class="name" x="458" y="410">Campaign data</text><text class="sub" x="458" y="432">Campaigns, rounds, targets,</text><text class="sub" x="458" y="448">doses given, coverage</text><text class="code" x="458" y="501">CarePlan · Group · MeasureReport</text>
+<rect class="cell" x="658" y="384" width="202" height="130" rx="2"/><text class="name" x="672" y="410">Terminology</text><text class="sub" x="672" y="432">Shared codes, and how each</text><text class="sub" x="672" y="448">tool&#x27;s own codes map to them</text><text class="code" x="672" y="501">CodeSystem · ValueSet · ConceptMap</text>
+<rect class="box" x="990" y="380" width="250" height="100" rx="3"/><text class="name" x="1004" y="407">Data warehouse</text><text class="sub" x="1004" y="426">Parquet files, SQL queries</text><text class="code" x="1004" y="468">SQL-on-FHIR</text>
+<rect class="box" x="990" y="660" width="250" height="70" rx="3"/><text class="name" x="1004" y="687">Dashboards and BI</text><text class="sub" x="1004" y="706">Superset, Metabase, Power BI</text>
+<rect class="box" x="210" y="660" width="230" height="70" rx="3"/><text class="name" x="224" y="687">DHIS2</text><text class="sub" x="224" y="706">National HMIS</text>
+<rect class="chip" x="301" y="224" width="230" height="92" rx="2"/>
+<text class="mono h-out" x="313" y="241">ICR → TOOLS</text><text class="body" x="313" y="256">locations and catchments</text><text class="body" x="313" y="271">target populations</text><text class="body" x="313" y="286">campaign plans and targets</text><text class="body" x="313" y="301">shared codes</text>
+<rect class="chip" x="559" y="224" width="230" height="92" rx="2"/>
+<text class="mono h-in" x="571" y="241">TOOLS → ICR</text><text class="body" x="571" y="256">doses and treatments given</text><text class="body" x="571" y="271">coverage</text><text class="body" x="571" y="286">supervision findings</text><text class="body" x="571" y="301">stock</text>
+<rect class="chip" x="350" y="545.5" width="216" height="99" rx="2"/>
+<text class="mono h-in" x="362" y="562.5">DHIS2 → ICR · FIRST LOAD</text><text class="body" x="362" y="577.5">org units, facilities, history</text>
+<text class="mono h-in" x="362" y="599.5">DHIS2 → ICR · AFTER THAT</text><text class="body" x="362" y="614.5">changes, e.g. a new facility</text><text class="body" x="362" y="629.5">campaign data entered in DHIS2</text>
+<rect class="chip" x="581" y="564" width="210" height="62" rx="2"/>
+<text class="mono h-out" x="593" y="581">ICR → DHIS2</text><text class="body" x="593" y="596">campaign results</text><text class="body" x="593" y="611">as aggregate data</text>
+</svg>
