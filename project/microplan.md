@@ -58,8 +58,8 @@ tags: [campaignhq, microplanning, polio, toro, synthetic-data]
   Location id via `promoteId`), `src/components/georegistry-map.js` (admin +
   facilities + settlements layers; settlements gated to z8+),
   `src/components/filters.js` (cascading selects).
-- Tiles built by `tools/warehouse/tiles.sh` (tippecanoe). Warehouse refresh is
-  `tools/warehouse/refresh.sh` (kiln for Locations, `octofhir-sof` for each IG
+- Tiles built by the tiles step of `tools/warehouse/refresh.sh` (tippecanoe). Warehouse
+  refresh is `tools/warehouse/refresh.sh` (fhir-pipes: the Location registry, then each IG
   ViewDefinition, partitioned by country). Adding a ViewDefinition to the IG makes a
   new `data/parquet/<name>/` folder appear automatically.
 - Deploy is `campaignhq/deploy.sh` → Cloudflare R2/Worker at

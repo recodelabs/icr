@@ -28,7 +28,7 @@ data/
     indicator_value/                                                       (IcrIndicatorValue — DHIS2 indicator values per place × period, from `kiln dhis2 reports`)
     _report.json           kiln's transform report (geometry issues etc.)
   tiles/
-    admin.pmtiles          admin boundaries (layers `country`, `states`, `lgas`) for MapLibre dashboards (tools/warehouse/tiles.sh)
+    admin.pmtiles          admin boundaries (layers `country`, `states`, `lgas`) for MapLibre dashboards (the tiles step of tools/warehouse/refresh.sh)
     facilities.pmtiles     health facility points (layer `facilities`), no dropping, z4–12, full registry record per feature
     settlements.pmtiles    settlement points (layer `settlements`), no dropping, z8–13, full registry record per feature
   views/                   the exact ViewDefinition JSON each table was built from (from the IG build)
@@ -78,7 +78,8 @@ Portolan catalog is its `catalog` hook (`tools/warehouse/catalog.sh`).
 
 ## Cloud mirror (Cloudflare R2)
 
-`tools/warehouse/refresh.sh --push` (or `tools/warehouse/push-r2.sh` on its own)
+`tools/warehouse/refresh.sh --push` (or, without refreshing,
+`fhir-pipes refresh --config tools/warehouse/fhir-pipes.toml --only push`)
 mirrors `parquet/`, `tiles/`, `views/`, `manifest.json`, `catalog.sql` and the
 Portolan catalog root files to the **`icr` R2 bucket** with the same paths, using
 the `r2` rclone remote. `raw/` and `.portolan/` are never pushed. The bucket is

@@ -1,183 +1,62 @@
 #!/usr/bin/env bash
-# Refresh data/ — the ICR analytics hub — from the FHIR server.
+# Refresh data/ — the ICR analytics hub — from the FHIR server with fhir-pipes
+# (https://github.com/ohs-foundation/fhir-pipes-rs). The steps, tables, partitioning, tiles,
+# catalog hook and push are set in tools/warehouse/fhir-pipes.toml:
 #
-#   1. locations:  kiln run  (incremental extract → data/raw/<server>/locations,
-#                             transform → data/parquet/locations)
-#   2. views:      for every resource type a ViewDefinition in the IG build reads,
-#                  export it (kiln export → data/raw/<server>/<Type>.ndjson) and run
-#                  that type's views in one octofhir-sof call (in memory, all CPUs);
-#                  partition each result by country (joined from the registry)
-#                  into data/parquet/<view_name>/
-#   3. tiles:      admin boundaries → data/tiles/admin.pmtiles (tools/warehouse/tiles.sh)
+#   1. locations:  extract the Location registry incrementally → data/raw/<server>/locations,
+#                  transform it → data/parquet/locations
+#   2. views:      download what changed of each resource type the IG's ViewDefinitions read
+#                  → data/raw/<server>/<Type>.ndjson, run the views, partition each table by
+#                  country → data/parquet/<table>/
+#   3. tiles:      the registry → data/tiles/*.pmtiles (duckdb + tippecanoe)
 #   4. manifest:   data/manifest.json with counts and provenance
-#   5. push:       optional, --push: mirror data/ (minus raw/) to Cloudflare R2
-#                  (tools/warehouse/push-r2.sh; bucket R2_BUCKET, default icr)
+#   5. hooks:      tools/warehouse/catalog.sh, the Portolan catalog, after a locations refresh
+#   6. push:       with --push, mirror data/ (minus raw/) to Cloudflare R2 (rclone)
 #
-# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push] [--full]   (default: all, no push)
-#        --full re-extracts every Location instead of only the changed ones. The incremental
-#        extract cannot see deletions, so run it after Locations were deleted on the server.
-# Env:   FHIR_BASE (http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
-#        KILN (~/github/kiln/target/debug/kiln; needs kiln export)  SOF (octofhir-sof; the recodelabs
-#        fork, for --parquet-temporal native)  DATA (repo data/)
+# Usage: tools/warehouse/refresh.sh [--views] [--locations] [--tiles] [--push] [--full]
+#        No step flag runs every step but push. --full downloads everything again instead of
+#        only what changed; run it after resources were deleted on the server.
+# Env:   FHIR_BASE (from the config, http://localhost:3447/fhir)  SERVER_NAME (hapi-local)
+#        DATA (repo data/)  FHIR_PIPES (the fhir-pipes binary, default fhir-pipes on PATH)
 #        FHIR_CLIENT_ID, FHIR_CLIENT_SECRET: an API key for a server behind the FHIR Info
-#        Gateway (tools/hapi/gcp/README.md); FHIR_TOKEN_URL defaults to the ICR Keycloak.
-#        Without them requests carry no token, as the local HAPI needs.
+#        Gateway (tools/hapi/gcp/README.md); FHIR_TOKEN_URL overrides the ICR Keycloak in the
+#        config. Without them requests carry no token, as the local HAPI needs.
+#        fhir-pipes' own FHIR_PIPES_* variables work too.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-REPO="$(cd "$HERE/../.." && pwd)"
-DATA="${DATA:-$REPO/data}"
-IG_RES="$REPO/ig/fsh-generated/resources"
-FHIR_BASE="${FHIR_BASE:-http://localhost:3447/fhir}"
-SERVER_NAME="${SERVER_NAME:-hapi-local}"
-KILN="${KILN:-$HOME/github/kiln/target/debug/kiln}"
-SOF="${SOF:-octofhir-sof}"
-export PATH="$HOME/.local/bin:$PATH"
+FHIR_PIPES="${FHIR_PIPES:-fhir-pipes}"
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
-# kiln gets and renews its own tokens from the KILN_* variables (kiln ≥ the
-# client-credentials release); both kiln run and kiln export use them.
+command -v "$FHIR_PIPES" >/dev/null || {
+  echo "fhir-pipes not found; install it with:" >&2
+  echo "  cargo install --git https://github.com/ohs-foundation/fhir-pipes-rs --locked fhir-pipes" >&2
+  exit 1
+}
+
+args=(refresh --config "$HERE/fhir-pipes.toml")
+[ -n "${FHIR_BASE:-}" ] && args+=(--server "$FHIR_BASE")
+[ -n "${SERVER_NAME:-}" ] && args+=(--server-name "$SERVER_NAME")
+[ -n "${DATA:-}" ] && args+=(--data "$DATA")
+[ -n "${FHIR_TOKEN_URL:-}" ] && args+=(--token-url "$FHIR_TOKEN_URL")
 if [ -n "${FHIR_CLIENT_ID:-}" ]; then
   : "${FHIR_CLIENT_SECRET:?set FHIR_CLIENT_SECRET with FHIR_CLIENT_ID}"
-  FHIR_TOKEN_URL="${FHIR_TOKEN_URL:-https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token}"
-  export KILN_CLIENT_ID="$FHIR_CLIENT_ID" KILN_CLIENT_SECRET="$FHIR_CLIENT_SECRET" KILN_TOKEN_URL="$FHIR_TOKEN_URL"
-  unset KILN_TOKEN
+  export FHIR_PIPES_CLIENT_ID="$FHIR_CLIENT_ID" FHIR_PIPES_CLIENT_SECRET="$FHIR_CLIENT_SECRET"
 fi
 
-DO_LOC=1; DO_VIEWS=1; DO_TILES=1; DO_PUSH=0; FULL=()
+only=()
 for a in "$@"; do
   case "$a" in
-    --views) DO_LOC=0; DO_TILES=0 ;;
-    --locations) DO_VIEWS=0; DO_TILES=0 ;;
-    --tiles) DO_LOC=0; DO_VIEWS=0 ;;
-    --push) DO_PUSH=1 ;;
-    --full) FULL=(--full) ;;
+    --views) only+=(views) ;;
+    --locations) only+=(locations hooks) ;;   # the catalog hook follows a locations refresh
+    --tiles) only+=(tiles) ;;
+    --push) args+=(--push) ;;
+    --full) args+=(--full) ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
   esac
 done
-
-RAW="$DATA/raw/$SERVER_NAME"
-PARQUET="$DATA/parquet"
-VIEWS="$DATA/views"
-mkdir -p "$RAW" "$PARQUET" "$VIEWS"
-
-if [ "$DO_LOC" = 1 ]; then
-  echo "== locations: kiln run ($FHIR_BASE → $RAW/locations → $PARQUET/locations)"
-  "$KILN" run --server "$FHIR_BASE" --snapshot "$RAW/locations" --out "$PARQUET" ${FULL[@]+"${FULL[@]}"}
+if [ ${#only[@]} -gt 0 ]; then
+  args+=(--only "$(IFS=,; echo "${only[*]}")")
 fi
 
-if [ "$DO_VIEWS" = 1 ]; then
-  echo "== views"
-  ls "$IG_RES"/Binary-*.json >/dev/null 2>&1 || { echo "no IG build found in $IG_RES (run sushi build in ig/)" >&2; exit 1; }
-  WORK="$(mktemp -d -t icr-views)"
-  # 1. Collect the views: one line per view in $WORK/views.tsv (type, name, table), in IG
-  #    order, and a copy of each under $WORK/by-type/<Type>/ for running them together.
-  for f in "$IG_RES"/Binary-*.json; do
-    # Only logical-model instances of the SoF ViewDefinition.
-    python3 -c "import json,sys; v=json.load(open('$f')); sys.exit(0 if str(v.get('resourceType','')).endswith('/ViewDefinition') else 1)" || continue
-    name=$(python3 -c "import json; print(json.load(open('$f'))['name'])")
-    rtype=$(python3 -c "import json; print(json.load(open('$f'))['resource'])")
-    table=$(python3 -c "import re,sys; n=sys.argv[1]; print(re.sub(r'(?<!^)(?=[A-Z])','_',n).lower().removeprefix('icr_'))" "$name")
-    view_json="$VIEWS/$name.json"
-    python3 -c "import json; v=json.load(open('$f')); v['resourceType']='ViewDefinition'; json.dump(v, open('$view_json','w'), indent=2)"
-    "$SOF" validate "$view_json" >/dev/null
-    mkdir -p "$WORK/by-type/$rtype"
-    cp "$view_json" "$WORK/by-type/$rtype/"
-    printf '%s\t%s\t%s\n' "$rtype" "$name" "$table" >> "$WORK/views.tsv"
-  done
-
-  # 2. Per resource type: download it once, then run all of its views in one sof call, so
-  #    the file is read and parsed once however many views read it. sof uses every CPU.
-  for rtype in $(cut -f1 "$WORK/views.tsv" | sort -u); do
-    ndjson="$RAW/$rtype.ndjson"
-    if [ ! -s "$ndjson" ] || [ "${REFRESH_RAW:-1}" = 1 ]; then
-      echo "   export $rtype → $ndjson"
-      "$KILN" export --server "$FHIR_BASE" --type "$rtype" --out "$RAW"
-    fi
-    # sof reports each file it writes on stderr ("Name -> path"); keep only anything else.
-    "$SOF" run "$WORK/by-type/$rtype" --input "$ndjson" --output parquet --parquet-temporal native \
-      --out "$WORK/out" 2> >(grep -v ' -> ' >&2)
-  done
-
-  # 3. Partition each view's rows by country, in IG order: campaign_calendar comes before
-  #    the views that find their country through it.
-  while IFS=$'\t' read -r rtype name table; do
-    tmp="$WORK/out/$name.parquet"
-    rm -rf "$PARQUET/$table"; mkdir -p "$PARQUET/$table"
-    # Partition by country: from the registry via location_id when the view has one,
-    # else via campaign_id through the campaign calendar table, else unpartitioned.
-    cols=$(duckdb -noheader -csv -c "SELECT string_agg(column_name, ',') FROM (DESCRIBE SELECT * FROM read_parquet('$tmp'))" | tr -d '"')
-    if [[ ",$cols," == *",location_id,"* ]]; then
-      country_join="LEFT JOIN (SELECT id AS _k, country FROM read_parquet('$PARQUET/locations/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true)) l ON l._k = v.location_id"
-    elif [[ ",$cols," == *",campaign_id,"* ]] && [ -d "$PARQUET/campaign_calendar" ]; then
-      country_join="LEFT JOIN (SELECT campaign_id AS _k, any_value(country) AS country FROM read_parquet('$PARQUET/campaign_calendar/**/*.parquet', hive_partitioning=true, union_by_name=true) GROUP BY 1) l ON l._k = v.campaign_id"
-    else
-      country_join="LEFT JOIN (SELECT NULL AS _k, NULL::VARCHAR AS country) l ON FALSE"
-    fi
-    duckdb -c "
-      COPY (
-        SELECT v.*, l.country FROM read_parquet('$tmp') v $country_join
-      ) TO '$PARQUET/$table' (FORMAT PARQUET, PARTITION_BY (country), WRITE_PARTITION_COLUMNS TRUE, OVERWRITE_OR_IGNORE, FILENAME_PATTERN 'part-{i}');"
-    rows=$(duckdb -noheader -csv -c "SELECT count(*) FROM read_parquet('$PARQUET/$table/country=*/**/*.parquet', hive_partitioning=true)")
-    echo "   $name ($rtype) → parquet/$table ($rows rows)"
-  done < "$WORK/views.tsv"
-  rm -rf "$WORK"
-fi
-
-if [ "$DO_TILES" = 1 ]; then
-  DATA="$DATA" "$HERE/tiles.sh"
-fi
-
-echo "== manifest"
-python3 - "$DATA" "$FHIR_BASE" "$SERVER_NAME" <<'EOF'
-import json, subprocess, sys, datetime, glob, os
-data, base, server = sys.argv[1:]
-def rows(table):
-    # country=*/ keeps the Portolan metadata beside the data (items.parquet) out of the table
-    q = f"SELECT count(*) FROM read_parquet('{data}/parquet/{table}/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true)"
-    return int(subprocess.check_output(["duckdb", "-noheader", "-csv", "-c", q]).decode().strip())
-# Skip dot-directories: Portolan keeps its catalog state in parquet/.portolan/.
-tables = sorted(d for d in os.listdir(f"{data}/parquet") if os.path.isdir(f"{data}/parquet/{d}") and not d.startswith("."))
-views = {}
-for f in glob.glob(f"{data}/views/*.json"):
-    v = json.load(open(f)); views[v["name"]] = {"url": v.get("url"), "resource": v.get("resource"), "status": v.get("status")}
-state = {}
-try: state = json.load(open(f"{data}/raw/{server}/locations/state.json"))
-except FileNotFoundError: pass
-m = {"refreshed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
-     "server": base, "server_name": server,
-     "tables": {t: {"rows": rows(t)} for t in tables},
-     "views": views,
-     "kiln": {k: state.get(k) for k in ("kiln_version", "watermark", "count", "organization_count", "completed_at")}}
-json.dump(m, open(f"{data}/manifest.json", "w"), indent=2)
-print(json.dumps(m["tables"]))
-EOF
-
-# Portolan catalog (data/ is the catalog root, published at https://sdi.healthcampaigns.org
-# by tools/sdi/). `add` writes the STAC metadata beside the parquet — collection.json, one
-# item per hive partition, items.parquet, README/AGENTS.md — and leaves kiln's files alone.
-# The snapshot time is the collection's datetime. The SDI is the location registry only —
-# the view tables are ICR-internal and stay out of the catalog (see data/README.md).
-if [ "$DO_LOC" = 1 ] && command -v portolan >/dev/null; then
-  echo "== portolan catalog"
-  refreshed=$(python3 -c "import json; print(json.load(open('$DATA/manifest.json'))['refreshed_at'])")
-  # kiln swaps in a fresh locations/ directory on every run, so the collection's
-  # human-written metadata is kept under .portolan/collections/ and copied in first.
-  mkdir -p "$PARQUET/locations/.portolan"
-  cp "$DATA/.portolan/collections/locations/metadata.yaml" "$PARQUET/locations/.portolan/metadata.yaml"
-  # `check --metadata` validates the catalog only: without it `--fix` also converts every loose
-  # GeoJSON/CSV under data/ (imports/, exports/) into parquet + thumbnails beside the originals.
-  # Always build from a clean slate: re-adding over existing items loses their `collection` field
-  # (portolan-cli 0.8), and a --locations run without a kiln change would otherwise hit that path.
-  find "$PARQUET/locations" -type f \( -name '*.json' -o -name '*.md' -o -name 'items.parquet' \) -delete
-  rm -rf "$PARQUET/locations/styles"
-  (cd "$DATA" && portolan add parquet/locations/ --no-thumbnails --datetime "$refreshed" \
-    && python3 "$HERE/sdi-collection.py" "$DATA" \
-    && portolan stac-geoparquet -c parquet/locations >/dev/null \
-    && portolan readme parquet/locations --no-recursive >/dev/null \
-    && portolan check --fix --metadata --data-scope local) || echo "   portolan: catalog not conformant (see above)" >&2
-fi
-echo "done → $DATA"
-
-if [ "$DO_PUSH" = 1 ]; then
-  DATA="$DATA" "$HERE/push-r2.sh"
-fi
+exec "$FHIR_PIPES" "${args[@]}"

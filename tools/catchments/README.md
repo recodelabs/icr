@@ -87,7 +87,7 @@ tools/warehouse/refresh.sh                              # parquet + tiles + cata
 `--groups-out` for other LGAs / exports. Every load is idempotent (PUT by id). Output is
 git-ignored (`tools/catchments/out/`).
 
-Downstream: `tools/warehouse/tiles.sh` writes the polygons to `data/tiles/catchments.pmtiles`
+Downstream: the tiles step of `tools/warehouse/refresh.sh` writes the polygons to `data/tiles/catchments.pmtiles`
 (layers `facility_catchments`, `settlement_catchments`), and the Campaign Dashboards
 Georegistry page (`campaignhq/src/georegistry.md`) shows them as two toggleable layers
 with a Catchments KPI card; clicking a polygon lists its properties including `catchment_of`.

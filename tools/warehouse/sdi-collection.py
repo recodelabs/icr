@@ -3,7 +3,7 @@
 
     sdi-tiles.py DATA_DIR
 
-The tiles live in DATA_DIR/tiles/ (built by tiles.sh) and are shared with the
+The tiles live in DATA_DIR/tiles/ (built by the tiles step of refresh.sh) and are shared with the
 dashboards, so the collection references them in place rather than copying:
 a collection-level `rel: pmtiles` link per archive (STAC web-map-links 1.3.0)
 and one style asset per archive in parquet/locations/styles/, copied from
