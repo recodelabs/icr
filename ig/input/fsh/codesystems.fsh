@@ -650,3 +650,12 @@ Description: "The tiling scheme a spatial-index cell belongs to. Each scheme has
 * #quadkey "Quadkey (XYZ tile key)" "Bing/XYZ tile quadkey: base-4 digits, one per zoom level from 1; the string length is the zoom; every prefix is the containing tile at that shorter zoom."
 * #h3 "H3 cell" "Uber H3 hexagonal cell index (15 hex characters); level = resolution 0–15. Not prefix-hierarchical as a string — join on exact cell."
 * #geohash "Geohash" "Base-32 geohash; level = precision (character count); prefixes are containing cells."
+
+CodeSystem: ICRReportSourceCS
+Id: icr-report-source-cs
+Title: "ICR Report Source"
+Description: "Where a MeasureReport's figures came from: the source system and, where it offers more than one, the route through it."
+* ^caseSensitive = true
+* ^experimental = false
+* #dhis2-analytics "DHIS2 analytics" "Values computed by DHIS2 from its analytics tables (`/api/analytics`), as of the last analytics build."
+* #dhis2-data-values "DHIS2 data values" "Raw DHIS2 data values (`/api/dataValueSets`), summed up the org unit tree and divided by fhir-pipes."
