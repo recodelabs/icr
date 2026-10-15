@@ -32,8 +32,8 @@
 <rect class="bg" width="1280" height="840"/>
 <text class="mono muted" x="40" y="44">EXAMPLE · DATA IN AND OUT OF THE ICR IN ONE COUNTRY&#x27;S NTD PROGRAMME</text>
 <rect class="group" x="560" y="64" width="676" height="216" rx="6"/>
-<text class="mono" x="580" y="90">SIGHTSAVERS</text>
-<text class="sub" x="580" y="108">NGO running the NTD programme</text>
+<text class="mono" x="580" y="90">NTD PROGRAMME</text>
+<text class="sub" x="580" y="108">Systems of the NGO that runs it</text>
 <path class="wire" d="M470,812 h34" marker-end="url(#c-in)"/><text class="sub" x="514" y="816">data going into the ICR</text><path class="wire" d="M680,812 h34" marker-end="url(#c-out)"/><text class="sub" x="724" y="816">data going out of the ICR, or between tools</text>
 <path id="c-cc-cs" class="wire" d="M980,210 L840,210" marker-end="url(#c-out)"/>
 <text class="body" x="910" y="202" text-anchor="middle">delivery data</text>
