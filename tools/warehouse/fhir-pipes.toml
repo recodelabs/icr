@@ -1,10 +1,12 @@
-# fhir-warehouse settings for the ICR warehouse (data/). Paths are relative to this file.
+# fhir-pipes settings for the ICR warehouse (data/). Paths are relative to this file.
+# tools/warehouse/refresh.sh runs it; directly:
 #
-#   fhir-warehouse refresh --config tools/warehouse/fhir-warehouse.toml \
+#   fhir-pipes refresh --config tools/warehouse/fhir-pipes.toml \
 #     --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp
 #
-# Flags and their environment variables (FHIR_BASE, SERVER_NAME, DATA, KILN, …) override
-# this file. The API key comes only from FHIR_CLIENT_ID and FHIR_CLIENT_SECRET.
+# Flags and their environment variables (FHIR_PIPES_SERVER, FHIR_PIPES_SERVER_NAME,
+# FHIR_PIPES_DATA, …) override this file. The API key comes only from
+# FHIR_PIPES_CLIENT_ID and FHIR_PIPES_CLIENT_SECRET.
 
 data = "../../data"
 views = "../../ig/fsh-generated/resources"

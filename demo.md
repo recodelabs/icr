@@ -187,12 +187,13 @@ there is none. The links point at the gateway, so the same token works on them.
 > only unless you have agreed a test with the ICR team. Anything written may be lost when the
 > server is reloaded.
 
-## kiln: export the location registry to GeoParquet
+## fhir-pipes: export the location registry to GeoParquet
 
-[kiln](https://github.com/recodelabs/kiln) copies the `Location` resources from a FHIR server
-into a GeoParquet dataset that QGIS, DuckDB, GeoPandas and web maps read directly. It can also
-send edits made in those tools back to the server. It is a single binary with no runtime
-dependencies.
+[fhir-pipes](https://github.com/ohs-foundation/fhir-pipes-rs) (formerly kiln) copies the
+`Location` resources from a FHIR server into a GeoParquet dataset that QGIS, DuckDB,
+GeoPandas and web maps read directly. It can also send edits made in those tools back to the
+server, and it builds the ICR warehouse (`tools/warehouse/refresh.sh`). It is a single binary
+with no runtime dependencies.
 
 If you only need the data and not the FHIR round trip, the same registry is published as
 GeoParquet at https://sdi.healthcampaigns.org with no key, for example:
@@ -202,35 +203,35 @@ GeoParquet at https://sdi.healthcampaigns.org with no key, for example:
 SELECT count(*) FROM read_parquet('https://sdi.healthcampaigns.org/parquet/locations/country=NGA/geom_type=point/type=facility/part-0.parquet');
 ```
 
-### Install kiln
+### Install fhir-pipes
 
-kiln is built from source with Rust. On macOS or Linux:
+fhir-pipes is built from source with Rust. On macOS or Linux:
 
 ```bash
 # 1. Install Rust (skip if `cargo --version` already works)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 
-# 2. Build and install kiln into ~/.cargo/bin (takes a few minutes)
-cargo install --git https://github.com/recodelabs/kiln --locked kiln
+# 2. Build and install fhir-pipes into ~/.cargo/bin (takes a few minutes)
+cargo install --git https://github.com/ohs-foundation/fhir-pipes-rs --locked fhir-pipes
 
-kiln --version
+fhir-pipes --version
 ```
 
 On Windows, install Rust with `rustup-init.exe` from https://rustup.rs, then run the same
 `cargo install` command.
 
-To update kiln later, run the `cargo install` command again with `--force`.
+To update fhir-pipes later, run the `cargo install` command again with `--force`.
 
 ### Set up the key
 
-kiln trades the key for tokens itself and gets a new token before the old one expires, so a
-long run is not cut off. Set the key once per shell:
+fhir-pipes trades the key for tokens itself and gets a new token before the old one expires,
+so a long run is not cut off. Set the key once per shell:
 
 ```bash
-export KILN_CLIENT_ID=key-<name>
-export KILN_CLIENT_SECRET=<secret>
-export KILN_TOKEN_URL=https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token
+export FHIR_PIPES_CLIENT_ID=key-<name>
+export FHIR_PIPES_CLIENT_SECRET=<secret>
+export FHIR_PIPES_TOKEN_URL=https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token
 ```
 
 The same values can be passed as `--client-id`, `--client-secret` and `--token-url`. Using the
@@ -239,7 +240,7 @@ environment keeps the secret out of your shell history.
 ### Export the registry
 
 ```bash
-kiln run --server https://gateway.healthcampaigns.org/fhir --snapshot icr-snapshot --out icr-out
+fhir-pipes run --server https://gateway.healthcampaigns.org/fhir --snapshot icr-snapshot --out icr-out
 ```
 
 - `icr-snapshot/` holds the raw `Location` and `Organization` resources (about 440 MB) and
@@ -253,7 +254,7 @@ The first run downloads every Location and takes about 15 minutes. Later runs wi
 Check what was written:
 
 ```bash
-kiln inspect --out icr-out
+fhir-pipes inspect --out icr-out
 ```
 
 ### Use the output
@@ -273,13 +274,14 @@ GROUP BY ALL ORDER BY n DESC;
 ```
 
 QGIS: drag a `part-0.parquet` file onto the map. The
-[kiln QGIS guide](https://github.com/recodelabs/kiln/blob/main/docs/qgis.md) covers styling,
-editing and sending edits back.
+[fhir-pipes QGIS guide](https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/docs/qgis.md)
+covers styling, editing and sending edits back.
 
 ### Send edits back
 
-`kiln diff` compares an edited file with the snapshot and writes only the changed resources,
-and `kiln load` sends them to the server with a version check on each one. Run `kiln load
---dry-run` first. Loading writes to the shared demo server, so agree it with the ICR team
-before you load. See [Round trip: diff and load](https://github.com/recodelabs/kiln#round-trip-diff-and-load)
-in the kiln README.
+`fhir-pipes diff` compares an edited file with the snapshot and writes only the changed
+resources, and `fhir-pipes load` sends them to the server with a version check on each one.
+Run `fhir-pipes load --dry-run` first. Loading writes to the shared demo server, so agree it
+with the ICR team before you load. See
+[Round trip: diff and load](https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/docs/locations.md#round-trip-diff-and-load)
+in the fhir-pipes docs.
