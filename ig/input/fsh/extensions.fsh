@@ -478,3 +478,12 @@ Description: "The DHIS2 period code a MeasureReport's figures were computed for 
 Context: MeasureReport
 * ^experimental = false
 * value[x] only string
+
+Extension: ReportSource
+Id: report-source
+Title: "Report Source"
+Description: "The system and route a MeasureReport's figures came from, e.g. DHIS2's analytics tables, or DHIS2 raw data values summed by fhir-pipes. Distinct from coverage-source, which says how a coverage figure was measured (administrative tallies vs survey); a report from DHIS2 analytics is still administrative coverage. Binding: extensible — other sources add codes to the ICR code system or use their own."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRReportSourceVS (extensible)

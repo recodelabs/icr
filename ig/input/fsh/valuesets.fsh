@@ -310,3 +310,10 @@ Title: "ICR Building Footprint Source"
 Description: "Building-footprint datasets a building count can come from. Binding: extensible — countries may add national cadastres or other footprint sets."
 * ^experimental = false
 * include codes from system ICRBuildingSourceCS
+
+ValueSet: ICRReportSourceVS
+Id: icr-report-source
+Title: "ICR Report Source"
+Description: "Sources of MeasureReport figures. Binding: extensible on the report-source extension."
+* ^experimental = false
+* include codes from system ICRReportSourceCS
