@@ -390,10 +390,10 @@ def country():
     D.text("back", 40, 44, "EXAMPLE · DATA IN AND OUT OF THE ICR IN ONE COUNTRY'S NTD PROGRAMME", "mono muted")
     S1, S2, S3, S4, S5 = (0.3, 5.5), (5.5, 11), (11, 15), (15, 21.5), (21.5, 27)
 
-    # Sightsavers' own systems
+    # The NTD programme's own systems
     D.add("back", '<rect class="group" x="560" y="64" width="676" height="216" rx="6"/>')
-    D.text("back", 580, 90, "SIGHTSAVERS", "mono")
-    D.text("back", 580, 108, "NGO running the NTD programme", "sub")
+    D.text("back", 580, 90, "NTD PROGRAMME", "mono")
+    D.text("back", 580, 108, "Systems of the NGO that runs it", "sub")
     D.node(980, 80, 230, 60, "Metabase", "Programme dashboards", hl=[(0.4, 2.8), (15.6, S4[1] - 0.2)])
     D.node(600, 180, 240, 60, "Crosscut", "Planning", hl=[(5.6, S2[1] - 0.2), (15.6, S4[1] - 0.2)])
     D.node(980, 180, 230, 60, "CommCare", "Collection", hl=[(15.1, S4[1] - 0.2)])
@@ -457,8 +457,8 @@ def country():
     D.stream("digit", digit, 16.5, True, "in")
 
     D.strip(850, [
-        (*S1, "EXISTING DATA", ["DHIS2 sends org units and routine data. Sightsavers' Metabase sends data",
-                                "from past campaigns."]),
+        (*S1, "EXISTING DATA", ["DHIS2 sends org units and routine data. The NTD programme's Metabase sends",
+                                "data from past campaigns."]),
         (*S2, "PLAN", ["Crosscut takes locations, populations and indicators from the ICR. Its catchment areas",
                        "and hard-to-reach communities go back into the location registry."]),
         (*S3, "SHARE", ["Other programmes' tools, ICF and DIGIT for malaria, get the same locations, populations",
@@ -578,7 +578,7 @@ __BAR__
   <section>
     <div class="eyebrow">Diagram 2</div>
     <h2>Example: what goes in and out of the ICR in one country's NTD programme</h2>
-    <p>Sightsavers runs the NTD programme with Crosscut for planning, CommCare for collection and Metabase for its dashboards. Other programmes in the same country use ICF and DIGIT. The ICR gives all of them the same locations and populations, and collects their results in one place.</p>
+    <p>The NGO running the NTD programme uses Crosscut for planning, CommCare for collection and Metabase for its dashboards. Other programmes in the same country use ICF and DIGIT. The ICR gives all of them the same locations and populations, and collects their results in one place.</p>
     <figure data-player>
       <div class="frame">__COUNTRY__</div>
       <div class="controls"></div>
