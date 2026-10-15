@@ -240,8 +240,15 @@ environment keeps the secret out of your shell history.
 ### Export the registry
 
 ```bash
-fhir-pipes run --server https://gateway.healthcampaigns.org/fhir --snapshot icr-snapshot --out icr-out
+fhir-pipes run --server https://gateway.healthcampaigns.org/fhir \
+  --profile https://raw.githubusercontent.com/recodelabs/icr/main/ig/fhir-pipes-profile.toml \
+  --snapshot icr-snapshot --out icr-out
 ```
+
+`--profile` is ICR's fhir-pipes profile (`ig/fhir-pipes-profile.toml`): it adds
+the ICR columns (`pcode`, `settlement_type`, `facility_level`, `nhfr_code`, …),
+the admin hierarchy and the `country` partitions. The snapshot keeps a copy, so
+later `fhir-pipes diff` and `transform locations` runs on it need no `--profile`.
 
 - `icr-snapshot/` holds the raw `Location` and `Organization` resources (about 440 MB) and
   the point the next run continues from.

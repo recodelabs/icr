@@ -10,6 +10,8 @@
 
 data = "../../data"
 views = "../../ig/fsh-generated/resources"
+# The ICR profile: its columns, admin units and codes (fhir-pipes docs/profiles.md).
+profile = "../../ig/fhir-pipes-profile.toml"
 
 [server]
 base = "http://localhost:3447/fhir"
