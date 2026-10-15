@@ -297,13 +297,13 @@ def architecture():
 
     # what moves between the tools and the ICR
     D.chip(trunk_x - 14 - 115, 270, 230, [
-        ("out", "ICR → TOOLS", ["locations and catchments", "target populations",
+        ("out", "ICR ↔ TOOLS", ["locations and catchments", "target populations",
                                 "campaign plans and targets", "shared codes"],
          [(5.1, 9.8), (10.1, 12.7), (16.1, 21.3)])])
     D.chip(trunk_x + 14 + 115, 270, 230, [
         ("in", "TOOLS → ICR", ["doses and treatments given", "coverage",
                                "supervision findings", "stock"],
-         [(12.8, 15.8)])])
+         [(12.8, 15.8), (16.1, 21.3)])])
 
     # the ICR
     ix, iy, iw, ih = 210, icr_top, 670, 200
