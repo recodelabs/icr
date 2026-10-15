@@ -89,6 +89,7 @@ class Diagram:
         self.key, self.w, self.h, self.T, self.label = key, w, h, T, label
         self.layers = {k: [] for k in self.LAYERS}
         self.stages = []
+        self.streams = []
 
     def add(self, layer, svg, anim=False):
         self.layers[layer].append((svg, anim))
@@ -179,7 +180,8 @@ class Diagram:
     def stream(self, pid, points, at, forward, kind, n=3, speed=260, spacing=0.2):
         """Dots running along wire pid; forward follows the wire's drawing direction."""
         T = self.T
-        dur = max(0.7, polyline_length(points) / speed)
+        # long routes run faster, so every dot arrives before its step stops
+        dur = min(1.5, max(0.7, polyline_length(points) / speed))
         for i in range(n):
             s = at + i * spacing
             kp = "0;0;1;1" if forward else "1;1;0;0"
@@ -190,7 +192,9 @@ class Diagram:
                      f'keyPoints="{kp}" keyTimes="{kt}"><mpath href="#{self.key}-{pid}" '
                      f'xlink:href="#{self.key}-{pid}"/></animateMotion>'
                      f'{self.opacity([(s, s + dur)], fade=0.08)}</circle>', anim=True)
-        return at + (n - 1) * spacing + dur
+        end = at + (n - 1) * spacing + dur
+        self.streams.append((pid, at, end))
+        return end
 
     def text(self, layer, x, y, s, cls, anchor=None, anim=False):
         a = f' text-anchor="{anchor}"' if anchor else ""
@@ -207,6 +211,10 @@ class Diagram:
         """Step markers and captions under the diagram (animated version only).
         stages: (start, end, label, caption lines)."""
         self.stages = [(a, label) for a, _, label, _ in stages]
+        # a step played on its own stops 0.6 s before it ends (see the page script)
+        for pid, at, end in self.streams:
+            a, b = next((a, b) for a, b, _, _ in stages if a <= at < b)
+            assert end <= b - 0.65, f"{self.key}: dots on {pid} arrive at {end:.2f}s, after the step stops at {b - 0.6:.2f}s"
         self.add("strip", f'<line class="rule" x1="40" y1="{y}" x2="{self.w - 40}" y2="{y}"/>', anim=True)
         step_w = (self.w - 80) / len(stages)
         for i, (a, b, label, caption) in enumerate(stages):
@@ -348,7 +356,7 @@ def architecture():
     # the workflow
     D.stream("dhis2", dh, 0.7, True, "in")
     D.stream("crosscut", paths["crosscut"], 5.3, False, "out")
-    D.stream("crosscut", paths["crosscut"], 7.6, True, "in")
+    D.stream("crosscut", paths["crosscut"], 7.3, True, "in")
     for t in collectors:
         D.stream(t, paths[t], 10.3, False, "out")
         D.stream(t, paths[t], 13.0, True, "in")
