@@ -3,7 +3,7 @@
 # bucket at https://sdi.healthcampaigns.org.
 #
 # The catalog content itself (catalog.json, collections, parquet, tiles) is
-# data/ pushed by tools/warehouse/push-r2.sh — this only (re)deploys the Worker,
+# data/ pushed by tools/warehouse/refresh.sh --push — this only (re)deploys the Worker,
 # so it is needed once, and again only when worker/index.js changes.
 #
 # Usage: ./deploy.sh [--dry-run]

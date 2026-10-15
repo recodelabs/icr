@@ -102,7 +102,7 @@ Recode Labs — ICR team <mberg@ona.io>
 usable geometry and are dropped. `type=null` holds Locations without a type
 code. Sierra Leone is test data, not a registry. The PMTiles (rel="pmtiles"
 links) cover Nigeria only and are rebuilt separately from the parquet
-(tools/warehouse/tiles.sh), so they can lag a refresh. No thumbnail yet.
+(the tiles step of tools/warehouse/refresh.sh), so they can lag a refresh. No thumbnail yet.
 
 
 ---
