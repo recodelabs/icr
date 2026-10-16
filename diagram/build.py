@@ -8,6 +8,7 @@ Writes, next to this file:
   icr-country-flows-animated.svg  the same, animated
   index.html                      a page that plays both animations, with controls (claude.ai artifact)
   *.png                           2x PNGs of the static SVGs for slides (needs Google Chrome)
+  icr-architecture-slide.svg      diagram 1 for slides, text as outlines (made by slide_svg.py)
 
 and copies them all to site/architecture/, with a full-page index.html, for
 https://www.healthcampaigns.org/architecture/.
@@ -704,7 +705,7 @@ SITE_BAR = ('<div class="topbar"><a class="brand" href="/">Integrated Campaign R
             '<a href="https://icr.healthcampaigns.org">Implementation guide ↗</a>'
             '</nav></div>')
 SITE_FILES = ('<p class="files">For slides: diagram 1 as <a href="icr-architecture.png">PNG</a> or '
-              '<a href="icr-architecture.svg">SVG</a>, diagram 2 as <a href="icr-country-flows.png">PNG</a> or '
+              '<a href="icr-architecture-slide.svg">SVG</a>, diagram 2 as <a href="icr-country-flows.png">PNG</a> or '
               '<a href="icr-country-flows.svg">SVG</a>. Animated SVGs: '
               '<a href="icr-architecture-animated.svg">diagram 1</a>, '
               '<a href="icr-country-flows-animated.svg">diagram 2</a>.</p>')
