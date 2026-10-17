@@ -45,6 +45,7 @@ binary from https://github.com/ohs-foundation/fhir-pipes-rs/releases, or
 ```bash
 cd tools/hapi && mkdir -p .local           # .local/ is git-ignored scratch
 FP=fhir-pipes                              # or the path to a downloaded binary
+export FHIR_PIPES_PROFILE="$PWD/../../ig/fhir-pipes-profile.toml"   # ICR columns, codes and extensions
 
 $FP run     --server http://localhost:3447/fhir --snapshot .local/snapshot --out .local/out
 $FP inspect --out .local/out
@@ -132,7 +133,8 @@ curl -s "$B/Location?quadkey:exact=122221112030312213"                 # one zoo
 curl -s "$B/Location?quadkey=1222211120&type=facility&_count=100"      # facilities in the tile
 ```
 
-Backfill recipe (after a load that predates the extension): `fhir-pipes extract` to refresh the snapshot,
+Backfill recipe (after a load that predates the extension), with `FHIR_PIPES_PROFILE` set to
+`ig/fhir-pipes-profile.toml` (or `--profile` on each command): `fhir-pipes extract` to refresh the snapshot,
 `fhir-pipes index --snapshot DIR --spatial-index quadkey:18 --out changes.ndjson`, then
 `fhir-pipes load --in changes.ndjson`.
 
