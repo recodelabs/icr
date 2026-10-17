@@ -2,8 +2,8 @@
 
 A HAPI FHIR **R4** server (JPA starter on Postgres 15) for ICR development — the FHIR-store
 slot of the reference stack, running on a laptop via Docker (OrbStack on macOS). Its first
-job is to test [kiln](https://github.com/recodelabs/kiln) (Location registry ⇄ GeoParquet)
-against ICR-shaped data; it is also the target for loading the IG's example scenario.
+job is to test [fhir-pipes](https://github.com/ohs-foundation/fhir-pipes-rs) (Location registry ⇄
+GeoParquet, and the SQL-on-FHIR warehouse; it replaced kiln) against ICR-shaped data; it is also the target for loading the IG's example scenario.
 
 ```
 FHIR base URL   http://localhost:3447/fhir
@@ -33,32 +33,39 @@ transaction bundles, so re-running it is idempotent (200 for unchanged, 201 for 
 ndjson FILE…` loads any NDJSON of FHIR resources. The IG resources come from
 `ig/fsh-generated/resources/`, so run `sushi build .` in `ig/` after changing FSH.
 
-## Testing kiln against it
+## Testing fhir-pipes against it
 
 The registry export now lives in the repo's analytics hub, `data/` (see `data/README.md`):
-`tools/warehouse/refresh.sh` runs kiln against this server into `data/raw/hapi-local/locations`
-(snapshot) and `data/parquet/locations` (GeoParquet), then every IG ViewDefinition. For ad-hoc
-kiln experiments use a scratch directory:
+`tools/warehouse/refresh.sh` runs `fhir-pipes refresh` against this server into
+`data/raw/hapi-local/locations` (snapshot) and `data/parquet/locations` (GeoParquet), then every IG
+ViewDefinition. For ad-hoc experiments use a scratch directory, with fhir-pipes 0.5.0 or later (a
+binary from https://github.com/ohs-foundation/fhir-pipes-rs/releases, or
+`cargo install --git https://github.com/ohs-foundation/fhir-pipes-rs --locked fhir-pipes`):
 
 ```bash
 cd tools/hapi && mkdir -p .local           # .local/ is git-ignored scratch
-KILN=~/github/kiln/target/debug/kiln       # or `cargo build --release` → target/release/kiln
+FP=fhir-pipes                              # or the path to a downloaded binary
 
-$KILN run     --server http://localhost:3447/fhir --snapshot .local/snapshot --out .local/out
-$KILN inspect --out .local/out
+$FP run     --server http://localhost:3447/fhir --snapshot .local/snapshot --out .local/out
+$FP inspect --out .local/out
 
 # round trip: edit .local/out in QGIS / DuckDB, then
-$KILN diff --snapshot .local/snapshot --in edits.geojson --out .local/changes.ndjson --report .local/report.json
-$KILN load --server http://localhost:3447/fhir --in .local/changes.ndjson --dry-run
-$KILN load --server http://localhost:3447/fhir --in .local/changes.ndjson
-$KILN run  --server http://localhost:3447/fhir --snapshot .local/snapshot --out .local/out   # incremental
+$FP diff --snapshot .local/snapshot --in edits.geojson --out .local/changes.ndjson --report .local/report.json
+$FP load --server http://localhost:3447/fhir --in .local/changes.ndjson --dry-run
+$FP load --server http://localhost:3447/fhir --in .local/changes.ndjson
+$FP run  --server http://localhost:3447/fhir --snapshot .local/snapshot --out .local/out   # incremental
+
+# a registry from boundary and site files (formerly `kiln bake` / `kiln bake-points`)
+$FP import location-boundaries --help
+$FP import location-sites --help                # --boundaries is the file location-boundaries wrote
 ```
 
 No token is needed: the server is open on localhost.
 
-Verified Sep 6, 2026 with kiln 0.2.0 against HAPI 8.12.0 on a laptop, after the national Nigeria load
+Verified Sep 6, 2026 with kiln 0.2.0 (the code now in fhir-pipes) against HAPI 8.12.0 on a laptop, after the national Nigeria load
 (812 admin units from the GRID3 LGA boundaries, 51,022 GRID3 facilities each paired with an Organization,
-292,438 GRID3 settlements; baked with `kiln bake` / `kiln bake-points`, loaded with `kiln load`):
+292,438 GRID3 settlements; baked with `kiln bake` / `kiln bake-points`, now `fhir-pipes import
+location-boundaries` / `fhir-pipes import location-sites`; loaded with `kiln load`, now `fhir-pipes load`):
 
 | Step | Result |
 | --- | --- |
@@ -110,7 +117,8 @@ is the revinclude call above, or resolve the subtree first and pass the ids as a
 ### Spatial index cells (quadkey)
 
 Every point Location carries its zoom-18 quadkey in the IG's `spatial-index` extension (written by
-`kiln bake-points --spatial-index quadkey:18` at import, or backfilled with `kiln index` + `kiln load`).
+`fhir-pipes import location-sites --spatial-index quadkey:18` at import, or backfilled with
+`fhir-pipes index` + `fhir-pipes load`).
 `Location?quadkey=` is a **string** parameter, and FHIR string search matches by prefix, so a shorter
 key is a containment query at that coarser zoom. Verified Sep 6, 2026 (344,281 Locations; the
 backfill wrote 343,462 updates in 27 s and loaded in 5 min):
@@ -124,16 +132,17 @@ curl -s "$B/Location?quadkey:exact=122221112030312213"                 # one zoo
 curl -s "$B/Location?quadkey=1222211120&type=facility&_count=100"      # facilities in the tile
 ```
 
-Backfill recipe (after a load that predates the extension): `kiln extract` to refresh the snapshot,
-`kiln index --snapshot DIR --spatial-index quadkey:18 --out changes.ndjson`, then `kiln load --in changes.ndjson`.
+Backfill recipe (after a load that predates the extension): `fhir-pipes extract` to refresh the snapshot,
+`fhir-pipes index --snapshot DIR --spatial-index quadkey:18 --out changes.ndjson`, then
+`fhir-pipes load --in changes.ndjson`.
 
 ## What is configured, and why (`hapi.application.yaml`)
 
 | Setting | Value | Why |
 | --- | --- | --- |
-| `max_page_size` | 1000 | kiln pages with `_count=1000`; HAPI's default cap of 200 would silently shrink pages |
-| `reuse_cached_search_results_millis` | 0 | an extract run right after a `kiln load` must see the new versions |
-| `search_prefetch_thresholds` | 13,503,2003,200003,2000003,-1 | HAPI 8.12 stops issuing next links at the last finite threshold before `-1` (log: "Pass completed with no matching results seeking rows …"): with the stock `13,503,2003,-1` a full `kiln extract` silently got 3,000 of 51,843 Locations, and with `200003` before `-1` it got 203,000 of 344,281. Keep the last finite step above any registry size; kiln ≥ 0.2.0 (#18) reports `count_mismatch` when this bites |
+| `max_page_size` | 1000 | fhir-pipes pages with `_count=1000`; HAPI's default cap of 200 would silently shrink pages |
+| `reuse_cached_search_results_millis` | 0 | an extract run right after a `fhir-pipes load` must see the new versions |
+| `search_prefetch_thresholds` | 13,503,2003,200003,2000003,-1 | HAPI 8.12 stops issuing next links at the last finite threshold before `-1` (log: "Pass completed with no matching results seeking rows …"): with the stock `13,503,2003,-1` a full `kiln extract` (now `fhir-pipes extract`) silently got 3,000 of 51,843 Locations, and with `200003` before `-1` it got 203,000 of 344,281. Keep the last finite step above any registry size; fhir-pipes (since kiln 0.2.0) reports `count_mismatch` when this bites |
 | `enforce_referential_integrity_on_write` | false | client-assigned ids arrive in arbitrary batch order (`partOf`, `managingOrganization`) |
 | `allow_external_references` | true | canonical and cross-store references in the IG examples |
 | `allow_multiple_delete` / `expunge_enabled` | true | dev box: wipe a resource type without dropping the volume |
