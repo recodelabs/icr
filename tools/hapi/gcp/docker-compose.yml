@@ -7,6 +7,8 @@
 #   https://auth.healthcampaigns.org/          Keycloak, the gateway's token issuer (realm icr)
 #
 # Only Caddy publishes ports (80/443). Everything else stays on the compose network.
+# Country servers (country/docker-compose.yml) run as their own compose projects; their
+# gateways join this network and Caddy serves them from sites/<country>.caddy.
 # Settings that differ from the laptop stack come from the environment (.env), so
 # hapi.application.yaml stays shared. See README.md in this folder.
 name: icr-hapi
@@ -135,6 +137,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./sites:/etc/caddy/sites:ro
       - caddy_data:/data
       - caddy_config:/config
 

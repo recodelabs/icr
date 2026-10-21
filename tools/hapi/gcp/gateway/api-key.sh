@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# API keys for the FHIR Info Gateway. A key is a Keycloak client in realm `icr`
+# API keys for the FHIR Info Gateway. A key is a Keycloak client in realm `icr`, or in a
+# country server's realm when REALM is set (pass -e REALM=uga to docker compose exec)
 # (client id `key-<name>` + its secret); the holder trades it for a 1-hour access token
 # with the OAuth client-credentials grant and sends that as `Authorization: Bearer`.
 # Any valid token gets the whole FHIR API (see allowed-queries.json).
@@ -11,12 +12,13 @@
 #   sudo docker compose exec -T keycloak bash -s -- list          < gateway/api-key.sh
 #   sudo docker compose exec -T keycloak bash -s -- rotate nkw    < gateway/api-key.sh
 #   sudo docker compose exec -T keycloak bash -s -- revoke nkw    < gateway/api-key.sh
+#   sudo docker compose exec -T -e REALM=uga keycloak bash -s -- create nkw < gateway/api-key.sh
 #
 # Revoking deletes the client: no new tokens, and tokens already issued stop working
 # when they expire (≤ 1 hour; the gateway checks the signature, it does not call back).
 set -euo pipefail
 K=/opt/keycloak/bin/kcadm.sh
-REALM=icr
+REALM=${REALM:-icr}
 cmd=${1:-}; name=${2:-}
 
 $K config credentials --server http://localhost:8080 --realm master \
@@ -40,7 +42,7 @@ EOF
 case "$cmd" in
   setup)
     $K get "realms/$REALM" >/dev/null 2>&1 || \
-      $K create realms -s realm=$REALM -s enabled=true -s displayName="ICR dev" \
+      $K create realms -s realm=$REALM -s enabled=true -s displayName="$([ "$REALM" = icr ] && echo "ICR dev" || echo "ICR $REALM")" \
         -s accessTokenLifespan=3600 -s sslRequired=external
     echo "realm $REALM ready" ;;
   create)

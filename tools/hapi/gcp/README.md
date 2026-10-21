@@ -100,6 +100,105 @@ the two extra hostnames return 502). To remove them for good, deploy the previou
 `docker-compose.yml`/`Caddyfile` and `sudo docker compose up -d --remove-orphans`;
 `DROP DATABASE keycloak` removes Keycloak's data.
 
+## Country servers
+
+A country gets its own ICR server: its own HAPI and Postgres, and its own gateway at its own
+address, with keys from its own Keycloak realm. A key for one country opens no other server, and
+the country's HAPI has no open address. The country servers share this VM's Caddy (TLS) and
+Keycloak (one realm each), so adding one costs about 1.5 GB of memory and no new machine.
+
+```
+                         ┌──────────────── main stack (icr-hapi) ─────────────────┐
+https://hapi.…           │ Caddy ──▶ hapi ──▶ db                                  │
+https://gateway.…        │   │  └──▶ gateway ──▶ hapi                             │
+https://auth.…           │   │  └──▶ keycloak (realms icr, uga, …)                │
+                         └───┼────────────────────────────────────────────────────┘
+https://fhir-uga.…           └──▶ uga-gateway ──▶ country-hapi ──▶ db   (project icr-uga)
+                                  token must come from realm uga         + daily pg_dump
+```
+
+| Country | Address | Realm | Env file on the VM |
+| --- | --- | --- | --- |
+| Uganda | `https://fhir-uga.healthcampaigns.org/fhir` | `uga` | `country/uga.env` |
+
+The pieces, all in this folder:
+
+- `country/docker-compose.yml`: one country's stack (Postgres, HAPI, gateway, a backup
+  service). It's a separate compose project, `icr-<code>`. Only the gateway joins the main
+  stack's network, as `<code>-gateway`, so Caddy can reach it.
+- `country/<code>.env` (on the VM only): the country code, its address, the token issuer, its
+  database password. `country/.env.example` shows the format.
+- `sites/<code>.caddy`: the Caddy site for its address. The main `Caddyfile` imports `sites/*.caddy`.
+- `country.sh`: the commands below. `add` writes the env and site files, creates the realm,
+  starts the stack and reloads Caddy.
+
+### Add a country
+
+1. **DNS:** point the address at the VM: an A record `fhir-<code>` → `35.187.76.240`, DNS only (grey
+   cloud), so Caddy can get a Let's Encrypt certificate.
+2. **Deploy** this folder (see "Deploy / update"), then on the VM, from `/opt/icr-hapi/gcp`:
+
+   ```bash
+   sudo ./country.sh add uga fhir-uga.healthcampaigns.org
+   sudo ./country.sh key uga create matt        # prints key-matt and its secret
+   ```
+
+   HAPI takes a minute or two to start. `https://fhir-uga.healthcampaigns.org/fhir/metadata` is
+   open; everything else needs a token from realm `uga`.
+3. **Load the IG's definitions** (profiles, terminology, search parameters, questionnaires,
+   protocols, indicators; not its example data), from the repo root on any machine:
+
+   ```bash
+   python3 tools/hapi/load.py ig --definitions-only --base https://fhir-uga.healthcampaigns.org/fhir \
+     --client-id key-matt --client-secret "$SECRET" \
+     --token-url https://auth.healthcampaigns.org/realms/uga/protocol/openid-connect/token
+   ```
+
+4. **Load the country's data** with the same key: `load.py ndjson FILE…`, or `fhir-pipes load` with
+   `--client-id`/`--client-secret`/`--token-url`. Give the country's resources ids with its code
+   as prefix (`uga-…`), as Nigeria's are `nga-…`, so they can be moved or merged later.
+
+### Run it
+
+```bash
+sudo ./country.sh ps                       # every country's containers
+sudo ./country.sh up uga                   # start, or apply a changed config or image
+sudo ./country.sh down uga                 # stop; the data stays
+sudo ./country.sh key uga list             # also: rotate NAME, revoke NAME
+sudo ./country.sh backup uga               # a pg_dump now
+```
+
+**Backups.** Unlike the main server, a country's data may not be regenerable from this repo, so
+each country has a `backup` service. It runs `pg_dump` once a day after 02:00 UTC into the
+volume `icr-<code>_backups` and keeps the last 14. The volume is on the VM's disk, so copy the
+dumps off the VM if losing the VM must not lose the data. To restore, load a dump into an
+empty `db` with `psql` before HAPI starts.
+
+**Memory.** A country's HAPI gets a 1.5 GB heap (`HAPI_HEAP` in its env file). Its Postgres gets 256 MB
+of shared buffers (`PG_SHARED_BUFFERS`). The whole stack uses about 1.5 GB idle. The main stack has
+about 12.5 GB of the 16 GB allocated, so there is room for one or two countries before the main
+HAPI's heap (`-Xmx6g`) or the machine size has to change.
+
+**Moving a country to its own VM.** The stack needs only a Caddy and a Keycloak realm it can reach:
+
+1. Run the main stack there, or just Caddy, with the same `sites/<code>.caddy`.
+2. Copy the env file and start the country with `country.sh up`. Its gateway can keep trusting
+   `auth.healthcampaigns.org`.
+3. Restore the latest dump.
+4. Move the DNS record.
+
+### Using this elsewhere
+
+Nothing in `country/` is specific to ICR's hosts. To copy the setup:
+
+1. Run the main stack, `docker-compose.yml` and `Caddyfile`, with your own `.env`: hostnames,
+   passwords.
+2. Run `sudo docker compose exec -T keycloak bash -s -- setup < gateway/api-key.sh` once.
+3. Add countries with `country.sh add CODE HOST`. It reads the Keycloak address from the main
+   `.env` and finds the main stack's network itself.
+
+The HAPI settings are `../hapi.application.yaml`, shared with the laptop stack.
+
 ## Seed
 
 Every dataset on the server is deterministic output of a generator in this repo, loaded with
