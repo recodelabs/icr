@@ -32,6 +32,14 @@ npm run build                   # static site in dist/
 The data loaders in `src/data/` need `duckdb` on the PATH; they run at build (and
 preview) time and their output is cached under `src/.observablehq/cache`.
 
+**DuckDB 2.0 in the browser.** Framework 1.13.4 pins DuckDB-Wasm 1.29.0 (DuckDB 1.1.1).
+`./duckdb-wasm2.sh . sldash sl-redux` swaps in DuckDB-Wasm built for DuckDB 2.0.0 from the
+duckdb-wasm CI, which isn't on npm yet. It patches the site's Framework cache and two files in
+`node_modules`, so `npm install` or `npm run clean` undo it. `deploy.sh` runs it before every
+build. Run it yourself after `npm install` if you want 2.0 in `npm run dev` too (open a page
+once first so Framework has cached DuckDB-Wasm). Once DuckDB-Wasm 2.0 is on npm, drop the
+script and the `duckdb` extensions setting in each `observablehq.config.js`.
+
 ## What is on the page
 
 - **Filters** — year, state, programme, status. Everything below reacts. The

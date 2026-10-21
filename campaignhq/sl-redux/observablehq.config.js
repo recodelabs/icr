@@ -31,5 +31,7 @@ export default {
   pager: false,
   search: false,
   style: "style.css",
-  cleanUrls: true
+  cleanUrls: true,
+  // DuckDB 2.0 (duckdb-wasm2.sh) has json and parquet built in; don't bundle Framework's 1.1.1 ones.
+  duckdb: {extensions: {json: null, parquet: null}}
 };

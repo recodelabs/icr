@@ -40,6 +40,7 @@ sync() {
   local dir="$1" prefix="$2"; shift 2
   if [ "$BUILD" = 1 ]; then
     echo "== build $dir"
+    ./duckdb-wasm2.sh "$dir"
     (cd "$dir" && npm run build)
   fi
   echo "== sync $dir/dist → $REMOTE:$BUCKET/_site/campaignhq/$prefix ${DRY:+(dry run)}"
