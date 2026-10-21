@@ -38,7 +38,9 @@ duckdb-wasm CI, which isn't on npm yet. It patches the site's Framework cache an
 `node_modules`, so `npm install` or `npm run clean` undo it. `deploy.sh` runs it before every
 build. Run it yourself after `npm install` if you want 2.0 in `npm run dev` too (open a page
 once first so Framework has cached DuckDB-Wasm). Once DuckDB-Wasm 2.0 is on npm, drop the
-script and the `duckdb` extensions setting in each `observablehq.config.js`.
+script and the `duckdb` extensions setting in each `observablehq.config.js`. The engine is
+copied in as `duckdb-base.<hash>.wasm`, with the start of its checksum in the name: the
+Worker tells browsers to keep it for a year, so a different build needs a different name.
 
 ## What is on the page
 
@@ -80,6 +82,12 @@ cd campaignhq && ./deploy.sh        # build → rclone sync dist/ → r2:icr/_si
 custom-domain route, so wrangler creates the DNS record and certificate on the
 first deploy. Needs `rclone` with the `r2` remote configured and a wrangler
 login on this account. `./deploy.sh --dry-run` shows what would change.
+
+Before each upload, `deploy.sh` puts a brotli copy (`name.wasm.br`, highest quality) next to
+every `.wasm` file, kept in `~/.cache/campaignhq-br` so an unchanged file is compressed once.
+The Worker sends that copy to browsers that accept brotli. Cloudflare would otherwise
+compress the file itself, at a lower level: the DuckDB engine (27.4 MB) goes out as 4.7 MiB
+instead of 7.0 MiB.
 
 ## Pages
 

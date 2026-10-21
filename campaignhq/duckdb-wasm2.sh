@@ -14,8 +14,10 @@
 # Each site's observablehq.config.js also sets duckdb.extensions json and parquet to
 # null: 2.0 has both built in, and Framework would otherwise bundle the 1.1.1 ones.
 #
-# The engine keeps the name duckdb-base.wasm (no content hash) and the Worker caches _npm/
-# for a year, so to move to a different build later, change its folder or file name too.
+# Framework puts a content hash in the worker's file name but not the engine's, and the
+# Worker tells browsers to keep _npm/ files for a year. So the engine is copied in as
+# duckdb-base.<first 8 hex of its sha256>.wasm: a different build gets a new name, and
+# browsers fetch it instead of keeping the old one.
 #
 # npm install and `npm run clean` undo this, so deploy.sh runs it before each build.
 # Safe to run again. Drop it once DuckDB-Wasm 2.0 is on npm and Framework can use it.
@@ -30,6 +32,7 @@ STORE="${DUCKDB_WASM2_DIR:-$HOME/.cache/duckdb-wasm2}/d54cbbe3df"
 SUMS="be806078a159f7c196ff5065d787c2f558f07e3ad727b21c7aa2b7329e8c50d7  duckdb-base.wasm
 8a8f73e2860daa0b1b7d4df0a2a017fef33e694249a6634636553478e630f9d5  duckdb-browser-base.worker.js
 35f33368cb6018c1e6ede36273f5fec39e5c86e4976599decda845d5af2d19f5  duckdb-browser.mjs"
+ENGINE="duckdb-base.$(echo "$SUMS" | awk '$2 == "duckdb-base.wasm" {print substr($1, 1, 8)}').wasm"
 
 [ $# -gt 0 ] || { echo "usage: $0 SITE_DIR..." >&2; exit 2; }
 
@@ -58,22 +61,23 @@ for site in "$@"; do
     exit 1
   fi
 
-  rm -f "$cache"/dist/duckdb-mvp.wasm "$cache"/dist/duckdb-eh.wasm \
+  rm -f "$cache"/dist/duckdb-mvp.wasm "$cache"/dist/duckdb-eh.wasm "$cache"/dist/duckdb-base*.wasm \
     "$cache"/dist/duckdb-browser-mvp.worker.js "$cache"/dist/duckdb-browser-eh.worker.js
   mkdir -p "$cache/dist"
-  cp "$STORE/duckdb-base.wasm" "$STORE/duckdb-browser-base.worker.js" "$cache/dist/"
+  cp "$STORE/duckdb-base.wasm" "$cache/dist/$ENGINE"
+  cp "$STORE/duckdb-browser-base.worker.js" "$cache/dist/"
   { echo "/* DuckDB-Wasm for DuckDB 2.0.0 (d54cbbe3df), duckdb/duckdb-wasm CI run $RUN; see campaignhq/duckdb-wasm2.sh */"
     sed -e "s#from\"apache-arrow\"#from\"../../$arrow/_esm.js\"#g" -e '/^\/\/# sourceMappingURL/d' "$STORE/duckdb-browser.mjs"
   } > "$cache/_esm.js"
 
-  python3 -I - "$client" "$libraries" <<'EOF'
+  python3 -I - "$client" "$libraries" "$ENGINE" <<'EOF'
 import re, sys
-client, libraries = sys.argv[1:]
+client, libraries, engine = sys.argv[1:]
 s = open(client).read()
 start, end = s.index("const bundles = {"), s.index("const bundle = duckdb.selectBundle(bundles);")
 s = s[:start] + '''const bundles = {
   base: {
-    mainModule: import.meta.resolve("npm:@duckdb/duckdb-wasm/dist/duckdb-base.wasm"),
+    mainModule: import.meta.resolve("npm:@duckdb/duckdb-wasm/dist/''' + engine + '''"),
     mainWorker: import.meta.resolve("npm:@duckdb/duckdb-wasm/dist/duckdb-browser-base.worker.js")
   }
 };
@@ -84,12 +88,15 @@ old = re.compile(r'(\s*)implicits\.add\("npm:@duckdb/duckdb-wasm/dist/duckdb-mvp
                  r'implicits\.add\("npm:@duckdb/duckdb-wasm/dist/duckdb-browser-mvp\.worker\.js"\);\s*'
                  r'implicits\.add\("npm:@duckdb/duckdb-wasm/dist/duckdb-eh\.wasm"\);\s*'
                  r'implicits\.add\("npm:@duckdb/duckdb-wasm/dist/duckdb-browser-eh\.worker\.js"\);')
+base = re.compile(r'npm:@duckdb/duckdb-wasm/dist/duckdb-base(\.[0-9a-f]{8})?\.wasm')
 if old.search(s):
-    s = old.sub(lambda m: m.group(1) + 'implicits.add("npm:@duckdb/duckdb-wasm/dist/duckdb-base.wasm");'
+    s = old.sub(lambda m: m.group(1) + f'implicits.add("npm:@duckdb/duckdb-wasm/dist/{engine}");'
                 + m.group(1) + 'implicits.add("npm:@duckdb/duckdb-wasm/dist/duckdb-browser-base.worker.js");', s, count=1)
-    open(libraries, "w").write(s)
-elif "duckdb-base.wasm" not in s:
+elif base.search(s):
+    s = base.sub(f"npm:@duckdb/duckdb-wasm/dist/{engine}", s, count=1)
+else:
     sys.exit(f"{libraries}: DuckDB file list not found; Framework changed?")
+open(libraries, "w").write(s)
 EOF
-  echo "== $site: DuckDB-Wasm 2.0 (arrow from $arrow)"
+  echo "== $site: DuckDB-Wasm 2.0, $ENGINE (arrow from $arrow)"
 done

@@ -14,12 +14,13 @@
 #
 # Usage: ./deploy.sh [--skip-build] [--dry-run] [SITE...]
 #        SITE: main (the default), sldash, sl-redux, or all
-# Env:   R2_BUCKET (icr)  R2_REMOTE (r2)
+# Env:   R2_BUCKET (icr)  R2_REMOTE (r2)  BR_CACHE (~/.cache/campaignhq-br)
 set -euo pipefail
 cd "$(dirname "$0")"
 BUCKET="${R2_BUCKET:-icr}"
 REMOTE="${R2_REMOTE:-r2}"
 SUBSITES=("sldash:dhis2-sl" "sl-redux:dhis2-sl-redux")
+BR_CACHE="${BR_CACHE:-$HOME/.cache/campaignhq-br}"
 BUILD=1; DRY=""; SITES=()
 for a in "$@"; do
   case "$a" in
@@ -35,6 +36,25 @@ done
 rclone lsd "$REMOTE:" 2>/dev/null | awk '{print $NF}' | grep -qx "$BUCKET" || {
   echo "bucket '$BUCKET' not found on rclone remote '$REMOTE'. Create it:  npx wrangler r2 bucket create $BUCKET" >&2; exit 1; }
 
+# precompress DIR: put a brotli copy (quality 11) next to each .wasm in DIR/dist, which the
+# Worker sends to browsers that accept brotli. Cloudflare's own compression is lighter: the
+# DuckDB engine goes over the wire as 7.0 MB that way, 4.7 MB from the copy. Copies are kept
+# in BR_CACHE by checksum, so an unchanged file is compressed once (it takes about a minute).
+precompress() {
+  find "$1/dist" -name '*.wasm.br' -delete
+  command -v brotli >/dev/null || { echo "brotli not installed; .wasm goes up without a brotli copy" >&2; return 0; }
+  mkdir -p "$BR_CACHE"
+  local f br
+  while IFS= read -r -d '' f; do
+    br="$BR_CACHE/$(shasum -a 256 "$f" | cut -c1-64).br"
+    if [ ! -s "$br" ]; then
+      echo "== brotli ${f#"$1"/dist/}"
+      brotli -q 11 -c "$f" > "$br.tmp" && mv "$br.tmp" "$br"
+    fi
+    cp "$br" "$f.br"
+  done < <(find "$1/dist" -name '*.wasm' -print0)
+}
+
 # sync DIR PREFIX [rclone options…]: mirror DIR/dist to the site folder PREFIX.
 sync() {
   local dir="$1" prefix="$2"; shift 2
@@ -43,6 +63,7 @@ sync() {
     ./duckdb-wasm2.sh "$dir"
     (cd "$dir" && npm run build)
   fi
+  precompress "$dir"
   echo "== sync $dir/dist → $REMOTE:$BUCKET/_site/campaignhq/$prefix ${DRY:+(dry run)}"
   rclone sync $DRY --checksum --fast-list --transfers 16 --exclude ".DS_Store" "$@" \
     "$dir/dist" "$REMOTE:$BUCKET/_site/campaignhq/$prefix" --stats-one-line -v 2>&1 | grep -v "^$" | tail -3

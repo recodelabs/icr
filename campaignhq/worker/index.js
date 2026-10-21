@@ -14,6 +14,11 @@
 // under _npm/, _import/, _observablehq/ and _file/, at the root or in a folder
 // site, get a long cache; pages do not.
 //
+// A .wasm file can have a brotli copy next to it (name.wasm.br, made by deploy.sh at the
+// highest quality). A browser that accepts brotli gets that copy as it is, marked
+// content-encoding: br; Cloudflare's own on-the-fly compression is lighter (the DuckDB
+// engine: 4.7 MB instead of 7.0). Range requests always get the plain file.
+//
 // The site moved from monitor.healthcampaigns.org to dashboards.healthcampaigns.org;
 // the old host 301-redirects to the same path on the new one (see CANONICAL_HOST).
 
@@ -53,12 +58,21 @@ export default {
         url.pathname = `/${path}/`;
         return Response.redirect(url.toString(), 301);
       }
-      const obj = await env.ICR.get(SITE_PREFIX + key, {range: ranged ? request.headers : undefined, onlyIf: request.headers});
+      const wasm = key.endsWith(".wasm");
+      let obj = null;
+      let brotli = false;
+      if (wasm && !ranged && /\bbr\b/.test(request.headers.get("accept-encoding") ?? "")) {
+        obj = await env.ICR.get(SITE_PREFIX + key + ".br", {onlyIf: request.headers});
+        brotli = obj !== null;
+      }
+      obj ??= await env.ICR.get(SITE_PREFIX + key, {range: ranged ? request.headers : undefined, onlyIf: request.headers});
       if (!obj) continue;
       const headers = new Headers();
       obj.writeHttpMetadata(headers);
       headers.set("etag", obj.httpEtag);
       headers.set("content-type", contentType(key));
+      if (wasm) headers.set("vary", "accept-encoding");
+      if (brotli) headers.set("content-encoding", "br");
       headers.set("accept-ranges", "bytes");
       const immutable = /(^|\/)(_npm|_import|_observablehq|_file)\//.test(key);
       headers.set("cache-control", immutable ? "public, max-age=31536000, immutable" : "public, max-age=300");
@@ -72,7 +86,8 @@ export default {
       }
       const status = "body" in obj && obj.body ? (partial ? 206 : 200) : 304;
       const body = status === 304 || request.method === "HEAD" ? null : obj.body;
-      return new Response(body, {status, headers});
+      // encodeBody "manual": the brotli copy is already encoded; don't compress it again.
+      return new Response(body, {status, headers, encodeBody: brotli ? "manual" : "automatic"});
     }
 
     const notFound = await env.ICR.get(SITE_PREFIX + "404.html");
