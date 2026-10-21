@@ -1,0 +1,28 @@
+# fhir-pipes settings for Uganda's SDI: the location registry of the Uganda ICR server as a
+# Portolan catalog at https://sdi.healthcampaigns.org/uga/ (the `uga/` folder of the `icr` R2
+# bucket, served by tools/sdi). Paths are relative to this file. Run sdi.sh, which runs:
+#
+#   FHIR_PIPES_CLIENT_ID=… FHIR_PIPES_CLIENT_SECRET=… \
+#     fhir-pipes refresh --config country/uganda/fhir-pipes.toml --only locations,tiles,hooks
+#
+# The catalog's human-written metadata is in sdi/.portolan/ (in git); everything else under
+# sdi/ is generated.
+
+data = "sdi"
+profile = "../../ig/fhir-pipes-profile.toml"
+
+[server]
+base = "https://fhir-uga.healthcampaigns.org/fhir"
+name = "uga"
+token_url = "https://auth.healthcampaigns.org/realms/uga/protocol/openid-connect/token"
+
+[tiles]
+countries = ["UGA"]
+
+# No [push]: fhir-pipes pushes to the root of a bucket, and this catalog is the bucket's
+# uga/ folder, so sdi.sh --push uploads it with rclone.
+
+[[hooks]]
+name = "catalog"
+after = "locations"
+run = ["../../tools/warehouse/catalog.sh"]

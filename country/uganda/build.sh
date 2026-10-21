@@ -10,7 +10,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 RELEASE=2026-10-21.0
 FHIR_PIPES=${FHIR_PIPES:-fhir-pipes}
-PROFILE_REPO=${PROFILE_REPO:-/Volumes/maximus/github/fhir-pipes-rs}
+PROFILE=../../ig/fhir-pipes-profile.toml   # the ICR profile, kept with the IG
 mkdir -p build overture cod
 
 # 1. Overture divisions for Uganda (about 10 seconds; kept until the release changes).
@@ -44,8 +44,7 @@ rm -f build/districts.geojson
 duckdb -no-agent -csv -c ".read districts.sql" | tee build/districts-checks.txt
 
 # 5. fhir-pipes builds the Locations; enrich.py adds identifiers and sources.
-git -C "$PROFILE_REPO" show v0.6.0:examples/profiles/icr.toml > build/icr-profile.toml
-"$FHIR_PIPES" import location-boundaries --profile build/icr-profile.toml --in build/districts.geojson \
+"$FHIR_PIPES" import location-boundaries --profile "$PROFILE" --in build/districts.geojson \
   --country Uganda=UGA --level region=region:region_code --level district=district \
   --alias district=district_aliases --dissolve-parents --out build/locations.ndjson --report build/import-report.json
 uv run -q --no-project --with duckdb python3 -I enrich.py build/districts.geojson overture/ug_division.parquet \

@@ -4,8 +4,11 @@
 
 - Identifiers: the P-code (official) for districts that have one, ISO 3166 codes for the country
   and regions (official), the Overture GERS id and the Wikidata id. A unit whose boundary came
-  from a COD-AB unit of another level (Lira City: Lira Municipality) gets that P-code, not official. The import's single
-  national-admin-code identifier is dropped: with no national code it only repeats the id.
+  from a COD-AB unit of another level (Lira City: Lira Municipality) gets that P-code, not official.
+  The regions get the COD-AB's region P-codes (UG1–UG4), not official. The import's single
+  national-admin-code identifier is kept on the country only (UGA, which the warehouse uses as
+  the country code, as NGA for Nigeria); below it there is no national code, and it only
+  repeats the id.
 - description: where the boundary came from.
 Reads the GeoJSON's properties by unit, and the Overture divisions for the country and regions.
 """
@@ -15,7 +18,8 @@ import duckdb
 
 GEOJSON, OVERTURE, IN, OUT = sys.argv[1:5]
 ICR = "https://icr.healthcampaigns.org/identifiers"
-PCODE, GERS = f"{ICR}/pcode", f"{ICR}/overture-gers"
+PCODE, GERS, NATIONAL = f"{ICR}/pcode", f"{ICR}/overture-gers", f"{ICR}/national-admin-code"
+REGION_PCODES = {"UG-C": "UG1", "UG-E": "UG2", "UG-N": "UG3", "UG-W": "UG4"}   # COD-AB admin1
 WIKIDATA = "http://www.wikidata.org/entity"
 ISO, ISO2 = "urn:iso:std:iso:3166", "urn:iso:std:iso:3166:-2"
 RELEASE = "Overture Maps 2026-10-21.0 (OpenStreetMap contributors, ODbL)"
@@ -40,11 +44,11 @@ with open(IN) as f, open(OUT, "w") as out:
         level = r["id"].count("-")          # uga = 0, uga-n = 1, uga-n-abim = 2
         if level == 0:
             gers, wd, _ = divs[("country", r["name"])]
-            ids = [ident(ISO, "UG", True), ident(GERS, gers), ident(WIKIDATA, wd)]
+            ids = [ident(ISO, "UG", True), ident(NATIONAL, "UGA"), ident(GERS, gers), ident(WIKIDATA, wd)]
             r["description"] = f"Boundary: the union of its districts, from {RELEASE}."
         elif level == 1:
             gers, wd, iso = divs[("region", r["name"])]
-            ids = [ident(ISO2, iso, True), ident(GERS, gers), ident(WIKIDATA, wd)]
+            ids = [ident(ISO2, iso, True), ident(PCODE, REGION_PCODES[iso]), ident(GERS, gers), ident(WIKIDATA, wd)]
             r["description"] = f"Boundary: the union of its districts, from {RELEASE}."
         else:
             p = props[r["name"]]

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "catalog_id": "icr-uga",
+  "created": "2026-10-21T21:19:30.048763+00:00",
+  "collections": {
+    "parquet/locations": {
+      "current_version": "1.0.0",
+      "updated": "2026-10-21T21:21:30.678671+00:00",
+      "asset_count": 1,
+      "total_size_bytes": 3898838
+    }
+  },
+  "updated": "2026-10-21T21:21:30.678671+00:00"
+}

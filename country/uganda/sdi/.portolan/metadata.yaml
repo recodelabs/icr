@@ -1,0 +1,27 @@
+# The Uganda catalog root. The collection's own metadata is in collections/locations/.
+
+title: "ICR Uganda"
+description: |
+  The location registry of the Uganda Integrated Campaign Registry (ICR) server, exported as
+  GeoParquet: Uganda's administrative boundaries (the country, 4 regions and 146 districts
+  and cities), the units the Ministry of Health plans campaigns by.
+
+contact:
+  name: "Recode Labs — ICR team"
+  email: "mberg@ona.io"
+
+# The boundaries come from OpenStreetMap through Overture Maps, so the database is ODbL.
+license: "ODbL-1.0"
+license_url: "https://opendatacommons.org/licenses/odbl/1-0/"
+attribution: "© OpenStreetMap contributors (ODbL), via Overture Maps · OCHA COD-AB · UNICEF ICR"
+
+providers:
+  - name: "OpenStreetMap contributors, via Overture Maps"
+    roles: ["producer", "licensor"]
+    url: "https://overturemaps.org"
+  - name: "UNICEF — Integrated Campaign Registry"
+    roles: ["processor"]
+    url: "https://icr.healthcampaigns.org"
+  - name: "Recode Labs"
+    roles: ["processor", "host"]
+    url: "https://recodelabs.org"

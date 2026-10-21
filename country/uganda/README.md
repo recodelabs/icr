@@ -10,6 +10,7 @@ Data for the Uganda ICR server, `https://fhir-uga.healthcampaigns.org/fhir` (see
 | `districts.sql` | Builds the districts GeoJSON from Overture and the COD-AB, and checks it |
 | `enrich.py` | Adds identifiers and sources to the Locations fhir-pipes writes |
 | `build.sh` | Runs it all; `--load` sends the result to the server |
+| `fhir-pipes.toml`, `sdi.sh`, `sdi/.portolan/` | Uganda's SDI catalog: the server's Locations as GeoParquet, map tiles and Portolan metadata |
 
 ## Admin units on the server
 
@@ -49,6 +50,24 @@ so a search by any of them finds the unit.
 
 `build/districts-checks.txt` must show 146 units, all matched to the workbook, and the
 districts' total area equal to the country's.
+
+## SDI catalog
+
+https://sdi.healthcampaigns.org/uga/ opens the Portolan browser on Uganda's catalog
+(`/uga/catalog.json`), separate from the main ICR catalog at the site's root. It holds the
+Locations of the Uganda server as GeoParquet (`parquet/locations/country=UGA/…`), the district
+map as PMTiles (`tiles/admin.pmtiles`) and the catalog's metadata, under the ODbL with credit to
+OpenStreetMap (via Overture Maps), OCHA and the ICR.
+
+```bash
+./sdi.sh            # refresh from the server: fhir-pipes refresh, then the Portolan catalog
+./sdi.sh --push     # and upload to the uga/ folder of the icr R2 bucket
+```
+
+Run it after the Locations on the server change. `fhir-pipes.toml` is the refresh config;
+`tools/warehouse/catalog.sh` builds the catalog with the metadata in `sdi/.portolan/`
+(edit the descriptions, license and known issues there). The SDI Worker (`tools/sdi`) serves
+the `uga/` folder; another country's catalog needs its code added to `COUNTRY_CATALOGS` there.
 
 ## Not yet loaded
 

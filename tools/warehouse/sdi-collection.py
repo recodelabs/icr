@@ -38,7 +38,8 @@ STYLE_TYPE = "application/vnd.mapbox.style+json"
 
 # The CLI names each partition item after its hive path ("country=NGA Geom Type=point
 # Type=facility"); these give the items the titles people see in the browser.
-COUNTRIES = {"NGA": "Nigeria", "NG": "Nigeria", "SL": "Sierra Leone", "SLE": "Sierra Leone"}
+COUNTRIES = {"NGA": "Nigeria", "NG": "Nigeria", "SL": "Sierra Leone", "SLE": "Sierra Leone",
+             "UGA": "Uganda", "UG": "Uganda"}
 TYPES = {
     "admin-unit": "administrative boundaries",
     "facility": "health facilities",
@@ -47,7 +48,9 @@ TYPES = {
     "null": "locations without a type",
 }
 
-# archive → (title, default-visible layers, style file, style title)
+# archive → (title, default-visible layers, style file, style title). A catalog can rename the
+# titles in .portolan/collections/locations/tiles.json ({"admin": {"title": …, "style_title": …},
+# "thumbnail_title": …}), e.g. Uganda's regions and districts where Nigeria has states and LGAs.
 TILES = {
     "admin": ("Administrative boundaries (country, states, LGAs)", ["lgas", "states", "country"], "default", "Administrative boundaries"),
     "facilities": ("Health facilities", ["facilities"], "facilities", "Health facilities by level"),
@@ -192,6 +195,8 @@ def main(data: Path) -> None:
     coll_path = coll_dir / "collection.json"
     src_styles = data / ".portolan" / "collections" / "locations" / "styles"
     coll = json.loads(coll_path.read_text())
+    titles_file = src_styles.parent / "tiles.json"
+    titles = json.loads(titles_file.read_text()) if titles_file.exists() else {}
 
     without_geometry = add_items_without_geometry(coll, coll_dir)
     titled = retitle_items(coll, coll_dir)
@@ -208,6 +213,8 @@ def main(data: Path) -> None:
                       if not k.startswith("style-") and not k.endswith("-tiles")}
 
     for name, (title, layers, style, style_title) in TILES.items():
+        title = titles.get(name, {}).get("title", title)
+        style_title = titles.get(name, {}).get("style_title", style_title)
         archive = data / "tiles" / f"{name}.pmtiles"
         if not archive.exists():
             print(f"   skip {name}: {archive} missing", file=sys.stderr)
@@ -238,7 +245,8 @@ def main(data: Path) -> None:
         thumb = coll_dir / "thumbnail.png"
         shutil.copyfile(src_thumb, thumb)
         coll["assets"]["thumbnail"] = {
-            "href": "./thumbnail.png", "type": "image/png", "title": "Nigeria — administrative boundaries",
+            "href": "./thumbnail.png", "type": "image/png",
+            "title": titles.get("thumbnail_title", "Nigeria — administrative boundaries"),
             "roles": ["thumbnail"], "file:size": thumb.stat().st_size, "file:checksum": multihash(thumb),
         }
 
