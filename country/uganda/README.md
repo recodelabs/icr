@@ -10,6 +10,7 @@ Data for the Uganda ICR server, `https://fhir-uga.healthcampaigns.org/fhir` (see
 | `districts.sql` | Builds the districts GeoJSON from Overture and the COD-AB, and checks it |
 | `enrich.py` | Adds identifiers and sources to the Locations fhir-pipes writes |
 | `build.sh` | Runs it all; `--load` sends the result to the server |
+| `population.sh` | WorldPop population estimates for every district, region and the country, loaded as ICRTargetPopulation Groups |
 | `fhir-pipes.toml`, `sdi.sh`, `sdi/.portolan/` | Uganda's SDI catalog: the server's Locations as GeoParquet, map tiles and Portolan metadata |
 
 ## Admin units on the server
@@ -51,6 +52,28 @@ so a search by any of them finds the unit.
 `build/districts-checks.txt` must show 146 units, all matched to the workbook, and the
 districts' total area equal to the country's.
 
+## WorldPop population
+
+`./population.sh --load` extracts the server's Locations, sums WorldPop's constrained 100 m grid
+for 2026 (release R2025A) under each district and city with `fhir-pipes population`, and loads
+151 Groups: one per district and city, plus region and country totals (`is-calculated`). Ids are
+`pop-worldpop-2026-<location id>`. They are total-population estimates with
+`denominator-source = worldpop`, not the planning denominator.
+
+R2025A rasters are LZW-compressed, which fhir-pipes 0.6.0 can't read, so the script rewrites the
+raster once with `gdal_translate` as DEFLATE (needs GDAL).
+
+Compared with the Ministry's `Population_2026` (2026-10-21): Uganda 52.0 million against 49.6
+million (×1.05); 110 of 146 districts within ±20%. The largest differences:
+
+| District | Ministry | WorldPop | Ratio | Likely reason |
+| --- | ---: | ---: | ---: | --- |
+| Obongi | 149,750 | 23,756 | 0.16 | Refugee settlements (Palorinya), which WorldPop's grid may undercount |
+| Lira City | 267,150 | 75,724 | 0.28 | Its boundary is the 2020 municipality, smaller than the city; with Lira District the two are 588,000 against 532,000 |
+| Soroti City | 284,640 | 132,728 | 0.47 | To check: city boundary or the Ministry's figure |
+| Lira | 264,560 | 512,088 | 1.94 | Holds most of Lira City's people (see above) |
+| Sironko | 148,080 | 321,823 | 2.17 | To check |
+
 ## SDI catalog
 
 https://sdi.healthcampaigns.org/uga/ opens the Portolan browser on Uganda's catalog
@@ -71,6 +94,8 @@ the `uga/` folder; another country's catalog needs its code added to `COUNTRY_CA
 
 ## Not yet loaded
 
-- The October 2026 ICHD targets (the workbook's `Target_refined` sheet).
+- The October 2026 ICHD targets (the workbook's `Target_refined` sheet). The two monthly-cohort
+  columns are MR2 targets (to confirm): the one headed April 2025 is children born in April 2025,
+  18 months old in October 2026; `MR2 Target_April 2024` is children born in April 2024.
 - Anything below district level. Overture has no outlines there (only about 61,800 village
   points); the COD-AB has counties and sub-counties from 2020.
