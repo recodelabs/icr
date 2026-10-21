@@ -48,15 +48,13 @@ sync() {
     "$dir/dist" "$REMOTE:$BUCKET/_site/campaignhq/$prefix" --stats-one-line -v 2>&1 | grep -v "^$" | tail -3
 }
 
+WORKER=0
 for site in "${SITES[@]}"; do
   if [ "$site" = main ]; then
     excludes=()
     for s in "${SUBSITES[@]}"; do excludes+=(--exclude "/${s#*:}/**"); done
     sync . "" "${excludes[@]}"
-    if [ -z "$DRY" ]; then
-      echo "== deploy worker"
-      npx wrangler deploy
-    fi
+    WORKER=1
     echo "== https://dashboards.healthcampaigns.org"
   else
     for s in "${SUBSITES[@]}"; do
@@ -66,3 +64,17 @@ for site in "${SITES[@]}"; do
     done
   fi
 done
+
+# The Worker goes last, so a wrangler failure never leaves a site unsynced.
+# Wrangler needs Node 22 or later; if the default node is older, use Homebrew's.
+if [ "$WORKER" = 1 ] && [ -z "$DRY" ]; then
+  echo "== deploy worker"
+  major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
+  if [ "$(major node)" -lt 22 ]; then
+    for n in "$(brew --prefix 2>/dev/null)/opt/node/bin/node" "$(brew --prefix 2>/dev/null)"/opt/node@2*/bin/node; do
+      if [ -x "$n" ] && [ "$(major "$n")" -ge 22 ]; then PATH="$(dirname "$n"):$PATH"; break; fi
+    done
+  fi
+  [ "$(major node)" -ge 22 ] || { echo "wrangler needs Node 22 or later (node is $(node -v)); the sites are synced, the Worker is not" >&2; exit 1; }
+  npx wrangler deploy
+fi
