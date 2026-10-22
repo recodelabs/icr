@@ -521,6 +521,14 @@ Description: "Analytics-stable classes for physical campaign commodities. GS1 GT
 * #irs-insecticide "IRS insecticide" "Insecticide consumable for indoor residual spraying (e.g. Pirimiphos-methyl 300CS)."
 * #rdt "Rapid diagnostic test" "A rapid diagnostic test kit (e.g. malaria RDT)."
 
+CodeSystem: ICRTaskInputTypeCS
+Id: icr-task-input-type-cs
+Title: "ICR Task Input Type"
+Description: "What a campaign Task is given before the work starts — the coded vocabulary of Task.input.type, the counterpart of ICRTaskOutputTypeCS. Parameters that describe the work (delivery strategy, task origin) stay Task extensions."
+* ^caseSensitive = true
+* ^experimental = false
+* #target-population "Target population" "The ICRTargetPopulation this task plans against: its share of the campaign's target, for a task below the campaign's reporting scope (a facility catchment, parish, school or settlement). A task at the campaign's own scope needs none: its target is the campaign's planning denominator for the task's activity (CarePlan.activity.detail)."
+
 CodeSystem: ICRTaskOutputTypeCS
 Id: icr-task-output-type-cs
 Title: "ICR Task Output Type"

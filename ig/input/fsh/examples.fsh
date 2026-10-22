@@ -525,8 +525,34 @@ Usage: #example
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
 * extension[taskOrigin].valueCode = #pre-planned
 * extension[dataLineage].valueCode = #realtime
+// The post's share of the district target: a task below the campaign's scope
+// (the district) carries its own target as a coded input.
+* input[targetPopulation].type = $TaskInputType#target-population "Target population"
+* input[targetPopulation].valueReference = Reference(example-target-population-rokupr-chc)
 * output.type.text = "Children vaccinated (session tally)"
 * output.valueUnsignedInt = 412
+
+Instance: example-target-population-rokupr-chc
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 9m–14y, Rokupr CHC catchment"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years, Rokupr CHC catchment (MR SIA 2026, fixed-post target)"
+* quantity = 3150
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-fixed-post)
+* characteristic[geography].exclude = false
+* characteristic[1].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[1].valueRange.low = 9 'mo' "months"
+* characteristic[1].valueRange.high = 14 'a' "years"
+* characteristic[1].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-01-15"
+* extension[isCalculated].valueBoolean = true
+* extension[isPlanningDenominator].valueBoolean = true
 
 Instance: example-mopup-task
 InstanceOf: ICRCampaignTask

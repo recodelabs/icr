@@ -151,6 +151,16 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 // (deliveryStrategy, taskOrigin) stay extensions: known at creation, they
 // describe the Task; results are outputs. A new tally axis is a new
 // ICRTaskOutputTypeCS code, not a new extension.
+* input MS
+* input ^short = "What the task is given before the work starts, as coded entries: today its target (target-population)"
+* input ^slicing.discriminator.type = #pattern
+* input ^slicing.discriminator.path = "type"
+* input ^slicing.rules = #open
+* input.type from ICRTaskInputTypeVS (extensible)
+* input contains targetPopulation 0..*
+* input[targetPopulation].type = $TaskInputType#target-population
+* input[targetPopulation].value[x] only Reference(ICRTargetPopulation)
+* input[targetPopulation] ^short = "This task's target, for a task below the campaign's reporting scope (facility catchment, parish, school, settlement); repeats when it is the sum of several estimates. A task at the campaign's scope leaves it out and uses the campaign's planning denominator for its activity"
 * output MS
 * output ^short = "Everything the visit produced, as coded entries: the scalar tally (treated-count), the house-to-house axes (houses-visited, eligible-present/absent, children-already-marked), reason codes (missed/refusal/exclusion), revisit outcome, and references to delivery events and the stratified coverage report"
 * output ^slicing.discriminator.type = #pattern

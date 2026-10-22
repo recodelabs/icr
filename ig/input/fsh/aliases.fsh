@@ -66,6 +66,7 @@ Alias: $LocationStatus = https://icr.healthcampaigns.org/CodeSystem/icr-location
 Alias: $EndemicityStatus = https://icr.healthcampaigns.org/CodeSystem/icr-endemicity-status-cs
 Alias: $CommodityClass = https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs
 Alias: $TaskOutputType = https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs
+Alias: $TaskInputType = https://icr.healthcampaigns.org/CodeSystem/icr-task-input-type-cs
 
 // --- cost-v1 (campaign cost line items + cost reports) ---
 // FHIR's designated system URI for ISO 4217 currency codes (the Money datatype's system);
