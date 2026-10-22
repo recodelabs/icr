@@ -107,6 +107,17 @@ Every task, delivery event, and report points to its campaign. The campaign itse
 not need to be updated as field data arrives, and a server can find everything that
 belongs to a campaign by searching for records that reference it.
 
+Some campaigns deliver several interventions together, such as measles-rubella with
+nOPV2, or vaccination, deworming and vitamin A on child health days. Each intervention
+has its own eligible population, so each needs its own target. Such an integrated
+campaign is still one `CarePlan` for each place and round, with one period, team and
+set of costs. It lists its activities in `CarePlan.activity.detail`, and each entry
+names its `ICRCampaignActivity` and the `ICRTargetPopulation` it plans against (the
+`planning-denominator` extension). The protocol gives each action its own eligibility
+in `PlanDefinition.action.subject[x]`. A coverage report for one intervention names
+it in the `campaign-activity` extension and divides by that activity's target. See
+the [integrated campaign example](CarePlan-example-integrated-round.html).
+
 ```mermaid
 graph TD
   PD["ICRCampaignProtocol (PlanDefinition)"] -->|"CarePlan.instantiatesCanonical ▲"| CP["ICRCampaign (CarePlan)"]
@@ -121,6 +132,7 @@ graph TD
   EV -.->|"campaign extension"| CP
   EV -->|"patient / subject"| PT
   TP["ICRTargetPopulation (denominator)"] -.->|"CarePlan.subject ▲"| CP
+  CP -->|"activity.detail: planning-denominator per activity"| TP
   CP -->|careTeam| CT["ICRCareTeam (team + supervisor)"]
   TASK -->|owner| CT
   CP -.->|"campaign extension ▲"| AC["ICRAdministrativeCoverage"]
@@ -168,6 +180,7 @@ This draft includes:
 - SQL-on-FHIR `ViewDefinition`s that turn the FHIR data into flat tables for
   analytics:
   [campaign calendar](ViewDefinition-IcrCampaignCalendar.html),
+  [campaign activities](ViewDefinition-IcrCampaignActivity.html),
   [target populations](ViewDefinition-IcrTargetPopulation.html),
   [coverage](ViewDefinition-IcrCoverage.html),
   [coverage strata](ViewDefinition-IcrCoverageStrata.html), and
