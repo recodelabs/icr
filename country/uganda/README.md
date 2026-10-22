@@ -159,11 +159,16 @@ with the round:
 - **Campaigns** (ICRCampaign): `ichd-2026-10-uga` for the country and one per district and city
   (`ichd-2026-10-uga-n-abim`), `partOf` the national one, 1–31 October 2026, `intent = plan`.
   The district is the reporting scope. The subject is the place's total population 2026 Group.
+  Each campaign lists the six activities in `activity.detail` (`status = not-started`), each with
+  its target Groups for the place as `planning-denominator`: catch-up has the unimmunized and
+  under-immunized Groups, MR2 has both cohorts, and deworming and vitamin A share one Group. There
+  is no campaign-wide `planning-denominator`, because each activity has its own.
 - **Tasks** (ICRCampaignTask): one per district and activity, 876 in all
   (`ichd-2026-10-mr2-uga-n-abim`), `basedOn` the district's campaign, `for` and `location` the
-  district, pre-planned. Each task's `input` points at its target Groups for the district (MR2:
-  both cohorts; catch-up: unimmunized and under-immunized). Later the district tasks can be split
-  into facility, parish or session tasks.
+  district, pre-planned. A district task carries no target of its own: it is at the campaign's
+  scope, so its target is the campaign's for its activity. Later the district tasks can be split
+  into facility, parish or session tasks; each of those would name its share of the target in
+  `Task.input` with type `icr-task-input-type-cs#target-population`.
 
 ```
 CarePlan?part-of=CarePlan/ichd-2026-10-uga
@@ -171,13 +176,17 @@ CarePlan?target-geography=Location/uga-n-abim
 Task?based-on=CarePlan/ichd-2026-10-uga-n-abim
 ```
 
+The IG's `IcrCampaignActivity` view flattens the campaigns to one row per campaign, activity and
+target Group (eight rows for Abim).
+
 Choices to confirm with the Ministry: the delivery strategy of each task (HPV is school, the rest
 fixed post), the products (the HPV vaccine and the deworming drug), and the ages (see above).
 
-**IG gaps found here.** An integrated campaign has a target per activity, but
-`planning-denominator` takes one Group per campaign, so it is left out and the subject is the
-total population. The tasks carry the per-activity targets in `Task.input` with a text type only;
-the IG has no code for it. Both are for the IG.
+**IG changes made for this** (recodelabs/icr#208): a `planning-denominator` per activity on
+`CarePlan.activity.detail`, a `campaign-activity` extension so a coverage report names the
+intervention it covers, eligibility per protocol action, and a coded `target-population` input
+on tasks. The protocol's actions don't name their eligible ages yet; that waits on the ages
+above.
 
 ## Not yet loaded
 

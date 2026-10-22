@@ -11,9 +11,11 @@ Writes, all with status draft:
 - one ICRCampaignTask per district and activity (for and location = the district), the unit
   that later splits into facility, parish or session tasks.
 
-Each campaign's subject is its place's total population for 2026 from the targets workbook. Each
-task names its activity's target Groups for the district in Task.input, the only place the
-IG's resources can point an activity of a campaign at its target (see README.md).
+Each campaign's subject is its place's total population for 2026 from the targets workbook. The
+campaign lists its six activities in CarePlan.activity.detail, each with its own target Groups
+for that place as planning-denominator (MR2 has two). A district task is at the campaign's own
+scope, so it carries no target: it finds it through its campaign and activity. A task below the
+district would name its own share in Task.input (target-population).
 """
 import html, json, sys
 
@@ -146,6 +148,14 @@ def campaign(lid, part_of=None):
                         "Ministry of Health's targets workbook." + (" National round." if lid == "uga" else "")),
         "subject": {"reference": f"Group/{population['id']}", "display": population["name"]},
         "period": {"start": START, "end": END},
+        "activity": [{"detail": {
+            "instantiatesCanonical": [canonical("ActivityDefinition", aid)],
+            "status": "not-started",
+            "description": f"{ACTIVITIES[aid][0]}. Target: {target_text(aid, lid)}.",
+            "extension": [{"url": f"{SD}/planning-denominator",
+                           "valueReference": {"reference": f"Group/{g['id']}", "display": g["name"]}}
+                          for g in target_groups(aid, lid)],
+        }} for aid in ACTIVITIES],
         "extension": [
             {"url": f"{SD}/target-geography", "valueReference": {"reference": f"Location/{lid}", "display": scope}},
         ],
@@ -169,9 +179,6 @@ def task(aid, lid):
         "basedOn": [{"reference": f"CarePlan/{ROUND}-{lid}"}],
         "for": where, "location": where,
         "executionPeriod": {"start": START, "end": END},
-        "input": [{"type": {"text": "Target population"},
-                   "valueReference": {"reference": f"Group/{g['id']}", "display": g["name"]}}
-                  for g in target_groups(aid, lid)],
         "extension": [
             {"url": f"{SD}/delivery-strategy", "valueCodeableConcept": cc(DELIVERY, strategy, STRATEGIES[strategy])},
             {"url": f"{SD}/task-origin", "valueCode": "pre-planned"},
