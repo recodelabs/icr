@@ -10,6 +10,7 @@ Data for the Uganda ICR server, `https://fhir-uga.healthcampaigns.org/fhir` (see
 | `districts.sql` | Builds the districts GeoJSON from Overture and the COD-AB, and checks it |
 | `enrich.py` | Adds identifiers and sources to the Locations fhir-pipes writes |
 | `build.sh` | Runs it all; `--load` sends the result to the server |
+| `targets.sh`, `targets.py` | The workbook's ICHD targets, loaded as ICRTargetPopulation Groups |
 | `population.sh` | WorldPop population estimates for every district, region and the country, loaded as ICRTargetPopulation Groups |
 | `fhir-pipes.toml`, `sdi.sh`, `sdi/.portolan/` | Uganda's SDI catalog: the server's Locations as GeoParquet, map tiles and Portolan metadata |
 
@@ -92,10 +93,59 @@ Run it after the Locations on the server change. `fhir-pipes.toml` is the refres
 (edit the descriptions, license and known issues there). The SDI Worker (`tools/sdi`) serves
 the `uga/` folder; another country's catalog needs its code added to `COUNTRY_CATALOGS` there.
 
+## ICHD targets, October 2026
+
+`./targets.sh --load` reads the workbook's `Target_refined` sheet and loads the targets the
+October 2026 ICHDs will plan against, ahead of the campaign itself: 1,661 ICRTargetPopulation
+Groups, one per target column for each of the 146 districts and cities, plus region and country
+totals. Ids are `ichd-2026-10-<target>-<location id>`.
+
+| Workbook column | `Group.code` | How the workbook gets it | Uganda |
+| --- | --- | --- | ---: |
+| Population_2026 | `population-2026` | as given | 49,554,040 |
+| Catch Population_2025 | `catch-population-2025` | as given | 48,152,090 |
+| Target Population<1Yr | `under-1` | catch population × 4.3% | 2,070,540 |
+| Unimmunized | `under-1-unimmunized` | under 1 × 2% | 41,411 |
+| Under Immunized | `under-1-under-immunized` | under 1 × 3% | 62,116 |
+| (headed April 2025) | `born-2025-04` | population 2026 × 4.3% ÷ 12 | 177,569 |
+| Total <1Yr Target | `under-1-total` | the three above | 281,096 |
+| MR2 Target_April 2024 | `mr2-born-2024-04` | catch population × 4.3% ÷ 12 | 172,545 |
+| Deworming+VitA | `deworming-vitamin-a` | as given | 11,897,101 |
+| HPV | `hpv` | as given | 371,634 |
+| Td2+ | `td2-plus` | as given | 11,100,743 |
+
+Every Group has `denominator-source = govt-estimate` (the workbook named in its text), the
+estimate date 2026-09-28 (when the workbook was last saved), `denominator-type`, and
+`is-calculated` where the workbook computes the figure or it is a region or country sum. The
+targets are flagged `is-planning-denominator`; the two population columns are not, as the targets
+are derived from them. The under-1 targets carry the age band 0–11 months; the other targets
+have no age band yet, because the workbook doesn't give the ages. Counts are rounded to whole people.
+`Total target` is left out: it adds up targets of different interventions.
+
+Two code systems on the server go with them:
+
+- `…/fhir/CodeSystem/uga-ichd-target`: the target columns, used as `Group.code`.
+- `…/fhir/CodeSystem/uga-campaign-round`: the round, `ichd-2026-10`, 1–31 October 2026, used as
+  `meta.tag` until the campaign is stored.
+
+Searches (URL-encode the system):
+
+```
+Group?_tag=https://fhir-uga.healthcampaigns.org/fhir/CodeSystem/uga-campaign-round|ichd-2026-10
+Group?code=https://fhir-uga.healthcampaigns.org/fhir/CodeSystem/uga-ichd-target|hpv&geography=Location/uga-n-abim
+```
+
+To confirm with the Ministry:
+
+- The ages for deworming and vitamin A, HPV and Td2+, so those Groups can carry an age band.
+- The column headed April 2025 is recorded as an MR2 target (children born in April 2025, 18 months
+  old in October 2026), but the workbook also counts it in the under-1 total.
+- What "Catch Population" is (taken to be the health facility catchment population).
+
+The campaign itself (ICRCampaign CarePlans pointing at these Groups as their planning
+denominators, and the protocol with one activity per intervention) comes next.
+
 ## Not yet loaded
 
-- The October 2026 ICHD targets (the workbook's `Target_refined` sheet). The two monthly-cohort
-  columns are MR2 targets (to confirm): the one headed April 2025 is children born in April 2025,
-  18 months old in October 2026; `MR2 Target_April 2024` is children born in April 2024.
 - Anything below district level. Overture has no outlines there (only about 61,800 village
   points); the COD-AB has counties and sub-counties from 2020.
