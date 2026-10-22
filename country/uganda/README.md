@@ -10,7 +10,7 @@ Data for the Uganda ICR server, `https://fhir-uga.healthcampaigns.org/fhir` (see
 | `districts.sql` | Builds the districts GeoJSON from Overture and the COD-AB, and checks it |
 | `enrich.py` | Adds identifiers and sources to the Locations fhir-pipes writes |
 | `build.sh` | Runs it all; `--load` sends the result to the server |
-| `targets.sh`, `targets.py` | The workbook's ICHD targets, loaded as ICRTargetPopulation Groups |
+| `targets.sh`, `targets.py`, `campaign.py` | The October 2026 ICHDs: the workbook's targets, and the draft campaign with its activities and district tasks |
 | `population.sh` | WorldPop population estimates for every district, region and the country, loaded as ICRTargetPopulation Groups |
 | `fhir-pipes.toml`, `sdi.sh`, `sdi/.portolan/` | Uganda's SDI catalog: the server's Locations as GeoParquet, map tiles and Portolan metadata |
 
@@ -93,9 +93,13 @@ Run it after the Locations on the server change. `fhir-pipes.toml` is the refres
 (edit the descriptions, license and known issues there). The SDI Worker (`tools/sdi`) serves
 the `uga/` folder; another country's catalog needs its code added to `COUNTRY_CATALOGS` there.
 
-## ICHD targets, October 2026
+## ICHDs, October 2026
 
-`./targets.sh --load` reads the workbook's `Target_refined` sheet and loads the targets the
+`./targets.sh --load` loads the targets and the draft campaign.
+
+### Targets
+
+`targets.py` reads the workbook's `Target_refined` sheet and loads the targets the
 October 2026 ICHDs will plan against, ahead of the campaign itself: 1,661 ICRTargetPopulation
 Groups, one per target column for each of the 146 districts and cities, plus region and country
 totals. Ids are `ichd-2026-10-<target>-<location id>`.
@@ -142,8 +146,38 @@ To confirm with the Ministry:
   old in October 2026), but the workbook also counts it in the under-1 total.
 - What "Catch Population" is (taken to be the health facility catchment population).
 
-The campaign itself (ICRCampaign CarePlans pointing at these Groups as their planning
-denominators, and the protocol with one activity per intervention) comes next.
+### Draft campaign
+
+`campaign.py` builds the campaign from the targets. Everything is `status = draft` and tagged
+with the round:
+
+- **Activities** (ICRCampaignActivity): `uga-ichd-catch-up` (missed routine doses, under 1),
+  `uga-ichd-mr2` (CVX 04), `uga-ichd-deworming` (ATC P02CA: albendazole or mebendazole),
+  `uga-ichd-vitamin-a` (ATC A11CA01), `uga-ichd-hpv` (CVX 137) and `uga-ichd-td` (CVX 139).
+- **Protocol** (ICRCampaignProtocol): `uga-ichd`, type integrated, listing the six activities,
+  with delivery strategies fixed post, outreach post and school.
+- **Campaigns** (ICRCampaign): `ichd-2026-10-uga` for the country and one per district and city
+  (`ichd-2026-10-uga-n-abim`), `partOf` the national one, 1–31 October 2026, `intent = plan`.
+  The district is the reporting scope. The subject is the place's total population 2026 Group.
+- **Tasks** (ICRCampaignTask): one per district and activity, 876 in all
+  (`ichd-2026-10-mr2-uga-n-abim`), `basedOn` the district's campaign, `for` and `location` the
+  district, pre-planned. Each task's `input` points at its target Groups for the district (MR2:
+  both cohorts; catch-up: unimmunized and under-immunized). Later the district tasks can be split
+  into facility, parish or session tasks.
+
+```
+CarePlan?part-of=CarePlan/ichd-2026-10-uga
+CarePlan?target-geography=Location/uga-n-abim
+Task?based-on=CarePlan/ichd-2026-10-uga-n-abim
+```
+
+Choices to confirm with the Ministry: the delivery strategy of each task (HPV is school, the rest
+fixed post), the products (the HPV vaccine and the deworming drug), and the ages (see above).
+
+**IG gaps found here.** An integrated campaign has a target per activity, but
+`planning-denominator` takes one Group per campaign, so it is left out and the subject is the
+total population. The tasks carry the per-activity targets in `Task.input` with a text type only;
+the IG has no code for it. Both are for the IG.
 
 ## Not yet loaded
 
