@@ -89,5 +89,5 @@ git-ignored (`tools/catchments/out/`).
 
 Downstream: the tiles step of `tools/warehouse/refresh.sh` writes the polygons to `data/tiles/catchments.pmtiles`
 (layers `facility_catchments`, `settlement_catchments`), and the Campaign Dashboards
-Georegistry page (`campaignhq/src/georegistry.md`) shows them as two toggleable layers
+Georegistry page (`dashboards/sites/main/src/georegistry.md`) shows them as two toggleable layers
 with a Catchments KPI card; clicking a polygon lists its properties including `catchment_of`.

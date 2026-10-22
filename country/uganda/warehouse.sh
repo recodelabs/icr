@@ -7,7 +7,7 @@
 #   ./warehouse.sh --push     and upload it
 #
 # In R2, uga/ holds the whole warehouse; the SDI (https://sdi.healthcampaigns.org/uga/) serves only
-# its location collection and tiles, and the dashboards (campaignhq/deploy.sh) build from the rest.
+# its location collection and tiles, and the dashboards (dashboards/, observatory deploy) build from the rest.
 #
 # The key comes from ~/.config/icr/uga-matt.env (or $KEY_FILE). Needs fhir-pipes, duckdb,
 # tippecanoe, portolan and rclone with the r2 remote, and the IG built (sushi build . in ig/).

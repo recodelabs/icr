@@ -1,0 +1,23 @@
+{
+  "name": "icr-dashboards",
+  "private": true,
+  "type": "module",
+  "description": "The ICR's Observable Framework dashboards (dashboards.healthcampaigns.org), built and deployed with Observatory",
+  "scripts": {
+    "check": "observatory check",
+    "dev": "observatory dev",
+    "build": "observatory build",
+    "deploy": "observatory deploy"
+  },
+  "dependencies": {
+    "@observablehq/framework": "1.13.4",
+    "@recodelabs/observatory-cli": "^0.1.0",
+    "@recodelabs/observatory-components": "^0.1.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

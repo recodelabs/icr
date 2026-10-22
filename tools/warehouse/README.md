@@ -10,7 +10,7 @@ targets, campaigns or results.
 ```
 FHIR servers ──fhir-pipes refresh──▶ warehouse on this machine ──push──▶ warehouse in R2 (private)
                                                                            │
-                                       dashboards ◀──deploy.sh pulls it, builds, uploads──┤
+                                       dashboards ◀──observatory deploy pulls it, builds, uploads──┤
                                        SDI (public: locations and tiles only) ◀───────────┤
                                        DuckDB users (catalog.sql) ◀───────────────────────┘
 ```
@@ -21,8 +21,10 @@ with DuckDB share. An update always goes through it in two steps:
 1. **Refresh and push a warehouse.** fhir-pipes reads a FHIR server, runs the IG's
    ViewDefinitions into parquet tables and builds map tiles, then the push copies the
    result to R2.
-2. **Redeploy the dashboards.** `campaignhq/deploy.sh` pulls the warehouse from R2,
-   builds each site from it, and uploads the build.
+2. **Redeploy the dashboards.** `observatory deploy`, run in `dashboards/`, pulls the
+   warehouse from R2, builds each site from it, and uploads the build. Observatory
+   (recodelabs/observatory, on npm as `@recodelabs/observatory-cli`) is the dashboards'
+   build and deploy tool.
 
 The dashboards do not query the warehouse while people browse. At build time, Observable
 Framework runs each site's data loaders (`src/data/*.sh`) over the warehouse and puts
@@ -35,9 +37,9 @@ redeploy.
 |---|---|---|---|---|
 | Main warehouse (Nigeria demo, Sierra Leone demo, IG examples) | `hapi.healthcampaigns.org` | `data/` | the bucket root (`parquet/`, `tiles/`, `catalog.sql` …) | none |
 | Uganda warehouse | `fhir-uga.healthcampaigns.org` | `country/uganda/warehouse/` | `uga/` | none |
-| Main dashboards | main warehouse | `campaignhq/` | `_site/campaignhq/` | https://dashboards.healthcampaigns.org |
-| Uganda dashboards | Uganda warehouse | `campaignhq/uganda/` | `_site/campaignhq/ug/` | https://dashboards.healthcampaigns.org/ug/ |
-| Sierra Leone dashboards | local `data/` only | `campaignhq/sldash/`, `campaignhq/sl-redux/` | `_site/campaignhq/dhis2-sl*/` | `/dhis2-sl/`, `/dhis2-sl-redux/` |
+| Main dashboards | main warehouse | `dashboards/sites/main/` | `_site/campaignhq/` | https://dashboards.healthcampaigns.org |
+| Uganda dashboards | Uganda warehouse | `dashboards/sites/uganda/` | `_site/campaignhq/ug/` | https://dashboards.healthcampaigns.org/ug/ |
+| Sierra Leone dashboards | local `data/` only | `dashboards/sites/sldash/`, `dashboards/sites/sl-redux/` | `_site/campaignhq/dhis2-sl*/` | `/dhis2-sl/`, `/dhis2-sl-redux/` |
 | SDI | both warehouses | | the same folders | https://sdi.healthcampaigns.org (main), `/uga/` |
 
 The SDI Worker (`tools/sdi`) serves only the location collections, tiles and catalog files.
@@ -77,25 +79,32 @@ country/uganda/warehouse.sh --push
 ## Redeploy the dashboards
 
 ```bash
-cd campaignhq && ./deploy.sh main uganda
+cd dashboards && npm install      # once, and after package.json changes
+npx observatory deploy main uganda
 ```
 
+- **The sites and where they go** are in `dashboards/observatory.config.js`.
+  `npx observatory check` lists each site, its warehouse and its bucket folder.
 - **What it does, for each site:**
-  1. Pulls the site's warehouse from R2 into `~/.cache/campaignhq-warehouse/`.
-  2. Sets `DATA` for the loaders.
+  1. Pulls the site's warehouse from R2 into `~/.cache/observatory/warehouses/`.
+  2. Sets `DATA` for the loaders, and `DUCKDB_AGENT_MODE=0`.
   3. Clears Framework's cached loader outputs.
-  4. Builds, then uploads the build to R2.
+  4. Swaps in DuckDB 2.0 for pages that use DuckDB.
+  5. Builds, then uploads the build to R2.
 
-  The Worker is redeployed last.
+  The campaignhq Worker (`dashboards/worker/`) is redeployed last.
 - **Options:**
   - `--dry-run` builds and shows what would change, without uploading.
-  - `--local-data` builds from the local copies instead of R2.
-- **Deploy `main` and `uganda` together**, from a branch whose `deploy.sh` lists `uganda`
-  in `SUBSITES`. The main site's upload deletes every folder under `_site/campaignhq/`
-  that isn't listed there, so deploying `main` from an older branch would delete `/ug/`.
-- **The Sierra Leone sites** (`./deploy.sh sldash sl-redux`) are static. They always build
-  from the local `data/`, because they read the raw Location download, which isn't pushed.
-  Redeploy them only when they change.
+  - `--local` builds from the local copies (`data/`, `country/uganda/warehouse/`) instead
+    of R2.
+  - `--skip-build` uploads the last build; `--no-worker` leaves the Worker alone.
+- **Sites are uploaded one at a time.** A site's upload leaves the folders of the sites
+  under its path alone, so `main` can be deployed on its own. If R2 holds pages in a
+  folder that no site in the config owns, the upload stops rather than delete them
+  (`--prune` deletes them).
+- **The Sierra Leone sites** (`npx observatory deploy sldash sl-redux`) are static. They
+  have no warehouse: their loaders read the raw Location download in the local `data/`,
+  which isn't pushed. Redeploy them only when they change.
 
 ## Check the result
 
@@ -115,27 +124,31 @@ can respond with 200 and still fail in its DuckDB queries.
 - **duckdb** (2.0, with the spatial extension), **tippecanoe**, and **portolan** for the
   catalog hook.
 - **rclone** with the `r2` remote for the `icr` bucket.
-- **wrangler** with a login on the Cloudflare account, and Node 22 or later. `deploy.sh`
-  falls back to Homebrew's node if the default is older.
+- **wrangler** with a login on the Cloudflare account, and Node 22 or later. If the
+  default node is older, put Homebrew's first:
+  `PATH="$(brew --prefix)/opt/node/bin:$PATH"`.
+- **gh**, signed in: Observatory downloads the DuckDB-Wasm 2.0 build from the
+  duckdb/duckdb-wasm CI the first time.
 - **The IG built:** run `sushi build .` in `ig/`. The views are read from
   `ig/fsh-generated/resources`.
 - **API keys:** the Uganda key in `~/.config/icr/uga-matt.env`. The main server is read
   through its open address for now.
-- **The Uganda dashboards' npm packages:** run `npm install` in `campaignhq/uganda/`; the
-  main site and the Sierra Leone sites each have their own.
+- **The dashboards' npm packages:** run `npm install` in `dashboards/`. All four sites
+  share them.
 
 ## Pitfalls
 
 - **DuckDB 2.0's agent mode.** When `AI_AGENT` is set (as in an AI coding session), DuckDB
   prints an "agent mode" banner on stdout. That corrupts the parquet that data loaders
-  write to stdout. `deploy.sh`, `refresh.sh` and `warehouse.sh` set `DUCKDB_AGENT_MODE=0`.
-  Set it yourself for `npm run dev`, or anything else that runs the loaders.
+  write to stdout. `observatory`, `refresh.sh` and `warehouse.sh` set
+  `DUCKDB_AGENT_MODE=0`. Set it yourself for anything else that runs the loaders.
 - **Stale dashboard data.** Framework keeps a loader's output until the loader file
-  changes. `deploy.sh` clears that cache. A dev server (`npm run dev`) doesn't, so delete
-  `src/.observablehq/cache/data` to see new data.
-- **The DuckDB engine in a dev server.** `duckdb-wasm2.sh` swaps in DuckDB 2.0, and
-  `npm install` or `npm run clean` undo it. If a dev server can't fetch
-  `duckdb-base.wasm`, run `./duckdb-wasm2.sh <site>` and restart the server.
+  changes. `observatory build` and `deploy` clear it. A dev server
+  (`npx observatory dev <site>`) doesn't, so delete the outputs under
+  `src/.observablehq/cache/` to see new data.
+- **The DuckDB engine.** `npm install` undoes Observatory's DuckDB 2.0 swap in
+  `node_modules`. `observatory dev`, `build` and `deploy` redo it each time, so always
+  run the sites through `observatory`, not `observable` directly.
 - **Portolan metadata beside the data.** Warehouse folders hold Portolan files
   (`items.parquet`, `collection.json`) next to the tables. Read tables with globs that
   start at `country=*/`, as `data/catalog.sql` and the loaders do.

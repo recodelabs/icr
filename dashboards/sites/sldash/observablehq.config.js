@@ -1,0 +1,36 @@
+// sldash — Sierra Leone dashboards, modelled on the dashboards of the DHIS2 demo
+// (play.dhis2.org), drawn from the DHIS2 data imported into the ICR with kiln dhis2.
+// https://observablehq.com/framework/config
+export default {
+  title: "DHIS2 Demo Dashboards (powered by FHIR)",
+  root: "src",
+  // One page per DHIS2 dashboard, under the dashboard's DHIS2 name.
+  pages: [
+    {name: "Overview", path: "/"},
+    {name: "Antenatal Care", path: "/antenatal-care"},
+    {name: "Delivery", path: "/delivery"},
+    {name: "Disease Surveillance", path: "/disease-surveillance"},
+    {name: "Immunization", path: "/immunization"},
+    {name: "Immunization data", path: "/immunization-data"},
+    {name: "Key Indicators", path: "/key-indicators"},
+    {name: "Malnutrition", path: "/malnutrition"},
+    {name: "Measles", path: "/measles"},
+    {name: "Mother and Child Health", path: "/mother-and-child-health"},
+    {name: "Nutrition", path: "/nutrition"},
+    {name: "Reporting Rates", path: "/reporting-rates"},
+    {name: "Reporting Reproductive Health", path: "/reporting-reproductive-health"},
+    {name: "Staffing", path: "/staffing"},
+    {name: "Visits ANC", path: "/visits-anc"},
+    {name: "About", path: "/about"}
+  ],
+  head: `<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">`,
+  footer: "",
+  sidebar: true,
+  toc: false,
+  pager: false,
+  search: false,
+  style: "style.css",
+  cleanUrls: true,
+  // DuckDB 2.0 (swapped in by observatory) has json and parquet built in; don't bundle Framework's 1.1.1 ones.
+  duckdb: {extensions: {json: null, parquet: null}}
+};

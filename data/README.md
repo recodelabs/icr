@@ -37,7 +37,7 @@ data/
   manifest.json            when, from which server, row counts, view canonicals (written by the refresh)
 ```
 
-The dashboard that reads all of this is `campaignhq/` (Observable Framework,
+The dashboards that read all of this are in `dashboards/` (Observable Framework,
 DuckDB-WASM, MapLibre). `tools/odklocations/` is a second, single-purpose site over
 the same `locations` table: filter facilities, settlements or admin
 boundaries and export an ODK entity CSV, conversion done in-browser by
@@ -68,8 +68,8 @@ mirrors `parquet/`, `tiles/`, `views/`, `manifest.json`, `catalog.sql` and the
 Portolan catalog root files to the **`icr` R2 bucket** with the same paths, using
 the `r2` rclone remote. `raw/` and `.portolan/` are never pushed. The bucket is
 derived, like this directory: the sync deletes what no longer exists locally. The
-CampaignHQ dashboard lives in the same bucket under `_site/campaignhq/` (see
-`campaignhq/README.md`).
+dashboards live in the same bucket under `_site/campaignhq/` (see
+`dashboards/README.md`).
 
 ## Portolan SDI — https://sdi.healthcampaigns.org
 

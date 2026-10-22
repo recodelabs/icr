@@ -1,5 +1,5 @@
 // ODK Locations static host: a Cloudflare Worker that serves the built site
-// from R2, same pattern as campaignhq (see campaignhq/worker/index.js) —
+// from R2, same pattern as the dashboards (see dashboards/worker/index.js) —
 // Cloudflare Pages caps files at 25 MiB, and DuckDB-WASM's engine builds
 // exceed it; R2 has no such limit, and keeping this next to the data hub in
 // the same bucket keeps one thing to manage.

@@ -4,7 +4,7 @@ Generates a **synthetic polio microplan frozen part-way through a round** for To
 Bauchi State, on top of what the registry really holds: the health facilities, their
 catchments (`tools/catchments`), the settlements assigned to each catchment, and the
 WorldPop 2026 total per settlement catchment (`kiln population`). It feeds the Campaign
-Dashboards **Microplan** page (`campaignhq/src/microplan.md`).
+Dashboards **Microplan** page (`dashboards/sites/main/src/microplan.md`).
 
 The round: **National Immunization Plus Days (NIPDs), round 2, September 7–11 2026**,
 nOPV2, house-to-house to every settlement, snapshot at the end of day 3 (Sep 9): about
