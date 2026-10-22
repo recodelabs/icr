@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 # Build Campaign Dashboards and publish it to https://dashboards.healthcampaigns.org.
 #
-#   observable build ──▶ dist/ ──rclone sync──▶ r2:icr/_site/campaignhq/ ──▶ wrangler deploy (Worker)
+#   warehouse in R2 ──rclone──▶ cache ──▶ observable build ──▶ dist/ ──rclone sync──▶ r2:icr/_site/campaignhq/
+#   ──▶ wrangler deploy (Worker)
 #
-# The Worker (worker/index.js) serves the site straight from R2; the data it
-# was built from is the local data/ hub (run tools/warehouse/refresh.sh first).
+# Each site is built from a warehouse in the same R2 bucket, the one source the dashboards, the
+# SDI and DuckDB users share: the main site from the bucket root (tools/warehouse/refresh.sh
+# --push writes it), /ug/ from uga/ (country/uganda/warehouse.sh --push). Its parquet/, tiles/
+# and manifest are pulled into WAREHOUSE_CACHE and the data loaders read them there ($DATA), so
+# a deploy shows what the warehouse holds, from any machine with the r2 remote. --local-data
+# builds from the local copies instead (data/, country/uganda/warehouse/). The two Sierra Leone
+# sites always build from the local data/: they read the raw Location download, which is not
+# pushed (the GeoParquet leaves out facilities without coordinates).
+#
+# The Worker (worker/index.js) serves the site straight from R2.
 #
 # Two more Framework sites are served under it, each from its own folder and built
 # from its own directory here:
@@ -14,20 +23,25 @@
 #                                   (run uganda/refresh.sh first)
 # The main site's sync leaves those folders alone.
 #
-# Usage: ./deploy.sh [--skip-build] [--dry-run] [SITE...]
+# Usage: ./deploy.sh [--skip-build] [--dry-run] [--local-data] [SITE...]
 #        SITE: main (the default), sldash, sl-redux, uganda, or all
 # Env:   R2_BUCKET (icr)  R2_REMOTE (r2)  BR_CACHE (~/.cache/campaignhq-br)
+#        WAREHOUSE_CACHE (~/.cache/campaignhq-warehouse)
 set -euo pipefail
 cd "$(dirname "$0")"
 BUCKET="${R2_BUCKET:-icr}"
 REMOTE="${R2_REMOTE:-r2}"
 SUBSITES=("sldash:dhis2-sl" "sl-redux:dhis2-sl-redux" "uganda:ug")
 BR_CACHE="${BR_CACHE:-$HOME/.cache/campaignhq-br}"
-BUILD=1; DRY=""; SITES=()
+WAREHOUSE_CACHE="${WAREHOUSE_CACHE:-$HOME/.cache/campaignhq-warehouse}"
+# site:folder of its warehouse in the bucket ("" = the root). Sites not listed build from local data.
+WAREHOUSES=("main:" "uganda:uga/")
+BUILD=1; DRY=""; LOCAL_DATA=0; SITES=()
 for a in "$@"; do
   case "$a" in
     --skip-build) BUILD=0 ;;
     --dry-run) DRY="--dry-run" ;;
+    --local-data) LOCAL_DATA=1 ;;
     main|sldash|sl-redux|uganda) SITES+=("$a") ;;
     all) SITES+=(main sldash sl-redux uganda) ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
@@ -57,13 +71,35 @@ precompress() {
   done < <(find "$1/dist" -name '*.wasm' -print0)
 }
 
-# sync DIR PREFIX [rclone options…]: mirror DIR/dist to the site folder PREFIX.
+# pull SITE: copy SITE's warehouse from R2 into the cache and print its path; nothing for a
+# site without one (it builds from local data).
+pull() {
+  local entry folder dest
+  for entry in "${WAREHOUSES[@]}"; do
+    [ "${entry%%:*}" = "$1" ] || continue
+    folder="${entry#*:}"; dest="$WAREHOUSE_CACHE/${folder:-root/}"
+    echo "== pull r2:$BUCKET/${folder} warehouse → $dest" >&2
+    for d in parquet tiles; do
+      rclone sync --checksum --fast-list --transfers 16 --exclude ".DS_Store" --exclude ".portolan/**" \
+        "$REMOTE:$BUCKET/${folder}$d" "$dest/$d" >&2
+    done
+    rclone copyto --checksum "$REMOTE:$BUCKET/${folder}manifest.json" "$dest/manifest.json" >&2
+    echo "${dest%/}"
+  done
+}
+
+# sync SITE DIR PREFIX [rclone options…]: build SITE (in DIR) and mirror DIR/dist to the site folder PREFIX.
 sync() {
-  local dir="$1" prefix="$2"; shift 2
+  local site="$1" dir="$2" prefix="$3"; shift 3
   if [ "$BUILD" = 1 ]; then
-    echo "== build $dir"
+    local data=""
+    [ "$LOCAL_DATA" = 1 ] || data="$(pull "$site")"
+    echo "== build $dir${data:+ from $data}"
     ./duckdb-wasm2.sh "$dir"
-    (cd "$dir" && npm run build)
+    # Framework reuses a loader's cached output until the loader itself changes, so new data in the
+    # warehouse would not show; drop the cached outputs (not the npm cache duckdb-wasm2.sh fills).
+    rm -rf "$dir/src/.observablehq/cache/data"
+    (cd "$dir" && export DUCKDB_AGENT_MODE=0 ${data:+DATA="$data"} && npm run build)
   fi
   precompress "$dir"
   echo "== sync $dir/dist → $REMOTE:$BUCKET/_site/campaignhq/$prefix ${DRY:+(dry run)}"
@@ -76,13 +112,13 @@ for site in "${SITES[@]}"; do
   if [ "$site" = main ]; then
     excludes=()
     for s in "${SUBSITES[@]}"; do excludes+=(--exclude "/${s#*:}/**"); done
-    sync . "" "${excludes[@]}"
+    sync main . "" "${excludes[@]}"
     WORKER=1
     echo "== https://dashboards.healthcampaigns.org"
   else
     for s in "${SUBSITES[@]}"; do
       [ "${s%%:*}" = "$site" ] || continue
-      sync "$site" "${s#*:}"
+      sync "$site" "$site" "${s#*:}"
       echo "== https://dashboards.healthcampaigns.org/${s#*:}/"
     done
   fi

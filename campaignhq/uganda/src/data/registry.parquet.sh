@@ -2,9 +2,12 @@
 # The location registry: every admin unit with its codes (P-code, ISO, Overture GERS id,
 # Wikidata), aliases and boundary source, with a centroid and bounding box for labels and zoom.
 set -euo pipefail
-W="$(cd "$(dirname "$0")/../../warehouse/parquet" && pwd)"
+# The Uganda warehouse: a copy pulled from R2 uga/ by deploy.sh, or country/uganda/warehouse.
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../../country/uganda/warehouse" && pwd)}"
+W="$DATA/parquet"
 export DUCKDB_AGENT_MODE=0
-P() { echo "read_parquet('$W/$1/**/*.parquet', hive_partitioning=true, union_by_name=true)"; }
+# Globs start at country=*/ so the Portolan metadata beside the data (items.parquet) is not read.
+P() { echo "read_parquet('$W/$1/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true)"; }
 duckdb -c "
 LOAD spatial;
 COPY (

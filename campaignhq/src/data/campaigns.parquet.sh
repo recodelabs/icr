@@ -7,7 +7,7 @@
 # An integrated campaign has a target per activity (the IcrCampaignActivity view):
 # activity_targets lists them, and the coverage figures name the activity they cover.
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 duckdb -c "
 COPY (
   WITH cal AS (SELECT * FROM read_parquet('$DATA/parquet/campaign_calendar/**/*.parquet', hive_partitioning=true, union_by_name=true)),

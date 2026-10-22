@@ -7,7 +7,7 @@
 # that has at least one of the two; the delta columns are null where only one
 # side exists.
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 duckdb -c "
 COPY (
   WITH tp AS (

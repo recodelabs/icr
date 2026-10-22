@@ -2,7 +2,7 @@
 # Boundaries of the admin units that have DHIS2 indicator values, simplified for the
 # indicator map (a GeoJSON source keyed by Location id, so no tile build is needed).
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 has() { [ -n "$(find "$1" -path '*/country=*' -name '*.parquet' 2>/dev/null | head -1)" ]; }
 V="$DATA/parquet/indicator_value/country=*/**/*.parquet"
 if ! has "$DATA/parquet/indicator_value"; then

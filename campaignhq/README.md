@@ -73,10 +73,22 @@ data hub it was built from. Cloudflare Pages was ruled out: it caps files at
 25 MiB and DuckDB-WASM's engine builds are ~35–40 MiB each. R2 has no such
 limit, and one bucket holds both site and data.
 
+The data comes from the warehouse in the same bucket, not from this machine: an update is
+refresh the warehouse, then deploy.
+
 ```bash
-tools/warehouse/refresh.sh --push   # (repo root) regenerate data/ and mirror it to r2:icr/
-cd campaignhq && ./deploy.sh        # build → rclone sync dist/ → r2:icr/_site/campaignhq → wrangler deploy
+tools/warehouse/refresh.sh --push            # (repo root) main server → data/ → r2:icr/
+country/uganda/warehouse.sh --push           # (repo root) Uganda server → r2:icr/uga/
+cd campaignhq && ./deploy.sh main uganda     # pull each site's warehouse from R2 → build → rclone sync dist/
+                                             # → r2:icr/_site/campaignhq → wrangler deploy
 ```
+
+`deploy.sh` pulls `parquet/`, `tiles/` and `manifest.json` of each site's warehouse into
+`~/.cache/campaignhq-warehouse/` and sets `DATA` for the data loaders; it also clears Framework's
+cached loader outputs, which it would otherwise reuse while the loaders are unchanged.
+`--local-data` builds from the local copies instead (`data/`, `country/uganda/warehouse/`), as
+`npm run dev` does. The two Sierra Leone sites always build from the local `data/`: they read the
+raw Location download, which is not pushed.
 
 `wrangler.toml` binds the bucket and declares `dashboards.healthcampaigns.org` as a
 custom-domain route, so wrangler creates the DNS record and certificate on the

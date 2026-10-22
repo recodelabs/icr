@@ -3,7 +3,7 @@
 # dashboard: every assertion with its LGA/state names, plus a flag for the
 # current one per LGA × property (newest wins).
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 duckdb -c "
 COPY (
   WITH s AS (SELECT * FROM read_parquet('$DATA/parquet/location_status/**/*.parquet', hive_partitioning=true, union_by_name=true)),

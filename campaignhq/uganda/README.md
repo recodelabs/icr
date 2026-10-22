@@ -13,17 +13,20 @@ server (https://fhir-uga.healthcampaigns.org/fhir), to start with the October 20
 - **Georegistry** (`/georegistry`): the country, regions and districts and cities, with their
   codes and boundaries.
 
-## Refresh and build
+## Data, refresh and build
+
+The data is Uganda's warehouse, built from the Uganda server by `country/uganda/warehouse.sh`
+(fhir-pipes: locations, the IG's views, boundary tiles) and pushed to `r2:icr/uga/`.
+`../deploy.sh uganda` pulls it from R2 and builds the site from it, so an update is:
 
 ```bash
-./refresh.sh              # fhir-pipes: Uganda server → warehouse/ (locations, views, tiles)
-npm install               # once
-npm run dev               # preview
-../deploy.sh uganda       # build and publish to /ug/
+country/uganda/warehouse.sh --push   # (repo root) Uganda server → r2:icr/uga/
+cd campaignhq && ./deploy.sh uganda  # R2 warehouse → build → /ug/
 ```
 
-`refresh.sh` uses the API key in `~/.config/icr/uga-matt.env` and the IG's ViewDefinitions in
-`ig/fsh-generated/resources` (run `sushi build .` in `ig/` first). `warehouse/` is not in git.
+For a preview, `npm install` once, then `npm run dev`: the loaders read
+`country/uganda/warehouse/` (run `warehouse.sh` first), or the directory in `DATA`, e.g.
+`DATA=~/.cache/campaignhq-warehouse/uga npm run dev` for the copy the last deploy pulled.
 
 The boundary tiles' layers are named `states` (regions) and `lgas` (districts and cities):
 fhir-pipes names admin levels 1 and 2 the Nigerian way for every country.
