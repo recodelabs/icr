@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The indicator catalogue (IcrIndicator): one row per Measure that has DHIS2 values.
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 has() { [ -n "$(find "$1" -path '*/country=*' -name '*.parquet' 2>/dev/null | head -1)" ]; }
 I="$DATA/parquet/indicator/country=*/**/*.parquet"
 if ! has "$DATA/parquet/indicator"; then

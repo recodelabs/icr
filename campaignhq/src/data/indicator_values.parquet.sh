@@ -3,7 +3,7 @@
 # indicator catalogue (IcrIndicator) and the admin units, one row per indicator ×
 # place × period. `value` is the figure as DHIS2 shows it (score × factor).
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 has() { [ -n "$(find "$1" -path '*/country=*' -name '*.parquet' 2>/dev/null | head -1)" ]; }
 V="$DATA/parquet/indicator_value/country=*/**/*.parquet"
 I="$DATA/parquet/indicator/country=*/**/*.parquet"

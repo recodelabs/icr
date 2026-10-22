@@ -19,6 +19,11 @@ export const COVERAGE_LEGEND = [
   {name: "Invalid", start: 120, end: 1000, color: "#CCCCCC"}
 ];
 
+/** The coverage legend's bands in softened red, yellow and green, for the gauges on the overview
+    and Visits ANC pages; the other pages keep DHIS2's own colours. */
+export const GAUGE_LEGEND = COVERAGE_LEGEND.map((l, i) =>
+  ({...l, color: ["#c8553d", "#e8925a", "#f2cf6b", "#cfdc8a", "#8fbf6a", "#4f9a5a", "#e5e7eb"][i]}));
+
 /** DHIS2 Maps' default thematic scale (five classes, yellow to brown). */
 export const MAP_CLASSES = ["#ffffd4", "#fed98e", "#fe9929", "#d95f0e", "#993404"];
 

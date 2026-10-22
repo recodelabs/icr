@@ -87,6 +87,14 @@ coding agent) for dispatching implementation work, adapted for ICR.
   Note the ICR project lives in the Recode Labs workspace, but do not assume the ChapChap
   (REC) team/IDs from the source workflow note. Confirm the ICR team before dispatching.
 
+## Data warehouse and dashboards
+
+Data flows from the FHIR servers to a warehouse (parquet, made by fhir-pipes), the warehouse is
+pushed to the private `icr` R2 bucket, and the dashboards at dashboards.healthcampaigns.org
+(and `/ug/` for Uganda) are built from it. Updates are run by hand. Before refreshing a
+warehouse or redeploying a dashboard, read the runbook: **`tools/warehouse/README.md`**
+(commands, prerequisites, checks and pitfalls).
+
 ## Repo layout
 
 - `docs/contract/` — proposal, ToR, signed contract. The spec.

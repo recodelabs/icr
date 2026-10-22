@@ -4,7 +4,7 @@
 # (campaign_id = mp-polio-2026-r2-<facility id>) and catchment, and the settlement's
 # under-5 planning denominator and WorldPop total.
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 duckdb -c "
 LOAD spatial;
 COPY (

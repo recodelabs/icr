@@ -2,7 +2,7 @@
 # Feature counts per layer × state × LGA (× facility level) for the Georegistry page's
 # KPIs and cascading filters.
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 duckdb -c "
 LOAD spatial;
 COPY (

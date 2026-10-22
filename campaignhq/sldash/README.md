@@ -82,6 +82,8 @@ are summed only in the cumulative line, as DHIS2 does).
 
 ## Layout
 
+- `src/about.md` — how the DHIS2 data model maps to FHIR (Location, Measure, MeasureReport),
+  with diagrams; the same file is copied to `sl-redux/src/about.md`.
 - `src/components/dhis2.js` — DHIS2's palette and legend set, dashboard item card, gauge,
   pie and pivot table.
 - `src/components/charts.js` — column, stacked column, line and year-over-year charts, and the

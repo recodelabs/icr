@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Admin units (states + LGAs) with centroids, for labels, filters and map fitting.
 set -euo pipefail
-DATA="$(cd "$(dirname "$0")/../../../data" && pwd)"
+DATA="${DATA:-$(cd "$(dirname "$0")/../../../data" && pwd)}"
 duckdb -c "
 LOAD spatial;
 COPY (

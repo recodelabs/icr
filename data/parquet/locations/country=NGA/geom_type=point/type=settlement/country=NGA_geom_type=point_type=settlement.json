@@ -90,10 +90,6 @@
         "minimum": "122202301312133313",
         "maximum": "122230220210201100"
       },
-      "facility_level": {
-        "minimum": 18,
-        "maximum": 18
-      },
       "tier": {
         "minimum": 3,
         "maximum": 3
@@ -143,7 +139,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-10-12T05:33:02Z"
+    "datetime": "2026-10-22T18:03:35Z"
   },
   "links": [
     {
@@ -168,8 +164,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 72462961,
-      "file:checksum": "122063958303834d3156b6021a4c8ae4e546125064cc1076f739d1fbea2b4e749857",
+      "file:size": 72456276,
+      "file:checksum": "1220addfa3a0f5066fdd42b25f56d7e26ead065ac2f6d8bff2e1a4245158fa390b6d",
       "roles": [
         "data"
       ]

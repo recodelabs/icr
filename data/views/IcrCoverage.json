@@ -2,7 +2,7 @@
   "resourceType": "ViewDefinition",
   "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage",
   "title": "ICR coverage reports",
-  "description": "One row per coverage report (MeasureReport): the **results** \u2014 people reached\nand coverage, whether from administrative tallies (`source = administrative`),\na post-campaign survey (`survey`) or LQAS (`lqas`), and whether preliminary\n(`lineage = realtime`) or final (`reconciled`). Joined to the campaign\ncalendar on `campaign_id` this gives people reached and coverage per round;\ngrouping by `campaign_id` and `source` puts administrative and survey figures\nside by side. Strata (sex, age band, delivery strategy, disposition,\ngeography) are in the companion view `IcrCoverageStrata`.",
+  "description": "One row per coverage report (MeasureReport): the **results** — people reached\nand coverage, whether from administrative tallies (`source = administrative`),\na post-campaign survey (`survey`) or LQAS (`lqas`), and whether preliminary\n(`lineage = realtime`) or final (`reconciled`). Joined to the campaign\ncalendar on `campaign_id` this gives people reached and coverage per round;\ngrouping by `campaign_id` and `source` puts administrative and survey figures\nside by side. Strata (sex, age band, delivery strategy, disposition,\ngeography) are in the companion view `IcrCoverageStrata`.",
   "name": "IcrCoverage",
   "status": "draft",
   "fhirVersion": [
@@ -12,7 +12,7 @@
   "where": [
     {
       "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/coverage-source').exists()",
-      "description": "Only ICR coverage reports (administrative, survey, LQAS) \u2014 not cost or readiness reports"
+      "description": "Only ICR coverage reports (administrative, survey, LQAS) — not cost or readiness reports"
     }
   ],
   "select": [
@@ -27,7 +27,7 @@
           "name": "campaign_id",
           "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)",
           "type": "string",
-          "description": "The campaign (round) this report is about \u2014 join key to IcrCampaignCalendar"
+          "description": "The campaign (round) this report is about — join key to IcrCampaignCalendar"
         },
         {
           "name": "location_id",
@@ -92,7 +92,7 @@
           "name": "score",
           "path": "group.first().measureScore.value",
           "type": "decimal",
-          "description": "Coverage as a proportion 0\u20131 (the ICR coverage Measures are proportion-scored; multiply by 100 for percent)"
+          "description": "Coverage as a proportion 0–1 (the ICR coverage Measures are proportion-scored; multiply by 100 for percent)"
         },
         {
           "name": "ci_low",
@@ -113,6 +113,12 @@
           "name": "reporter",
           "path": "reporter.display",
           "type": "string"
+        },
+        {
+          "name": "activity",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)",
+          "type": "canonical",
+          "description": "In an integrated campaign, the activity this report covers — join with campaign_id to IcrCampaignActivity for that activity's target. Empty for a single-intervention campaign"
         }
       ]
     }

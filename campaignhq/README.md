@@ -32,6 +32,16 @@ npm run build                   # static site in dist/
 The data loaders in `src/data/` need `duckdb` on the PATH; they run at build (and
 preview) time and their output is cached under `src/.observablehq/cache`.
 
+**DuckDB 2.0 in the browser.** Framework 1.13.4 pins DuckDB-Wasm 1.29.0 (DuckDB 1.1.1).
+`./duckdb-wasm2.sh . sldash sl-redux` swaps in DuckDB-Wasm built for DuckDB 2.0.0 from the
+duckdb-wasm CI, which isn't on npm yet. It patches the site's Framework cache and two files in
+`node_modules`, so `npm install` or `npm run clean` undo it. `deploy.sh` runs it before every
+build. Run it yourself after `npm install` if you want 2.0 in `npm run dev` too (open a page
+once first so Framework has cached DuckDB-Wasm). Once DuckDB-Wasm 2.0 is on npm, drop the
+script and the `duckdb` extensions setting in each `observablehq.config.js`. The engine is
+copied in as `duckdb-base.<hash>.wasm`, with the start of its checksum in the name: the
+Worker tells browsers to keep it for a year, so a different build needs a different name.
+
 ## What is on the page
 
 - **Filters** — year, state, programme, status. Everything below reacts. The
@@ -63,15 +73,33 @@ data hub it was built from. Cloudflare Pages was ruled out: it caps files at
 25 MiB and DuckDB-WASM's engine builds are ~35–40 MiB each. R2 has no such
 limit, and one bucket holds both site and data.
 
+The data comes from the warehouse in the same bucket, not from this machine: an update is
+refresh the warehouse, then deploy.
+
 ```bash
-tools/warehouse/refresh.sh --push   # (repo root) regenerate data/ and mirror it to r2:icr/
-cd campaignhq && ./deploy.sh        # build → rclone sync dist/ → r2:icr/_site/campaignhq → wrangler deploy
+tools/warehouse/refresh.sh --push            # (repo root) main server → data/ → r2:icr/
+country/uganda/warehouse.sh --push           # (repo root) Uganda server → r2:icr/uga/
+cd campaignhq && ./deploy.sh main uganda     # pull each site's warehouse from R2 → build → rclone sync dist/
+                                             # → r2:icr/_site/campaignhq → wrangler deploy
 ```
+
+`deploy.sh` pulls `parquet/`, `tiles/` and `manifest.json` of each site's warehouse into
+`~/.cache/campaignhq-warehouse/` and sets `DATA` for the data loaders; it also clears Framework's
+cached loader outputs, which it would otherwise reuse while the loaders are unchanged.
+`--local-data` builds from the local copies instead (`data/`, `country/uganda/warehouse/`), as
+`npm run dev` does. The two Sierra Leone sites always build from the local `data/`: they read the
+raw Location download, which is not pushed.
 
 `wrangler.toml` binds the bucket and declares `dashboards.healthcampaigns.org` as a
 custom-domain route, so wrangler creates the DNS record and certificate on the
 first deploy. Needs `rclone` with the `r2` remote configured and a wrangler
 login on this account. `./deploy.sh --dry-run` shows what would change.
+
+Before each upload, `deploy.sh` puts a brotli copy (`name.wasm.br`, highest quality) next to
+every `.wasm` file, kept in `~/.cache/campaignhq-br` so an unchanged file is compressed once.
+The Worker sends that copy to browsers that accept brotli. Cloudflare would otherwise
+compress the file itself, at a lower level: the DuckDB engine (27.4 MB) goes out as 4.7 MiB
+instead of 7.0 MiB.
 
 ## Pages
 
@@ -126,6 +154,10 @@ login on this account. `./deploy.sh --dry-run` shows what would change.
 `sldash/` is a separate Observable Framework site, with its own `package.json`, that
 rebuilds the DHIS2 demo's Sierra Leone dashboards from the DHIS2 data in the registry.
 It is not part of this site's build or deploy. See `sldash/README.md`.
+
+`sl-redux/` is a second version of those dashboards with the same indicators, redrawn for
+comparing districts (filters, rankings, heatmaps, scorecards). Also a separate site; see
+`sl-redux/README.md`.
 
 ## Basemap
 

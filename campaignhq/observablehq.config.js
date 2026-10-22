@@ -18,7 +18,8 @@ export default {
         // An external URL here (unlike the /-prefixed paths above) makes Framework
         // open it in a new tab automatically; the ↗ is added by the CSS below.
         {name: "ODK Locations", path: "https://odklocations.healthcampaigns.org/"},
-        {name: "SDI Portolan", path: "https://sdi.healthcampaigns.org/"}
+        {name: "SDI Portolan", path: "https://sdi.healthcampaigns.org/"},
+        {name: "Uganda dashboards", path: "https://dashboards.healthcampaigns.org/ug/"}
       ]
     }
   ],
@@ -32,5 +33,7 @@ export default {
   theme: ["light", "alt"],
   // Every page's data comes from static parquet + pmtiles produced by the loaders
   // in src/data, so the site builds to plain static files.
-  cleanUrls: true
+  cleanUrls: true,
+  // DuckDB 2.0 (duckdb-wasm2.sh) has json and parquet built in; don't bundle Framework's 1.1.1 ones.
+  duckdb: {extensions: {json: null, parquet: null}}
 };

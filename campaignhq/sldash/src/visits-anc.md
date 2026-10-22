@@ -7,7 +7,7 @@ sql:
 # Visits ANC
 
 ```js
-import {item, gauge} from "./components/dhis2.js";
+import {item, gauge, GAUGE_LEGEND} from "./components/dhis2.js";
 import {load, pick, relative} from "./components/page.js";
 
 // DHIS2 uids of the items on the demo's Visits ANC dashboard.
@@ -28,7 +28,7 @@ const w = (n) => Math.max(260, (width - 24) / n - 24);
 // One gauge of a coverage indicator for Sierra Leone (DHIS2's user org unit) this year.
 const dial = (dx) => {
   const d = pick(all, {dx, level: 0, periods: [P.thisYear]})[0];
-  return html`<div style="display:flex;justify-content:center">${gauge(d?.value, {max: 120, label: `${d?.name ?? dx} (%)`, width: Math.min(340, w(3))})}</div>`;
+  return html`<div style="display:flex;justify-content:center">${gauge(d?.value, {max: 120, label: `${d?.name ?? dx} (%)`, width: Math.min(340, w(3)), legend: GAUGE_LEGEND})}</div>`;
 };
 ```
 
@@ -43,5 +43,5 @@ ${item(`ANC: ANC LLITN coverage ${year} (gauge)`, dial(DX.llitnCov))}
 <div class="muted d2-footer">
 Rebuilt from the demo DHIS2's <b>Visits ANC</b> dashboard (play.dhis2.org, Sierra Leone) with the values
 imported into the registry by <code>kiln dhis2</code>: all 3 gauges, for Sierra Leone. Gauge colours
-follow the Immunization Coverage legend used on the other pages.
+follow the Immunization Coverage legend's bands, in softer colours than DHIS2's.
 </div>

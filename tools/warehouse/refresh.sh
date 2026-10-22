@@ -27,6 +27,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FHIR_PIPES="${FHIR_PIPES:-fhir-pipes}"
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+export DUCKDB_AGENT_MODE=0   # DuckDB 2.0 prints an agent banner when AI_AGENT is set; keep it out
 
 command -v "$FHIR_PIPES" >/dev/null || {
   echo "fhir-pipes not found; install it with:" >&2

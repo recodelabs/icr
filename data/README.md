@@ -46,35 +46,19 @@ WebAssembly.
 
 ## Refresh
 
-```bash
-tools/warehouse/refresh.sh            # kiln run (incremental) + every ViewDefinition in the IG
-tools/warehouse/refresh.sh --views    # views only (seconds)
-tools/warehouse/refresh.sh --tiles    # admin boundary PMTiles only
-```
-
-Needs: the local HAPI (`tools/hapi`), or the hosted one through the FHIR Info
-Gateway with an API key (`FHIR_BASE`, `FHIR_CLIENT_ID`, `FHIR_CLIENT_SECRET`; see
-`tools/hapi/gcp/README.md`), `kiln` (`~/github/kiln/target/debug/kiln`
-or `KILN=`), `octofhir-sof` (the recodelabs/sof fork build, on the PATH or
-`SOF=`), `duckdb` (with the spatial extension, installed on first use),
-`tippecanoe` (`brew install tippecanoe`) for the tiles, and a sushi build of the
-IG (`ig/fsh-generated/`) for the ViewDefinitions.
-
-The same refresh as one Rust binary,
-[fhir-warehouse](https://github.com/recodelabs/fhir-warehouse), with its ICR
-settings in `tools/warehouse/fhir-warehouse.toml`. It runs the views in process
-(no `octofhir-sof` binary or temp files), runs the tiles beside the views, and
-needs only `kiln`, plus `duckdb` and `tippecanoe` for the tiles and `rclone` to push:
+How to update this directory, push it to R2 and redeploy the dashboards from it is in the
+runbook, `tools/warehouse/README.md`. In short:
 
 ```bash
-fhir-warehouse refresh --config tools/warehouse/fhir-warehouse.toml \
-  --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp
-fhir-warehouse refresh --config tools/warehouse/fhir-warehouse.toml --only views --reuse-raw
-fhir-warehouse check --config tools/warehouse/fhir-warehouse.toml   # settings and tools found
+FHIR_BASE=https://hapi.healthcampaigns.org/fhir SERVER_NAME=hapi-gcp \
+  tools/warehouse/refresh.sh --push     # incremental; --full after deletions; --views / --tiles for one part
 ```
 
-It writes the same tables, partitions and manifest as `refresh.sh`. The
-Portolan catalog is its `catalog` hook (`tools/warehouse/catalog.sh`).
+`refresh.sh` runs [fhir-pipes](https://github.com/ohs-foundation/fhir-pipes-rs) with the
+settings in `tools/warehouse/fhir-pipes.toml`: the Location registry, every ViewDefinition in
+the IG (from a sushi build in `ig/fsh-generated/`), the tiles, the manifest and the Portolan
+catalog hook. kiln, octofhir-sof and fhir-warehouse, which earlier versions of this page
+described, are retired.
 
 ## Cloud mirror (Cloudflare R2)
 
