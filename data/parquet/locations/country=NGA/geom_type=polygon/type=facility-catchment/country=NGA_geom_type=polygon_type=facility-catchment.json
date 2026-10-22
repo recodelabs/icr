@@ -123,7 +123,7 @@
     "vector:geometry_types": [
       "Polygon"
     ],
-    "datetime": "2026-10-12T05:33:02Z"
+    "datetime": "2026-10-22T18:03:35Z"
   },
   "links": [
     {
@@ -148,8 +148,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 173801,
-      "file:checksum": "1220716a13d801c4393c432a3ca4018fc87f0a20ee16dbed7181f2f231daa8968645",
+      "file:size": 173292,
+      "file:checksum": "1220c054f4d774798dba07b6977854bed8becd5f4cf4cb51bfa33e629033f3d57d3f",
       "roles": [
         "data"
       ]

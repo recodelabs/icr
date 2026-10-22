@@ -17,21 +17,9 @@
     },
     {
       "rel": "item",
-      "href": "./country=NGA/geom_type=point/type=community-distribution-point/country=NGA_geom_type=point_type=community-distribution-point.json",
-      "type": "application/geo+json",
-      "title": "Nigeria — community distribution point"
-    },
-    {
-      "rel": "item",
       "href": "./country=NGA/geom_type=point/type=facility/country=NGA_geom_type=point_type=facility.json",
       "type": "application/geo+json",
       "title": "Nigeria — health facilities"
-    },
-    {
-      "rel": "item",
-      "href": "./country=NGA/geom_type=point/type=school/country=NGA_geom_type=point_type=school.json",
-      "type": "application/geo+json",
-      "title": "Nigeria — schools"
     },
     {
       "rel": "item",
@@ -56,6 +44,30 @@
       "href": "./country=NGA/geom_type=polygon/type=settlement-catchment/country=NGA_geom_type=polygon_type=settlement-catchment.json",
       "type": "application/geo+json",
       "title": "Nigeria — settlement catchment"
+    },
+    {
+      "rel": "item",
+      "href": "./country=SL/geom_type=point/type=facility/country=SL_geom_type=point_type=facility.json",
+      "type": "application/geo+json",
+      "title": "Sierra Leone — health facilities"
+    },
+    {
+      "rel": "item",
+      "href": "./country=SL/geom_type=point/type=null/country=SL_geom_type=point_type=null.json",
+      "type": "application/geo+json",
+      "title": "Sierra Leone — locations without a type"
+    },
+    {
+      "rel": "item",
+      "href": "./country=SL/geom_type=point/type=school/country=SL_geom_type=point_type=school.json",
+      "type": "application/geo+json",
+      "title": "Sierra Leone — schools"
+    },
+    {
+      "rel": "item",
+      "href": "./country=SL/geom_type=polygon/type=admin-unit/country=SL_geom_type=polygon_type=admin-unit.json",
+      "type": "application/geo+json",
+      "title": "Sierra Leone — administrative boundaries"
     },
     {
       "rel": "item",
@@ -124,7 +136,7 @@
     "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json",
     "https://stac-extensions.github.io/web-map-links/v1.3.0/schema.json"
   ],
-  "updated": "2026-10-12T05:33:03Z",
+  "updated": "2026-10-22T18:03:40Z",
   "partition:scheme": "hive",
   "partition:keys": [
     {
@@ -140,7 +152,7 @@
       "type": "string"
     }
   ],
-  "partition:file_count": 9,
+  "partition:file_count": 11,
   "title": "ICR location registry",
   "extent": {
     "spatial": {
@@ -188,115 +200,29 @@
       "Polygon"
     ],
     "geoparquet:feature_count": [
-      210,
-      51022,
-      80,
+      52704,
       292438,
       812,
       159,
       2087,
+      2,
+      1,
       601,
       166
     ],
     "table:column_statistics": [
       {
         "id": {
-          "minimum": "nga-sup-site-kn-20002-community-01",
-          "maximum": "nga-sup-site-kn-20042-community-03"
-        },
-        "version_id": {
-          "minimum": "1",
-          "maximum": "1"
-        },
-        "last_updated": {
-          "minimum": "2026-10-06T09:07:17.603+00:00",
-          "maximum": "2026-10-06T09:07:56.161+00:00"
-        },
-        "name": {
-          "minimum": "Ajingi community site 01 (dummy)",
-          "maximum": "Wudil community site 08 (dummy)"
-        },
-        "status": {
-          "minimum": "active",
-          "maximum": "active"
-        },
-        "type": {
-          "minimum": "community-distribution-point",
-          "maximum": "community-distribution-point"
-        },
-        "physical_type": {
-          "minimum": "si",
-          "maximum": "si"
-        },
-        "part_of": {
-          "minimum": "nga-kn-20002",
-          "maximum": "nga-kn-20042"
-        },
-        "position_latitude": {
-          "minimum": 7.707301,
-          "maximum": 9.256813
-        },
-        "pcode": {
-          "minimum": 10.633327,
-          "maximum": 12.543923
-        },
-        "tier": {
-          "minimum": 3,
-          "maximum": 3
-        },
-        "admin0_name": {
-          "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-community-01",
-          "maximum": "/nga/nga-kn/nga-kn-20042/nga-sup-site-kn-20042-community-03"
-        },
-        "admin1_name": {
-          "minimum": "nga",
-          "maximum": "nga-kn-20042"
-        },
-        "admin2_name": {
-          "minimum": "Nigeria",
-          "maximum": "Nigeria"
-        },
-        "admin3_name": {
-          "minimum": "Kano",
-          "maximum": "Kano"
-        },
-        "admin4_name": {
-          "minimum": "Ajingi",
-          "maximum": "Wudil"
-        },
-        "admin2_code": {
-          "minimum": "NGA",
-          "maximum": "NGA"
-        },
-        "admin3_code": {
-          "minimum": "KN",
-          "maximum": "KN"
-        },
-        "admin4_code": {
-          "minimum": "20002",
-          "maximum": "20042"
-        },
-        "lon": {
-          "minimum": "NGA",
-          "maximum": "NGA"
-        },
-        "lat": {
-          "minimum": "point",
-          "maximum": "point"
-        }
-      },
-      {
-        "id": {
           "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
-          "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
+          "maximum": "kogi-dummy-sn-ffea47b1ff"
         },
         "version_id": {
           "minimum": "1",
-          "maximum": "1"
+          "maximum": "2"
         },
         "last_updated": {
           "minimum": "2026-10-05T19:28:02.287+00:00",
-          "maximum": "2026-10-05T19:36:20.169+00:00"
+          "maximum": "2026-10-22T11:24:58.847+00:00"
         },
         "name": {
           "minimum": "1 Brigade Medical Center",
@@ -320,7 +246,7 @@
         },
         "managing_organization": {
           "minimum": "org-0001e040-0be2-4e0d-961e-cfb64f157554",
-          "maximum": "org-fffc6081-543c-4681-b94a-6d0d10d0854c"
+          "maximum": "org-kogi-dummy-sn-ffea47b1ff"
         },
         "position_longitude": {
           "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
@@ -334,44 +260,48 @@
           "minimum": 4.28171,
           "maximum": 13.865239
         },
-        "quadkey_level": {
-          "minimum": "122202301313132330",
-          "maximum": "122230220210200133"
-        },
-        "facility_level": {
-          "minimum": 18,
-          "maximum": 18
-        },
         "ownership": {
           "minimum": "primary",
           "maximum": "unknown"
         },
-        "nhfr_code": {
+        "quadkey": {
           "minimum": "private",
-          "maximum": "unknown"
+          "maximum": "unknown",
+          "null_count": 151
+        },
+        "quadkey_level": {
+          "minimum": "122202301313132330",
+          "maximum": "122230220210200133"
+        },
+        "nhfr_code": {
+          "minimum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-code",
+          "maximum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-uid",
+          "null_count": 18003
         },
         "nhfr_uid": {
           "minimum": "01/01/1/1/1/0004",
-          "maximum": "37/06/1/3/2/0358",
-          "null_count": 16481
+          "maximum": "87654002",
+          "null_count": 18003
         },
         "facility_level_text": {
-          "minimum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-code",
-          "maximum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-uid",
-          "null_count": 16481
+          "minimum": "01/01/1/1/1/0004",
+          "maximum": "37/06/1/3/2/0358",
+          "null_count": 18003
         },
         "ownership_text": {
-          "minimum": "01/01/1/1/1/0004",
+          "minimum": "12346487",
           "maximum": "87654002",
-          "null_count": 16481
+          "null_count": 18163
         },
         "depth": {
-          "minimum": "General Hospital",
-          "maximum": "Unknown"
+          "minimum": "Clinic",
+          "maximum": "Unknown",
+          "null_count": 17
         },
         "admin_level": {
           "minimum": "Federal Government",
-          "maximum": "Unknown"
+          "maximum": "Unknown",
+          "null_count": 151
         },
         "tier": {
           "minimum": 2,
@@ -413,93 +343,7 @@
         },
         "geom_type": {
           "minimum": "{\"resourceType\":\"Organization\",\"id\":\"org-0001e040-0be2-4e0d-961e",
-          "maximum": "{\"resourceType\":\"Organization\",\"id\":\"org-fffc6081-543c-4681-b94b"
-        },
-        "lon": {
-          "minimum": "NGA",
-          "maximum": "NGA"
-        },
-        "lat": {
-          "minimum": "point",
-          "maximum": "point"
-        }
-      },
-      {
-        "id": {
-          "minimum": "nga-sup-site-kn-20002-school-01",
-          "maximum": "nga-sup-site-kn-20036-school-04"
-        },
-        "version_id": {
-          "minimum": "1",
-          "maximum": "1"
-        },
-        "last_updated": {
-          "minimum": "2026-10-06T09:07:47.042+00:00",
-          "maximum": "2026-10-06T09:07:47.042+00:00"
-        },
-        "name": {
-          "minimum": "Ajingi school site 01 (dummy)",
-          "maximum": "Wudil school site 04 (dummy)"
-        },
-        "status": {
-          "minimum": "active",
-          "maximum": "active"
-        },
-        "type": {
-          "minimum": "school",
-          "maximum": "school"
-        },
-        "physical_type": {
-          "minimum": "si",
-          "maximum": "si"
-        },
-        "part_of": {
-          "minimum": "nga-kn-20002",
-          "maximum": "nga-kn-20036"
-        },
-        "position_latitude": {
-          "minimum": 7.770792,
-          "maximum": 9.30874
-        },
-        "pcode": {
-          "minimum": 10.583213,
-          "maximum": 12.065937
-        },
-        "tier": {
-          "minimum": 3,
-          "maximum": 3
-        },
-        "admin0_name": {
-          "minimum": "/nga/nga-kn/nga-kn-20002/nga-sup-site-kn-20002-school-01",
-          "maximum": "/nga/nga-kn/nga-kn-20036/nga-sup-site-kn-20036-school-04"
-        },
-        "admin1_name": {
-          "minimum": "nga",
-          "maximum": "nga-kn-20036"
-        },
-        "admin2_name": {
-          "minimum": "Nigeria",
-          "maximum": "Nigeria"
-        },
-        "admin3_name": {
-          "minimum": "Kano",
-          "maximum": "Kano"
-        },
-        "admin4_name": {
-          "minimum": "Ajingi",
-          "maximum": "Wudil"
-        },
-        "admin2_code": {
-          "minimum": "NGA",
-          "maximum": "NGA"
-        },
-        "admin3_code": {
-          "minimum": "KN",
-          "maximum": "KN"
-        },
-        "admin4_code": {
-          "minimum": "20002",
-          "maximum": "20036"
+          "maximum": "{\"resourceType\":\"Organization\",\"id\":\"org-kogi-dummy-sn-ffea47b1g"
         },
         "lon": {
           "minimum": "NGA",
@@ -558,10 +402,6 @@
         "quadkey_level": {
           "minimum": "122202301312133313",
           "maximum": "122230220210201100"
-        },
-        "facility_level": {
-          "minimum": 18,
-          "maximum": 18
         },
         "tier": {
           "minimum": 3,
@@ -862,6 +702,395 @@
       },
       {
         "id": {
+          "minimum": "example-facility",
+          "maximum": "example-fixed-post"
+        },
+        "version_id": {
+          "minimum": "3",
+          "maximum": "3"
+        },
+        "last_updated": {
+          "minimum": "2026-10-22T17:10:20.879+00:00",
+          "maximum": "2026-10-22T17:10:20.879+00:00"
+        },
+        "name": {
+          "minimum": "Rokupr Community Health Centre",
+          "maximum": "Rokupr Community Health Centre — fixed vaccination post"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "facility",
+          "maximum": "facility"
+        },
+        "physical_type": {
+          "minimum": "si",
+          "maximum": "si"
+        },
+        "part_of": {
+          "minimum": "example-settlement",
+          "maximum": "example-settlement"
+        },
+        "managing_organization": {
+          "minimum": "example-facility-org",
+          "maximum": "example-facility-org",
+          "null_count": 1
+        },
+        "position_longitude": {
+          "minimum": "08f2a3b4c5d6e7f8-building-chc-example",
+          "maximum": "08f2a3b4c5d6e7f8-place-chc-example"
+        },
+        "position_latitude": {
+          "minimum": -12.9465,
+          "maximum": -12.9465
+        },
+        "pcode": {
+          "minimum": 9.014,
+          "maximum": 9.014
+        },
+        "settlement_type": {
+          "minimum": "08f2a3b4c5d6e7f8-building-chc-example",
+          "maximum": "08f2a3b4c5d6e7f8-place-chc-example"
+        },
+        "ownership": {
+          "minimum": "primary",
+          "maximum": "primary",
+          "null_count": 1
+        },
+        "quadkey": {
+          "minimum": "public",
+          "maximum": "public",
+          "null_count": 1
+        },
+        "quadkey_level": {
+          "minimum": "033321123102101100",
+          "maximum": "033321123102101100",
+          "null_count": 1
+        },
+        "nhfr_code": {
+          "minimum": "https://icr.healthcampaigns.org/identifiers/registry-id",
+          "maximum": "https://icr.healthcampaigns.org/identifiers/registry-id",
+          "null_count": 1
+        },
+        "nhfr_uid": {
+          "minimum": "SL-MFL-0421",
+          "maximum": "SL-MFL-0421",
+          "null_count": 1
+        },
+        "depth": {
+          "minimum": "Community Health Centre",
+          "maximum": "Community Health Centre",
+          "null_count": 1
+        },
+        "tier": {
+          "minimum": 3,
+          "maximum": 3
+        },
+        "admin0_name": {
+          "minimum": "/example-country/example-district/example-settlement/example-fac",
+          "maximum": "/example-country/example-district/example-settlement/example-fiy"
+        },
+        "admin1_name": {
+          "minimum": "example-country",
+          "maximum": "example-settlement"
+        },
+        "admin2_name": {
+          "minimum": "Sierra Leone",
+          "maximum": "Sierra Leone"
+        },
+        "admin3_name": {
+          "minimum": "Kambia District",
+          "maximum": "Kambia District"
+        },
+        "admin2_code": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "admin3_code": {
+          "minimum": "SL0201",
+          "maximum": "SL0201"
+        },
+        "geom_type": {
+          "minimum": "{\"resourceType\":\"Organization\",\"id\":\"example-facility-org\",\"meta",
+          "maximum": "{\"resourceType\":\"Organization\",\"id\":\"example-facility-org\",\"metb",
+          "null_count": 1
+        },
+        "lon": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "lat": {
+          "minimum": "point",
+          "maximum": "point"
+        }
+      },
+      {
+        "id": {
+          "minimum": "example-dwelling",
+          "maximum": "example-settlement"
+        },
+        "version_id": {
+          "minimum": "3",
+          "maximum": "3"
+        },
+        "last_updated": {
+          "minimum": "2026-10-22T17:10:20.879+00:00",
+          "maximum": "2026-10-22T17:10:20.879+00:00"
+        },
+        "name": {
+          "minimum": "Dwelling — Rokupr block 4, house 12",
+          "maximum": "Rokupr"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "physical_type": {
+          "minimum": "area",
+          "maximum": "ho"
+        },
+        "part_of": {
+          "minimum": "example-district",
+          "maximum": "example-settlement"
+        },
+        "position_longitude": {
+          "minimum": "08f2a3b4c5d6e7f8-building-example",
+          "maximum": "08f2a3b4c5d6e7f8-place-example"
+        },
+        "position_latitude": {
+          "minimum": -12.9471,
+          "maximum": -12.9469
+        },
+        "pcode": {
+          "minimum": 9.0144,
+          "maximum": 9.0149
+        },
+        "settlement_type": {
+          "minimum": "08f2a3b4c5d6e7f8-building-example",
+          "maximum": "08f2a3b4c5d6e7f8-place-example"
+        },
+        "facility_level": {
+          "minimum": "rural",
+          "maximum": "rural",
+          "null_count": 1
+        },
+        "quadkey_level": {
+          "minimum": "033321123102101100",
+          "maximum": "033321123102101100"
+        },
+        "tier": {
+          "minimum": 2,
+          "maximum": 3
+        },
+        "admin0_name": {
+          "minimum": "/example-country/example-district/example-settlement",
+          "maximum": "/example-country/example-district/example-settlement/example-dwf"
+        },
+        "admin1_name": {
+          "minimum": "example-country",
+          "maximum": "example-settlement"
+        },
+        "admin2_name": {
+          "minimum": "Sierra Leone",
+          "maximum": "Sierra Leone"
+        },
+        "admin3_name": {
+          "minimum": "Kambia District",
+          "maximum": "Kambia District"
+        },
+        "admin2_code": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "admin3_code": {
+          "minimum": "SL0201",
+          "maximum": "SL0201"
+        },
+        "lon": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "lat": {
+          "minimum": "point",
+          "maximum": "point"
+        }
+      },
+      {
+        "id": {
+          "minimum": "example-school",
+          "maximum": "example-school"
+        },
+        "version_id": {
+          "minimum": "3",
+          "maximum": "3"
+        },
+        "last_updated": {
+          "minimum": "2026-10-22T17:10:20.879+00:00",
+          "maximum": "2026-10-22T17:10:20.879+00:00"
+        },
+        "name": {
+          "minimum": "Rokupr Primary School",
+          "maximum": "Rokupr Primary School"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "school",
+          "maximum": "school"
+        },
+        "physical_type": {
+          "minimum": "bu",
+          "maximum": "bu"
+        },
+        "part_of": {
+          "minimum": "example-settlement",
+          "maximum": "example-settlement"
+        },
+        "position_longitude": {
+          "minimum": "08f2a3b4c5d6e7f8-building-school-example",
+          "maximum": "08f2a3b4c5d6e7f8-building-school-example"
+        },
+        "position_latitude": {
+          "minimum": -12.9458,
+          "maximum": -12.9458
+        },
+        "pcode": {
+          "minimum": 9.0152,
+          "maximum": 9.0152
+        },
+        "settlement_type": {
+          "minimum": "08f2a3b4c5d6e7f8-building-school-example",
+          "maximum": "08f2a3b4c5d6e7f8-building-school-example"
+        },
+        "tier": {
+          "minimum": 3,
+          "maximum": 3
+        },
+        "admin0_name": {
+          "minimum": "/example-country/example-district/example-settlement/example-sch",
+          "maximum": "/example-country/example-district/example-settlement/example-sci"
+        },
+        "admin1_name": {
+          "minimum": "example-country",
+          "maximum": "example-settlement"
+        },
+        "admin2_name": {
+          "minimum": "Sierra Leone",
+          "maximum": "Sierra Leone"
+        },
+        "admin3_name": {
+          "minimum": "Kambia District",
+          "maximum": "Kambia District"
+        },
+        "admin2_code": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "admin3_code": {
+          "minimum": "SL0201",
+          "maximum": "SL0201"
+        },
+        "lon": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "lat": {
+          "minimum": "point",
+          "maximum": "point"
+        }
+      },
+      {
+        "id": {
+          "minimum": "example-district",
+          "maximum": "example-district"
+        },
+        "version_id": {
+          "minimum": "3",
+          "maximum": "3"
+        },
+        "last_updated": {
+          "minimum": "2026-10-22T17:10:20.879+00:00",
+          "maximum": "2026-10-22T17:10:20.879+00:00"
+        },
+        "name": {
+          "minimum": "Kambia District",
+          "maximum": "Kambia District"
+        },
+        "status": {
+          "minimum": "active",
+          "maximum": "active"
+        },
+        "type": {
+          "minimum": "admin-unit",
+          "maximum": "admin-unit"
+        },
+        "physical_type": {
+          "minimum": "jdn",
+          "maximum": "jdn"
+        },
+        "part_of": {
+          "minimum": "example-country",
+          "maximum": "example-country"
+        },
+        "position_longitude": {
+          "minimum": "08f2a3b4c5d6e7f8-division-example",
+          "maximum": "SL0201"
+        },
+        "gers_id": {
+          "minimum": "SL0201",
+          "maximum": "SL0201"
+        },
+        "settlement_type": {
+          "minimum": "08f2a3b4c5d6e7f8-division-example",
+          "maximum": "08f2a3b4c5d6e7f8-division-example"
+        },
+        "tier": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "path": {
+          "minimum": 1,
+          "maximum": 1
+        },
+        "admin0_name": {
+          "minimum": "/example-country/example-district",
+          "maximum": "/example-country/example-district"
+        },
+        "admin1_name": {
+          "minimum": "example-country",
+          "maximum": "example-country"
+        },
+        "admin2_name": {
+          "minimum": "Sierra Leone",
+          "maximum": "Sierra Leone"
+        },
+        "admin3_name": {
+          "minimum": "Kambia District",
+          "maximum": "Kambia District"
+        },
+        "admin2_code": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "admin3_code": {
+          "minimum": "SL0201",
+          "maximum": "SL0201"
+        },
+        "lon": {
+          "minimum": "SL",
+          "maximum": "SL"
+        },
+        "lat": {
+          "minimum": "polygon",
+          "maximum": "polygon"
+        }
+      },
+      {
+        "id": {
           "minimum": "sle-ABM75Q1UfoP",
           "maximum": "sle-zsqxu7ZZRpO"
         },
@@ -909,11 +1138,11 @@
           "minimum": 6.9679,
           "maximum": 9.9432
         },
-        "facility_level_text": {
+        "nhfr_code": {
           "minimum": "https://icr.healthcampaigns.org/identifiers/dhis2/sl-demo/orguni",
           "maximum": "https://icr.healthcampaigns.org/identifiers/dhis2/sl-demo/orgunj"
         },
-        "ownership_text": {
+        "nhfr_uid": {
           "minimum": "ABM75Q1UfoP",
           "maximum": "zsqxu7ZZRpO"
         },
@@ -1057,7 +1286,7 @@
       "href": "./country=*/geom_type=*/type=*/*.parquet",
       "type": "application/vnd.apache.parquet",
       "title": "Partitioned GeoParquet",
-      "description": "Glob pattern for 9 partitioned files",
+      "description": "Glob pattern for 11 partitioned files",
       "roles": [
         "data"
       ]
@@ -1069,8 +1298,8 @@
       "roles": [
         "collection-mirror"
       ],
-      "file:size": 50510,
-      "file:checksum": "122062cec0761240a7e05494bfb1a6341a2a96c460d067b98a3a094279e07437f317"
+      "file:size": 56287,
+      "file:checksum": "12200d1df61dd86499095ede84a79b17a3df8796f828b4e043ac73548072f91616d8"
     },
     "admin-tiles": {
       "href": "../../tiles/admin.pmtiles",
@@ -1079,8 +1308,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 2949352,
-      "file:checksum": "1220cbb64bcbebe006581fe7246567dbfd86ea212ffe9f0d769c1d5533fd31d8ff32"
+      "file:size": 2949351,
+      "file:checksum": "12200af5946943af3fa0ed1f595d259f04a08a7022c9c121074318a6aa6a2a29af24"
     },
     "style-default": {
       "href": "./styles/default.json",
@@ -1100,8 +1329,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 47349701,
-      "file:checksum": "12209b46e850c65c80a249f010a1bab369430805a4ffa7fab5a30f17e498659905cd"
+      "file:size": 48109486,
+      "file:checksum": "12205da895b8acf420b8eb97ea74a238ecba30280126773c5bdae5a28fec01d13dbc"
     },
     "style-facilities": {
       "href": "./styles/facilities.json",
@@ -1120,8 +1349,8 @@
       "roles": [
         "visual"
       ],
-      "file:size": 124440811,
-      "file:checksum": "122096aacc40e6f994a3c78b490e857ad8ecc41097c5297d3a7bafcd6d475576bef4"
+      "file:size": 124440815,
+      "file:checksum": "12204b6d68fcc97cd45fcf82ff4d73668619a6541cd0ac8a1fbd8bea086ba010eb1c"
     },
     "style-settlements": {
       "href": "./styles/settlements.json",

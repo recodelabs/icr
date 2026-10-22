@@ -2,7 +2,7 @@
   "resourceType": "ViewDefinition",
   "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar",
   "title": "ICR campaign calendar",
-  "description": "One row per campaign (CarePlan) per target geography: **what is planned or ran,\nwhere, and when** \u2014 the table behind the campaign calendar and the\ncampaign-visibility use case (an official registry of what is planned where,\nviewable as a map and a calendar).\n\nJoin `location_id` to the location registry (Location, or its parquet export) to\nroll campaigns up or down the administrative hierarchy; `parent_campaign_id`\nlinks a round to its umbrella campaign; `round` is the round number within the\nprogramme-year. Umbrella campaigns without a `target-geography` still appear\n(one row, `location_id` empty) thanks to `forEachOrNull`.\n\nColumn types are declared so runners that support native temporal types write\n`period_start` / `period_end` as dates rather than strings.",
+  "description": "One row per campaign (CarePlan) per target geography: **what is planned or ran,\nwhere, and when** — the table behind the campaign calendar and the\ncampaign-visibility use case (an official registry of what is planned where,\nviewable as a map and a calendar).\n\nJoin `location_id` to the location registry (Location, or its parquet export) to\nroll campaigns up or down the administrative hierarchy; `parent_campaign_id`\nlinks a round to its umbrella campaign; `round` is the round number within the\nprogramme-year. Umbrella campaigns without a `target-geography` still appear\n(one row, `location_id` empty) thanks to `forEachOrNull`.\n\nColumn types are declared so runners that support native temporal types write\n`period_start` / `period_end` as dates rather than strings.",
   "name": "IcrCampaignCalendar",
   "status": "draft",
   "fhirVersion": [
@@ -27,7 +27,7 @@
           "name": "status",
           "path": "status",
           "type": "code",
-          "description": "draft (planned) | active | completed | \u2026"
+          "description": "draft (planned) | active | completed | …"
         },
         {
           "name": "intent",
@@ -72,7 +72,7 @@
           "name": "denominator_id",
           "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator').value.ofType(Reference).getReferenceKey(Group)",
           "type": "string",
-          "description": "The ICRTargetPopulation Group this campaign plans against \u2014 join key to the target_population view for people targeted"
+          "description": "The ICRTargetPopulation Group this campaign plans against — join key to the target_population view for people targeted. Integrated campaigns name a target per activity instead: see IcrCampaignActivity"
         }
       ]
     },
@@ -83,7 +83,7 @@
           "name": "location_id",
           "path": "value.ofType(Reference).getReferenceKey(Location)",
           "type": "string",
-          "description": "The Location this campaign targets \u2014 join key to the location registry. One row per target geography; empty for umbrella campaigns with none."
+          "description": "The Location this campaign targets — join key to the location registry. One row per target geography; empty for umbrella campaigns with none."
         }
       ]
     }
