@@ -1,14 +1,18 @@
-# fhir-pipes settings for Uganda's SDI: the location registry of the Uganda ICR server as a
-# Portolan catalog at https://sdi.healthcampaigns.org/uga/ (the `uga/` folder of the `icr` R2
-# bucket, served by tools/sdi). Paths are relative to this file. Run sdi.sh, which runs:
+# fhir-pipes settings for Uganda's warehouse (warehouse/): the Uganda ICR server's locations, the
+# IG's ViewDefinitions over its campaigns, targets and tasks, and map tiles. Paths are relative to
+# this file. Run warehouse.sh, which runs:
 #
 #   FHIR_PIPES_CLIENT_ID=… FHIR_PIPES_CLIENT_SECRET=… \
-#     fhir-pipes refresh --config country/uganda/fhir-pipes.toml --only locations,tiles,hooks
+#     fhir-pipes refresh --config country/uganda/fhir-pipes.toml --only locations,views,tiles,hooks
 #
-# The catalog's human-written metadata is in sdi/.portolan/ (in git); everything else under
-# sdi/ is generated.
+# warehouse.sh --push uploads it to the uga/ folder of the `icr` R2 bucket. That folder is also
+# Uganda's SDI (https://sdi.healthcampaigns.org/uga/, served by tools/sdi), which serves only the
+# location collection and the tiles; the view tables stay private, like the main warehouse's at
+# the bucket root. The catalog's human-written metadata is in warehouse/.portolan/ (in git);
+# everything else under warehouse/ is generated.
 
-data = "sdi"
+data = "warehouse"
+views = "../../ig/fsh-generated/resources"
 profile = "../../ig/fhir-pipes-profile.toml"
 
 [server]
@@ -16,11 +20,28 @@ base = "https://fhir-uga.healthcampaigns.org/fhir"
 name = "uga"
 token_url = "https://auth.healthcampaigns.org/realms/uga/protocol/openid-connect/token"
 
+[tables]
+# IcrCampaignActivity → campaign_activity
+strip_prefix = ["icr_"]
+
+# Every view table is partitioned by country, as in the main warehouse.
+[partition]
+column = "country"
+
+[[partition.lookup]]
+key = "location_id"
+table = "locations"
+table_key = "id"
+
+[[partition.lookup]]
+key = "campaign_id"
+table = "campaign_calendar"
+
 [tiles]
 countries = ["UGA"]
 
-# No [push]: fhir-pipes pushes to the root of a bucket, and this catalog is the bucket's
-# uga/ folder, so sdi.sh --push uploads it with rclone.
+# No [push]: fhir-pipes pushes to the root of a bucket, and this warehouse is the bucket's uga/
+# folder, so warehouse.sh --push uploads it with rclone.
 
 [[hooks]]
 name = "catalog"

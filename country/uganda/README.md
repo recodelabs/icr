@@ -12,7 +12,7 @@ Data for the Uganda ICR server, `https://fhir-uga.healthcampaigns.org/fhir` (see
 | `build.sh` | Runs it all; `--load` sends the result to the server |
 | `targets.sh`, `targets.py`, `campaign.py` | The October 2026 ICHDs: the workbook's targets, and the draft campaign with its activities and district tasks |
 | `population.sh` | WorldPop population estimates for every district, region and the country, loaded as ICRTargetPopulation Groups |
-| `fhir-pipes.toml`, `sdi.sh`, `sdi/.portolan/` | Uganda's SDI catalog: the server's Locations as GeoParquet, map tiles and Portolan metadata |
+| `fhir-pipes.toml`, `warehouse.sh`, `warehouse/.portolan/` | Uganda's warehouse: the server's Locations, the IG's views (campaigns, targets, tasks) and map tiles, with the Portolan catalog of the Locations (the SDI) |
 
 ## Admin units on the server
 
@@ -75,23 +75,32 @@ million (×1.05); 110 of 146 districts within ±20%. The largest differences:
 | Lira | 264,560 | 512,088 | 1.94 | Holds most of Lira City's people (see above) |
 | Sironko | 148,080 | 321,823 | 2.17 | To check |
 
-## SDI catalog
+## Warehouse and SDI catalog
 
-https://sdi.healthcampaigns.org/uga/ opens the Portolan browser on Uganda's catalog
-(`/uga/catalog.json`), separate from the main ICR catalog at the site's root. It holds the
-Locations of the Uganda server as GeoParquet (`parquet/locations/country=UGA/…`), the district
-map as PMTiles (`tiles/admin.pmtiles`) and the catalog's metadata, under the ODbL with credit to
-OpenStreetMap (via Overture Maps), OCHA and the ICR.
+`warehouse.sh` builds Uganda's warehouse in `warehouse/` with fhir-pipes, as `tools/warehouse`
+does for the main server: the Locations as GeoParquet (`parquet/locations/country=UGA/…`), the
+IG's ViewDefinitions as tables (`campaign_calendar`, `campaign_activity`, `target_population`,
+`campaign_task` …), the district map as PMTiles (`tiles/admin.pmtiles`) and the Portolan catalog
+of the Locations.
 
 ```bash
-./sdi.sh            # refresh from the server: fhir-pipes refresh, then the Portolan catalog
-./sdi.sh --push     # and upload to the uga/ folder of the icr R2 bucket
+./warehouse.sh            # refresh from the server (about 30 seconds)
+./warehouse.sh --push     # and upload it to the uga/ folder of the icr R2 bucket
 ```
 
-Run it after the Locations on the server change. `fhir-pipes.toml` is the refresh config;
-`tools/warehouse/catalog.sh` builds the catalog with the metadata in `sdi/.portolan/`
-(edit the descriptions, license and known issues there). The SDI Worker (`tools/sdi`) serves
-the `uga/` folder; another country's catalog needs its code added to `COUNTRY_CATALOGS` there.
+In R2, `uga/` holds the whole warehouse, private like the main warehouse at the bucket root. Two
+things read it:
+
+- **The SDI**, https://sdi.healthcampaigns.org/uga/, opens the Portolan browser on Uganda's
+  catalog (`/uga/catalog.json`). The SDI Worker (`tools/sdi`) serves only the location collection,
+  the tiles and the catalog files, under the ODbL with credit to OpenStreetMap (via Overture Maps),
+  OCHA and the ICR. Another country's catalog needs its code added to `COUNTRY_CATALOGS` there.
+- **The Uganda dashboards**, https://dashboards.healthcampaigns.org/ug/: `campaignhq/deploy.sh`
+  pulls `uga/` from R2 and builds the site from it.
+
+Run it after anything on the server changes, then redeploy the dashboards. `fhir-pipes.toml` is
+the refresh config; `tools/warehouse/catalog.sh` builds the catalog with the metadata in
+`warehouse/.portolan/` (edit the descriptions, license and known issues there).
 
 ## ICHDs, October 2026
 

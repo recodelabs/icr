@@ -2,18 +2,18 @@ build/
 overture/
 cod/
 targets-names.csv
-# sdi/ is written by sdi.sh, except the catalog's human-written metadata and its root files
+# warehouse/ is written by warehouse.sh, except the catalog's human-written metadata and its root files
 # (portolan needs catalog.json to recognise the catalog).
-sdi/*
-!sdi/.portolan/
-!sdi/catalog.json
-!sdi/versions.json
-!sdi/README.md
-!sdi/AGENTS.md
-!sdi/parquet/
-sdi/parquet/*
-!sdi/parquet/.portolan/
+warehouse/*
+!warehouse/.portolan/
+!warehouse/catalog.json
+!warehouse/versions.json
+!warehouse/README.md
+!warehouse/AGENTS.md
+!warehouse/parquet/
+warehouse/parquet/*
+!warehouse/parquet/.portolan/
 # The source files stay out of git for now: the workbook and the COD-AB zip.
 *.xlsx
 *.zip
-sdi/.portolan/.versions.lock
+warehouse/.portolan/.versions.lock
