@@ -2,7 +2,7 @@
   "resourceType": "ViewDefinition",
   "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorValue",
   "title": "ICR indicator values",
-  "description": "One row per indicator value imported from DHIS2 (`kiln dhis2 reports`): one\nindicator, one place, one period. `score` is the DHIS2 value divided by the\nindicator's factor (a proportion 0\u20131 for a percent indicator); `numerator`\nand `denominator` are DHIS2's own, or `count` for a plain-number indicator.\nDHIS2 computes every value for its own place and period, so values are never\nsummed across places or periods: read the level you want. Join `measure` to\n`IcrIndicator.url` and `location_id` to the registry.",
+  "description": "One row per indicator value imported from DHIS2 (`kiln dhis2 reports`): one\nindicator, one place, one period. `score` is the DHIS2 value divided by the\nindicator's factor (a proportion 0–1 for a percent indicator); `numerator`\nand `denominator` are DHIS2's own, or `count` for a plain-number indicator.\nDHIS2 computes every value for its own place and period, so values are never\nsummed across places or periods: read the level you want. Join `measure` to\n`IcrIndicator.url` and `location_id` to the registry.",
   "name": "IcrIndicatorValue",
   "status": "draft",
   "fhirVersion": [
@@ -42,7 +42,7 @@
           "name": "period",
           "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/dhis2-period').value.ofType(string)",
           "type": "string",
-          "description": "DHIS2 period code: 2025, 2025Q1, 202501, 2025W5, \u2026"
+          "description": "DHIS2 period code: 2025, 2025Q1, 202501, 2025W5, …"
         },
         {
           "name": "period_start",

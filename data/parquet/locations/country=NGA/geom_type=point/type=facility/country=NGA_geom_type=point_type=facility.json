@@ -40,19 +40,19 @@
   ],
   "properties": {
     "geoparquet:geometry_type": "Point",
-    "geoparquet:feature_count": 51022,
+    "geoparquet:feature_count": 52704,
     "table:column_statistics": {
       "id": {
         "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
-        "maximum": "fffc6081-543c-4681-b94a-6d0d10d0854c"
+        "maximum": "kogi-dummy-sn-ffea47b1ff"
       },
       "version_id": {
         "minimum": "1",
-        "maximum": "1"
+        "maximum": "2"
       },
       "last_updated": {
         "minimum": "2026-10-05T19:28:02.287+00:00",
-        "maximum": "2026-10-05T19:36:20.169+00:00"
+        "maximum": "2026-10-22T11:24:58.847+00:00"
       },
       "name": {
         "minimum": "1 Brigade Medical Center",
@@ -76,7 +76,7 @@
       },
       "managing_organization": {
         "minimum": "org-0001e040-0be2-4e0d-961e-cfb64f157554",
-        "maximum": "org-fffc6081-543c-4681-b94a-6d0d10d0854c"
+        "maximum": "org-kogi-dummy-sn-ffea47b1ff"
       },
       "position_longitude": {
         "minimum": "0001e040-0be2-4e0d-961e-cfb64f157554",
@@ -90,44 +90,48 @@
         "minimum": 4.28171,
         "maximum": 13.865239
       },
-      "quadkey_level": {
-        "minimum": "122202301313132330",
-        "maximum": "122230220210200133"
-      },
-      "facility_level": {
-        "minimum": 18,
-        "maximum": 18
-      },
       "ownership": {
         "minimum": "primary",
         "maximum": "unknown"
       },
-      "nhfr_code": {
+      "quadkey": {
         "minimum": "private",
-        "maximum": "unknown"
+        "maximum": "unknown",
+        "null_count": 151
+      },
+      "quadkey_level": {
+        "minimum": "122202301313132330",
+        "maximum": "122230220210200133"
+      },
+      "nhfr_code": {
+        "minimum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-code",
+        "maximum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-uid",
+        "null_count": 18003
       },
       "nhfr_uid": {
         "minimum": "01/01/1/1/1/0004",
-        "maximum": "37/06/1/3/2/0358",
-        "null_count": 16481
+        "maximum": "87654002",
+        "null_count": 18003
       },
       "facility_level_text": {
-        "minimum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-code",
-        "maximum": "https://icr.healthcampaigns.org/identifiers/nga-nhfr-uid",
-        "null_count": 16481
+        "minimum": "01/01/1/1/1/0004",
+        "maximum": "37/06/1/3/2/0358",
+        "null_count": 18003
       },
       "ownership_text": {
-        "minimum": "01/01/1/1/1/0004",
+        "minimum": "12346487",
         "maximum": "87654002",
-        "null_count": 16481
+        "null_count": 18163
       },
       "depth": {
-        "minimum": "General Hospital",
-        "maximum": "Unknown"
+        "minimum": "Clinic",
+        "maximum": "Unknown",
+        "null_count": 17
       },
       "admin_level": {
         "minimum": "Federal Government",
-        "maximum": "Unknown"
+        "maximum": "Unknown",
+        "null_count": 151
       },
       "tier": {
         "minimum": 2,
@@ -169,7 +173,7 @@
       },
       "geom_type": {
         "minimum": "{\"resourceType\":\"Organization\",\"id\":\"org-0001e040-0be2-4e0d-961e",
-        "maximum": "{\"resourceType\":\"Organization\",\"id\":\"org-fffc6081-543c-4681-b94b"
+        "maximum": "{\"resourceType\":\"Organization\",\"id\":\"org-kogi-dummy-sn-ffea47b1g"
       },
       "lon": {
         "minimum": "NGA",
@@ -184,7 +188,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-10-12T05:33:02Z"
+    "datetime": "2026-10-22T18:03:35Z"
   },
   "links": [
     {
@@ -209,8 +213,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 16763458,
-      "file:checksum": "122002444b0c35c5582a77d4b065515927405527debf3742b872c85566f4162f2e3b",
+      "file:size": 17153255,
+      "file:checksum": "1220b01b41c6da3e90b4270a1268987d41b8089b10167fea1dcfac4a5b635956d1ba",
       "roles": [
         "data"
       ]

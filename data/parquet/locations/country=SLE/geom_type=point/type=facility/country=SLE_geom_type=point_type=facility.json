@@ -90,11 +90,11 @@
         "minimum": 6.9679,
         "maximum": 9.9432
       },
-      "facility_level_text": {
+      "nhfr_code": {
         "minimum": "https://icr.healthcampaigns.org/identifiers/dhis2/sl-demo/orguni",
         "maximum": "https://icr.healthcampaigns.org/identifiers/dhis2/sl-demo/orgunj"
       },
-      "ownership_text": {
+      "nhfr_uid": {
         "minimum": "ABM75Q1UfoP",
         "maximum": "zsqxu7ZZRpO"
       },
@@ -143,7 +143,7 @@
     "vector:geometry_types": [
       "Point"
     ],
-    "datetime": "2026-10-12T05:33:02Z"
+    "datetime": "2026-10-22T18:03:35Z"
   },
   "links": [
     {
@@ -168,8 +168,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 159489,
-      "file:checksum": "12207399a479d36ba21829d3f2dac1c932d146bdd51beebe64a2c5e1de4a45627e41",
+      "file:size": 158977,
+      "file:checksum": "122053c50328d5f3ef958cdc32a55697fb4d71437e61c55d1384b0fa94fddb59271e",
       "roles": [
         "data"
       ]

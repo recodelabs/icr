@@ -80,14 +80,24 @@ const where = [
   status === "All" ? "TRUE" : `status = '${status}'`
 ].join(" AND ");
 const lgaRows = toRows(await sql([`SELECT * FROM campaigns WHERE level = 'lga' AND ${where} ORDER BY period_start, state, location_name`]));
+// An integrated round's targets per activity (list of {activity, targeted}) as plain objects.
+const plainTargets = (v) => v == null ? null : Array.from(v, (x) => {
+  const o = typeof x.toJSON === "function" ? x.toJSON() : {...x};
+  return {activity: o.activity, targeted: o.targeted == null ? null : Number(o.targeted)};
+});
+const targetsText = (d) => d.activity_targets?.length ? d.activity_targets.map((t) => `${t.activity} ${fmtInt(t.targeted)}`).join(" · ") : "";
 // Display labels (Inputs.table does not run formatters on null values).
 for (const d of lgaRows) {
+  d.activity_targets = plainTargets(d.activity_targets);
+  d.targets_text = targetsText(d);
   d.reached_text = d.reached != null ? fmtInt(d.reached) : d.result_status === "planned" ? "" : d.result_status === "in progress" ? "…" : "no report";
-  d.admin_text = d.admin_coverage != null ? `${Math.round(d.admin_coverage * 100)}%` : d.realtime_coverage != null ? `${Math.round(d.realtime_coverage * 100)}% so far` : "";
+  d.admin_text = (d.admin_coverage != null ? `${Math.round(d.admin_coverage * 100)}%` : d.realtime_coverage != null ? `${Math.round(d.realtime_coverage * 100)}% so far` : "")
+    + (d.coverage_activity && (d.admin_coverage != null || d.realtime_coverage != null) ? ` ${d.coverage_activity}` : "");
   d.survey_text = d.survey_coverage != null ? `${Math.round(d.survey_coverage * 100)}% (${Math.round(d.survey_ci_low * 100)}–${Math.round(d.survey_ci_high * 100)})` : "";
   d.lqas_text = d.lqas_result ?? "";
 }
 const stateRows = toRows(await sql([`SELECT * FROM campaigns WHERE level = 'state' AND country = 'NGA' AND ${where} ORDER BY period_start`]));
+for (const d of stateRows) d.activity_targets = plainTargets(d.activity_targets);
 ```
 
 ```js
@@ -107,12 +117,23 @@ const kpi = {
   programmes: new Set(lgaRows.map((d) => d.programme)).size
 };
 kpi.coverage = kpi.reportedTargeted > 0 ? kpi.reportedReached / kpi.reportedTargeted : null;
+kpi.integrated = lgaRows.filter((d) => d.activity_targets?.length).length;
+
+// People targeted per intervention: an integrated round adds each activity's own target,
+// any other round adds its planning denominator under its programme.
+const byIntervention = d3.rollups(
+  lgaRows.flatMap((d) => d.activity_targets?.length
+    ? d.activity_targets.map((t) => ({intervention: t.activity, targeted: t.targeted ?? 0, integrated: true}))
+    : [{intervention: d.programme, targeted: d.targeted ?? 0, integrated: false}]),
+  (v) => ({targeted: d3.sum(v, (t) => t.targeted), rounds: v.length, integrated: v.some((t) => t.integrated)}),
+  (t) => t.intervention
+).map(([intervention, v]) => ({intervention, ...v})).sort((a, b) => b.targeted - a.targeted);
 ```
 
 <div class="grid grid-cols-4" style="gap: 12px">
   <div class="card"><h2>Campaign rounds</h2><span class="big">${fmtInt(kpi.rounds)}</span><div class="muted">LGA-level rounds in selection</div></div>
   <div class="card"><h2>LGAs covered</h2><span class="big">${fmtInt(kpi.lgas)}</span><div class="muted">across ${kpi.programmes} programme${kpi.programmes === 1 ? "" : "s"}</div></div>
-  <div class="card"><h2>People targeted</h2><span class="big">${fmtInt(kpi.targeted)}</span><div class="muted">sum of planning denominators</div></div>
+  <div class="card"><h2>People targeted</h2><span class="big">${fmtInt(kpi.targeted)}</span><div class="muted">sum of planning denominators${kpi.integrated ? `; ${fmtInt(kpi.integrated)} integrated round${kpi.integrated === 1 ? " counts its" : "s count their"} largest activity target` : ""}</div></div>
   <div class="card"><h2>People reached</h2><span class="big">${kpi.reached ? fmtInt(kpi.reached) : "—"}</span><div class="muted">${kpi.coverage != null ? `${Math.round(kpi.coverage * 100)}% administrative coverage over ${fmtInt(kpi.reported)} reported round${kpi.reported === 1 ? "" : "s"}` : "no administrative reports in selection"}${kpi.noReport ? ` · ${fmtInt(kpi.noReport)} not reported` : ""}${kpi.inProgress ? ` · ${fmtInt(kpi.inProgress)} in progress` : ""}</div></div>
 </div>
 
@@ -126,6 +147,30 @@ kpi.coverage = kpi.reportedTargeted > 0 ? kpi.reportedReached / kpi.reportedTarg
     ${mapTargeted}
   </div>
 </div>
+
+<div class="card" style="margin-top: 12px">
+  <h2>People targeted by intervention</h2>
+  <div class="muted" style="margin-bottom: 6px">Integrated rounds give each intervention its own target (MR 9 months–14 years, nOPV2 0–59 months, albendazole 1–14 years), so they appear once per intervention here. Other rounds count under their programme.</div>
+  ${interventionChart}
+</div>
+
+```js
+const interventionChart = byIntervention.length
+  ? Plot.plot({
+      width,
+      height: 30 + 26 * byIntervention.length,
+      marginLeft: 210, marginRight: 90,
+      x: {label: null, grid: true, tickFormat: "s"},
+      y: {label: null, domain: byIntervention.map((d) => d.intervention)},
+      marks: [
+        Plot.barX(byIntervention, {x: "targeted", y: "intervention", fill: (d) => d.integrated ? "#2563eb" : "#94a3b8", insetTop: 4, insetBottom: 4,
+          tip: true, title: (d) => `${d.intervention}\n${fmtInt(d.targeted)} targeted in ${fmtInt(d.rounds)} LGA round${d.rounds === 1 ? "" : "s"}${d.integrated ? "\npart of integrated rounds" : ""}`}),
+        Plot.text(byIntervention, {x: "targeted", y: "intervention", text: (d) => fmtInt(d.targeted), textAnchor: "start", dx: 6, fontSize: 11}),
+        Plot.ruleX([0])
+      ]
+    })
+  : html`<div class="muted">No rounds in selection.</div>`;
+```
 
 <div class="card" style="margin-top: 12px">
   <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap">
@@ -164,8 +209,9 @@ const pad = 7 * 864e5;
 const xDomain = allRows.length
   ? [new Date(Math.min(...allRows.map((d) => +new Date(d.period_start))) - pad), new Date(Math.max(...allRows.map((d) => +new Date(d.period_end))) + pad)]
   : [new Date(`${year === "All" ? 2022 : year}-01-01`), new Date(`${year === "All" ? 2027 : year}-12-31`)];
-const barTitle = (d) => `${d.title}\n${fmtDate(d.period_start)} → ${fmtDate(d.period_end)} · ${d.status === "draft" ? "planned" : d.status}\npeople targeted: ${fmtInt(d.targeted)}`
-  + (d.reached != null ? `\npeople reached: ${fmtInt(d.reached)}${d.admin_coverage != null ? ` (${Math.round(d.admin_coverage * 100)}% admin coverage)` : ""}` : "")
+const barTitle = (d) => `${d.title}\n${fmtDate(d.period_start)} → ${fmtDate(d.period_end)} · ${d.status === "draft" ? "planned" : d.status}`
+  + (d.activity_targets?.length ? `\ntargets: ${d.activity_targets.map((t) => `${t.activity} ${fmtInt(t.targeted)}`).join(" · ")}` : `\npeople targeted: ${fmtInt(d.targeted)}`)
+  + (d.reached != null ? `\npeople reached${d.coverage_activity ? ` (${d.coverage_activity})` : ""}: ${fmtInt(d.reached)}${d.admin_coverage != null ? ` (${Math.round(d.admin_coverage * 100)}% admin coverage)` : ""}` : "")
   + (d.survey_coverage != null ? `\npost-campaign survey: ${Math.round(d.survey_coverage * 100)}% (95% CI ${Math.round(d.survey_ci_low * 100)}–${Math.round(d.survey_ci_high * 100)}), n = ${fmtInt(d.survey_n)}` : "")
   + (d.lqas_result ? `\nLQAS: ${d.lqas_result}` : "");
 
@@ -227,20 +273,20 @@ const timelineEl = timelineMode === "By state"
 ## Campaign rounds
 
 ```js
-const search = view(Inputs.search(lgaRows, {placeholder: "Search title, LGA, state…", columns: ["title", "location_name", "state", "programme", "lqas_text", "reached_text"]}));
+const search = view(Inputs.search(lgaRows, {placeholder: "Search title, LGA, state…", columns: ["title", "location_name", "state", "programme", "targets_text", "lqas_text", "reached_text"]}));
 ```
 
 ```js
 Inputs.table(search, {
-  columns: ["period_start", "period_end", "programme", "state", "location_name", "status", "targeted", "reached_text", "admin_text", "lqas_text", "survey_text", "title"],
-  header: {period_start: "Start", period_end: "End", programme: "Programme", state: "State", location_name: "LGA", status: "Status", targeted: "Targeted", reached_text: "Reached", admin_text: "Admin cov.", lqas_text: "LQAS", survey_text: "Survey", title: "Campaign"},
+  columns: ["period_start", "period_end", "programme", "state", "location_name", "status", "targeted", "targets_text", "reached_text", "admin_text", "lqas_text", "survey_text", "title"],
+  header: {period_start: "Start", period_end: "End", programme: "Programme", state: "State", location_name: "LGA", status: "Status", targeted: "Targeted", targets_text: "Targets by activity", reached_text: "Reached", admin_text: "Admin cov.", lqas_text: "LQAS", survey_text: "Survey", title: "Campaign"},
   format: {
     period_start: fmtDate, period_end: fmtDate,
     targeted: (d) => fmtInt(d),
     status: (s) => s === "draft" ? "planned" : s
   },
   align: {reached_text: "right", admin_text: "right", survey_text: "right"},
-  width: {period_start: 90, period_end: 90, programme: 160, state: 65, location_name: 110, status: 75, targeted: 85, reached_text: 85, admin_text: 80, lqas_text: 90, survey_text: 110},
+  width: {period_start: 90, period_end: 90, programme: 160, state: 65, location_name: 110, status: 75, targeted: 85, targets_text: 230, reached_text: 85, admin_text: 95, lqas_text: 90, survey_text: 110},
   sort: "period_start", reverse: false,
   rows: 18
 })

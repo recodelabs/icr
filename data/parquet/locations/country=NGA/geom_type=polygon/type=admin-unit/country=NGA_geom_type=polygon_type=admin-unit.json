@@ -141,7 +141,7 @@
     "vector:geometry_types": [
       "MultiPolygon"
     ],
-    "datetime": "2026-10-12T05:33:02Z"
+    "datetime": "2026-10-22T18:03:35Z"
   },
   "links": [
     {
@@ -166,8 +166,8 @@
     "data": {
       "href": "./part-0.parquet",
       "type": "application/vnd.apache.parquet",
-      "file:size": 2406224,
-      "file:checksum": "122081cd3988c01a03a198aa53657555a23c12a49328f77f7a06b6c9c9753856f72c",
+      "file:size": 2405708,
+      "file:checksum": "12204710ad92e88dfeff49e35778dbf73256b5d5e0745b8f6d9da29cb3cc245fdd6c",
       "roles": [
         "data"
       ]

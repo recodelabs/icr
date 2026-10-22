@@ -1,0 +1,65 @@
+{
+  "resourceType": "ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignActivity",
+  "title": "ICR campaign activities",
+  "description": "One row per activity of a campaign per target: **which interventions a campaign\ndelivers and how many people each one targets** (CarePlan.activity.detail).\nAn integrated campaign (MR beside nOPV2, or vaccination, deworming and vitamin A\non child health days) has a different eligible population for each activity, so\nit names a planning denominator per activity rather than one for the campaign.\n\nJoin `denominator_id` to the target-population view for the count; an activity\nwhose target is the sum of several estimates has one row per estimate, so sum\nthem per `campaign_id` and `activity`. Join `campaign_id` and `activity` to the\ncoverage view to divide each activity's people reached by its own target.\nCampaigns without activity details have no rows here; their target is\n`denominator_id` on the campaign calendar.",
+  "name": "IcrCampaignActivity",
+  "status": "draft",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "CarePlan",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "campaign_id",
+          "path": "getResourceKey()",
+          "type": "id",
+          "description": "The CarePlan id — join key to IcrCampaignCalendar"
+        }
+      ]
+    },
+    {
+      "forEach": "activity.detail",
+      "column": [
+        {
+          "name": "activity",
+          "path": "instantiatesCanonical.first()",
+          "type": "canonical",
+          "description": "The ICRCampaignActivity — the same canonical as Task.instantiatesCanonical and the coverage view's activity"
+        },
+        {
+          "name": "activity_status",
+          "path": "status",
+          "type": "code",
+          "description": "not-started | in-progress | completed | cancelled …"
+        },
+        {
+          "name": "activity_start",
+          "path": "scheduled.ofType(Period).start",
+          "type": "date",
+          "description": "The activity's own start, when narrower than the campaign period; empty means the campaign's"
+        },
+        {
+          "name": "activity_end",
+          "path": "scheduled.ofType(Period).end",
+          "type": "date"
+        }
+      ],
+      "select": [
+        {
+          "forEachOrNull": "extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator')",
+          "column": [
+            {
+              "name": "denominator_id",
+              "path": "value.ofType(Reference).getReferenceKey(Group)",
+              "type": "string",
+              "description": "The ICRTargetPopulation Group this activity plans against — join key to IcrTargetPopulation. Empty when the activity names none (it then uses the campaign's)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
