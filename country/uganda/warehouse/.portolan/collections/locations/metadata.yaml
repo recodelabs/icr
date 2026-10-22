@@ -1,0 +1,69 @@
+# Portolan metadata for the Uganda `parquet/locations` collection. fhir-pipes swaps in a
+# fresh parquet/locations/ on every run, so tools/warehouse/catalog.sh copies this file in
+# before `portolan add`. Edit it here.
+
+title: "Uganda location registry"
+description: |
+  Every Location on the Uganda ICR FHIR server, one GeoParquet row per resource:
+  Uganda, its 4 regions, and its 146 districts and cities as polygons, matching the
+  Ministry of Health's list of districts and cities (the October 2026 Integrated Child
+  Health Days targets) one to one. Each row carries the administrative hierarchy
+  (admin0…admin2 names and codes, `path`, `ancestor_ids`), the P-code (`pcode`), the
+  Overture Maps id (`gers_id`) and the complete FHIR resource in `fhir_json`.
+
+  Ids are `uga`, `uga-<region>` (`uga-n`, `uga-e`, `uga-c`, `uga-w`) and
+  `uga-<region>-<name>` (`uga-n-abim`, `uga-n-lira-city`). Hive-partitioned by `country`
+  / `geom_type` / `type`. Geometry is WGS 84 (OGC:CRS84) WKB.
+
+contact:
+  name: "Recode Labs — ICR team"
+  email: "mberg@ona.io"
+
+license: "ODbL-1.0"
+license_url: "https://opendatacommons.org/licenses/odbl/1-0/"
+keywords: ["administrative boundaries", "districts", "Uganda", "FHIR", "immunization", "campaigns", "Overture Maps", "OpenStreetMap"]
+attribution: "© OpenStreetMap contributors (ODbL), via Overture Maps · OCHA COD-AB · UNICEF ICR"
+
+providers:
+  - name: "OpenStreetMap contributors, via Overture Maps"
+    roles: ["producer", "licensor"]
+    url: "https://overturemaps.org"
+  - name: "OCHA — Common Operational Datasets (Lira City boundary, P-codes)"
+    roles: ["producer"]
+    url: "https://data.humdata.org/dataset/cod-ab-uga"
+  - name: "Recode Labs"
+    roles: ["processor", "host"]
+    url: "https://recodelabs.org"
+
+source_url: "https://fhir-uga.healthcampaigns.org/fhir"
+processing_notes: |
+  District and city boundaries are Overture Maps release 2026-10-21.0 (its `county`
+  level, from OpenStreetMap), changed in two places to match the ministry's list: Entebbe
+  City, a separate unit in Overture, is merged into Wakiso; Lira City, missing from
+  Overture, is the OCHA COD-AB's Lira Municipality (2020), cut out of Lira. Region and
+  country boundaries are the union of their districts. P-codes are the COD-AB's (v01,
+  2020), matched by name. The units were built with country/uganda/build.sh in the ICR
+  repo (fhir-pipes import location-boundaries), loaded into the Uganda FHIR server, and
+  exported here with fhir-pipes refresh (country/uganda/fhir-pipes.toml). FHIR stays the
+  master; this table is regenerated in full on each refresh.
+known_issues: |
+  Lira City's boundary is the 2020 municipality, smaller than the city today. The 10
+  cities and Terego (created in 2020) have no P-code; Lira City carries Lira
+  Municipality's. The map tiles name their layers `states` (regions) and `lgas`
+  (districts and cities), fhir-pipes' fixed names.
+
+examples:
+  - engine: duckdb
+    description: "Districts and cities per region (read over HTTP)"
+    code: |
+      SELECT admin1_name AS region, count(*) AS districts
+      FROM read_parquet('https://sdi.healthcampaigns.org/uga/parquet/locations/country=UGA/geom_type=polygon/type=admin-unit/part-0.parquet')
+      WHERE admin_level = 2
+      GROUP BY 1 ORDER BY 1;
+  - engine: python
+    description: "Load the district boundaries with GeoPandas"
+    code: |
+      import geopandas as gpd
+      units = gpd.read_parquet(
+          "https://sdi.healthcampaigns.org/uga/parquet/locations/country=UGA/geom_type=polygon/type=admin-unit/part-0.parquet")
+      districts = units[units.admin_level == 2]

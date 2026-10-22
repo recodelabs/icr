@@ -1,0 +1,8 @@
+title: "Location registry"
+description: "The Uganda ICR location registry as hive-partitioned GeoParquet — one collection, `locations`."
+contact:
+  name: "Recode Labs — ICR team"
+  email: "mberg@ona.io"
+license: "ODbL-1.0"
+license_url: "https://opendatacommons.org/licenses/odbl/1-0/"
+attribution: "© OpenStreetMap contributors (ODbL), via Overture Maps · OCHA COD-AB · UNICEF ICR"

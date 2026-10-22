@@ -1,0 +1,6 @@
+# Uganda ICR server (../country/docker-compose.yml, env file country/uga.env): the gateway
+# only, HAPI itself has no public address.
+fhir-uga.healthcampaigns.org {
+	encode gzip
+	reverse_proxy uga-gateway:8080
+}

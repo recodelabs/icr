@@ -1,0 +1,19 @@
+build/
+overture/
+cod/
+targets-names.csv
+# warehouse/ is written by warehouse.sh, except the catalog's human-written metadata and its root files
+# (portolan needs catalog.json to recognise the catalog).
+warehouse/*
+!warehouse/.portolan/
+!warehouse/catalog.json
+!warehouse/versions.json
+!warehouse/README.md
+!warehouse/AGENTS.md
+!warehouse/parquet/
+warehouse/parquet/*
+!warehouse/parquet/.portolan/
+# The source files stay out of git for now: the workbook and the COD-AB zip.
+*.xlsx
+*.zip
+warehouse/.portolan/.versions.lock

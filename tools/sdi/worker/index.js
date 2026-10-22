@@ -14,14 +14,19 @@
 //   parquet/locations/**                             ← the collection (metadata + GeoParquet)
 //   tiles/*.pmtiles                                  ← MapLibre tiles of the same locations
 //
-// Routing: /  → the Portolan browser opened on this catalog; everything else →
+// A country with its own ICR server has its own catalog in a folder of the bucket named by
+// its code (uga/ → https://sdi.healthcampaigns.org/uga/), laid out the same way and pushed by
+// fhir-pipes refresh with that country's config (country/<name>/fhir-pipes.toml).
+//
+// Routing: / (or /uga/) → the Portolan browser opened on that catalog; everything else →
 // the object at that path. Objects change in place on each refresh, and
 // Cloudflare's edge kept serving stale JSON under a max-age, so responses are
 // no-cache: clients may keep them but must revalidate (ETag → 304), which is
 // cheap and keeps range readers correct.
 
-const CATALOG_URL = "https://sdi.healthcampaigns.org/catalog.json";
+const SITE = "https://sdi.healthcampaigns.org/";
 const BROWSER = "https://browser.portolan-sdi.org/#/external/";
+const COUNTRY_CATALOGS = ["uga"];
 const SERVED = /^(catalog\.json|README\.md|AGENTS\.md|versions\.json|parquet\/(catalog\.json|README\.md|AGENTS\.md|locations\/.+)|tiles\/[^/]+\.pmtiles)$/;
 const HIDDEN = /(^|\/)\./;
 
@@ -58,8 +63,12 @@ export default {
 
     const url = new URL(request.url);
     const path = decodeURIComponent(url.pathname).replace(/^\/+/, "");
-    if (path === "") return Response.redirect(BROWSER + encodeURIComponent(CATALOG_URL), 302);
-    if (!SERVED.test(path) || HIDDEN.test(path)) return respond("Not found", {status: 404});
+    // A country catalog's paths are the root catalog's under its folder.
+    const [first, ...rest] = path.split("/");
+    const folder = COUNTRY_CATALOGS.includes(first) ? `${first}/` : "";
+    const inner = folder ? rest.join("/") : path;
+    if (inner === "") return Response.redirect(BROWSER + encodeURIComponent(`${SITE}${folder}catalog.json`), 302);
+    if (!SERVED.test(inner) || HIDDEN.test(inner)) return respond("Not found", {status: 404});
 
     const ranged = request.headers.has("range");
     const obj = await env.ICR.get(path, {range: ranged ? request.headers : undefined, onlyIf: request.headers});

@@ -1,0 +1,2 @@
+# Per-country env files hold database passwords; they live on the VM only.
+*.env

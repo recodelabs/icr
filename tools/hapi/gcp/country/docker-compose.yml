@@ -1,0 +1,123 @@
+# One country's ICR server on the hosted VM: its own HAPI and Postgres, and a FHIR Info
+# Gateway in front that only accepts tokens from the country's Keycloak realm.
+#
+#   https://$FHIR_HOST/fhir     the gateway (API key required; /fhir/metadata is open)
+#
+# HAPI has no public address. Caddy and Keycloak are the main stack's (../docker-compose.yml):
+# the gateway joins its network as `$COUNTRY-gateway`, which ../sites/$COUNTRY.caddy proxies to,
+# and keys are clients in the realm named $COUNTRY (../gateway/api-key.sh with REALM=$COUNTRY).
+# Everything else is the country's own, so the stack can move to its own VM as a unit.
+#
+# The services are called country-hapi and country-gateway, not hapi and gateway: Docker gives a
+# container its service name on every network it joins, and on the shared network `hapi` and
+# `gateway` are the main stack's. The gateway would otherwise sometimes reach the main HAPI,
+# and Caddy would sometimes send the main gateway's traffic here.
+#
+# Run from /opt/icr-hapi/gcp on the VM, one env file per country (see country/.env.example):
+#   sudo docker compose -f country/docker-compose.yml --env-file country/uga.env up -d
+name: icr-${COUNTRY:?set in the env file}
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in the env file}
+    # sized for a small registry; raise with the data
+    command: >
+      postgres
+      -c shared_buffers=${PG_SHARED_BUFFERS:-256MB}
+      -c effective_cache_size=1GB
+      -c work_mem=16MB
+      -c maintenance_work_mem=128MB
+      -c random_page_cost=1.1
+    shm_size: 256m
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  country-hapi:
+    image: hapiproject/hapi:v8.12.0-1
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_LOCATION: file:///app/config/application.yaml
+      spring.datasource.password: ${POSTGRES_PASSWORD}
+      # HAPI is only reached through the gateway, which rewrites links that start with its
+      # PROXY_TO (below) to its own public base, so paging links and fullUrls come out right.
+      hapi.fhir.server_address: http://country-hapi:3447/fhir
+      hapi.fhir.tester.home.name: ICR ${COUNTRY}
+      JAVA_TOOL_OPTIONS: -Xmx${HAPI_HEAP:-1536m}
+    volumes:
+      - ../../hapi.application.yaml:/app/config/application.yaml:ro
+
+  # Same image and settings as the main stack's gateway (see ../docker-compose.yml), but the
+  # tokens must come from this country's realm, so a key for one country opens no other.
+  country-gateway:
+    image: us-docker.pkg.dev/fhir-proxy-build/stable/fhir-gateway:v0.5.0
+    restart: unless-stopped
+    depends_on:
+      country-hapi:
+        condition: service_started
+    environment:
+      PROXY_TO: http://country-hapi:3447/fhir
+      TOKEN_ISSUER: ${TOKEN_ISSUER:?set in the env file}
+      BACKEND_TYPE: HAPI
+      ACCESS_CHECKER: list
+      RUN_MODE: PROD
+      ALLOWED_QUERIES_FILE: /config/allowed-queries.json
+      JAVA_TOOL_OPTIONS: -Xmx384m
+    volumes:
+      - ../gateway/allowed-queries.json:/config/allowed-queries.json:ro
+    networks:
+      default:
+      shared:
+        aliases: ["${COUNTRY}-gateway"]
+
+  # A pg_dump into the backups volume once a day after 02:00 UTC, the last 14 kept. Checks every
+  # 10 minutes, so a restart doesn't skip a day; waits until HAPI has created its tables.
+  # `country.sh backup CODE` makes one now.
+  backup:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGUSER: hapi
+      PGDATABASE: hapi
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      COUNTRY: ${COUNTRY}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -o pipefail
+        while true; do
+          f=/backups/$$COUNTRY-$$(date -u +%Y%m%d).sql.gz
+          if [ ! -f $$f ] && [ $$(date -u +%H) -ge 2 ] &&
+             [ "$$(psql -tAc "select to_regclass('hfj_resource') is not null")" = t ]; then
+            pg_dump | gzip > $$f.tmp && mv $$f.tmp $$f && echo "backup $$f" || rm -f $$f.tmp
+            ls -1t /backups/*.sql.gz | tail -n +15 | xargs -r rm --
+          fi
+          sleep 600
+        done
+    volumes:
+      - backups:/backups
+
+networks:
+  shared:
+    external: true
+    name: ${MAIN_NETWORK:-icr-hapi_default}   # the main stack's network (project icr-hapi)
+
+volumes:
+  pgdata:
+  backups:

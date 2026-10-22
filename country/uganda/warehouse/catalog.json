@@ -1,0 +1,37 @@
+{
+  "type": "Catalog",
+  "id": "icr-uga",
+  "stac_version": "1.1.0",
+  "description": "The location registry of the Uganda Integrated Campaign Registry (ICR) server, exported as\nGeoParquet: Uganda's administrative boundaries (the country, 4 regions and 146 districts\nand cities), the units the Ministry of Health plans campaigns by.",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./catalog.json",
+      "type": "application/json",
+      "title": "ICR Uganda"
+    },
+    {
+      "rel": "agents",
+      "href": "./AGENTS.md",
+      "type": "text/markdown",
+      "title": "Agent/LLM usage guide"
+    },
+    {
+      "rel": "describedby",
+      "href": "./README.md",
+      "type": "text/markdown",
+      "title": "Human-readable documentation"
+    },
+    {
+      "rel": "child",
+      "href": "./parquet/catalog.json",
+      "type": "application/json",
+      "title": "Location registry"
+    }
+  ],
+  "title": "ICR Uganda",
+  "stac_extensions": [
+    "https://schemas.portolan-sdi.org/portolan/v0.2.0/schema.json"
+  ],
+  "updated": "2026-10-22T18:40:25Z"
+}

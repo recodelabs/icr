@@ -1,0 +1,7 @@
+# Portolan CLI configuration for the Uganda catalog (country/uganda/warehouse ⇄ r2:icr/uga ⇄
+# https://sdi.healthcampaigns.org/uga/). Built by `fhir-pipes refresh` with
+# country/uganda/fhir-pipes.toml; the catalog hook is tools/warehouse/catalog.sh.
+tabular.enabled: 'true'
+
+publish:
+  public_url: https://sdi.healthcampaigns.org/uga/

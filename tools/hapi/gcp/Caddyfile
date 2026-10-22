@@ -13,3 +13,6 @@
 	encode gzip
 	reverse_proxy gateway:8080
 }
+
+# One file per country server (country/docker-compose.yml), e.g. sites/uga.caddy.
+import sites/*.caddy
