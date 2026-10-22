@@ -10,24 +10,26 @@
 # from its own directory here:
 #   sldash/    → /dhis2-sl/         the DHIS2 demo's Sierra Leone dashboards
 #   sl-redux/  → /dhis2-sl-redux/   the same, redrawn for comparing districts
+#   uganda/    → /ug/               Uganda's planning data, from the Uganda ICR server
+#                                   (run uganda/refresh.sh first)
 # The main site's sync leaves those folders alone.
 #
 # Usage: ./deploy.sh [--skip-build] [--dry-run] [SITE...]
-#        SITE: main (the default), sldash, sl-redux, or all
+#        SITE: main (the default), sldash, sl-redux, uganda, or all
 # Env:   R2_BUCKET (icr)  R2_REMOTE (r2)  BR_CACHE (~/.cache/campaignhq-br)
 set -euo pipefail
 cd "$(dirname "$0")"
 BUCKET="${R2_BUCKET:-icr}"
 REMOTE="${R2_REMOTE:-r2}"
-SUBSITES=("sldash:dhis2-sl" "sl-redux:dhis2-sl-redux")
+SUBSITES=("sldash:dhis2-sl" "sl-redux:dhis2-sl-redux" "uganda:ug")
 BR_CACHE="${BR_CACHE:-$HOME/.cache/campaignhq-br}"
 BUILD=1; DRY=""; SITES=()
 for a in "$@"; do
   case "$a" in
     --skip-build) BUILD=0 ;;
     --dry-run) DRY="--dry-run" ;;
-    main|sldash|sl-redux) SITES+=("$a") ;;
-    all) SITES+=(main sldash sl-redux) ;;
+    main|sldash|sl-redux|uganda) SITES+=("$a") ;;
+    all) SITES+=(main sldash sl-redux uganda) ;;
     *) echo "unknown option $a" >&2; exit 2 ;;
   esac
 done

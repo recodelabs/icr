@@ -18,7 +18,8 @@ export default {
         // An external URL here (unlike the /-prefixed paths above) makes Framework
         // open it in a new tab automatically; the ↗ is added by the CSS below.
         {name: "ODK Locations", path: "https://odklocations.healthcampaigns.org/"},
-        {name: "SDI Portolan", path: "https://sdi.healthcampaigns.org/"}
+        {name: "SDI Portolan", path: "https://sdi.healthcampaigns.org/"},
+        {name: "Uganda dashboards", path: "https://dashboards.healthcampaigns.org/ug/"}
       ]
     }
   ],
