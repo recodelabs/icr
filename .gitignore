@@ -62,3 +62,7 @@ tools/catchments/out/
 
 # tools/microplan-builder generated NDJSON (rebuilt by build.py from data/parquet)
 tools/microplan-builder/out/
+
+# fhir-pipes' run lock in a warehouse folder (data/, country/*/warehouse/): an empty file it
+# keeps on purpose; the lock itself ends with the run.
+.refresh.lock

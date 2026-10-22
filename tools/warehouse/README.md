@@ -139,8 +139,10 @@ can respond with 200 and still fail in its DuckDB queries.
 - **Portolan metadata beside the data.** Warehouse folders hold Portolan files
   (`items.parquet`, `collection.json`) next to the tables. Read tables with globs that
   start at `country=*/`, as `data/catalog.sql` and the loaders do.
-- **Lock file.** fhir-pipes leaves `data/.refresh.lock` behind after a clean run. Don't
-  commit it.
+- **Lock file.** `.refresh.lock` in a warehouse folder is fhir-pipes' run lock: a run holds
+  an operating-system lock on it, so two refreshes of one warehouse take turns, and the lock
+  ends with the process. The empty file stays by design and never blocks a later run.
+  `.gitignore` keeps it out of git.
 - **What is public.** The dashboards are public, including the Ministry of Health's ICHD
   targets on `/ug/`; a login is planned. The SDI is public by design. The warehouses in R2
   are private: the bucket has no public URL. The main FHIR server's open address
@@ -157,5 +159,4 @@ can respond with 200 and still fail in its DuckDB queries.
 - A full location extract shows no progress.
 - The location GeoParquet leaves out locations without coordinates. This is why the Sierra
   Leone sites read `raw/`.
-- `.refresh.lock` is left behind after a clean run.
 - The push can only target the root of a bucket.
