@@ -232,6 +232,13 @@ Description: "The JRSM-aligned endemicity ladder. Binding: extensible (not requi
 * ^experimental = false
 * include codes from system ICREndemicityStatusCS
 
+ValueSet: ICRTaskInputTypeVS
+Id: icr-task-input-type
+Title: "ICR Task Input Type"
+Description: "The standard Task.input types. Binding: extensible on ICRCampaignTask.input.type, so deployment-specific inputs stay legal as custom codes or text."
+* ^experimental = false
+* include codes from system ICRTaskInputTypeCS
+
 ValueSet: ICRTaskOutputTypeVS
 Id: icr-task-output-type
 Title: "ICR Task Output Type"

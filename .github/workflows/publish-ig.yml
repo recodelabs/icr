@@ -67,13 +67,14 @@ jobs:
           key: fhir-packages-${{ hashFiles('ig/sushi-config.yaml') }}
           restore-keys: fhir-packages-
 
+      # The Publisher version is pinned in ig/_updatePublisher.sh; the cache key follows that
+      # script, so changing the pin downloads the new jar once and later runs reuse it.
       - name: Cache IG Publisher jar
         id: cache-publisher
         uses: actions/cache@v4
         with:
           path: ig/input-cache/publisher.jar
-          key: ig-publisher-${{ github.run_number }}
-          restore-keys: ig-publisher-
+          key: ig-publisher-${{ hashFiles('ig/_updatePublisher.sh') }}
 
       - name: Download IG Publisher
         if: steps.cache-publisher.outputs.cache-hit != 'true'

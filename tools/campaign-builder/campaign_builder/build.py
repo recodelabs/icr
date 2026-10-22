@@ -64,24 +64,34 @@ def build(cfg: Config, as_of: date) -> dict[str, list[dict]]:
         if ctype == "integrated" and any(s.protocol.endswith("ntd-integrated") for s in r.states):
             extra_types.append("mda")
 
+        def targets(protocol: str, group_for_band) -> list[tuple[str, str]]:
+            """An integrated campaign's target per activity: its age band's Group for this scope."""
+            return [(aid, group_for_band(band)) for aid, band in fhir.action_bands(protocol)]
+
         national_id = None
         if r.multi_state:
             national_id = f"nga-demo-{r.id}"
             names = ", ".join(cfg.states[s.state_code].name for s in r.states)
-            # National umbrella: its own denominator is the sum over the states in scope.
-            gid = f"nga-demo-pop-{band_key.replace('_', '')}-{r.year}-{r.id}"
-            band = cfg.age_bands[band_key]
-            total = sum(band_population(cfg.states[s.state_code], r.year, band) for s in r.states)
-            if gid not in populations:
-                populations[gid] = fhir.population_group(cfg, _Scope(names), cfg.country_location, band, r.year, total, gid)
-                populations[gid]["name"] = f"{band.label}, {names} ({r.year}, {r.title})"
+
+            def national_group(bk: str) -> str:
+                # National umbrella: its own denominator is the sum over the states in scope.
+                gid = f"nga-demo-pop-{bk.replace('_', '')}-{r.year}-{r.id}"
+                band = cfg.age_bands[bk]
+                total = sum(band_population(cfg.states[s.state_code], r.year, band) for s in r.states)
+                if gid not in populations:
+                    populations[gid] = fhir.population_group(cfg, _Scope(names), cfg.country_location, band, r.year, total, gid)
+                    populations[gid]["name"] = f"{band.label}, {names} ({r.year}, {r.title})"
+                return gid
+
+            gid = national_group(band_key)
             care_plans.append(fhir.care_plan(
                 cfg, cid=national_id, title=f"{r.title} — {names}",
                 description=f"{prog['label']}: {r.title}. Umbrella across {len(r.states)} states; "
                             f"each state and LGA has its own round CarePlan (partOf).",
                 protocol=r.states[0].protocol, campaign_type=ctype, subject_group=gid,
                 start=r.start, end=r.end, as_of=as_of, geography_id=cfg.country_location, geography_name="Nigeria",
-                round_number=r.round_number, part_of=None, created_lead_days=75, activity_types=extra_types))
+                round_number=r.round_number, part_of=None, created_lead_days=75, activity_types=extra_types,
+                activity_targets=targets(r.states[0].protocol, national_group)))
 
         for sr in r.states:
             state = cfg.states[sr.state_code]
@@ -93,7 +103,8 @@ def build(cfg: Config, as_of: date) -> dict[str, list[dict]]:
                             f"({sr.start:%d %b} – {sr.end:%d %b %Y}).",
                 protocol=sr.protocol, campaign_type=ctype, subject_group=sgid,
                 start=sr.start, end=sr.end, as_of=as_of, geography_id=state.id, geography_name=f"{state.name} State",
-                round_number=r.round_number, part_of=national_id, created_lead_days=60, activity_types=extra_types))
+                round_number=r.round_number, part_of=national_id, created_lead_days=60, activity_types=extra_types,
+                activity_targets=targets(sr.protocol, lambda bk: pop_group(state, state.id, bk, r.year))))
             for w in sr.windows:
                 lgid = pop_group(w.lga, w.lga.id, band_key, r.year)
                 care_plans.append(fhir.care_plan(
@@ -103,7 +114,8 @@ def build(cfg: Config, as_of: date) -> dict[str, list[dict]]:
                                 f"{state.name} State, wave {w.batch + 1}.",
                     protocol=sr.protocol, campaign_type=ctype, subject_group=lgid,
                     start=w.start, end=w.end, as_of=as_of, geography_id=w.lga.id, geography_name=f"{w.lga.name} LGA",
-                    round_number=r.round_number, part_of=state_cid, created_lead_days=45, activity_types=extra_types))
+                    round_number=r.round_number, part_of=state_cid, created_lead_days=45, activity_types=extra_types,
+                    activity_targets=targets(sr.protocol, lambda bk: pop_group(w.lga, w.lga.id, bk, r.year))))
 
     reports, results_summary = build_results(cfg, load_results_config(cfg_dir(cfg)), rounds, populations, as_of, _short)
     statuses, endemicity_summary = build_endemicity(cfg, cfg.endemicity, as_of, _short)

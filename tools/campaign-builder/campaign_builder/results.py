@@ -251,6 +251,7 @@ def build_results(cfg: Config, rc: dict, rounds: list[Round], populations: dict[
     summary = {"admin": 0, "realtime": 0, "survey_state": 0, "lqas": 0, "ces": 0, "missing": 0, "incidents": 0, "over100": 0}
 
     for r in rounds:
+        first_report = len(reports)
         prog_cfg = cfg.programmes[r.programme]
         band_key = prog_cfg["age_band"]
         prog = rc["programmes"][r.programme]
@@ -380,6 +381,13 @@ def build_results(cfg: Config, rc: dict, rounds: list[Round], populations: dict[
                     ci=(_pct(lo), _pct(hi)),
                     stratifiers=_survey_strata(rr, est, n, bands)))
                 summary["survey_state"] += 1
+
+        # An integrated round's reports name the activity they cover (campaign-activity), so their
+        # denominator is read as that activity's target, not one for the whole campaign.
+        if prog.get("activity"):
+            for rep in reports[first_report:]:
+                rep["extension"].append({"url": f"{SD}/campaign-activity",
+                                            "valueCanonical": f"{cfg.canonical_base}/ActivityDefinition/{prog['activity']}"})
 
     return reports, summary
 

@@ -16,14 +16,14 @@ Usage: #definition
 * experimental = false
 * name = "ICRAdminCoverage"
 * title = "ICR Administrative Coverage"
-* description = "Doses/treatments delivered ÷ planning denominator, from tallies. Disaggregable by sex, age band, delivery strategy and geography."
+* description = "Doses/treatments delivered ÷ planning denominator, from tallies. Disaggregable by sex, age band, delivery strategy and geography. For an integrated campaign there is one report per activity (campaign-activity), each divided by that activity's own planning denominator."
 * scoring = $MeasureScoring#proportion "Proportion"
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].criteria.language = #text/cql
-* group.population[0].criteria.expression = "Doses/treatments administered in the period (record-origin = campaign)"
+* group.population[0].criteria.expression = "Doses/treatments administered in the period (record-origin = campaign); when the report names a campaign-activity, only that activity's (its product, or events from tasks instantiating it)"
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].criteria.language = #text/cql
-* group.population[1].criteria.expression = "Planning denominator (the flagged ICRTargetPopulation for the geography)"
+* group.population[1].criteria.expression = "Planning denominator: when the report names a campaign-activity, the planning-denominator(s) on the campaign's activity.detail for that activity (summed when several); otherwise, or when that activity names none, the campaign's planning-denominator"
 * group.stratifier[0].code = $CoverageStratifier#sex "Sex"
 * group.stratifier[0].criteria.language = #text/cql
 * group.stratifier[0].criteria.expression = "Patient.gender"
@@ -196,7 +196,7 @@ Usage: #definition
 * group[1].code = $CostFigure#per-person-targeted "Cost per person targeted"
 * group[1].population[0].code = $MeasurePopulation#denominator "Denominator"
 * group[1].population[0].criteria.language = #text/cql
-* group[1].population[0].criteria.expression = "Planning denominator (the flagged ICRTargetPopulation for the geography; denominator-type as declared)"
+* group[1].population[0].criteria.expression = "Planning denominator, resolved as in icr-admin-coverage: the activity's (activity.detail) when the report names a campaign-activity, otherwise the campaign's; denominator-type as declared"
 * group[1].stratifier[0].code = $CoverageStratifier#geography "Geography"
 * group[1].stratifier[0].criteria.language = #text/cql
 * group[1].stratifier[0].criteria.expression = "Reporting Location"
