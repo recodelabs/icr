@@ -12,7 +12,7 @@ here compiled to WebAssembly instead: see `src/components/odk-locations/`)
 running in the same tab. Nothing is uploaded to a server; the export button
 triggers a local file download.
 
-Static site, same pattern as `../../campaignhq/`: Observable Framework, built
+Static site, same pattern as `../../dashboards/`: Observable Framework, built
 ahead of time, served from Cloudflare R2 by a small Worker.
 
 ## Data
@@ -37,7 +37,7 @@ npm run build   # → dist/
 
 ## Deploy — https://odklocations.healthcampaigns.org
 
-Same as `campaignhq/`: a Cloudflare Worker (`worker/index.js`) serves the
+Same as `dashboards/`: a Cloudflare Worker (`worker/index.js`) serves the
 built site straight from the `icr` R2 bucket, under `_site/odklocations/`.
 
 ```bash

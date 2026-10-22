@@ -95,7 +95,7 @@ things read it:
   catalog (`/uga/catalog.json`). The SDI Worker (`tools/sdi`) serves only the location collection,
   the tiles and the catalog files, under the ODbL with credit to OpenStreetMap (via Overture Maps),
   OCHA and the ICR. Another country's catalog needs its code added to `COUNTRY_CATALOGS` there.
-- **The Uganda dashboards**, https://dashboards.healthcampaigns.org/ug/: `campaignhq/deploy.sh`
+- **The Uganda dashboards**, https://dashboards.healthcampaigns.org/ug/: `dashboards/` (`npx observatory deploy uganda`)
   pulls `uga/` from R2 and builds the site from it.
 
 Run it after anything on the server changes, then redeploy the dashboards. `fhir-pipes.toml` is

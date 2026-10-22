@@ -40,12 +40,12 @@ data/parquet/_report.json
 data/.portolan/.versions.lock
 data/tiles/
 
-# campaignhq (Observable Framework)
-campaignhq/node_modules/
-campaignhq/dist/
-campaignhq/src/.observablehq/
+# dashboards (Observable Framework sites, built with Observatory)
+dashboards/node_modules/
+dashboards/sites/*/dist/
+dashboards/sites/*/src/.observablehq/
+dashboards/worker/.wrangler/
 .wrangler/
-campaignhq/.wrangler/
 
 # tools/sdi (Cloudflare Worker for sdi.healthcampaigns.org)
 tools/sdi/node_modules/
