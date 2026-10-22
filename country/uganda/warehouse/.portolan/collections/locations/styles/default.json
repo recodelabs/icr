@@ -18,7 +18,7 @@
       "id": "districts-fill",
       "type": "fill",
       "source": "data",
-      "source-layer": "lgas",
+      "source-layer": "districts",
       "paint": {
         "fill-color": "#dfe8f1",
         "fill-opacity": 0.7
@@ -28,7 +28,7 @@
       "id": "districts-line",
       "type": "line",
       "source": "data",
-      "source-layer": "lgas",
+      "source-layer": "districts",
       "paint": {
         "line-color": "#9db4cc",
         "line-width": [
@@ -50,7 +50,7 @@
       "id": "regions-line",
       "type": "line",
       "source": "data",
-      "source-layer": "states",
+      "source-layer": "regions",
       "paint": {
         "line-color": "#4a6d8c",
         "line-width": [
@@ -94,7 +94,7 @@
       "id": "district-names",
       "type": "symbol",
       "source": "data",
-      "source-layer": "lgas",
+      "source-layer": "districts",
       "minzoom": 7,
       "layout": {
         "text-field": [

@@ -30,5 +30,5 @@ from the cached R2 warehouse, or with `--local` from `country/uganda/warehouse/`
 `warehouse.sh` first). The maps are Observatory's `adminMap`
 (`src/components/uganda-map.js` sets Uganda's bounds).
 
-The boundary tiles' layers are named `states` (regions) and `lgas` (districts and cities):
-fhir-pipes names admin levels 1 and 2 the Nigerian way for every country.
+The boundary tiles' layers are `country`, `regions` and `districts` (districts and cities),
+named by the Uganda profile, `ig/fhir-pipes-profile-uganda.toml`.
