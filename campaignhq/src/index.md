@@ -158,8 +158,9 @@ const byIntervention = d3.rollups(
 const interventionChart = byIntervention.length
   ? Plot.plot({
       width,
-      height: 30 + 26 * byIntervention.length,
-      marginLeft: 210, marginRight: 90,
+      // One band of 28px per intervention plus the axis, so a single bar still has room.
+      height: 46 + 28 * byIntervention.length,
+      marginTop: 8, marginBottom: 30, marginLeft: 210, marginRight: 90,
       x: {label: null, grid: true, tickFormat: "s"},
       y: {label: null, domain: byIntervention.map((d) => d.intervention)},
       marks: [
