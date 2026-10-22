@@ -90,6 +90,7 @@ programmes:
     strategies: {fixed-post: 0.40, temporary-post: 0.30, house-to-house: 0.30}
     age_bands: {"6–11 months": 0.10, "12–59 months": 0.90}
   mr-integrated:
+    activity: nga-demo-act-mr     # the reports cover MR: their denominator is the MR target (9 months–14 years)
     quality: [0.86, 1.00]
     round_sd: 0.03
     measure: icr-admin-coverage

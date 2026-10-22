@@ -30,6 +30,7 @@ age_bands:
   m6_59:       {label: "Children 6–59 months",          low: 6,  low_unit: mo, high: 59, high_unit: mo, fraction: 0.175}
   m9_59:       {label: "Children 9–59 months",          low: 9,  low_unit: mo, high: 59, high_unit: mo, fraction: 0.160}
   m9_y14:      {label: "Children 9 months–14 years",    low: 9,  low_unit: mo, high: 14, high_unit: a,  fraction: 0.440}
+  y1_14:       {label: "Children 1–14 years",           low: 1,  low_unit: a,  high: 14, high_unit: a,  fraction: 0.415}
   y5_14:       {label: "School-age children 5–14 years", low: 5, low_unit: a,  high: 14, high_unit: a,  fraction: 0.300}
   y5_plus:     {label: "Population 5 years and older",  low: 5,  low_unit: a,  high: null, high_unit: a, fraction: 0.815}
   m6_plus:     {label: "Population 6 months and older", low: 6,  low_unit: mo, high: null, high_unit: a, fraction: 0.985}
