@@ -71,7 +71,8 @@ const scopePop = pop.get(scopeId);
 </div>
 
 ```js
-const scopeTotals = ACTIVITIES.map((a) => ({key: a.key, label: a.label, target: targetFor(region, a.key) ?? 0, selected: a.key === activity}));
+const scopeTotals = ACTIVITIES.map((a) => ({key: a.key, label: a.label, target: targetFor(region, a.key) ?? 0, selected: a.key === activity}))
+  .sort((a, b) => b.target - a.target);  // largest first
 const activityChart = Plot.plot({
   width,
   height: 34 + 28 * scopeTotals.length,
