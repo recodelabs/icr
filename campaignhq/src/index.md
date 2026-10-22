@@ -120,14 +120,17 @@ kpi.coverage = kpi.reportedTargeted > 0 ? kpi.reportedReached / kpi.reportedTarg
 kpi.integrated = lgaRows.filter((d) => d.activity_targets?.length).length;
 
 // People targeted per intervention: an integrated round adds each activity's own target,
-// any other round adds its planning denominator under its programme.
-const byIntervention = d3.rollups(
+// any other round adds its planning denominator under its programme. One part per kind of
+// round, so an intervention given both ways (nOPV2) shows both.
+const targetParts = d3.flatRollup(
   lgaRows.flatMap((d) => d.activity_targets?.length
     ? d.activity_targets.map((t) => ({intervention: t.activity, targeted: t.targeted ?? 0, integrated: true}))
     : [{intervention: d.programme, targeted: d.targeted ?? 0, integrated: false}]),
-  (v) => ({targeted: d3.sum(v, (t) => t.targeted), rounds: v.length, integrated: v.some((t) => t.integrated)}),
-  (t) => t.intervention
-).map(([intervention, v]) => ({intervention, ...v})).sort((a, b) => b.targeted - a.targeted);
+  (v) => ({targeted: d3.sum(v, (t) => t.targeted), rounds: v.length}),
+  (t) => t.intervention, (t) => t.integrated
+).map(([intervention, integrated, v]) => ({intervention, integrated, ...v}));
+const byIntervention = d3.rollups(targetParts, (v) => d3.sum(v, (t) => t.targeted), (t) => t.intervention)
+  .map(([intervention, targeted]) => ({intervention, targeted})).sort((a, b) => b.targeted - a.targeted);
 ```
 
 <div class="grid grid-cols-4" style="gap: 12px">
@@ -155,17 +158,20 @@ const byIntervention = d3.rollups(
 </div>
 
 ```js
+// Blue: targets from integrated rounds, one per activity. Grey: single-programme rounds.
+const INTEGRATED = "In integrated rounds (each activity's own target)", SINGLE = "In single-programme rounds";
 const interventionChart = byIntervention.length
   ? Plot.plot({
       width,
+      color: {domain: [INTEGRATED, SINGLE], range: ["#7fa6d6", "#c5ccd6"], legend: true},
       // One band of 28px per intervention plus the axis, so a single bar still has room.
       height: 46 + 28 * byIntervention.length,
       marginTop: 8, marginBottom: 30, marginLeft: 210, marginRight: 90,
       x: {label: null, grid: true, tickFormat: "s"},
       y: {label: null, domain: byIntervention.map((d) => d.intervention)},
       marks: [
-        Plot.barX(byIntervention, {x: "targeted", y: "intervention", fill: (d) => d.integrated ? "#2563eb" : "#94a3b8", insetTop: 4, insetBottom: 4,
-          tip: true, title: (d) => `${d.intervention}\n${fmtInt(d.targeted)} targeted in ${fmtInt(d.rounds)} LGA round${d.rounds === 1 ? "" : "s"}${d.integrated ? "\npart of integrated rounds" : ""}`}),
+        Plot.barX(targetParts, Plot.stackX({x: "targeted", y: "intervention", fill: (d) => d.integrated ? INTEGRATED : SINGLE, insetTop: 4, insetBottom: 4,
+          tip: true, title: (d) => `${d.intervention}, ${d.integrated ? "in integrated rounds" : "in single-programme rounds"}\n${fmtInt(d.targeted)} targeted in ${fmtInt(d.rounds)} LGA round${d.rounds === 1 ? "" : "s"}`})),
         Plot.text(byIntervention, {x: "targeted", y: "intervention", text: (d) => fmtInt(d.targeted), textAnchor: "start", dx: 6, fontSize: 11}),
         Plot.ruleX([0])
       ]
