@@ -46,10 +46,18 @@ Context: CarePlan
 Extension: PlanningDenominator
 Id: planning-denominator
 Title: "Planning Denominator"
-Description: "The target-population Group flagged as this campaign's planning denominator. Multiple competing estimates may exist per geography; exactly one is the planning denominator (working doc §4.2)."
-Context: CarePlan
+Description: "The target-population Group a campaign plans against: the count its coverage and cost per person targeted divide by. Multiple competing estimates may exist per geography; the campaign names the one it uses (working doc §4.2). On the CarePlan it is the campaign's target. On CarePlan.activity.detail it is the target of one activity of an integrated campaign (MR 9 months–14 years beside nOPV2 0–59 months); it may repeat there when an activity's target is the sum of several estimates (two birth cohorts for a second dose), and two activities may name the same estimate (deworming and vitamin A for one age band). An activity without its own falls back to the campaign's."
+Context: CarePlan, CarePlan.activity.detail
 * ^experimental = false
 * value[x] only Reference(ICRTargetPopulation)
+
+Extension: CampaignActivity
+Id: campaign-activity
+Title: "Campaign Activity"
+Description: "The activity of an integrated campaign that this report covers: the ICRCampaignActivity a CarePlan.activity.detail of the campaign instantiates. The report's denominator is then that activity's planning denominator and its numerator counts only that activity's doses or treatments. Absent on a report for a single-intervention campaign, or for a campaign as a whole."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only Canonical(ICRCampaignActivity)
 
 Extension: RealtimeVsReconciled
 Id: realtime-vs-reconciled
@@ -478,3 +486,12 @@ Description: "The DHIS2 period code a MeasureReport's figures were computed for 
 Context: MeasureReport
 * ^experimental = false
 * value[x] only string
+
+Extension: ReportSource
+Id: report-source
+Title: "Report Source"
+Description: "The system and route a MeasureReport's figures came from, e.g. DHIS2's analytics tables, or DHIS2 raw data values summed by fhir-pipes. Distinct from coverage-source, which says how a coverage figure was measured (administrative tallies vs survey); a report from DHIS2 analytics is still administrative coverage. Binding: extensible — other sources add codes to the ICR code system or use their own."
+Context: MeasureReport
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRReportSourceVS (extensible)

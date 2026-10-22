@@ -7,7 +7,7 @@ compared side by side. Lives in `campaignhq/sldash/` as its own site, with the s
 DuckDB-WASM over parquet, MapLibre, built to static files.
 
 ```
-DHIS2 (play.dhis2.org) ──kiln dhis2 locations/measures/reports──▶ NDJSON ──kiln load──▶ HAPI
+DHIS2 (play.dhis2.org) ──fhir-pipes dhis2 locations/measures/reports──▶ NDJSON ──fhir-pipes load──▶ HAPI
 HAPI ──tools/warehouse/refresh.sh──▶ data/parquet/{locations, indicator, indicator_value}
 data/parquet ──src/data/values.parquet.sh, units.geojson.sh──▶ this site
 ```

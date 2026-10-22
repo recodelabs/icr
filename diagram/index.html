@@ -1,0 +1,474 @@
+<title>ICR solution architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout and type follow www.healthcampaigns.org: one 1120px column, light paper only. */
+:root {
+  --paper: #F7F8F5; --paper-2: #EEF1EB; --ink: #17211C; --ink-2: #4A554F; --ink-3: #8A948E; --rule: #D5DAD3;
+  --reg: #2F6B4F; --reg-2: #DDE9E0;
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --d-paper: var(--paper); --d-surface: var(--paper-2); --d-ink: var(--ink); --d-ink2: var(--ink-2);
+  --d-muted: #6F7A74; --d-faint: var(--rule); --d-hair: #C9CFC7;
+  --d-accent: #F16427; --d-accent-ink: #A13A10; --d-tint: rgba(241,100,39,.13);
+}
+
+.bg{fill:var(--d-paper,#F7F8F5)}
+.box{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1.25}
+.icr{fill:var(--d-paper,#F7F8F5);stroke:var(--d-accent,#F16427);stroke-width:1.75;stroke-dasharray:7 4}
+.cell{fill:var(--d-surface,#EEF1EB);stroke:var(--d-ink,#17211C);stroke-width:1}
+.group{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1;stroke-dasharray:5 4}
+.chip{fill:var(--d-paper,#F7F8F5);stroke:var(--d-hair,#C9CFC7);stroke-width:1}
+.wire{fill:none;stroke:var(--d-ink2,#4A554F);stroke-width:1.25}
+.rule{stroke:var(--d-hair,#C9CFC7);stroke-width:1}
+.ah-in,.dot-in,.mk-on,.hlbar{fill:var(--d-accent,#F16427)}
+.ah-out,.dot-out{fill:var(--d-ink,#17211C)}
+.hl{fill:none;stroke:var(--d-accent,#F16427);stroke-width:2.5}
+.tint{fill:var(--d-tint,rgba(241,100,39,.13))}
+.mk-off{fill:var(--d-faint,#D5DAD3)}
+.dg text{font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;fill:var(--d-ink,#17211C)}
+.dg .name{font-size:15.5px;font-weight:600}
+.dg .sub{font-size:12px;fill:var(--d-ink2,#4A554F)}
+.dg .body{font-size:11.5px}
+.dg .mono,.dg .code{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.dg .mono{font-size:9.5px;letter-spacing:.08em}
+.dg .code{font-size:9px;fill:var(--d-muted,#6F7A74)}
+.dg .muted{fill:var(--d-muted,#6F7A74)}
+.dg .h-in{fill:var(--d-accent-ink,#A13A10);font-weight:500}
+.dg .h-out{font-weight:500}
+.dg .title{font-weight:700;letter-spacing:-.01em}
+.dg .caption{font-size:15px;font-weight:600}
+.dg .cellname{font-size:13.5px;font-weight:600}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: var(--reg); }
+h1, h2, h3 { font-family: var(--display); line-height: 1.05; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 3.6vw, 42px); font-weight: 700; letter-spacing: -0.025em; }
+h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; max-width: 28ch; }
+h3 { font-size: 19px; font-weight: 600; }
+p { margin: 0; max-width: 62ch; color: var(--ink-2); }
+.wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 22px; padding: 20px 0; font-family: var(--display); font-size: 15px; }
+.topbar .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+.topbar .brand span { color: var(--ink-3); font-weight: 400; margin-left: 10px; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.topbar nav a { color: var(--ink-2); text-decoration: none; }
+.topbar nav a:hover { color: var(--ink); }
+.hero { padding-block: 40px 56px; display: grid; gap: 14px; }
+.hero .kicker { font-family: var(--display); font-weight: 600; font-size: clamp(18px, 2vw, 22px); color: var(--ink-2); letter-spacing: -0.01em; }
+section { padding-block: 64px; border-top: 1px solid var(--rule); display: grid; gap: 16px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+.card { border-top: 2px solid var(--ink); padding-top: 14px; display: grid; gap: 6px; align-content: start; }
+.card.reg { border-top-color: var(--d-accent); }
+.card ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 16.5px; display: grid; gap: 4px; }
+figure { margin: 8px 0 0; display: grid; gap: 12px; }
+.frame { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
+.frame svg { display: block; width: 100%; height: auto; min-width: 820px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.controls button { font-family: var(--display); font-size: 15px; font-weight: 600; background: transparent; border: 1px solid var(--rule);
+  color: var(--ink-2); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.controls button:hover { border-color: var(--ink-3); color: var(--ink); }
+.controls button:focus-visible { outline: 2px solid var(--d-accent); outline-offset: 2px; }
+.controls button[aria-current="step"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.controls .play { background: var(--d-accent); color: #fff; border-color: var(--d-accent); min-width: 84px; }
+.controls .play:hover { color: #fff; border-color: var(--d-accent-ink); }
+.progress { flex: 1 1 120px; height: 2px; background: var(--rule); position: relative; }
+.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--d-accent); }
+figcaption { font-size: 15px; color: var(--ink-3); max-width: 80ch; }
+.files { font-size: 15px; color: var(--ink-2); }
+footer { border-top: 1px solid var(--rule); padding: 40px 0 60px; font-size: 14px; color: var(--ink-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer a { color: var(--ink-2); }
+footer code { font-family: var(--mono); font-size: 13px; }
+footer .support { flex-basis: 100%; font-size: 13px; margin-top: 6px; }
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">Integrated Campaign Registry</div>
+  <h1>ICR solution architecture</h1>
+</header>
+
+<main>
+  <section aria-label="What the ICR does and does not do">
+    <div class="cards">
+      <div class="card reg">
+        <h3>The ICR holds</h3>
+        <ul>
+          <li>The location registry: admin areas, facilities, catchments, settlements</li>
+          <li>Campaigns and rounds, targets and results</li>
+          <li>Shared codes, and how each tool's codes map to them</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Other systems keep doing</h3>
+        <ul>
+          <li>Data collection in CommCare, DIGIT, ODK and DHIS2 Tracker</li>
+          <li>Microplanning in Crosscut</li>
+          <li>Routine reporting in DHIS2, the national HMIS</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Diagram 1</div>
+    <h2>Where the ICR sits between campaign tools and national reporting</h2>
+    <figure data-player>
+      <div class="frame"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="dg" viewBox="0 0 1280 930" width="1280" height="930" role="img" aria-label="The ICR in a country&#x27;s campaign systems: campaign tools plan and collect, the ICR keeps the registry and the record, DHIS2 and the warehouse report." data-loop="26" data-stages="[[0.3, &quot;LOAD&quot;], [5, &quot;PLAN&quot;], [10, &quot;DELIVER&quot;], [16, &quot;REPORT&quot;], [21.5, &quot;NEXT ROUND&quot;]]">
+<title>The ICR in a country&#x27;s campaign systems: campaign tools plan and collect, the ICR keeps the registry and the record, DHIS2 and the warehouse report.</title>
+<defs><marker id="a-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="a-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
+<rect class="bg" width="1280" height="930"/>
+<text class="mono muted" x="40" y="44">THE ICR IN A COUNTRY&#x27;S CAMPAIGN SYSTEMS</text>
+<text class="mono" x="40" y="116">PLAN AND COLLECT</text>
+<text class="sub" x="40" y="136">Countries keep the</text>
+<text class="sub" x="40" y="152">tools they use</text>
+<text class="mono" x="40" y="412">RECORD</text>
+<text class="sub" x="40" y="432">One registry and</text>
+<text class="sub" x="40" y="448">system of record</text>
+<text class="mono" x="40" y="687">REPORT AND ANALYSE</text>
+<text class="sub" x="40" y="707">National reporting</text>
+<text class="sub" x="40" y="723">and analysis</text>
+<path class="wire" d="M210,772 h34" marker-end="url(#a-in)"/><text class="sub" x="254" y="776">data going into the ICR</text><path class="wire" d="M420,772 h34" marker-end="url(#a-out)"/><text class="sub" x="464" y="776">data going out of the ICR, or between tools</text>
+<path id="a-crosscut" class="wire" d="M291,160 L291,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-commcare" class="wire" d="M465,160 L465,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-digit" class="wire" d="M639,160 L639,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-icf" class="wire" d="M813,160 L813,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-other" class="wire" d="M987,160 L987,210 L545,210 L545,330" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<path id="a-cdash" class="wire" d="M1161,160 L1161,210 L545,210 L545,330" marker-start="url(#a-out)"/>
+<path id="a-wh" class="wire" d="M880,430 L990,430" marker-end="url(#a-out)"/>
+<text class="mono muted" x="935" y="421" text-anchor="middle">PARQUET EXPORT</text>
+<path id="a-bi" class="wire" d="M1115,480 L1115,660" marker-end="url(#a-out)"/>
+<path id="a-dhis2" class="wire" d="M325,660 L325,530" marker-start="url(#a-out)" marker-end="url(#a-in)"/>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0269;0.0538;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0269;0.03;0.0508;0.0538;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0346;0.0615;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0346;0.0377;0.0585;0.0615;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0423;0.0692;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0423;0.0454;0.0662;0.0692;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.2038;0.2615;1"><mpath href="#a-crosscut" xlink:href="#a-crosscut"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2038;0.2069;0.2585;0.2615;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.2115;0.2692;1"><mpath href="#a-crosscut" xlink:href="#a-crosscut"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2115;0.2146;0.2662;0.2692;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.2192;0.2769;1"><mpath href="#a-crosscut" xlink:href="#a-crosscut"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2192;0.2223;0.2738;0.2769;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2808;0.3385;1"><mpath href="#a-crosscut" xlink:href="#a-crosscut"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2808;0.2838;0.3354;0.3385;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2885;0.3462;1"><mpath href="#a-crosscut" xlink:href="#a-crosscut"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2885;0.2915;0.3431;0.3462;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2962;0.3538;1"><mpath href="#a-crosscut" xlink:href="#a-crosscut"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2962;0.2992;0.3508;0.3538;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.3962;0.4331;1"><mpath href="#a-commcare" xlink:href="#a-commcare"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3962;0.3992;0.4301;0.4331;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4038;0.4408;1"><mpath href="#a-commcare" xlink:href="#a-commcare"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4038;0.4069;0.4378;0.4408;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4115;0.4485;1"><mpath href="#a-commcare" xlink:href="#a-commcare"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4115;0.4146;0.4454;0.4485;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5;0.537;1"><mpath href="#a-commcare" xlink:href="#a-commcare"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5;0.5031;0.5339;0.537;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5077;0.5447;1"><mpath href="#a-commcare" xlink:href="#a-commcare"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5077;0.5108;0.5416;0.5447;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5154;0.5524;1"><mpath href="#a-commcare" xlink:href="#a-commcare"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5154;0.5185;0.5493;0.5524;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.3962;0.4352;1"><mpath href="#a-digit" xlink:href="#a-digit"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3962;0.3992;0.4321;0.4352;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4038;0.4429;1"><mpath href="#a-digit" xlink:href="#a-digit"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4038;0.4069;0.4398;0.4429;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4115;0.4506;1"><mpath href="#a-digit" xlink:href="#a-digit"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4115;0.4146;0.4475;0.4506;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5;0.5391;1"><mpath href="#a-digit" xlink:href="#a-digit"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5;0.5031;0.536;0.5391;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5077;0.5467;1"><mpath href="#a-digit" xlink:href="#a-digit"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5077;0.5108;0.5437;0.5467;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5154;0.5544;1"><mpath href="#a-digit" xlink:href="#a-digit"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5154;0.5185;0.5514;0.5544;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.3962;0.4538;1"><mpath href="#a-icf" xlink:href="#a-icf"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3962;0.3992;0.4508;0.4538;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4038;0.4615;1"><mpath href="#a-icf" xlink:href="#a-icf"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4038;0.4069;0.4585;0.4615;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4115;0.4692;1"><mpath href="#a-icf" xlink:href="#a-icf"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4115;0.4146;0.4662;0.4692;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5;0.5577;1"><mpath href="#a-icf" xlink:href="#a-icf"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5;0.5031;0.5546;0.5577;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5077;0.5654;1"><mpath href="#a-icf" xlink:href="#a-icf"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5077;0.5108;0.5623;0.5654;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5154;0.5731;1"><mpath href="#a-icf" xlink:href="#a-icf"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5154;0.5185;0.57;0.5731;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.3962;0.4538;1"><mpath href="#a-other" xlink:href="#a-other"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3962;0.3992;0.4508;0.4538;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4038;0.4615;1"><mpath href="#a-other" xlink:href="#a-other"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4038;0.4069;0.4585;0.4615;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4115;0.4692;1"><mpath href="#a-other" xlink:href="#a-other"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4115;0.4146;0.4662;0.4692;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5;0.5577;1"><mpath href="#a-other" xlink:href="#a-other"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5;0.5031;0.5546;0.5577;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5077;0.5654;1"><mpath href="#a-other" xlink:href="#a-other"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5077;0.5108;0.5623;0.5654;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5154;0.5731;1"><mpath href="#a-other" xlink:href="#a-other"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5154;0.5185;0.57;0.5731;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5;0.5269;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5;0.5031;0.5238;0.5269;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5077;0.5346;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5077;0.5108;0.5315;0.5346;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5154;0.5423;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5154;0.5185;0.5392;0.5423;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.6308;0.6577;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6308;0.6338;0.6546;0.6577;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.6385;0.6654;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6385;0.6415;0.6623;0.6654;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.6462;0.6731;1"><mpath href="#a-dhis2" xlink:href="#a-dhis2"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6462;0.6492;0.67;0.6731;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.6308;0.6885;1"><mpath href="#a-cdash" xlink:href="#a-cdash"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6308;0.6338;0.6854;0.6885;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.6385;0.6962;1"><mpath href="#a-cdash" xlink:href="#a-cdash"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6385;0.6415;0.6931;0.6962;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.6462;0.7038;1"><mpath href="#a-cdash" xlink:href="#a-cdash"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6462;0.6492;0.7008;0.7038;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6308;0.6577;1"><mpath href="#a-wh" xlink:href="#a-wh"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6308;0.6338;0.6546;0.6577;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6385;0.6654;1"><mpath href="#a-wh" xlink:href="#a-wh"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6385;0.6415;0.6623;0.6654;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6462;0.6731;1"><mpath href="#a-wh" xlink:href="#a-wh"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6462;0.6492;0.67;0.6731;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6654;0.6923;1"><mpath href="#a-bi" xlink:href="#a-bi"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6654;0.6685;0.6892;0.6923;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6731;0.7;1"><mpath href="#a-bi" xlink:href="#a-bi"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6731;0.6762;0.6969;0.7;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6808;0.7077;1"><mpath href="#a-bi" xlink:href="#a-bi"/></animateMotion><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6808;0.6838;0.7046;0.7077;1" values="0.0;0;1;1;0;0"/></circle>
+<rect class="box" x="210" y="90" width="162" height="70" rx="3"/><text class="name" x="224" y="117">Crosscut</text><text class="sub" x="224" y="136">Microplanning</text>
+<rect class="box" x="384" y="90" width="162" height="70" rx="3"/><text class="name" x="398" y="117">CommCare</text><text class="sub" x="398" y="136">Delivery, supervision</text>
+<rect class="box" x="558" y="90" width="162" height="70" rx="3"/><text class="name" x="572" y="117">DIGIT</text><text class="sub" x="572" y="136">Malaria campaigns</text>
+<rect class="box" x="732" y="90" width="162" height="70" rx="3"/><text class="name" x="746" y="130.0">ICF</text>
+<rect class="box" x="906" y="90" width="162" height="70" rx="3"/><text class="name" x="920" y="117">Other tools</text><text class="sub" x="920" y="136">ODK, DHIS2 Tracker</text>
+<rect class="box" x="1080" y="90" width="162" height="70" rx="3"/><text class="name" x="1094" y="117">Dashboards</text><text class="sub" x="1094" y="136">Campaign monitoring</text>
+<rect class="icr" x="210" y="330" width="670" height="200" rx="4"/>
+<text class="title" x="230" y="364" font-size="24">ICR</text><text class="sub" x="280" y="363">Integrated Campaign Registry</text><text class="mono h-in" x="860" y="362" text-anchor="end">SYSTEM OF RECORD · HL7 FHIR R4</text>
+<rect class="cell" x="230" y="384" width="202" height="130" rx="2"/><text class="name" x="244" y="410">Location registry</text><text class="sub" x="244" y="432">Admin areas, health facilities,</text><text class="sub" x="244" y="448">catchments, settlements</text><text class="code" x="244" y="501">Location · Organization</text>
+<rect class="cell" x="444" y="384" width="202" height="130" rx="2"/><text class="name" x="458" y="410">Campaign data</text><text class="sub" x="458" y="432">Campaigns, rounds, targets,</text><text class="sub" x="458" y="448">doses given, coverage</text><text class="code" x="458" y="501">CarePlan · Group · MeasureReport</text>
+<rect class="cell" x="658" y="384" width="202" height="130" rx="2"/><text class="name" x="672" y="410">Terminology</text><text class="sub" x="672" y="432">Shared codes, and how each</text><text class="sub" x="672" y="448">tool&#x27;s own codes map to them</text><text class="code" x="672" y="501">CodeSystem · ValueSet · ConceptMap</text>
+<rect class="box" x="990" y="380" width="250" height="100" rx="3"/><text class="name" x="1004" y="407">Data warehouse</text><text class="sub" x="1004" y="426">Parquet files, SQL queries</text><text class="code" x="1004" y="468">SQL-on-FHIR</text>
+<rect class="box" x="990" y="660" width="250" height="70" rx="3"/><text class="name" x="1004" y="687">Dashboards and BI</text><text class="sub" x="1004" y="706">DuckDB, Superset, Metabase, Power BI</text>
+<rect class="box" x="210" y="660" width="230" height="70" rx="3"/><text class="name" x="224" y="687">DHIS2</text><text class="sub" x="224" y="706">National HMIS</text>
+<rect class="chip" x="301" y="224" width="230" height="92" rx="2"/>
+<g opacity="0"><rect class="tint" x="302" y="228" width="228" height="82"/><rect class="hlbar" x="302" y="228" width="2.5" height="82"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1962;0.2077;0.3654;0.3769;0.3885;0.4;0.4769;0.4885;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></g>
+<text class="mono h-out" x="313" y="241">ICR ↔ TOOLS</text><text class="body" x="313" y="256">locations and catchments</text><text class="body" x="313" y="271">target populations</text><text class="body" x="313" y="286">campaign plans and targets</text><text class="body" x="313" y="301">shared codes</text>
+<rect class="chip" x="559" y="224" width="230" height="92" rx="2"/>
+<g opacity="0"><rect class="tint" x="560" y="228" width="228" height="82"/><rect class="hlbar" x="560" y="228" width="2.5" height="82"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4923;0.5038;0.5962;0.6077;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="571" y="241">TOOLS → ICR</text><text class="body" x="571" y="256">doses and treatments given</text><text class="body" x="571" y="271">coverage</text><text class="body" x="571" y="286">supervision findings</text><text class="body" x="571" y="301">stock</text>
+<rect class="chip" x="350" y="545.5" width="216" height="99" rx="2"/>
+<g opacity="0"><rect class="tint" x="351" y="549.5" width="214" height="37"/><rect class="hlbar" x="351" y="549.5" width="2.5" height="37"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0192;0.0308;0.1731;0.1846;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="362" y="562.5">DHIS2 → ICR · FIRST LOAD</text><text class="body" x="362" y="577.5">org units, facilities, history</text>
+<g opacity="0"><rect class="tint" x="351" y="586.5" width="214" height="52"/><rect class="hlbar" x="351" y="586.5" width="2.5" height="52"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4962;0.5077;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="362" y="599.5">DHIS2 → ICR · AFTER THAT</text><text class="body" x="362" y="614.5">changes, e.g. a new facility</text><text class="body" x="362" y="629.5">campaign data entered in DHIS2</text>
+<rect class="chip" x="581" y="564" width="210" height="62" rx="2"/>
+<g opacity="0"><rect class="tint" x="582" y="568" width="208" height="52"/><rect class="hlbar" x="582" y="568" width="2.5" height="52"/><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6192;0.6308;0.8077;0.8192;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-out" x="593" y="581">ICR → DHIS2</text><text class="body" x="593" y="596">campaign results</text><text class="body" x="593" y="611">as aggregate data</text>
+<rect class="hl" x="210" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1962;0.2077;0.3654;0.3769;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="384" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="558" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="732" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="906" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.5962;0.6077;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="1080" y="90" width="162" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6769;0.6885;0.8077;0.8192;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="tint" x="230" y="384" width="202" height="130" rx="2" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0615;0.0731;0.1731;0.1846;0.3077;0.3192;0.3654;0.3769;0.8346;0.8462;0.9808;0.9923;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><rect class="hl" x="230" y="384" width="202" height="130" rx="2" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0615;0.0731;0.1731;0.1846;0.3077;0.3192;0.3654;0.3769;0.8346;0.8462;0.9808;0.9923;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="tint" x="444" y="384" width="202" height="130" rx="2" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0615;0.0731;0.1731;0.1846;0.5231;0.5346;0.5962;0.6077;0.8346;0.8462;0.9808;0.9923;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><rect class="hl" x="444" y="384" width="202" height="130" rx="2" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0615;0.0731;0.1731;0.1846;0.5231;0.5346;0.5962;0.6077;0.8346;0.8462;0.9808;0.9923;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="tint" x="658" y="384" width="202" height="130" rx="2" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.4769;0.4885;0.8346;0.8462;0.9808;0.9923;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect><rect class="hl" x="658" y="384" width="202" height="130" rx="2" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3885;0.4;0.4769;0.4885;0.8346;0.8462;0.9808;0.9923;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="hl" x="990" y="380" width="250" height="100" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6462;0.6577;0.8077;0.8192;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="990" y="660" width="250" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6923;0.7038;0.8077;0.8192;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="210" y="660" width="230" height="70" rx="3" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0154;0.0269;0.0885;0.1;0.4962;0.5077;0.5962;0.6077;0.6615;0.6731;0.8077;0.8192;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect>
+<line class="rule" x1="40" y1="820" x2="1240" y2="820"/>
+<rect class="mk-off" x="40" y="840" width="8" height="8"/><rect class="mk-on" x="40" y="840" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0115;0.0173;0.1865;0.1923;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="56" y="848">1  LOAD</text><text class="mono" x="56" y="848" opacity="0">1  LOAD<animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0115;0.0173;0.1865;0.1923;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="882">DHIS2 org units and historical campaign data load the ICR&#x27;s location registry and campaign data.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0115;0.025;0.1788;0.1923;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="280" y="840" width="8" height="8"/><rect class="mk-on" x="280" y="840" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1923;0.1981;0.3788;0.3846;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="296" y="848">2  PLAN</text><text class="mono" x="296" y="848" opacity="0">2  PLAN<animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1923;0.1981;0.3788;0.3846;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="882">Crosscut reads locations and target populations from the ICR to make microplans,</text><text class="caption" x="40" y="904">and sends catchment areas back to the location registry.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1923;0.2058;0.3712;0.3846;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="520" y="840" width="8" height="8"/><rect class="mk-on" x="520" y="840" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3846;0.3904;0.6096;0.6154;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="536" y="848">3  DELIVER</text><text class="mono" x="536" y="848" opacity="0">3  DELIVER<animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3846;0.3904;0.6096;0.6154;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="882">Collection tools get the campaign plan, targets and shared codes from the ICR,</text><text class="caption" x="40" y="904">run the campaign with their own forms, and send results back. DHIS2 sends its campaign data and any changes, such as a new facility.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3846;0.3981;0.6019;0.6154;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="760" y="840" width="8" height="8"/><rect class="mk-on" x="760" y="840" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6154;0.6212;0.8212;0.8269;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="776" y="848">4  REPORT</text><text class="mono" x="776" y="848" opacity="0">4  REPORT<animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6154;0.6212;0.8212;0.8269;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="882">The ICR sends aggregate results to DHIS2 and exports Parquet files to the warehouse,</text><text class="caption" x="40" y="904">which dashboards and BI tools read.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6154;0.6288;0.8135;0.8269;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="1000" y="840" width="8" height="8"/><rect class="mk-on" x="1000" y="840" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8269;0.8327;0.9942;1;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="1016" y="848">5  NEXT ROUND</text><text class="mono" x="1016" y="848" opacity="0">5  NEXT ROUND<animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8269;0.8327;0.9942;1;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="882">The next round starts from the registry: locations, populations and past results</text><text class="caption" x="40" y="904">don&#x27;t have to be collected again.</text><animate attributeName="opacity" dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8269;0.8404;0.9865;1;1" values="0.0;0;1;1;0;0"/></g>
+</svg></div>
+      <div class="controls"></div>
+      <figcaption>Click a step to play it, or Play to run through them all. Orange arrowheads mark data going into the ICR.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="eyebrow">Diagram 2</div>
+    <h2>Example: what goes in and out of the ICR in one country's NTD programme</h2>
+    <p>The NGO running the NTD programme uses Crosscut for planning, CommCare for collection and Metabase for its dashboards. Other programmes in the same country use ICF and DIGIT. The ICR gives all of them the same locations and populations, and collects their results in one place.</p>
+    <figure data-player>
+      <div class="frame"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="dg" viewBox="0 0 1280 960" width="1280" height="960" role="img" aria-label="Example of one country&#x27;s NTD programme: what each system sends to the ICR and what it gets back." data-loop="27" data-stages="[[0.3, &quot;EXISTING DATA&quot;], [5.5, &quot;PLAN&quot;], [11, &quot;SHARE&quot;], [15, &quot;RUN CAMPAIGNS&quot;], [21.5, &quot;NEXT ROUND&quot;]]">
+<title>Example of one country&#x27;s NTD programme: what each system sends to the ICR and what it gets back.</title>
+<defs><marker id="c-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker><marker id="c-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker></defs>
+<rect class="bg" width="1280" height="960"/>
+<text class="mono muted" x="40" y="44">EXAMPLE · DATA IN AND OUT OF THE ICR IN ONE COUNTRY&#x27;S NTD PROGRAMME</text>
+<rect class="group" x="560" y="64" width="676" height="216" rx="6"/>
+<text class="mono" x="580" y="90">NTD PROGRAMME</text>
+<text class="sub" x="580" y="108">Systems of the NGO that runs it</text>
+<path class="wire" d="M470,812 h34" marker-end="url(#c-in)"/><text class="sub" x="514" y="816">data going into the ICR</text><path class="wire" d="M680,812 h34" marker-end="url(#c-out)"/><text class="sub" x="724" y="816">data going out of the ICR, or between tools</text>
+<path id="c-cc-cs" class="wire" d="M980,210 L840,210" marker-end="url(#c-out)"/>
+<text class="body" x="910" y="202" text-anchor="middle">delivery data</text>
+<path id="c-cc-mb" class="wire" d="M1095,180 L1095,140" marker-end="url(#c-out)"/>
+<text class="body" x="1105" y="164">reports</text>
+<path id="c-icf" class="wire" d="M270,135 L470,480" marker-start="url(#c-out)" marker-end="url(#c-in)"/>
+<path id="c-digit" class="wire" d="M270,735 L470,585" marker-start="url(#c-out)" marker-end="url(#c-in)"/>
+<path id="c-cs" class="wire" d="M720,240 L720,450" marker-start="url(#c-out)" marker-end="url(#c-in)"/>
+<path id="c-cc" class="wire" d="M1120,240 L810,525" marker-end="url(#c-in)"/>
+<path id="c-mb" class="wire" d="M1210,110 L1252,110 L1252,565 L810,565" marker-end="url(#c-in)"/>
+<path id="c-dhis2" class="wire" d="M1000,750 L760,600" marker-end="url(#c-in)"/>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0259;0.0662;1"><mpath href="#c-dhis2" xlink:href="#c-dhis2"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0259;0.0289;0.0633;0.0662;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0333;0.0736;1"><mpath href="#c-dhis2" xlink:href="#c-dhis2"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0333;0.0363;0.0707;0.0736;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0407;0.0811;1"><mpath href="#c-dhis2" xlink:href="#c-dhis2"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0407;0.0437;0.0781;0.0811;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.037;0.0926;1"><mpath href="#c-mb" xlink:href="#c-mb"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.037;0.04;0.0896;0.0926;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0444;0.1;1"><mpath href="#c-mb" xlink:href="#c-mb"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0444;0.0474;0.097;0.1;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.0519;0.1074;1"><mpath href="#c-mb" xlink:href="#c-mb"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0519;0.0548;0.1044;0.1074;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.2148;0.2447;1"><mpath href="#c-cs" xlink:href="#c-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2148;0.2178;0.2418;0.2447;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.2222;0.2521;1"><mpath href="#c-cs" xlink:href="#c-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2222;0.2252;0.2492;0.2521;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.2296;0.2595;1"><mpath href="#c-cs" xlink:href="#c-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2296;0.2326;0.2566;0.2595;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.3111;0.341;1"><mpath href="#c-cs" xlink:href="#c-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3111;0.3141;0.3381;0.341;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.3185;0.3484;1"><mpath href="#c-cs" xlink:href="#c-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3185;0.3215;0.3455;0.3484;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.3259;0.3558;1"><mpath href="#c-cs" xlink:href="#c-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3259;0.3289;0.3529;0.3558;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4185;0.4741;1"><mpath href="#c-icf" xlink:href="#c-icf"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4185;0.4215;0.4711;0.4741;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4259;0.4815;1"><mpath href="#c-icf" xlink:href="#c-icf"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4259;0.4289;0.4785;0.4815;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4333;0.4889;1"><mpath href="#c-icf" xlink:href="#c-icf"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4333;0.4363;0.4859;0.4889;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4185;0.4541;1"><mpath href="#c-digit" xlink:href="#c-digit"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4185;0.4215;0.4512;0.4541;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4259;0.4615;1"><mpath href="#c-digit" xlink:href="#c-digit"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4259;0.4289;0.4586;0.4615;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.4333;0.4689;1"><mpath href="#c-digit" xlink:href="#c-digit"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4333;0.4363;0.466;0.4689;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5667;0.5926;1"><mpath href="#c-cc-cs" xlink:href="#c-cc-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5667;0.5696;0.5896;0.5926;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5741;0.6;1"><mpath href="#c-cc-cs" xlink:href="#c-cc-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5741;0.577;0.597;0.6;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5815;0.6074;1"><mpath href="#c-cc-cs" xlink:href="#c-cc-cs"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5815;0.5844;0.6044;0.6074;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5667;0.5926;1"><mpath href="#c-cc-mb" xlink:href="#c-cc-mb"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5667;0.5696;0.5896;0.5926;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5741;0.6;1"><mpath href="#c-cc-mb" xlink:href="#c-cc-mb"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5741;0.577;0.597;0.6;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-out" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5815;0.6074;1"><mpath href="#c-cc-mb" xlink:href="#c-cc-mb"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5815;0.5844;0.6044;0.6074;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6111;0.6667;1"><mpath href="#c-cc" xlink:href="#c-cc"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6111;0.6141;0.6637;0.6667;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6185;0.6741;1"><mpath href="#c-cc" xlink:href="#c-cc"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6185;0.6215;0.6711;0.6741;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6259;0.6815;1"><mpath href="#c-cc" xlink:href="#c-cc"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6259;0.6289;0.6785;0.6815;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6111;0.6667;1"><mpath href="#c-icf" xlink:href="#c-icf"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6111;0.6141;0.6637;0.6667;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6185;0.6741;1"><mpath href="#c-icf" xlink:href="#c-icf"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6185;0.6215;0.6711;0.6741;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6259;0.6815;1"><mpath href="#c-icf" xlink:href="#c-icf"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6259;0.6289;0.6785;0.6815;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6111;0.6467;1"><mpath href="#c-digit" xlink:href="#c-digit"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6111;0.6141;0.6438;0.6467;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6185;0.6541;1"><mpath href="#c-digit" xlink:href="#c-digit"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6185;0.6215;0.6512;0.6541;1" values="0.0;0;1;1;0;0"/></circle>
+<circle class="dot-in" r="4.5" opacity="0"><animateMotion dur="27s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6259;0.6615;1"><mpath href="#c-digit" xlink:href="#c-digit"/></animateMotion><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6259;0.6289;0.6586;0.6615;1" values="0.0;0;1;1;0;0"/></circle>
+<rect class="box" x="980" y="80" width="230" height="60" rx="3"/><text class="name" x="994" y="107">Metabase</text><text class="sub" x="994" y="126">Programme dashboards</text>
+<rect class="box" x="600" y="180" width="240" height="60" rx="3"/><text class="name" x="614" y="207">Crosscut</text><text class="sub" x="614" y="226">Planning</text>
+<rect class="box" x="980" y="180" width="230" height="60" rx="3"/><text class="name" x="994" y="207">CommCare</text><text class="sub" x="994" y="226">Collection</text>
+<rect class="box" x="40" y="90" width="230" height="60" rx="3"/><text class="name" x="54" y="125.0">ICF</text>
+<rect class="box" x="40" y="720" width="230" height="60" rx="3"/><text class="name" x="54" y="747">DIGIT</text><text class="sub" x="54" y="766">Malaria</text>
+<rect class="box" x="1000" y="720" width="230" height="60" rx="3"/><text class="name" x="1014" y="747">DHIS2</text><text class="sub" x="1014" y="766">National HMIS</text>
+<rect class="icr" x="470" y="450" width="340" height="150" rx="4"/>
+<text class="title" x="486" y="482" font-size="24">ICR</text><text class="sub" x="536" y="481">registry and system of record</text>
+<rect class="cell" x="486.0" y="506" width="97.33333333333333" height="78" rx="2"/><text class="cellname" x="534.6666666666666" y="541.0" text-anchor="middle">Location</text><text class="cellname" x="534.6666666666666" y="557.0" text-anchor="middle">registry</text>
+<rect class="cell" x="591.3333333333334" y="506" width="97.33333333333333" height="78" rx="2"/><text class="cellname" x="640.0" y="541.0" text-anchor="middle">Campaign</text><text class="cellname" x="640.0" y="557.0" text-anchor="middle">data</text>
+<rect class="cell" x="696.6666666666666" y="506" width="97.33333333333333" height="78" rx="2"/><text class="cellname" x="745.3333333333333" y="549.0" text-anchor="middle">Terminology</text>
+<rect class="chip" x="252" y="257.5" width="236" height="99" rx="2"/>
+<g opacity="0"><rect class="tint" x="253" y="261.5" width="234" height="52"/><rect class="hlbar" x="253" y="261.5" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4148;0.4259;0.537;0.5481;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-out" x="264" y="274.5">ICR → ICF</text><text class="body" x="264" y="289.5">locations · populations</text><text class="body" x="264" y="304.5">indicators · Crosscut catchments</text>
+<g opacity="0"><rect class="tint" x="253" y="313.5" width="234" height="37"/><rect class="hlbar" x="253" y="313.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="264" y="326.5">ICF → ICR</text><text class="body" x="264" y="341.5">campaign data</text>
+<rect class="chip" x="254" y="612.5" width="216" height="99" rx="2"/>
+<g opacity="0"><rect class="tint" x="255" y="616.5" width="214" height="52"/><rect class="hlbar" x="255" y="616.5" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4148;0.4259;0.537;0.5481;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-out" x="266" y="629.5">ICR → DIGIT</text><text class="body" x="266" y="644.5">locations · populations</text><text class="body" x="266" y="659.5">indicators</text>
+<g opacity="0"><rect class="tint" x="255" y="668.5" width="214" height="37"/><rect class="hlbar" x="255" y="668.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="266" y="681.5">DIGIT → ICR</text><text class="body" x="266" y="696.5">campaign data</text>
+<rect class="chip" x="594" y="288" width="252" height="114" rx="2"/>
+<g opacity="0"><rect class="tint" x="595" y="292" width="250" height="37"/><rect class="hlbar" x="595" y="292" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2074;0.2185;0.2926;0.3037;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-out" x="606" y="305">ICR → CROSSCUT</text><text class="body" x="606" y="320">locations · populations · indicators</text>
+<g opacity="0"><rect class="tint" x="595" y="329" width="250" height="67"/><rect class="hlbar" x="595" y="329" width="2.5" height="67"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3074;0.3185;0.3889;0.4;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="606" y="342">CROSSCUT → ICR</text><text class="body" x="606" y="357">catchment areas, added to</text><text class="body" x="606" y="372">the location registry</text><text class="body" x="606" y="387">hard-to-reach communities</text>
+<rect class="chip" x="891" y="323" width="210" height="62" rx="2"/>
+<g opacity="0"><rect class="tint" x="892" y="327" width="208" height="52"/><rect class="hlbar" x="892" y="327" width="2.5" height="52"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6074;0.6185;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="903" y="340">COMMCARE → ICR</text><text class="body" x="903" y="355">campaign data</text><text class="body" x="903" y="370">supervision coverage</text>
+<rect class="chip" x="950" y="541.5" width="160" height="47" rx="2"/>
+<g opacity="0"><rect class="tint" x="951" y="545.5" width="158" height="37"/><rect class="hlbar" x="951" y="545.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0222;0.0333;0.1852;0.1963;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="962" y="558.5">METABASE → ICR</text><text class="body" x="962" y="573.5">historical data</text>
+<rect class="chip" x="782" y="651.5" width="196" height="47" rx="2"/>
+<g opacity="0"><rect class="tint" x="783" y="655.5" width="194" height="37"/><rect class="hlbar" x="783" y="655.5" width="2.5" height="37"/><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0185;0.0296;0.1852;0.1963;1" values="0.0;0;1;1;0;0"/></g>
+<text class="mono h-in" x="794" y="668.5">DHIS2 → ICR</text><text class="body" x="794" y="683.5">org units · routine data</text>
+<rect class="hl" x="980" y="80" width="230" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0148;0.0259;0.0926;0.1037;0.5778;0.5889;0.7778;0.7889;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="hl" x="600" y="180" width="240" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2074;0.2185;0.3889;0.4;0.5778;0.5889;0.7778;0.7889;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="hl" x="980" y="180" width="230" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5593;0.5704;0.7778;0.7889;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="hl" x="40" y="90" width="230" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4111;0.4222;0.537;0.5481;0.6037;0.6148;0.7778;0.7889;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="hl" x="40" y="720" width="230" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4111;0.4222;0.537;0.5481;0.6037;0.6148;0.7778;0.7889;1" values="0.0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="hl" x="1000" y="720" width="230" height="60" rx="3" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0148;0.0259;0.0926;0.1037;1" values="0.0;0;1;1;0;0"/></rect>
+<rect class="tint" x="486.0" y="506" width="97.33333333333333" height="78" rx="2" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0593;0.0704;0.1852;0.1963;0.3333;0.3444;0.3889;0.4;0.8148;0.8259;0.9815;0.9926;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><rect class="hl" x="486.0" y="506" width="97.33333333333333" height="78" rx="2" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0593;0.0704;0.1852;0.1963;0.3333;0.3444;0.3889;0.4;0.8148;0.8259;0.9815;0.9926;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="tint" x="591.3333333333334" y="506" width="97.33333333333333" height="78" rx="2" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0704;0.0815;0.1852;0.1963;0.6519;0.663;0.7778;0.7889;0.8148;0.8259;0.9815;0.9926;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><rect class="hl" x="591.3333333333334" y="506" width="97.33333333333333" height="78" rx="2" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0704;0.0815;0.1852;0.1963;0.6519;0.663;0.7778;0.7889;0.8148;0.8259;0.9815;0.9926;1" values="0.0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect>
+<rect class="tint" x="696.6666666666666" y="506" width="97.33333333333333" height="78" rx="2" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8148;0.8259;0.9815;0.9926;1" values="0.0;0;1;1;0;0"/></rect><rect class="hl" x="696.6666666666666" y="506" width="97.33333333333333" height="78" rx="2" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8148;0.8259;0.9815;0.9926;1" values="0.0;0;1;1;0;0"/></rect>
+<line class="rule" x1="40" y1="850" x2="1240" y2="850"/>
+<rect class="mk-off" x="40" y="870" width="8" height="8"/><rect class="mk-on" x="40" y="870" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0111;0.0167;0.1981;0.2037;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="56" y="878">1  EXISTING DATA</text><text class="mono" x="56" y="878" opacity="0">1  EXISTING DATA<animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0111;0.0167;0.1981;0.2037;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="912">DHIS2 sends org units and routine data. The NTD programme&#x27;s Metabase sends</text><text class="caption" x="40" y="934">data from past campaigns.</text><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0111;0.0241;0.1907;0.2037;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="280" y="870" width="8" height="8"/><rect class="mk-on" x="280" y="870" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2037;0.2093;0.4019;0.4074;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="296" y="878">2  PLAN</text><text class="mono" x="296" y="878" opacity="0">2  PLAN<animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2037;0.2093;0.4019;0.4074;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="912">Crosscut takes locations, populations and indicators from the ICR. Its catchment areas</text><text class="caption" x="40" y="934">and hard-to-reach communities go back into the location registry.</text><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2037;0.2167;0.3944;0.4074;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="520" y="870" width="8" height="8"/><rect class="mk-on" x="520" y="870" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4074;0.413;0.55;0.5556;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="536" y="878">3  SHARE</text><text class="mono" x="536" y="878" opacity="0">3  SHARE<animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4074;0.413;0.55;0.5556;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="912">Other programmes&#x27; tools, ICF and DIGIT for malaria, get the same locations, populations</text><text class="caption" x="40" y="934">and indicators. ICF also gets Crosscut&#x27;s catchments.</text><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4074;0.4204;0.5426;0.5556;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="760" y="870" width="8" height="8"/><rect class="mk-on" x="760" y="870" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5556;0.5611;0.7907;0.7963;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="776" y="878">4  RUN CAMPAIGNS</text><text class="mono" x="776" y="878" opacity="0">4  RUN CAMPAIGNS<animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5556;0.5611;0.7907;0.7963;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="912">CommCare sends delivery data to Crosscut and Metabase, and campaign data and</text><text class="caption" x="40" y="934">supervision coverage to the ICR. ICF and DIGIT send their campaign data too.</text><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5556;0.5685;0.7833;0.7963;1" values="0.0;0;1;1;0;0"/></g>
+<rect class="mk-off" x="1000" y="870" width="8" height="8"/><rect class="mk-on" x="1000" y="870" width="8" height="8" opacity="0"><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.7963;0.8019;0.9944;1;1" values="0.0;0;1;1;0;0"/></rect><text class="mono muted" x="1016" y="878">5  NEXT ROUND</text><text class="mono" x="1016" y="878" opacity="0">5  NEXT ROUND<animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.7963;0.8019;0.9944;1;1" values="0.0;0;1;1;0;0"/></text>
+<g opacity="0"><text class="caption" x="40" y="912">The next round starts from what the ICR holds: locations, catchments, populations</text><text class="caption" x="40" y="934">and past results are already there.</text><animate attributeName="opacity" dur="27s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.7963;0.8093;0.987;1;1" values="0.0;0;1;1;0;0"/></g>
+</svg></div>
+      <div class="controls"></div>
+    </figure>
+      </section>
+</main>
+
+<footer><div>Static and animated SVG versions of both diagrams are in the ICR repository under <code>diagram/</code>, built by <code>diagram/build.py</code>.</div></footer>
+</div>
+
+<script>
+// The diagrams carry SMIL timings so the SVG files animate on their own. On this page
+// the script reads those timings, removes the SMIL elements and plays them itself, so
+// play, pause and the step buttons behave the same in every browser.
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const nums = s => s.split(';').map(Number);
+  function interp(times, values, p) {
+    for (let i = 0; i < times.length - 1; i++) {
+      if (p <= times[i + 1]) {
+        const span = times[i + 1] - times[i];
+        return span <= 0 ? values[i + 1] : values[i] + (values[i + 1] - values[i]) * (p - times[i]) / span;
+      }
+    }
+    return values[values.length - 1];
+  }
+
+  function compile(svg) {
+    const tracks = [];
+    svg.querySelectorAll('animate, animateMotion').forEach(a => {
+      const el = a.parentElement;
+      const times = nums(a.getAttribute('keyTimes'));
+      if (a.localName === 'animate') {
+        const values = nums(a.getAttribute('values'));
+        tracks.push(p => { el.style.opacity = interp(times, values, p); });
+      } else {
+        const points = nums(a.getAttribute('keyPoints'));
+        const path = svg.querySelector(a.querySelector('mpath').getAttribute('href'));
+        const len = path.getTotalLength();
+        tracks.push(p => {
+          const pt = path.getPointAtLength(interp(times, points, p) * len);
+          el.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+        });
+      }
+      a.remove();
+    });
+    return p => tracks.forEach(f => f(p));
+  }
+
+  document.querySelectorAll('[data-player]').forEach(fig => {
+    const svg = fig.querySelector('svg');
+    const T = +svg.dataset.loop;
+    const stages = JSON.parse(svg.dataset.stages);
+    const draw = compile(svg);
+    const bar = fig.querySelector('.controls');
+
+    // stopAt: when a step is played from pause, where to stop again
+    let t = 0, paused = false, stopAt = null, last = performance.now();
+
+    const play = document.createElement('button');
+    play.type = 'button';
+    play.className = 'play';
+    bar.append(play);
+    const setPaused = p => { paused = p; play.textContent = p ? 'Play' : 'Pause'; };
+    play.addEventListener('click', () => { stopAt = null; setPaused(!paused); });
+
+    // A step button plays just that step and stops on its last frame, before the step
+    // fades out, so a demo can go through the steps one click at a time. Play loops.
+    const playStep = i => {
+      stopAt = (i + 1 < stages.length ? stages[i + 1][0] : T) - 0.6;
+      t = stages[i][0] + 0.05;
+      setPaused(false);
+    };
+    const current = () => stages.reduce((n, [at], i) => (t >= at ? i : n), 0);
+    const steps = stages.map(([, label], i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = `${i + 1} ${label}`;
+      b.addEventListener('click', () => playStep(i));
+      bar.append(b);
+      return b;
+    });
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.textContent = 'Next step →';
+    next.addEventListener('click', () => playStep((current() + 1) % stages.length));
+    bar.append(next);
+    const progress = document.createElement('div');
+    progress.className = 'progress';
+    progress.innerHTML = '<i></i>';
+    bar.append(progress);
+    const fill = progress.firstChild;
+
+    function frame(now) {
+      if (!paused) {
+        t = (t + Math.min(0.1, (now - last) / 1000)) % T;
+        if (stopAt !== null && t >= stopAt) { t = stopAt; stopAt = null; setPaused(true); }
+      }
+      last = now;
+      draw(t / T);
+      fill.style.width = `${(t / T) * 100}%`;
+      const cur = current();
+      steps.forEach((b, i) => b.setAttribute('aria-current', i === cur ? 'step' : 'false'));
+      requestAnimationFrame(frame);
+    }
+
+    if (reduced) { t = stages[stages.length - 1][0] + 0.6; setPaused(true); }
+    else setPaused(false);
+    requestAnimationFrame(frame);
+  });
+})();
+</script>

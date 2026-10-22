@@ -126,5 +126,5 @@ public base URL.
 > After the loads, `POST /fhir/$reindex` with `url` = `CarePlan?`, `Group?`, `Location?`.
 
 > [!warning] The R2 parquet is the only full copy of the registry
-> `tools/warehouse/push-r2.sh` mirrors `data/` to R2 with deletes. Run `refresh.sh` (no
+> `tools/warehouse/refresh.sh --push` mirrors `data/` to R2 with deletes. Run `refresh.sh` (no
 > `--push`) against a loaded server first, so `data/parquet/locations` holds part files.

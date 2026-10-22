@@ -133,6 +133,7 @@ Description: "The computed cost figures for a campaign at one geography, lineage
 * evaluatedResource ^short = "The inputs: the ICRCampaignCost line items summed, the coverage MeasureReport whose numerator was the divisor, and any higher-level lines apportioned in"
 * extension contains
     Campaign named campaign 1..1 MS and
+    CampaignActivity named campaignActivity 0..1 MS and
     CostLineage named costLineage 1..1 MS and
     CostPerspective named costPerspective 0..1 MS and
     CostScope named costScope 1..1 MS and
@@ -141,6 +142,7 @@ Description: "The computed cost figures for a campaign at one geography, lineage
     DenominatorType named denominatorType 0..1 MS and
     RealtimeVsReconciled named dataLineage 1..1 MS
 * extension[campaign] ^short = "The campaign (round or umbrella) the figures report against — the direct MeasureReport→ICRCampaign join, as on the coverage profiles"
+* extension[campaignActivity] ^short = "In an integrated campaign, the activity the figures are for (cost per person targeted then divides by that activity's planning denominator); absent ⇒ the campaign as a whole"
 * extension[costLineage] ^short = "budgeted | actual — a report never mixes the two"
 * extension[costPerspective] ^short = "financial | economic; absent ⇒ financial"
 * extension[costScope] ^short = "full | delivery-only — required; commodity value is the biggest swing between otherwise comparable unit costs"

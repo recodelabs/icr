@@ -134,15 +134,15 @@ PROTOCOLS: dict[str, dict] = {
         title="Integrated measles-rubella (9 months–14 years) + nOPV2 (0–59 months) campaign",
         type="integrated", band="m9_y14", delivery=["fixed-post", "temporary-post", "house-to-house"],
         goal="≥95% MR coverage 9 months–14 years and ≥95% nOPV2 coverage 0–59 months, by post-campaign survey",
-        actions=[("Vaccinate all children 9 months–14 years with MR", "nga-demo-act-mr"),
-                 ("Vaccinate all children 0–59 months with nOPV2", "nga-demo-act-nopv2")]),
+        actions=[("Vaccinate all children 9 months–14 years with MR", "nga-demo-act-mr", "m9_y14"),
+                 ("Vaccinate all children 0–59 months with nOPV2", "nga-demo-act-nopv2", "under5")]),
     "nga-demo-proto-mr-nopv2-ntd-integrated": dict(
         title="Integrated measles-rubella + nOPV2 + NTD (albendazole) campaign",
         type="integrated", band="m9_y14", delivery=["fixed-post", "temporary-post", "house-to-house"],
         goal="≥95% MR and nOPV2 coverage; ≥75% albendazole coverage 1–14 years",
-        actions=[("Vaccinate all children 9 months–14 years with MR", "nga-demo-act-mr"),
-                 ("Vaccinate all children 0–59 months with nOPV2", "nga-demo-act-nopv2"),
-                 ("Deworm all children 1–14 years with albendazole", "nga-demo-act-alb")]),
+        actions=[("Vaccinate all children 9 months–14 years with MR", "nga-demo-act-mr", "m9_y14"),
+                 ("Vaccinate all children 0–59 months with nOPV2", "nga-demo-act-nopv2", "under5"),
+                 ("Deworm all children 1–14 years with albendazole", "nga-demo-act-alb", "y1_14")]),
     "nga-demo-proto-lf-oncho-mda": dict(
         title="Lymphatic filariasis / onchocerciasis MDA (ivermectin + albendazole), community-directed",
         type="mda", band="y5_plus", delivery=["community-directed"],
@@ -166,6 +166,15 @@ PROTOCOLS: dict[str, dict] = {
 }
 
 
+# An integrated protocol's actions each name an age band (title, activity, band): each
+# intervention has its own eligibility, and its campaigns a target per activity.
+
+
+def action_bands(protocol_id: str) -> list[tuple[str, str]]:
+    """(activity id, age band key) for each action of an integrated protocol; empty otherwise."""
+    return [(a[1], a[2]) for a in PROTOCOLS[protocol_id]["actions"] if len(a) == 3]
+
+
 def activity_definitions(cfg: Config) -> list[dict]:
     out = []
     for aid, a in ACTIVITIES.items():
@@ -185,20 +194,36 @@ def eligibility_group_id(protocol_id: str) -> str:
     return protocol_id.replace("-proto-", "-eligible-")
 
 
+def band_eligibility_group_id(band_key: str) -> str:
+    return f"nga-demo-eligible-{band_key.replace('_', '')}"
+
+
+def _eligibility_group(cfg: Config, gid: str, band: AgeBand, of: str) -> dict:
+    return {
+        "resourceType": "Group", "id": gid, "meta": meta(cfg, None),
+        "type": "person", "actual": False,
+        "name": f"{band.label} (eligibility, {of})",
+        "characteristic": [{
+            "code": cc(GROUP_CHAR, "age-band", "Age band"),
+            "valueRange": age_range(band), "exclude": False}],
+    }
+
+
 def eligibility_groups(cfg: Config) -> list[dict]:
-    """Definitional cohorts (actual=false, no count) that protocols point at."""
-    out = []
-    for pid, p in PROTOCOLS.items():
-        band = cfg.age_bands[p["band"]]
-        out.append({
-            "resourceType": "Group", "id": eligibility_group_id(pid), "meta": meta(cfg, None),
-            "type": "person", "actual": False,
-            "name": f"{band.label} (eligibility, {p['title']})",
-            "characteristic": [{
-                "code": cc(GROUP_CHAR, "age-band", "Age band"),
-                "valueRange": age_range(band), "exclude": False}],
-        })
+    """Definitional cohorts (actual=false, no count) that protocols and their actions point at."""
+    out = [_eligibility_group(cfg, eligibility_group_id(pid), cfg.age_bands[p["band"]], p["title"])
+           for pid, p in PROTOCOLS.items()]
+    action_band_keys = sorted({band for pid in PROTOCOLS for _, band in action_bands(pid)})
+    out += [_eligibility_group(cfg, band_eligibility_group_id(b), cfg.age_bands[b], "an action of an integrated protocol")
+            for b in action_band_keys]
     return out
+
+
+def _action(cfg: Config, title: str, aid: str, band: str | None = None) -> dict:
+    a = {"title": title, "definitionCanonical": f"{cfg.canonical_base}/ActivityDefinition/{aid}"}
+    if band:
+        a["subjectReference"] = {"reference": f"Group/{band_eligibility_group_id(band)}"}
+    return a
 
 
 def plan_definitions(cfg: Config) -> list[dict]:
@@ -211,8 +236,7 @@ def plan_definitions(cfg: Config) -> list[dict]:
             "type": cc(CAMPAIGN_TYPE, p["type"], CAMPAIGN_TYPE_DISPLAY[p["type"]]),
             "subjectReference": {"reference": f"Group/{eligibility_group_id(pid)}"},
             "goal": [{"description": {"text": p["goal"]}}],
-            "action": [{"title": title, "definitionCanonical": f"{cfg.canonical_base}/ActivityDefinition/{aid}"}
-                       for title, aid in p["actions"]],
+            "action": [_action(cfg, *a) for a in p["actions"]],
             "extension": delivery_ext(p["delivery"]),
         })
     return out
@@ -256,7 +280,10 @@ def _status(start: date, end: date, as_of: date) -> tuple[str, str]:
 
 def care_plan(cfg: Config, *, cid: str, title: str, description: str, protocol: str, campaign_type: str,
               subject_group: str, start: date, end: date, as_of: date, geography_id: str, geography_name: str,
-              round_number: int, part_of: str | None, created_lead_days: int, activity_types: list[str] | None = None) -> dict:
+              round_number: int, part_of: str | None, created_lead_days: int, activity_types: list[str] | None = None,
+              activity_targets: list[tuple[str, str]] | None = None) -> dict:
+    """activity_targets: (activity id, target Group id) per activity of an integrated campaign, written as
+    CarePlan.activity.detail with that activity's planning denominator."""
     status, intent = _status(start, end, as_of)
     categories = [cc(CAMPAIGN_TYPE, campaign_type, CAMPAIGN_TYPE_DISPLAY[campaign_type])]
     for t in activity_types or []:
@@ -277,6 +304,13 @@ def care_plan(cfg: Config, *, cid: str, title: str, description: str, protocol: 
         "created": (start - timedelta(days=created_lead_days)).isoformat(),
         "extension": ext,
     }
+    if activity_targets:
+        detail_status = {"completed": "completed", "active": "in-progress", "draft": "not-started"}[status]
+        cp["activity"] = [{"detail": {
+            "instantiatesCanonical": [f"{cfg.canonical_base}/ActivityDefinition/{aid}"],
+            "status": detail_status,
+            "extension": [{"url": f"{SD}/planning-denominator", "valueReference": {"reference": f"Group/{gid}"}}],
+        }} for aid, gid in activity_targets]
     if part_of:
         cp["partOf"] = [{"reference": f"CarePlan/{part_of}"}]
     return cp
