@@ -20,6 +20,11 @@ CREATE OR REPLACE VIEW coverage AS
 CREATE OR REPLACE VIEW coverage_strata AS
   SELECT * FROM read_parquet('parquet/coverage_strata/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
+-- One row per campaign × activity × target: an integrated campaign's planning denominator per
+-- activity (CarePlan.activity.detail; ViewDefinition IcrCampaignActivity).
+CREATE OR REPLACE VIEW campaign_activity AS
+  SELECT * FROM read_parquet('parquet/campaign_activity/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
+
 CREATE OR REPLACE VIEW location_status AS
   SELECT * FROM read_parquet('parquet/location_status/country=*/**/*.parquet', hive_partitioning = true, union_by_name = true);
 
@@ -57,3 +62,14 @@ CREATE OR REPLACE VIEW coverage_admin_vs_survey AS
   FROM coverage a
   JOIN coverage s ON s.campaign_id = a.campaign_id AND s.source = 'survey'
   WHERE a.source = 'administrative' AND a.lineage = 'reconciled';
+
+-- Convenience: each campaign's target per activity (an activity's target can be several Groups,
+-- summed here), with the activity's short id. Campaigns without an activity list have no rows;
+-- their target is campaign_calendar.denominator_id.
+CREATE OR REPLACE VIEW campaign_activity_target AS
+  SELECT a.campaign_id, regexp_extract(a.activity, '([^/]+)$', 1) AS activity_id, a.activity,
+         any_value(a.activity_status) AS activity_status, sum(t.quantity) AS targeted,
+         list(a.denominator_id) AS denominator_ids
+  FROM campaign_activity a
+  LEFT JOIN target_population t ON t.group_id = a.denominator_id
+  GROUP BY a.campaign_id, a.activity;
