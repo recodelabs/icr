@@ -9,7 +9,7 @@ sql:
 
 # Campaign coverage
 
-How many people did the campaigns reach (administrative coverage) vs what was planned.
+How many people did the campaigns reach (administrative coverage) vs what was planned. An integrated round has a target per activity; its coverage report names the activity it covers (MR for the MR + nOPV2 rounds), and its coverage here is that activity's reached ÷ that activity's target.
 
 ```js
 import {campaignMap, syncMaps, DEFAULT_BASEMAP} from "./components/map.js";
