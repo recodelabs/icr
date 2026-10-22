@@ -72,12 +72,62 @@ Column types are declared so runners that support native temporal types write
 * select[0].column[10].name = "denominator_id"
 * select[0].column[10].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator').value.ofType(Reference).getReferenceKey(Group)"
 * select[0].column[10].type = "string"
-* select[0].column[10].description = "The ICRTargetPopulation Group this campaign plans against — join key to the target_population view for people targeted"
+* select[0].column[10].description = "The ICRTargetPopulation Group this campaign plans against — join key to the target_population view for people targeted. Integrated campaigns name a target per activity instead: see IcrCampaignActivity"
 * select[1].forEachOrNull = "extension('https://icr.healthcampaigns.org/StructureDefinition/target-geography')"
 * select[1].column[0].name = "location_id"
 * select[1].column[0].path = "value.ofType(Reference).getReferenceKey(Location)"
 * select[1].column[0].type = "string"
 * select[1].column[0].description = "The Location this campaign targets — join key to the location registry. One row per target geography; empty for umbrella campaigns with none."
+
+Instance: IcrCampaignActivity
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR campaign activities"
+Description: """
+One row per activity of a campaign per target: **which interventions a campaign
+delivers and how many people each one targets** (CarePlan.activity.detail).
+An integrated campaign (MR beside nOPV2, or vaccination, deworming and vitamin A
+on child health days) has a different eligible population for each activity, so
+it names a planning denominator per activity rather than one for the campaign.
+
+Join `denominator_id` to the target-population view for the count; an activity
+whose target is the sum of several estimates has one row per estimate, so sum
+them per `campaign_id` and `activity`. Join `campaign_id` and `activity` to the
+coverage view to divide each activity's people reached by its own target.
+Campaigns without activity details have no rows here; their target is
+`denominator_id` on the campaign calendar.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignActivity"
+* name = "IcrCampaignActivity"
+* title = "ICR campaign activities"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #CarePlan
+* select[0].column[0].name = "campaign_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[0].description = "The CarePlan id — join key to IcrCampaignCalendar"
+* select[1].forEach = "activity.detail"
+* select[1].column[0].name = "activity"
+* select[1].column[0].path = "instantiatesCanonical.first()"
+* select[1].column[0].type = "canonical"
+* select[1].column[0].description = "The ICRCampaignActivity — the same canonical as Task.instantiatesCanonical and the coverage view's activity"
+* select[1].column[1].name = "activity_status"
+* select[1].column[1].path = "status"
+* select[1].column[1].type = "code"
+* select[1].column[1].description = "not-started | in-progress | completed | cancelled …"
+* select[1].column[2].name = "activity_start"
+* select[1].column[2].path = "scheduled.ofType(Period).start"
+* select[1].column[2].type = "date"
+* select[1].column[2].description = "The activity's own start, when narrower than the campaign period; empty means the campaign's"
+* select[1].column[3].name = "activity_end"
+* select[1].column[3].path = "scheduled.ofType(Period).end"
+* select[1].column[3].type = "date"
+* select[1].select[0].forEachOrNull = "extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator')"
+* select[1].select[0].column[0].name = "denominator_id"
+* select[1].select[0].column[0].path = "value.ofType(Reference).getReferenceKey(Group)"
+* select[1].select[0].column[0].type = "string"
+* select[1].select[0].column[0].description = "The ICRTargetPopulation Group this activity plans against — join key to IcrTargetPopulation. Empty when the activity names none (it then uses the campaign's)"
 
 Instance: IcrTargetPopulation
 InstanceOf: $ViewDefinition
@@ -342,6 +392,10 @@ geography) are in the companion view `IcrCoverageStrata`.
 * select[0].column[17].name = "reporter"
 * select[0].column[17].path = "reporter.display"
 * select[0].column[17].type = "string"
+* select[0].column[18].name = "activity"
+* select[0].column[18].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)"
+* select[0].column[18].type = "canonical"
+* select[0].column[18].description = "In an integrated campaign, the activity this report covers — join with campaign_id to IcrCampaignActivity for that activity's target. Empty for a single-intervention campaign"
 
 Instance: IcrCoverageStrata
 InstanceOf: $ViewDefinition

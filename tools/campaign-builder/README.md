@@ -54,7 +54,7 @@ Options: `--as-of YYYY-MM-DD` (default 2026-09-07) sets the line between
 | Resource | Profile | Count | Role |
 |---|---|---|---|
 | ActivityDefinition | ICRCampaignActivity | 8 | the product catalogue: nOPV2, MCV, MR, ivermectin ± albendazole, azithromycin, praziquantel + albendazole |
-| Group (definitional) | — | 9 | protocol eligibility cohorts (age bands, no count) |
+| Group (definitional) | — | 12 | eligibility cohorts (age bands, no count): one per protocol, plus one per age band of an integrated protocol's actions |
 | PlanDefinition | ICRCampaignProtocol | 9 | protocols: nOPV2 SIA, measles catch-up, measles OBR, MR + nOPV2 (± NTD), LF/oncho MDA, oncho CDTI, trachoma MDA, schisto/STH school MDA |
 | Group | ICRTargetPopulation | ~2,000 | planning denominators per LGA / state × age band × year |
 | Group | ICRTargetPopulation | 124 | **total-population** census projection per LGA / state for one year (`python -m campaign_builder.totals --year 2026` → `08-total-populations.ndjson`; ids `pop-census-projection-YEAR-LOCATIONID`, the counterpart of `kiln population`'s `pop-worldpop-…` Groups for the Campaign Targeting dashboard) |
@@ -63,7 +63,11 @@ Options: `--as-of YYYY-MM-DD` (default 2026-09-07) sets the line between
 
 The three CarePlan levels are linked by `partOf`. Every CarePlan carries
 `target-geography` (the Location), `campaign-round`, `planning-denominator`,
-`period`, and `status`/`intent` derived from the as-of date. LGA CarePlans are
+`period`, and `status`/`intent` derived from the as-of date. The integrated
+MR + nOPV2 (± albendazole) campaigns also list their activities in
+`activity.detail`, each with its own `planning-denominator` (MR 9 months–14
+years, nOPV2 0–59 months, albendazole 1–14 years), and their coverage reports
+name the MR activity (`campaign-activity`) because they report MR coverage. LGA CarePlans are
 `intent=order`; umbrellas of future rounds are `intent=plan`.
 
 All generated resources carry `meta.tag` **`nga-demo`** (system

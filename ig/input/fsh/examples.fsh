@@ -525,8 +525,34 @@ Usage: #example
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
 * extension[taskOrigin].valueCode = #pre-planned
 * extension[dataLineage].valueCode = #realtime
+// The post's share of the district target: a task below the campaign's scope
+// (the district) carries its own target as a coded input.
+* input[targetPopulation].type = $TaskInputType#target-population "Target population"
+* input[targetPopulation].valueReference = Reference(example-target-population-rokupr-chc)
 * output.type.text = "Children vaccinated (session tally)"
 * output.valueUnsignedInt = 412
+
+Instance: example-target-population-rokupr-chc
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 9m–14y, Rokupr CHC catchment"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years, Rokupr CHC catchment (MR SIA 2026, fixed-post target)"
+* quantity = 3150
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-fixed-post)
+* characteristic[geography].exclude = false
+* characteristic[1].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[1].valueRange.low = 9 'mo' "months"
+* characteristic[1].valueRange.high = 14 'a' "years"
+* characteristic[1].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-01-15"
+* extension[isCalculated].valueBoolean = true
+* extension[isPlanningDenominator].valueBoolean = true
 
 Instance: example-mopup-task
 InstanceOf: ICRCampaignTask
@@ -1560,3 +1586,169 @@ Usage: #example
 * evaluatedResource[+] = Reference(example-admin-coverage)
 * evaluatedResource[+] = Reference(example-cost-perdiem-actual)
 * evaluatedResource[+] = Reference(example-cost-transport-actual)
+
+// --- An integrated campaign: one round, two interventions, a target for each ---
+// MR and nOPV2 delivered together in Kambia. Each intervention has its own
+// eligible population (protocol action.subject) and its own planning denominator
+// (CarePlan.activity.detail), so each gets its own coverage report. It stays ONE
+// campaign: one period, one team, one set of costs; not a campaign per vaccine.
+
+Instance: example-nopv2-activity
+InstanceOf: ICRCampaignActivity
+Title: "Administer nOPV2 — campaign activity definition"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* status = #active
+* kind = #Task
+* title = "Administer nOPV2, 0–59 months"
+* code.text = "Vaccinate"
+* topic = $CampaignType#vaccination-sia "Vaccination campaign (SIA)"
+// CVX has no code for novel OPV type 2; the product is named in text.
+* productCodeableConcept.text = "nOPV2 (novel oral polio vaccine type 2)"
+* dosage.text = "2 drops oral, regardless of prior doses"
+
+Instance: example-mr-eligible-population
+InstanceOf: Group
+Title: "MR eligible population — children 9 months–14 years (definitional)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* type = #person
+* actual = false
+* name = "Children 9 months–14 years (MR eligibility)"
+* characteristic[0].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[0].valueRange.low = 9 'mo' "months"
+* characteristic[0].valueRange.high = 14 'a' "years"
+* characteristic[0].exclude = false
+
+Instance: example-nopv2-eligible-population
+InstanceOf: Group
+Title: "nOPV2 eligible population — children 0–59 months (definitional)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* type = #person
+* actual = false
+* name = "Children 0–59 months (nOPV2 eligibility)"
+* characteristic[0].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[0].valueRange.low = 0 'mo' "months"
+* characteristic[0].valueRange.high = 59 'mo' "months"
+* characteristic[0].exclude = false
+
+// Eligibility per action: the protocol says who each intervention is for.
+Instance: example-integrated-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "Integrated MR + nOPV2 protocol"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* status = #active
+* version = "1.0.0"
+* title = "Integrated measles-rubella (9 months–14 years) and nOPV2 (0–59 months) campaign"
+* type = $CampaignType#integrated "Integrated / multi-intervention campaign"
+* extension[deliveryStrategy][0].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
+* extension[deliveryStrategy][1].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* goal.description.text = "≥95% MR coverage 9 months–14 years and ≥95% nOPV2 coverage 0–59 months"
+* action[0].title = "Administer MCV to all children 9 months–14 years"
+* action[0].definitionCanonical = Canonical(example-mcv-activity)
+* action[0].subjectReference = Reference(example-mr-eligible-population)
+* action[1].title = "Administer nOPV2 to all children 0–59 months"
+* action[1].definitionCanonical = Canonical(example-nopv2-activity)
+* action[1].subjectReference = Reference(example-nopv2-eligible-population)
+
+// The two targets. The MR one is example-target-population, the estimate the
+// June MR SIA already planned against: an estimate is reusable across rounds,
+// and the CAMPAIGN decides which estimate each activity divides by.
+Instance: example-target-population-u5
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 0–59 months, Kambia District"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* type = #person
+* actual = false
+* name = "Children 0–59 months, Kambia District, 2026"
+* quantity = 19300
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
+* characteristic[1].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[1].valueRange.low = 0 'mo' "months"
+* characteristic[1].valueRange.high = 59 'mo' "months"
+* characteristic[1].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-01-15"
+* extension[isPlanningDenominator].valueBoolean = true
+
+// The campaign's subject: everyone the round serves (0–14 years). Neither
+// activity divides by it.
+Instance: example-target-population-0-14
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — children 0–14 years, Kambia District"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* type = #person
+* actual = false
+* name = "Children 0–14 years, Kambia District, 2026"
+* quantity = 51850
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-district)
+* characteristic[geography].exclude = false
+* characteristic[1].code = $GroupCharacteristic#age-band "Age band"
+* characteristic[1].valueRange.low = 0 'a' "years"
+* characteristic[1].valueRange.high = 14 'a' "years"
+* characteristic[1].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[estimateDate].valueDate = "2026-01-15"
+* extension[isPlanningDenominator].valueBoolean = false
+
+// One campaign, one activity.detail per intervention, each with its target.
+// nOPV2 ran house-to-house in the first four days only: its own scheduledPeriod.
+Instance: example-integrated-round
+InstanceOf: ICRCampaign
+Title: "Kambia integrated MR + nOPV2 — September 2026"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* instantiatesCanonical = Canonical(example-integrated-protocol)
+* status = #completed
+* intent = #order
+* title = "Integrated MR + nOPV2 campaign, Kambia District, September 2026"
+* category[0] = $CampaignType#integrated "Integrated / multi-intervention campaign"
+* category[1] = $CampaignType#vaccination-sia "Vaccination campaign (SIA)"
+* subject = Reference(example-target-population-0-14)
+* period.start = "2026-09-14"
+* period.end = "2026-09-19"
+* careTeam = Reference(example-careteam)
+* extension[targetGeography].valueReference = Reference(example-district)
+* activity[0].detail.instantiatesCanonical = Canonical(example-mcv-activity)
+* activity[0].detail.status = #completed
+* activity[0].detail.extension[planningDenominator].valueReference = Reference(example-target-population)
+* activity[1].detail.instantiatesCanonical = Canonical(example-nopv2-activity)
+* activity[1].detail.status = #completed
+* activity[1].detail.scheduledPeriod.start = "2026-09-14"
+* activity[1].detail.scheduledPeriod.end = "2026-09-17"
+* activity[1].detail.extension[planningDenominator].valueReference = Reference(example-target-population-u5)
+
+// Coverage per activity: campaign-activity says which intervention, so the
+// denominator is that activity's target (19,300), not the MR one (48,250).
+Instance: example-integrated-coverage-nopv2
+InstanceOf: ICRAdministrativeCoverage
+Title: "Administrative coverage — nOPV2 in the Kambia integrated round, September 2026"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-admin-coverage"
+* subject = Reference(example-district)
+* period.start = "2026-09-14"
+* period.end = "2026-09-17"
+* reporter.display = "Kambia District Health Management Team"
+* extension[campaign].valueReference = Reference(example-integrated-round)
+* extension[campaignActivity].valueCanonical = Canonical(example-nopv2-activity)
+* group.population[0].code = $MeasurePopulation#numerator "Numerator"
+* group.population[0].count = 18721
+* group.population[1].code = $MeasurePopulation#denominator "Denominator"
+* group.population[1].count = 19300
+* group.measureScore.value = 0.97
+* extension[coverageSource].valueCode = #administrative
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
+* extension[denominatorType].valueCode = #at-risk
+* extension[dataLineage].valueCode = #reconciled

@@ -42,7 +42,11 @@ campaign.
    hierarchy and their own geography-scoped denominator estimates — they do **not**
    each get a CarePlan, so a district with hundreds of communities is still one
    campaign resource. Child CarePlans are reserved for genuine sub-rounds with
-   their own period or reporting obligation. A person is never a CarePlan subject:
+   their own period or reporting obligation, and an integrated campaign is not split
+   into one CarePlan per intervention: it lists its activities in
+   `CarePlan.activity.detail`, each with its own planning denominator, because each
+   intervention has its own eligible population (MR 9 months–14 years, nOPV2 0–59
+   months) while the period, team and costs are shared. A person is never a CarePlan subject:
    individuals appear only in the delivery events (`Immunization.patient`,
    `MedicationAdministration.subject`).
 3. **Task is the operational unit** — one per site-session or per household,

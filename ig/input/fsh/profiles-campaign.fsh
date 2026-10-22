@@ -21,6 +21,8 @@ Description: "The reusable, version-controlled template for a campaign type — 
 * action ^short = "The activity sequence, instantiated as ICRCampaignActivity definitions"
 * action.definition[x] only Canonical(ICRCampaignActivity)
 * action.definition[x] MS
+* action.subject[x] MS
+* action.subject[x] ^short = "Who this action is for, where it differs from the protocol's subject: in an integrated protocol each intervention has its own eligibility (MR 9 months–14 years, nOPV2 0–59 months). Same shape as the protocol's subject: a definitional Group (actual=false, no count) with an age-band characteristic"
 * extension contains DeliveryStrategy named deliveryStrategy 1..* MS
 * extension[deliveryStrategy] ^short = "Delivery strategies this protocol uses — campaigns routinely mix them"
 
@@ -28,7 +30,8 @@ Profile: ICRCampaign
 Parent: CarePlan
 Id: ICRCampaign
 Title: "ICR Campaign"
-Description: "A specific campaign execution — the keystone resource. Begins life as a microplan (intent=plan) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via partOf (working doc §7.2, §6.3). Granularity: one ICRCampaign per REPORTING SCOPE — the highest level that carries the campaign's global target (typically the district round), with that scope's denominator as subject. Operational sub-units (wards, villages, communities) sit under it through the Location hierarchy and their own geography-scoped ICRTargetPopulation estimates; they do not each get a CarePlan. Child CarePlans (partOf) are reserved for genuine sub-rounds with their own period or reporting obligation, not for every level of geographic disaggregation."
+Description: "A specific campaign execution — the keystone resource. Begins life as a microplan (intent=plan) and evolves into the execution record as Tasks complete and coverage accumulates. Rounds are sibling ICRCampaigns under an umbrella campaign via partOf (working doc §7.2, §6.3). Granularity: one ICRCampaign per REPORTING SCOPE — the highest level that carries the campaign's global target (typically the district round), with that scope's denominator as subject. Operational sub-units (wards, villages, communities) sit under it through the Location hierarchy and their own geography-scoped ICRTargetPopulation estimates; they do not each get a CarePlan. Child CarePlans (partOf) are reserved for genuine sub-rounds with their own period or reporting obligation, not for every level of geographic disaggregation. An integrated campaign (several interventions delivered together, each with its own eligible population) is still one ICRCampaign per reporting scope, not one per intervention: it lists its activities in activity.detail, each instantiating an ICRCampaignActivity of the protocol and naming its own planning denominator."
+* obeys icr-campaign-activity-targets
 * ^experimental = false
 * instantiatesCanonical 1..1 MS
 * instantiatesCanonical only Canonical(ICRCampaignProtocol)
@@ -49,16 +52,35 @@ Description: "A specific campaign execution — the keystone resource. Begins li
 * addresses ^short = "The disease/condition targeted"
 * partOf only Reference(ICRCampaign)
 * partOf ^short = "Umbrella campaign this round belongs to (multi-round pattern, working doc §6.3)"
+* activity MS
+* activity ^short = "The activities this campaign includes, each with its target (detail); optionally also a curated Task list (reference). For tasks the canonical link runs the other way — Task.basedOn points at this campaign — so the CarePlan is never rewritten as tasks are created"
 * activity.reference only Reference(ICRCampaignTask)
-* activity ^short = "Optional curated Task list. The canonical link runs the other way — Task.basedOn points at this campaign — so the CarePlan is never rewritten as tasks are created"
+* activity.detail MS
+* activity.detail ^short = "One activity of the campaign and its target: required on an integrated campaign (icr-campaign-activity-targets), optional otherwise"
+* activity.detail.instantiatesCanonical 1..1 MS
+* activity.detail.instantiatesCanonical only Canonical(ICRCampaignActivity)
+* activity.detail.instantiatesCanonical ^short = "The activity, as in the protocol's action.definitionCanonical; the tasks that carry it out have the same Task.instantiatesCanonical, and a coverage report names it in campaign-activity"
+* activity.detail.status MS
+* activity.detail.status ^short = "This activity's progress within the campaign: not-started → in-progress → completed, or cancelled when an intervention is dropped from the round"
+* activity.detail.scheduled[x] only Period
+* activity.detail.scheduled[x] MS
+* activity.detail.scheduled[x] ^short = "This activity's own dates, when they are narrower than the campaign period (e.g. a school-based intervention in one week of the round)"
+* activity.detail.extension contains PlanningDenominator named planningDenominator 0..* MS
+* activity.detail.extension[planningDenominator] ^short = "This activity's target: the ICRTargetPopulation its coverage divides by. Repeats when the target is the sum of several estimates; two activities may name the same estimate"
 * extension contains
     CampaignRound named campaignRound 0..1 MS and
     TargetGeography named targetGeography 0..* MS and
     PlanningDenominator named planningDenominator 0..1 MS and
     SocialMobilization named socialMobilization 0..1 MS and
     RealtimeVsReconciled named dataLineage 0..1 MS
+* extension[planningDenominator] ^short = "The campaign's target: the ICRTargetPopulation coverage divides by. For an integrated campaign each activity names its own in activity.detail; this one is then optional and applies to activities that name none"
 * extension[socialMobilization] ^short = "Demand generation: population-informed + channels used (v0.20.0)"
 * extension[targetGeography] ^short = "The Location this campaign targets — searchable as CarePlan?target-geography= (SearchParameter icr-campaign-target-geography): what is planned where, chainable through partof and reverse-includable from a Location subtree (campaign-visibility)"
+
+Invariant: icr-campaign-activity-targets
+Description: "An integrated campaign (category integrated) lists its activities in activity.detail, each with its own planning denominator: one target for the whole campaign cannot serve interventions with different eligible populations. Warning severity: a draft may be stored before every target is known."
+Severity: #warning
+Expression: "category.coding.where(code = 'integrated').exists() implies (activity.detail.exists() and activity.detail.all(extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator').exists()))"
 
 Profile: ICRCampaignActivity
 Parent: ActivityDefinition
@@ -129,6 +151,16 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 // (deliveryStrategy, taskOrigin) stay extensions: known at creation, they
 // describe the Task; results are outputs. A new tally axis is a new
 // ICRTaskOutputTypeCS code, not a new extension.
+* input MS
+* input ^short = "What the task is given before the work starts, as coded entries: today its target (target-population)"
+* input ^slicing.discriminator.type = #pattern
+* input ^slicing.discriminator.path = "type"
+* input ^slicing.rules = #open
+* input.type from ICRTaskInputTypeVS (extensible)
+* input contains targetPopulation 0..*
+* input[targetPopulation].type = $TaskInputType#target-population
+* input[targetPopulation].value[x] only Reference(ICRTargetPopulation)
+* input[targetPopulation] ^short = "This task's target, for a task below the campaign's reporting scope (facility catchment, parish, school, settlement); repeats when it is the sum of several estimates. A task at the campaign's scope leaves it out and uses the campaign's planning denominator for its activity"
 * output MS
 * output ^short = "Everything the visit produced, as coded entries: the scalar tally (treated-count), the house-to-house axes (houses-visited, eligible-present/absent, children-already-marked), reason codes (missed/refusal/exclusion), revisit outcome, and references to delivery events and the stratified coverage report"
 * output ^slicing.discriminator.type = #pattern
