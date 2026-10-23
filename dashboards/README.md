@@ -83,15 +83,18 @@ ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
 - **Sign-in:** at `/_obs/login`, with Keycloak (the `uga` realm, client `observatory`) or by
   email and password. A verified ona.io address is active at once. Anyone else waits for an
   admin's approval; mberg@ona.io gets an email about each new account. Approval alone does
-  not open `/ug/`: give someone outside Ona access by adding them to the Keycloak group
-  `/dashboards`, or by adding `{email: "…"}` to the site's `access` and redeploying.
+  not open `/ug/`: give someone outside Ona access by ticking uganda for them on Settings (or
+  inviting them there), or by adding them to the Keycloak group `/dashboards`.
 - **Uganda files cached before sign-in:** until the gate, `/ug/` was public, and its data
   files were sent with a one-year browser cache. A browser that opened `/ug/` then may still
   hold those files, though their pages now need sign-in. The file names change, and the old
   copies stop being used, once the Uganda data next changes.
 - **Admins** (`auth.admins`): mberg@ona.io and the Keycloak group `/dashboards-admins`.
-  They see every site and manage users at `/_obs/admin`. A signed-in user sees an account
-  bar on each page, with "Manage users" for admins.
+  They see every site and manage users at `/_obs/admin` ("Settings"). A signed-in user sees
+  an account panel at the foot of each page's sidebar, with "Settings" for admins.
+- **Invitations:** on Settings, an admin invites someone by email and ticks the sites they can
+  see (or makes them admin). They sign in with an emailed link; no password is needed. Each
+  user's row has the same ticks, to change later.
 - **Users and sessions** are in the D1 database `observatory`. `observatory deploy` applies
   the gate's migrations before it deploys the Worker.
 - **Secrets** (`npx wrangler secret put NAME`, in `worker/`): `BETTER_AUTH_SECRET`,
