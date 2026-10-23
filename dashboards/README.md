@@ -122,11 +122,11 @@ to keep it for a year, so a different build needs a different name.
 
 ## Deploy
 
-**After editing pages**, from an up-to-date `main`:
+**After editing pages**, from an up-to-date `main`, in `dashboards/`:
 
 ```bash
 git switch main && git pull
-cd dashboards && npx observatory deploy uganda    # or main, or both
+npx observatory deploy uganda    # or main, or both
 ```
 
 This rebuilds the site with the latest data in R2 and uploads it.
