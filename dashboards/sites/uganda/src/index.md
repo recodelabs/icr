@@ -8,7 +8,7 @@ sql:
 
 <link rel="stylesheet" href="npm:maplibre-gl@5/dist/maplibre-gl.css">
 
-# ICHD targets, October 2026
+# ICHD Campaign targets - October 2026
 
 The Ministry of Health's targets for the Integrated Child Health Days (ICHDs) round of October 2026, by district and city. In the [Integrated Campaign Registry](https://icr.healthcampaigns.org) each district has one draft campaign, and the campaign names a target for each of its six activities. The round is a plan: nothing has started.
 
