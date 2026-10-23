@@ -24,14 +24,19 @@ binding = "SITE"
 bucket_name = "icr"
 
 # Custom domains on the healthcampaigns.org zone (same account). Wrangler creates the DNS
-# record and certificate for a custom_domain route on deploy. The old monitor.* host stays
-# attached so the gate can 301-redirect it to BASE_URL rather than leaving it dangling.
+# record and certificate for a custom_domain route on deploy. The old monitor.* host and
+# doorman.* (the sign-in Worker this gate replaced) stay attached so the gate can
+# 301-redirect them to BASE_URL rather than leaving them dangling.
 [[routes]]
 pattern = "dashboards.healthcampaigns.org"
 custom_domain = true
 
 [[routes]]
 pattern = "monitor.healthcampaigns.org"
+custom_domain = true
+
+[[routes]]
+pattern = "doorman.healthcampaigns.org"
 custom_domain = true
 
 # Secrets (wrangler secret put …): BETTER_AUTH_SECRET, OIDC_UGA_SECRET (the Keycloak client's
