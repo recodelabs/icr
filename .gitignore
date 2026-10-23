@@ -45,6 +45,7 @@ dashboards/node_modules/
 dashboards/sites/*/dist/
 dashboards/sites/*/src/.observablehq/
 dashboards/worker/.wrangler/
+dashboards/worker/.dev.vars
 .wrangler/
 
 # tools/sdi (Cloudflare Worker for sdi.healthcampaigns.org)

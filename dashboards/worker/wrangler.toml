@@ -1,20 +1,31 @@
-# Campaign Dashboards on Cloudflare: a Worker that serves the Framework build from the
-# `icr` R2 bucket at https://dashboards.healthcampaigns.org.
-# Deployed by `observatory deploy` (dashboards/README.md), after it uploads the sites.
+# Campaign Dashboards on Cloudflare: Observatory's gate, serving the Framework builds from the
+# `icr` R2 bucket at https://dashboards.healthcampaigns.org, with sign-in for the closed sites.
+# Deployed by `observatory deploy` (dashboards/README.md), after it uploads the sites and
+# applies the D1 migrations.
 name = "campaignhq"
 main = "index.js"
 compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
 account_id = "af8ac7eb1f7ec617e14702e69ce0d4c7"
 workers_dev = false
 
+[vars]
+BASE_URL = "https://dashboards.healthcampaigns.org"
+
+# Users, sessions and Keycloak claims. The schema is the gate package's migrations.
+[[d1_databases]]
+binding = "DB"
+database_name = "observatory"
+database_id = "1b74e355-5c9b-40c0-a162-38aaa823830f"
+migrations_dir = "../node_modules/@recodelabs/observatory-gate/migrations"
+
 [[r2_buckets]]
-binding = "ICR"
+binding = "SITE"
 bucket_name = "icr"
 
-# Custom domains on the healthcampaigns.org zone (same account). Wrangler creates
-# the DNS record and certificate for a custom_domain route on deploy. The old
-# monitor.* host is kept attached so the Worker can 301-redirect it (see
-# CANONICAL_HOST in worker/index.js) rather than leaving it dangling.
+# Custom domains on the healthcampaigns.org zone (same account). Wrangler creates the DNS
+# record and certificate for a custom_domain route on deploy. The old monitor.* host stays
+# attached so the gate can 301-redirect it to BASE_URL rather than leaving it dangling.
 [[routes]]
 pattern = "dashboards.healthcampaigns.org"
 custom_domain = true
@@ -22,3 +33,6 @@ custom_domain = true
 [[routes]]
 pattern = "monitor.healthcampaigns.org"
 custom_domain = true
+
+# Secrets (wrangler secret put …): BETTER_AUTH_SECRET, OIDC_UGA_SECRET (the Keycloak client's
+# secret) and RESEND_API_KEY (sign-in and approval emails).
