@@ -17,13 +17,13 @@ npm `@recodelabs/observatory-cli`); its components package supplies the shared m
 | The same, redrawn | `/dhis2-sl-redux/` | `sites/sl-redux/` | the local `data/` only |
 
 `observatory.config.js` lists the sites, their warehouses and where they go in R2.
-`worker/` is the Cloudflare Worker that serves them.
+`worker/` is the Cloudflare Worker that serves them and handles sign-in.
 
 ## Run
 
 ```bash
 cd dashboards
-npm install                       # Framework, the observatory CLI and components, wrangler
+npm install                       # Framework, the observatory CLI, components and gate, wrangler
 npx observatory check             # the sites, their warehouses and bucket folders
 npx observatory dev main          # preview, data from the cached R2 warehouse (pulled if none)
 npx observatory dev main --local  # … from the local copy (data/) instead
@@ -52,7 +52,7 @@ tools/warehouse/refresh.sh --push            # (repo root) main server → data/
 country/uganda/warehouse.sh --push           # (repo root) Uganda server → r2:icr/uga/
 cd dashboards && npx observatory deploy main uganda
                                              # pull each warehouse → build → upload to
-                                             # r2:icr/_site/campaignhq/… → wrangler deploy worker/
+                                             # r2:icr/_site/campaignhq/… → D1 migrations → wrangler deploy worker/
 ```
 
 For each site, `observatory deploy`:
@@ -63,7 +63,7 @@ For each site, `observatory deploy`:
 4. Adds brotli copies of the `.wasm` files.
 5. Uploads the build to `_site/campaignhq/` plus the site's path.
 
-Then it deploys the Worker. `--dry-run` shows what would change; `--local` builds from the
+Then it applies the gate's D1 migrations and deploys the Worker. `--dry-run` shows what would change; `--local` builds from the
 local copies.
 
 **Sites are uploaded separately.** Uploading `main` leaves `/ug/` and the Sierra Leone
@@ -73,17 +73,31 @@ than delete them.
 The Sierra Leone sites have no warehouse. Their loaders read the raw Location download in
 the local `data/`, which is not pushed, so deploy them from a machine that has it.
 
-**The Worker** (`worker/index.js`, `worker/wrangler.toml`) serves the sites straight from
-the bucket. Cloudflare Pages was ruled out because it caps files at 25 MiB, and
-DuckDB-WASM's engine is larger.
-- **Domain:** `wrangler.toml` declares `dashboards.healthcampaigns.org` as a
-  custom-domain route, so wrangler creates its DNS record and certificate.
+**The Worker** (`worker/`) is Observatory's gate (`@recodelabs/observatory-gate`): it
+serves the sites straight from the bucket and decides who sees what. Cloudflare Pages was
+ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
+- **Access:** each site's `access` in `observatory.config.js`. The main and Sierra Leone
+  sites are public. `/ug/` is open to the Keycloak `uga` realm's group `/dashboards`, to
+  verified ona.io addresses and to admins. Its data files follow its page: without a
+  session they get 401.
+- **Sign-in:** at `/_obs/login`, with Keycloak (the `uga` realm, client `observatory`) or by
+  email and password. A verified ona.io address is active at once. Anyone else waits for an
+  admin's approval; mberg@ona.io gets an email about each new account.
+- **Admins** (`auth.admins`): mberg@ona.io and the Keycloak group `/dashboards-admins`.
+  They see every site and manage users at `/_obs/admin`. A signed-in user sees an account
+  bar on each page, with "Manage users" for admins.
+- **Users and sessions** are in the D1 database `observatory`. `observatory deploy` applies
+  the gate's migrations before it deploys the Worker.
+- **Secrets** (`npx wrangler secret put NAME`, in `worker/`): `BETTER_AUTH_SECRET`,
+  `OIDC_UGA_SECRET` (the Keycloak client's secret) and `RESEND_API_KEY` (mail). Never
+  commit or print them. For `wrangler dev`, put them in `worker/.dev.vars`, which git
+  ignores.
+- **Domain:** `wrangler.toml` declares `dashboards.healthcampaigns.org` as a custom-domain
+  route, so wrangler creates its DNS record and certificate.
 - **Old host:** `monitor.healthcampaigns.org` 301-redirects to the new host.
 - **Brotli copies:** browsers that accept brotli get the precompressed copy of each
   `.wasm` file. Cloudflare's own compression is lighter: the DuckDB engine (27.4 MB) goes
   out as 4.7 MiB from the copy instead of 7.0 MiB.
-- **Access:** until Observatory's gate replaces this Worker, every site is public. The
-  `access` rules in `observatory.config.js` take effect with the gate.
 
 ## The main site
 

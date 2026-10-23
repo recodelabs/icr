@@ -92,7 +92,8 @@ npx observatory deploy main uganda
   4. Swaps in DuckDB 2.0 for pages that use DuckDB.
   5. Builds, then uploads the build to R2.
 
-  The campaignhq Worker (`dashboards/worker/`) is redeployed last.
+  Then the gate (`dashboards/worker/`, the `campaignhq` Worker) is redeployed, after its D1
+  migrations are applied.
 - **Options:**
   - `--dry-run` builds and shows what would change, without uploading.
   - `--local` builds from the local copies (`data/`, `country/uganda/warehouse/`) instead
@@ -156,8 +157,9 @@ can respond with 200 and still fail in its DuckDB queries.
   an operating-system lock on it, so two refreshes of one warehouse take turns, and the lock
   ends with the process. The empty file stays by design and never blocks a later run.
   `.gitignore` keeps it out of git.
-- **What is public.** The dashboards are public, including the Ministry of Health's ICHD
-  targets on `/ug/`; a login is planned. The SDI is public by design. The warehouses in R2
+- **What is public.** The main and Sierra Leone dashboards are public. `/ug/`, with the
+  Ministry of Health's ICHD targets, needs sign-in: Keycloak `uga` group `/dashboards`, a
+  verified ona.io address, or an admin (`dashboards/README.md`). The SDI is public by design. The warehouses in R2
   are private: the bucket has no public URL. The main FHIR server's open address
   (`hapi.healthcampaigns.org`) is unprotected for now.
 - **Secrets.** Never print or commit the API keys, the rclone config or the Cloudflare
