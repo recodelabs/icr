@@ -100,7 +100,8 @@ ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
   ignores.
 - **Domain:** `wrangler.toml` declares `dashboards.healthcampaigns.org` as a custom-domain
   route, so wrangler creates its DNS record and certificate.
-- **Old host:** `monitor.healthcampaigns.org` 301-redirects to the new host.
+- **Old hosts:** `monitor.healthcampaigns.org` and `doorman.healthcampaigns.org` 301-redirect to
+  the new host; old `/_door/` links go to `/_obs/`.
 - **Brotli copies:** browsers that accept brotli get the precompressed copy of each
   `.wasm` file. Cloudflare's own compression is lighter: the DuckDB engine (27.4 MB) goes
   out as 4.7 MiB from the copy instead of 7.0 MiB.
