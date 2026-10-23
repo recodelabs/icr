@@ -82,7 +82,13 @@ ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
   session they get 401.
 - **Sign-in:** at `/_obs/login`, with Keycloak (the `uga` realm, client `observatory`) or by
   email and password. A verified ona.io address is active at once. Anyone else waits for an
-  admin's approval; mberg@ona.io gets an email about each new account.
+  admin's approval; mberg@ona.io gets an email about each new account. Approval alone does
+  not open `/ug/`: give someone outside Ona access by adding them to the Keycloak group
+  `/dashboards`, or by adding `{email: "…"}` to the site's `access` and redeploying.
+- **Uganda files cached before sign-in:** until the gate, `/ug/` was public, and its data
+  files were sent with a one-year browser cache. A browser that opened `/ug/` then may still
+  hold those files, though their pages now need sign-in. The file names change, and the old
+  copies stop being used, once the Uganda data next changes.
 - **Admins** (`auth.admins`): mberg@ona.io and the Keycloak group `/dashboards-admins`.
   They see every site and manage users at `/_obs/admin`. A signed-in user sees an account
   bar on each page, with "Manage users" for admins.
