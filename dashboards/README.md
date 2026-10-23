@@ -19,6 +19,84 @@ npm `@recodelabs/observatory-cli`); its components package supplies the shared m
 `observatory.config.js` lists the sites, their warehouses and where they go in R2.
 `worker/` is the Cloudflare Worker that serves them and handles sign-in.
 
+## Edit a page
+
+Each page is a Markdown file in its site's `src/` folder, for example
+`sites/uganda/src/index.md` is https://dashboards.healthcampaigns.org/ug/. There are two ways
+to change one.
+
+| | On the site | On your computer |
+|---|---|---|
+| For | small fixes: a typo, a heading, a sentence | writing pages, charts, anything bigger |
+| Preview | the live page, as it is now | your page as you type, with its charts and data |
+| Saves to | GitHub, a commit on `main` per save | the files on your computer; you commit |
+| Needs | an admin account | this repo, Node 22, `duckdb`, rclone |
+
+### A small fix on the site
+
+1. Sign in at https://dashboards.healthcampaigns.org/_obs/login with an admin account.
+2. Open the page and click **Edit this page** in the panel at the foot of the sidebar.
+   (`/_obs/edit/` lists every page.)
+3. Change the text on the left. The right is the live page, which doesn't change yet.
+4. Optionally say what you changed, then click **Save to GitHub** (or press Ctrl/Cmd-S).
+   Each save is one commit on `main`, with you as its author.
+5. Publish it: deploy the site (below). Until then the site shows the old page.
+
+If someone changed the file on GitHub after you opened it, the save is refused and your
+text stays in the box; copy it, reload, and make the change again.
+
+### Writing on your computer
+
+**Once:**
+
+```bash
+git clone https://github.com/recodelabs/icr && cd icr/dashboards
+npm install        # Framework, the observatory CLI, components and gate, wrangler
+```
+
+You also need Node 22 or later, the `duckdb` CLI on your PATH (the data loaders use it) and
+an rclone remote called `r2` for the `icr` bucket (it fetches the data). Without the rclone
+remote, add `--local` to use the local copies of the warehouses (`data/`,
+`country/uganda/warehouse/`), if you have them.
+
+**Each time:**
+
+1. Get the latest pages, on a branch of your own:
+   ```bash
+   git pull
+   git switch -c pages/uganda-intro      # any name
+   ```
+2. Start the editor and the preview for one site:
+   ```bash
+   npx observatory dev uganda
+   ```
+   It prints two addresses and opens the first in your browser:
+   ```
+   == uganda: edit at http://127.0.0.1:3001/ (the preview is http://127.0.0.1:3000/)
+   ```
+3. Pick a page. Its Markdown is on the left and the page is on the right. Type, and after a
+   moment the file is saved to disk ("Saved to disk" at the top right) and the page on the
+   right redraws. You can also edit the files in your own editor (VS Code and so on); the
+   preview follows those too. If the file changes on disk while it's open in the browser,
+   the browser editor stops saving and offers to load the new version.
+4. Stop with Ctrl-C when you're done.
+5. Commit and push, then open a pull request (or push to `main` if you're sure):
+   ```bash
+   git add sites/uganda/src
+   git commit -m "Uganda: rewrite the introduction"
+   git push -u origin pages/uganda-intro
+   ```
+6. Once it's merged, publish it: deploy the site (below).
+
+Only that site's pages are listed, and the editor only answers on this computer
+(127.0.0.1). `npx observatory dev uganda --no-edit` runs the preview alone.
+
+> [!note]
+> The editor on your computer comes with observatory CLI 0.3.0, which isn't on npm yet.
+> Until it is, use the copy in the observatory repo: `npm install --no-save
+> ../../observatory/packages/cli` here (with the observatory repo next to this one). The next
+> plain `npm install` puts the published version back.
+
 ## Run
 
 ```bash
@@ -43,6 +121,15 @@ named `duckdb-base.<hash>.wasm`, after the start of its checksum: the Worker tel
 to keep it for a year, so a different build needs a different name.
 
 ## Deploy
+
+**After editing pages**, from an up-to-date `main`:
+
+```bash
+git switch main && git pull
+cd dashboards && npx observatory deploy uganda    # or main, or both
+```
+
+This rebuilds the site with the latest data in R2 and uploads it.
 
 The data comes from the warehouses in the `icr` R2 bucket, not from this machine: an update
 is refresh the warehouse, then deploy. The full runbook is `tools/warehouse/README.md`.
