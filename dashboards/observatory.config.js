@@ -13,7 +13,7 @@ export default {
     // The gate's users and sessions; `observatory deploy` applies its migrations first.
     d1: "observatory"
   },
-  brand: {title: "Campaign Dashboards", accent: "#0b57d0", logo: null},
+  brand: {title: "Campaign Dashboards", accent: "#0b57d0", logo: "/_obs/observatory.svg"},
   warehouses: {
     // tools/warehouse/refresh.sh --push writes the main warehouse to the bucket root.
     main: {r2: "", local: "../data"},
