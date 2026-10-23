@@ -10,8 +10,9 @@
 
 data = "../../data"
 views = "../../ig/fsh-generated/resources"
-# The ICR profile: its columns, admin units and codes (fhir-pipes docs/profiles.md).
-profile = "../../ig/fhir-pipes-profile.toml"
+# The ICR profile for Nigeria: its columns, admin units and codes, and the tile layer names
+# country, states, lgas (fhir-pipes docs/profiles.md).
+profile = "../../ig/fhir-pipes-profile-nigeria.toml"
 
 [server]
 base = "http://localhost:3447/fhir"

@@ -121,7 +121,8 @@ can respond with 200 and still fail in its DuckDB queries.
 
 ## What the tools need
 
-- **fhir-pipes** 0.6 or later (ohs-foundation/fhir-pipes-rs), at `~/.local/bin/fhir-pipes`.
+- **fhir-pipes** built from ohs-foundation/fhir-pipes-rs main at or after #140 (0.6.0 refuses the
+  profile's `admin_layers`), at `~/.local/bin/fhir-pipes`.
 - **duckdb** (2.0, with the spatial extension), **tippecanoe**, and **portolan** for the
   catalog hook.
 - **rclone** with the `r2` remote for the `icr` bucket.

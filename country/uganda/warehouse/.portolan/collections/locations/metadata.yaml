@@ -49,8 +49,8 @@ processing_notes: |
 known_issues: |
   Lira City's boundary is the 2020 municipality, smaller than the city today. The 10
   cities and Terego (created in 2020) have no P-code; Lira City carries Lira
-  Municipality's. The map tiles name their layers `states` (regions) and `lgas`
-  (districts and cities), fhir-pipes' fixed names.
+  Municipality's. The map tiles' layers are `country`, `regions` and `districts`
+  (districts and cities).
 
 examples:
   - engine: duckdb

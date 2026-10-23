@@ -13,7 +13,8 @@
 
 data = "warehouse"
 views = "../../ig/fsh-generated/resources"
-profile = "../../ig/fhir-pipes-profile.toml"
+# The ICR profile for Uganda: the tile layers are country, regions, districts.
+profile = "../../ig/fhir-pipes-profile-uganda.toml"
 
 [server]
 base = "https://fhir-uga.healthcampaigns.org/fhir"
