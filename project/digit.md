@@ -1,7 +1,7 @@
 ---
 title: DIGIT HCM and the ICR — data model comparison and mapping to FHIR
-version: 0.3.0
-last_modified: 2026-10-26T22:45:00Z
+version: 0.4.0
+last_modified: 2026-10-26T23:35:00Z
 status: analysis; IG additions decided in ig-gaps-from-digit; no importer built yet
 tags:
   - icr
@@ -14,7 +14,7 @@ tags:
 
 # DIGIT HCM and the ICR — data model comparison and mapping to FHIR
 
-<sub>`v0.3.0 · Last modified Oct 26, 2026 at 6:45 PM EDT`</sub>
+<sub>`v0.4.0 · Last modified Oct 26, 2026 at 7:35 PM EDT`</sub>
 
 DIGIT Health Campaign Management (HCM) is eGov Foundation's open-source campaign system:
 Java/Spring microservices on the DIGIT platform, a Flutter field app that works offline,
@@ -367,8 +367,10 @@ Two differences:
 - `ICRTargetPopulation` counts persons by default. Bednet campaigns target
   **households**; these become ICRTargetPopulation figures with
   `unit-of-count = household` ([[ig-gaps-from-digit]] §3).
-- DIGIT's `baseline` vs `target` maps to `denominatorType` `total-population` vs
-  `at-risk`, and the `target` Group is the planning denominator.
+- DIGIT's `baseline` maps to `denominatorType = total-population`. Its `target` maps to
+  an `at-risk` planning denominator only where the tenant confirms it is the eligible
+  population; where it is a performance goal it maps to a `Goal` on the campaign (see the
+  mapping table).
 
 ### 7. Geography
 
@@ -540,9 +542,9 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | --- | --- |
 | child `Project.address.boundary` / `census.boundary_code` | `characteristic[geography]` → the Location |
 | `targets[].baseline` | a Group with `denominatorType = total-population`, `quantity` = baseline |
-| `targets[].target` | where the tenant confirms it is the eligible population: a Group with `denominatorType = at-risk`, `quantity` = target, `isPlanningDenominator = true`. Where it is a goal (for example 80 % of the eligible), it maps to the protocol's `goal`, not a denominator |
-| (provenance of project targets) | `denominatorSource` from the campaign's configuration, else `govt-estimate`; `estimateDate` = the campaign's creation date where nothing better is known |
-| `targets[].beneficiaryType = HOUSEHOLD` | `extension[unitOfCount] = household` on the same Groups |
+| `targets[].target` | where the tenant confirms it is the eligible population: a Group with `denominatorType = at-risk`, `quantity` = target, `isPlanningDenominator = true`. Where it is a performance goal (for example 80 % of the eligible), it maps to a `Goal` referenced from the campaign's `CarePlan.goal`, not to a denominator or the shared protocol |
+| (provenance of project targets) | `denominatorSource` from the campaign's configuration where it names the source; `govt-estimate` only where the figure is known to be official; otherwise `unknown`. `estimateDate` absent when unknown |
+| `targets[].beneficiaryType = HOUSEHOLD` | `modifierExtension[unitOfCount] = household` on the same Groups (a modifier extension, so consumers cannot read the count as people) |
 | `census.total_population` | `quantity` |
 | `census.population_by_demographics` (variable + distribution) | one Group per band, with age / sex `characteristic` |
 | `census.additional_field` (key, value), for example target by age band | one Group per target figure, `denominatorType = at-risk` |
@@ -605,8 +607,8 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | `createdBy` (user) | `owner` → the worker's CareTeam; the worker as `requester` or a `performer`-style extension |
 | dose criterion / delivery in `additionalFields` | `instantiatesCanonical` → the ICRCampaignActivity |
 | (set per campaign) | `extension[deliveryStrategy]` |
-| beneficiaries registered at this visit | `output[registeredCount]` |
-| (whether the visit was planned) | `extension[taskOrigin]`: `pre-planned` when the importer can match the visit to a planned household list, otherwise `field-registered` |
+| beneficiaries registered at this visit | `output[registeredCount]` (people) and `output[registeredHousehold]` (each household registered) |
+| (whether the visit was planned) | `extension[taskOrigin]`: `pre-planned` when the visit matches planned work (a household list or a microplanned site session); with no planning evidence, the campaign's configured default |
 | `code` | a fixed code per activity type (`deliver`, `administer`) |
 | `additionalFields` | mapped per instance; unmapped keys dropped |
 
@@ -618,9 +620,9 @@ sample configurations:
 | DIGIT task status | Person's delivery event | Visit Task |
 | --- | --- | --- |
 | `ADMINISTRATION_SUCCESS`, `DELIVERED` | `status = completed` | counts in `treatedCount` |
-| `ADMINISTRATION_FAILED`, `NOT_ADMINISTERED` | `status = not-done`, `statusReason` from `deliveryComment` (missed reasons) | `missedReason` |
-| `BENEFICIARY_REFUSED` | `status = not-done`, `statusReason` = refusal | `noncomplianceReason` |
-| `INELIGIBLE` | `status = not-done`, `statusReason` = exclusion reason (age, pregnancy, illness) | `exclusionReason` |
+| `ADMINISTRATION_FAILED`, `NOT_ADMINISTERED` | vaccine or drug: `status = not-done`, `statusReason` from `deliveryComment` (missed reasons); commodity: no event | `missedReason` |
+| `BENEFICIARY_REFUSED` | vaccine or drug: `status = not-done`, `statusReason` = refusal; commodity: no event | `noncomplianceReason` |
+| `INELIGIBLE` | vaccine or drug: `status = not-done`, `statusReason` = exclusion reason (age, pregnancy, illness); commodity: no event | `exclusionReason` |
 | `BENEFICIARY_REFERRED` | `not-done` or `completed` as recorded, plus an `ICRReferral` | `referred-count` |
 | `CLOSED_HOUSEHOLD` | no event | `status = failed`, `missedReason = absent`; revisit Task with `partOf` |
 | `NOT_VISITED` | no event | `status = requested` |
@@ -630,7 +632,13 @@ recorded, `failed` when it was not reached, and `requested` when not yet visited
 
 ### TaskResource → delivery events
 
-One event per `TaskResource` with `isDelivered = true`:
+One event per delivered `TaskResource` (`isDelivered = true`, `status = completed`). A
+vaccine or drug `TaskResource` with `isDelivered = false` gives an event with
+`status = not-done` and `statusReason` from `deliveryComment`. A commodity with
+`isDelivered = false` gives no event; its reason goes on the visit Task. Every event
+carries `extension[campaignActivity]` = the activity it delivers. A co-pack variant (SPAQ)
+gives one event per component drug, each with the component's dose from the variant's
+configuration:
 
 | DIGIT | ICRImmunizationEvent | ICRMedicationAdministration | ICRSupplyDistribution |
 | --- | --- | --- | --- |
@@ -645,8 +653,8 @@ One event per `TaskResource` with `isDelivered = true`:
 | cycle and dose index | `protocolApplied.doseNumber` | the round + the activity | — |
 | (link back) | the Task's `output` (`delivery-event`) references each event | | |
 
-`isDelivered = false` creates no event; its `deliveryComment` goes to the Task's
-`missedReason` or `exclusionReason` through a code map. When per-person DIGIT tasks are
+The `deliveryComment` of an undelivered resource also goes to the Task's `missedReason`
+or `exclusionReason` through a code map. When per-person DIGIT tasks are
 grouped into one household Task, `treatedCount` is the number of people with a delivered
 resource, and `BENEFICIARY_REFERRED` statuses add to `referred-count`.
 
@@ -742,7 +750,8 @@ are survey data: aggregate them per lot or area into `ICRSurveyCoverage`.
 | DIGIT | FHIR |
 | --- | --- |
 | `plan_configuration` | the campaign while `intent = plan`; the configuration name and files as identifiers |
-| `plan_configuration_assumptions` (key, value), `operations` (input · operator · assumption → output) | `component`s on each `ICRResourceEstimate` (the assumptions that apply to it) |
+| `plan_configuration_assumptions` (key, value) | numeric `component`s on each `ICRResourceEstimate` (the assumptions that apply to it) |
+| `plan_configuration_operations` (input · operator · assumption → output) | not represented; the plan file is referenced from `derivedFrom` (DocumentReference), so the estimate cannot be recomputed from the ICR |
 | `plan.locality` | the Location the plan row is for |
 | `plan_resource` (resource type, estimated number), for example nets or tablets needed | `ICRResourceEstimate`: `subject` = the locality, `code` from `ICRResourceTypeVS`, `valueQuantity` |
 | `plan_target` (metric, value, unit) | `ICRTargetPopulation` |
@@ -788,25 +797,28 @@ as a second task.
 
 becomes, in the ICR:
 
-- One `ICRCampaignTask` for the household visit, with a deterministic id built from the
-  round, the household and the visit window's start, and both DIGIT task ids as
-  identifiers: `basedOn` →
+- One `ICRCampaignTask` for the household visit, id `ng-visit-3f1c…` (assigned once
+  from the `clientReferenceId` of the visit's first DIGIT task and kept in the source
+  index), with both DIGIT task ids as identifiers: `basedOn` →
   `CarePlan/ng-smc-2026-c1` (the cycle-1 round, `partOf` the SMC 2026 umbrella),
   `for` → the household ICRDeliveryUnit,
   `location` → the dwelling Location (`partOf` = Location for `NG_KN_LOC_0457`),
   `instantiatesCanonical` → the SPAQ day-1 ICRCampaignActivity, `status = completed`,
-  `output[treatedCount] = 2`, `output[delivery-event]` → both administrations,
+  `output[treatedCount] = 2`, `output[delivery-event]` → all four administrations,
   `deliveryStrategy = house-to-house` (from configuration),
   `taskOrigin = field-registered` (no planned household list), `owner` → the worker's
   CareTeam.
 - Two `ICRMedicationAdministration`s per child, because SPAQ is a co-pack of two drugs and
   ICRMedicationAdministration takes a single `medicationCodeableConcept` (two codings in
   one CodeableConcept would mean two codes for the same drug, not two drugs):
-  `ng-T-2026-08-001234-sp` with ATC `P01BD51` (sulfadoxine-pyrimethamine) and
-  `ng-T-2026-08-001234-aq` with ATC `P01BA06` (amodiaquine). Each has `subject` → the
+  `ng-3f1c…-sp` with ATC `P01BD51` (sulfadoxine-pyrimethamine) and `ng-3f1c…-aq` with ATC
+  `P01BA06` (amodiaquine), ids built from the DIGIT task's `clientReferenceId`. Each dose
+  comes from the variant's configuration (the 3–11-month blister: one SP tablet on day 1
+  and one AQ tablet a day), not from the co-pack `quantity`. Each has `subject` → the
   child, `effectiveDateTime` = 2026-08-01, `campaign` → the cycle-1 round,
-  `recordOrigin = campaign`, `directlyObserved = true`. The sibling's DIGIT task gives two
-  more. `treatedCount` counts people (2), not administrations (4).
+  `campaignActivity` → the SPAQ day-1 activity, `recordOrigin = campaign`,
+  `directlyObserved = true`. The sibling's DIGIT task gives two more. `treatedCount` and
+  coverage count people (2), not administrations (4).
 
 The project `P-LOC-0457` does not become a CarePlan; the importer looks it up to find the
 campaign and the locality.

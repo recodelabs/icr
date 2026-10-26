@@ -1,8 +1,8 @@
 ---
 title: IG additions from the DIGIT mapping — design decisions
-version: 0.2.0
-last_modified: 2026-10-26T22:40:00Z
-status: decided and reviewed (Codex, Oct 26, 2026); not yet implemented in the IG
+version: 0.3.0
+last_modified: 2026-10-26T23:30:00Z
+status: decided; reviewed twice by Codex (Oct 26, 2026); not yet implemented in the IG
 tags:
   - icr
   - ig
@@ -12,15 +12,15 @@ tags:
 
 # IG additions from the DIGIT mapping — design decisions
 
-<sub>`v0.2.0 · Last modified Oct 26, 2026 at 6:40 PM EDT`</sub>
+<sub>`v0.3.0 · Last modified Oct 26, 2026 at 7:30 PM EDT`</sub>
 
 Mapping DIGIT HCM onto the ICR ([[digit]]) showed six things the IG cannot yet record.
 This note records what was decided for each, the options that were rejected and why, and
 the element-level design to implement. The decisions were made in a review session on
 Oct 26, 2026, checked against the WHO SMART Guidelines IGs (smart.who.int: Immunizations,
 HIV, Base) because the ICR aims to follow SMART conventions ([[ig-summary-v2]] §13.3),
-and then reviewed by Codex against the R4 core definitions. Version 0.2.0 applies that
-review; "Changes after review" at the end lists what changed.
+and then reviewed by Codex against the R4 core definitions, twice. Versions 0.2.0 and
+0.3.0 apply those reviews; "Changes after review" at the end lists what changed.
 
 ## Summary
 
@@ -30,9 +30,9 @@ review; "Changes after review" at the end lists what changed.
 | 2. Referrals | ServiceRequest for the referral, Task for the facility's follow-up | Profiles `ICRReferral` (ServiceRequest), `ICRReferralFulfilment` (Task); extension `referring-task`; CodeSystem `ICRReferralReasonCS` + ConceptMap to SNOMED CT; Task output `referred-count` |
 | 3. Household denominators | Unit of count as a modifier extension on the target population | Modifier extension `unit-of-count`; CodeSystem/ValueSet `ICRCountUnit`; Measure `icr-household-coverage`; `denominator` slice on coverage reports |
 | 4. Stock counts | A count at a facility or store is an Observation | Profile `ICRStockCount` (Observation); extensions `supplied-item`, `stock-count-basis` |
-| 5. Registration | A `registered-count` output on any Task; a `register` Task only for a separate registration visit | Activity code `register`; Task outputs `registered-count`, `voucher`, `entitlement` |
+| 5. Registration | `registered-count` and `registered-household` outputs on any Task; a `register` Task only for a separate registration visit | Activity code `register`; Task outputs `registered-count`, `registered-household`, `voucher`, `entitlement` |
 | 6. Microplan resource estimates | Per-area estimate of each resource as an Observation | Profile `ICRResourceEstimate` (Observation); extension `estimate-basis`; CodeSystem `ICRResourceTypeCS` |
-| — Per-person outcomes | Not-delivered doses are delivery events with `status = not-done` | No new artifact; IG text in §6 and principle 8 |
+| — Per-person outcomes | Not-delivered vaccine and drug doses are delivery events with `status = not-done`; events name their activity | Extension `campaign-activity` on delivery events; IG text in §6, §7 and principle 8 |
 
 ## SMART Guidelines findings that shaped the decisions
 
@@ -93,13 +93,21 @@ and treats the head as the anchor for linking a household across campaigns
   listed relationships". Where the source category matters, keep it in `text`.
 - CodeSystem `ICRHouseholdRelationshipCS` holds the three ICR codes: `head`, `co-head`,
   `non-relative`.
-- Invariant `icr-du-one-head`, **error**: at most one active member (`inactive` not true)
-  is coded `head`.
+- **Active member**, for both invariants: `inactive` is not true and `period.end` is
+  absent.
+- Invariant `icr-du-one-head`, **error**: at most one active member is coded `head`.
 - Invariant `icr-du-head`, **warning**: a household (`code = household`) with at least one
-  active member should have an active member coded `head`. Inactive or past members
-  (`member.inactive = true`, or `member.period` ended) do not count.
-- Update the IG text in §5.1: the head is identified by the code, not by list order; when
-  the head leaves, mark their membership inactive and code the new reference head.
+  active member should have an active member coded `head`.
+- **Choosing the reference head** is persistent: once a member is the reference head they
+  stay so until they leave the household or the source names a different head. An
+  importer picks the source's head; if the source marks several, the one registered first
+  (earliest client creation time) is the reference head and the others are co-heads.
+- **When the reference head changes**, every other member's relationship code was relative
+  to the old head and may no longer be true. Re-code them from the source if it gives
+  relationships to the new head; otherwise remove the codes (leave the extension absent)
+  rather than keep codes that refer to someone else. The earlier codes stay in the Group's
+  version history.
+- Update the IG text in §5.1: the head is identified by the code, not by list order.
 
 **Rejected.** A complex extension with separate role and relationship parts;
 `Group.managingEntity` (R4 allows only Organization, RelatedPerson, Practitioner or
@@ -179,17 +187,26 @@ excluded from campaign visit counts.
 `Referral` (the person came to the facility with a referral slip, or the field record was
 never synced). The importer then creates an `ICRReferral` from the HFReferral:
 `subject` from its beneficiary, `basedOn` from its project, `authoredOn` from its client
-time, `reasonCode` from its symptom, `requester` absent, and id
-`<prefix>-hfr-<HFReferral id>`. If a field `Referral` for the same person and facility,
-made up to 14 days before, arrives later, the fulfilment's `focus` moves to the field
-referral and the created one is set to `entered-in-error`. Receiving facilities resolve to
+time, `reasonCode` from its symptom, `requester` absent, an `identifier` with the
+HFReferral id, and id `<prefix>-hfr-<HFReferral id>`.
+
+If a field `Referral` arrives later, the two are merged only when **exactly one** field
+referral matches on all of: the same person, the same receiving facility, the same
+campaign round, a compatible reason (the HFReferral symptom maps to one of the field
+referral's reason codes), and an `authoredOn` up to 14 days before the facility visit.
+On a merge, the fulfilment's `focus` moves to the field referral, the field referral gains
+the HFReferral identifier, and the created request is set to `revoked` with a note naming
+the referral it was merged into. When there are no matches or several, both stay separate
+and the pair is listed for manual reconciliation. Receiving facilities resolve to
 their Organization for `owner` and their Location for `locationReference` / `location`;
 staff recipients resolve to a PractitionerRole where one exists, otherwise a Practitioner.
 
 **Reason codes.** CodeSystem `ICRReferralReasonCS`; ValueSet `ICRReferralReasonVS`
 (extensible); ConceptMap `ICRReferralReasonToSNOMED`, source ICR → target SNOMED CT,
 pinned to SNOMED CT International Edition 2025-02-01
-(`http://snomed.info/sct/900000000000207008/version/20250201`). This follows the SMART
+(`http://snomed.info/sct/900000000000207008/version/20250201`). Every `narrower`, `wider`
+and `relatedto` target carries the note below in `target.comment` (R4 invariant `cmd-1`
+requires a comment on narrower and inexact maps). This follows the SMART
 pattern and keeps SNOMED licensing out of the data. All targets were verified active on
 tx.fhir.org. `equivalence` is the R4 ConceptMap value, read as "the target is … the
 source":
@@ -253,9 +270,10 @@ number on an `ICRTargetPopulation`.
     round. Geography follows the household's **residence** (`groupLocation`), not the
     handover place. Denominator: the activity's planning denominator, which must have
     `unit-of-count = household`.
-  - *Registration coverage.* Numerator: distinct households that are the `for` of an
-    ICRCampaignTask of the round with `output[registeredCount] > 0` (see §5). Denominator:
-    as above.
+  - *Registration coverage.* Numerator: distinct households in
+    `output[registeredHousehold]` of the round's ICRCampaignTasks (see §5), filtered by
+    the household's residence (`groupLocation`) within the report's geography.
+    Denominator: as above.
 - **Coverage reports name their denominator.** Add a `denominator` slice to
   `MeasureReport.evaluatedResource` (an extension on the reference, `evaluated-role` =
   `denominator`) on `ICRAdministrativeCoverage`, pointing at the ICRTargetPopulation(s)
@@ -315,20 +333,26 @@ per person.
 
 **Decision.**
 
-- **`registered-count` output on any ICRCampaignTask** (`ICRTaskOutputTypeCS`,
-  unsignedInt, 0..1): the number of people registered into the campaign at this visit.
-  It is used on register Tasks and on delivery Tasks alike, so registration is counted
-  in both workflows. "Households registered" = distinct `for` households of the round's
-  Tasks with `registered-count > 0`.
+- **Two registration outputs on any ICRCampaignTask** (`ICRTaskOutputTypeCS`), used on
+  register Tasks and delivery Tasks alike, so registration is counted in both workflows:
+  - `registered-count` (unsignedInt, 0..1): the number of people registered into the
+    campaign at this visit.
+  - `registered-household` (Reference(ICRDeliveryUnit), 0..*): each household registered
+    into the campaign at this visit. On a household visit it is the `for` household; on
+    a site session it lists every household registered there. A household can be
+    registered without any new person being registered.
+  "Households registered" = distinct `registered-household` references in the round.
 - **`taskOrigin` keeps its meaning**: whether the Task was generated from the microplan
   (`pre-planned`) or created on discovery (`field-registered`). It says nothing about
-  whether people were registered at the visit.
+  whether people were registered at the visit. Where the source has no planning evidence,
+  the importer uses a per-campaign default (for example `pre-planned` for microplanned
+  site sessions, `field-registered` for house-to-house sweeps with no household list).
 - `ICRCampaignActivity` code `register`; the ITN example gains a register activity beside
   its distribute activity.
 - **A register Task only for a separate registration visit.** For a household
   registration visit: `for` = the household Group, `instantiatesCanonical` = the register
   activity, `executionPeriod` = the registration date, outputs `registered-count`,
-  `eligiblePresent`, `eligibleAbsent`, `voucher`, `entitlement`.
+  `registered-household`, `eligiblePresent`, `eligibleAbsent`, `voucher`, `entitlement`.
 - **Not created in advance per household.** Register Tasks are created at the visit; they
   are never generated per household ahead of the campaign. Pre-planned work stays at area
   or team level. This keeps resource counts down.
@@ -377,9 +401,10 @@ resource kind (× product for commodities), following `ICRCampaignCost`.
 | `device` | MS | the planning tool, as a Device, where it is recorded |
 | `method` | MS | how it was made (microplanning tool, manual) |
 
-**What is not kept.** The components hold the input assumptions, not DIGIT's formula chain
-(operators, order, rounding). The estimate cannot be recomputed from the ICR; the source
-plan is referenced through `derivedFrom` and `identifier`.
+**What is not kept.** The components hold the numeric input assumptions only. DIGIT's
+formula chain (operators, order of operations, rounding) is not represented; the estimate
+cannot be recomputed from the ICR. The source plan is referenced through `derivedFrom`
+(the plan file as a DocumentReference) and `identifier`.
 
 `ICRResourceTypeCS` (first version): `commodity`, `teams`, `team-days`, `supervisors`,
 `vehicles`, `cold-chain-equipment` (vaccine carriers, cold boxes).
@@ -396,20 +421,38 @@ do, the resource-type codes should be agreed with Crosscut before the IG release
 treated, one refuses and one is excluded. Reason outputs on the Task do not say which
 child, so a person-targeted follow-up Task cannot be created from them.
 
-**Decision.** A person who was eligible but not given the dose or drug gets a delivery
-event with **`status = not-done`** and `statusReason` (R4 `Immunization.statusReason`,
-`MedicationAdministration.statusReason`), coded from the IG's missed, refusal and exclusion
-value sets, with `extension[campaign]` and `recordOrigin` as for any delivery event. This
-keeps one Task per visit and gives a person-level record of every outcome. The Task keeps
-the counts and the household-level reasons.
+**Decision.** A person who was eligible but not given a **vaccine or drug** gets a
+delivery event with **`status = not-done`** and `statusReason` (R4
+`Immunization.statusReason`, `MedicationAdministration.statusReason`), coded from the IG's
+missed, refusal and exclusion value sets, with `extension[campaign]` and `recordOrigin` as
+for any delivery event. This keeps one Task per visit and gives a person-level record of
+every outcome. The Task keeps the counts and the household-level reasons.
+
+- **Commodities are different.** R4 SupplyDelivery has no `statusReason` and its status
+  codes (`in-progress`, `completed`, `abandoned`, `entered-in-error`) cannot say "not
+  given". A commodity not handed over creates **no** ICRSupplyDistribution; the reason is
+  recorded on the visit Task (`missedReason`, `noncomplianceReason`). Commodity delivery
+  is household-level, so no person is lost.
+- **Events name their activity.** Delivery events gain the existing `campaign-activity`
+  extension (canonical ICRCampaignActivity), 0..1 MS, required by invariant when the
+  visit Task carries more than one activity. Per-activity results count events by this
+  link, not by product code; a co-pack delivered as two administrations names the same
+  activity on both.
 
 - `Task.status` for a household visit: `completed` when the household was reached and any
   person outcome was recorded; `failed` when the household was not reached (closed, not
   found); `requested` when not yet visited.
 - `treated-count` = distinct people with at least one event `status = completed` at the
-  visit. Per-activity coverage counts delivery events by activity, not Tasks.
-- Coverage Measures count only `status = completed` events in the numerator; `not-done`
-  events feed missed-child lists and follow-up Tasks.
+  visit.
+- **Two ways to count coverage, never added together.** The IG supports tally-only
+  capture, where a Task carries `treated-count` and no person-level events. So a coverage
+  numerator is computed per visit Task: if the Task references delivery events
+  (`output[delivery-event]`), count **distinct people** with a `completed` event for the
+  activity; otherwise use its `treated-count`. A visit never contributes both. The unit is
+  people for the person Measures (two SPAQ administrations to one child count once) and
+  households for `icr-household-coverage`.
+- `not-done` events never count in a numerator; they feed missed-child lists and
+  follow-up Tasks.
 
 ## Effect on the DIGIT mapping
 
@@ -417,27 +460,43 @@ Corrections to [[digit]] that follow from these decisions:
 
 1. **DIGIT per-person tasks.** In individual-beneficiary campaigns (SMC, polio) DIGIT
    records one task per person per delivery. These map to **delivery events** (completed
-   or not-done). The importer groups them into **one** ICRCampaignTask per visit. The
-   **visit key** is: campaign round + household + worker + a visit window (source tasks
-   whose client times fall within 2 hours of the first, configurable). The Task id is
-   built from round, household and the window's start time. Fixed-post and site sessions
-   group by round + site + worker + session window, with `for` = the site Location. The
-   delivery workflow (strategy) decides household vs site grouping, not whether a
-   household record exists.
-2. **Many-to-one source index.** The importer keeps a table of DIGIT row id → ICR
-   resource id. When a source row changes, is deleted or moves to a different visit key,
-   every Task it contributed to is recomputed (status, counts, outputs, identifiers).
-   Resource ids are always built from `clientReferenceId`, never switched to the server
-   `id` after sync; the server `id` is an identifier.
+   or not-done). The importer groups them into **one** ICRCampaignTask per visit.
+   - **Grouping rule (a heuristic).** DIGIT has no visit identifier, so grouping is a
+     best guess: source tasks of the same campaign round, household and worker whose
+     client times fall within a visit window (default 2 hours from the visit's latest
+     row, configurable) form one visit. Where the source has better evidence (one sync
+     batch, one household-overview session) it is used first. Known limits: a failed
+     attempt and a return within the window merge; two workers in one household make two
+     visits.
+   - **Site sessions** group by round + site + worker + session window, with `for` = the
+     site Location. The delivery workflow (strategy) decides household vs site grouping,
+     not whether the person has a household record.
+   - **Stable visit identity.** A visit's id is assigned once, when its first row is
+     imported: `<prefix>-visit-<clientReferenceId of that row>`. It is stored in the
+     source index and never recomputed, so two visits cannot share an id and earlier rows
+     that arrive later join the existing visit rather than renaming it.
+2. **Many-to-one source index.** The importer keeps a table of DIGIT row id → visit id and
+   ICR resource ids. When a source row changes or is deleted, the visit it belongs to is
+   recomputed (status, counts, outputs, identifiers). When a correction moves rows out of
+   a visit, the visit keeps its id for the rows that remain; the moved rows join or start
+   another visit, and references to the old visit (`partOf` on revisit Tasks,
+   `referring-task` on referrals) are updated through the index. A visit left with no rows
+   is deleted. Resource ids are built from `clientReferenceId`, never switched to the
+   server `id` after sync; the server `id` is an identifier.
 3. **Registration.** A `ProjectBeneficiary` from a separate registration phase maps to a
    register Task with `registered-count`, `voucher` and `entitlement`; one registered
    during the delivery visit adds to that visit Task's `registered-count`. The voucher
    (`tag`) is not stored on the Group or Patient.
 4. **Project targets.** `Project.targets.target` is mapped to an at-risk denominator only
-   where the tenant confirms it is the eligible population; where it is a goal (for
-   example 80 % of eligible people) it maps to the protocol's `goal`, not to a
-   denominator. Project-target Groups get `denominatorSource` from the campaign's
-   configuration, else `govt-estimate`.
+   where the tenant confirms it is the eligible population. Where it is a performance goal
+   (for example 80 % of eligible people) it is specific to that campaign and area, so it
+   maps to a `Goal` resource referenced from the campaign's `CarePlan.goal`
+   (`target.measure`, `target.detailQuantity`, `addresses` the geography in a note or
+   extension), not to the shared protocol's `goal`. Project-target Groups get
+   `denominatorSource` from the campaign's configuration where it names the source,
+   `govt-estimate` only where the figure is known to be official, and `unknown`
+   otherwise. `estimateDate` is left absent when unknown; the import date is provenance,
+   not the estimate date.
 
 The DIGIT entities that had no target now map as follows: `isHeadOfHousehold` →
 `relationship-to-head = head` (first head) or `co-head`; `relationshipType` →
@@ -451,10 +510,12 @@ ICRTargetPopulation with `unit-of-count = household`; `StockReconciliation` →
 - [ ] `extensions.fsh`: `relationship-to-head` (Group.member), `unit-of-count`
       (modifier, Group), `referring-task` (ServiceRequest), `supplied-item` (Observation),
       `stock-count-basis` (Observation), `estimate-basis` (Observation),
-      `evaluated-role` (Reference, on MeasureReport.evaluatedResource)
+      `evaluated-role` (Reference, on MeasureReport.evaluatedResource); add Immunization,
+      MedicationAdministration and SupplyDelivery to the context of `campaign-activity`
 - [ ] `codesystems.fsh`: `ICRHouseholdRelationshipCS`, `ICRReferralReasonCS`,
       `ICRCountUnitCS`, `ICRResourceTypeCS`; new codes in `ICRTaskOutputTypeCS`
-      (`referred-count`, `registered-count`, `voucher`, `entitlement`); `stock-count`,
+      (`referred-count`, `registered-count`, `registered-household`, `voucher`,
+      `entitlement`); `stock-count`,
       `expected-stock-balance`, `campaign-referral` and identifier type `voucher`
 - [ ] `valuesets.fsh`: `ICRRelationshipToHeadVS` (with `is-a` filters),
       `ICRReferralReasonVS`, `ICRCountUnitVS`, `ICRResourceTypeVS`
@@ -505,3 +566,22 @@ Codex reviewed v0.1.0 on Oct 26, 2026 (22 findings). Changes in v0.2.0:
   round and a visit window; a many-to-one source index handles replays and deletions.
 - Quantities used in calculations require a numeric value and a coded unit; the loss of
   DIGIT's formula chain is stated.
+
+Codex re-checked v0.2.0 the same day (11 of 22 resolved, 11 partly, 9 new issues).
+Changes in v0.3.0:
+
+- `not-done` applies to vaccine and drug events only; a commodity not handed over creates
+  no SupplyDistribution (R4 SupplyDelivery has no `statusReason` or not-done status).
+- Coverage numerators use events or the Task tally per visit, never both, and count
+  distinct people; delivery events name their activity with `campaign-activity`.
+- Visit identity is assigned once and stored, not derived from the window; the grouping
+  rule is stated as a heuristic; corrections that move rows update references.
+- `registered-household` output so site-session and household-only registrations count;
+  residence filter on the registration numerator; a per-campaign `taskOrigin` default.
+- Referral merges need a unique match on person, facility, round and reason; the merged
+  request is `revoked`, not `entered-in-error`, and keeps the HFReferral identifier.
+- Reference-head changes re-code or clear the other members' relationships; the reference
+  head is chosen once; both head invariants use one definition of an active member.
+- Unknown estimate dates stay absent; `unknown` source unless the figure is official;
+  campaign-specific performance goals go on `CarePlan.goal`, not the protocol.
+- ConceptMap notes go in `target.comment` (R4 `cmd-1`).
