@@ -93,8 +93,8 @@ and treats the head as the anchor for linking a household across campaigns
   listed relationships". Where the source category matters, keep it in `text`.
 - CodeSystem `ICRHouseholdRelationshipCS` holds the three ICR codes: `head`, `co-head`,
   `non-relative`.
-- **Active member**, for both invariants: `inactive` is not true and `period.end` is
-  absent.
+- **Active member**, for both invariants: `inactive` is not true, and `period.end` is
+  absent or later than now (FHIRPath `period.end.empty() or period.end > now()`).
 - Invariant `icr-du-one-head`, **error**: at most one active member is coded `head`.
 - Invariant `icr-du-head`, **warning**: a household (`code = household`) with at least one
   active member should have an active member coded `head`.
@@ -434,23 +434,33 @@ every outcome. The Task keeps the counts and the household-level reasons.
   recorded on the visit Task (`missedReason`, `noncomplianceReason`). Commodity delivery
   is household-level, so no person is lost.
 - **Events name their activity.** Delivery events gain the existing `campaign-activity`
-  extension (canonical ICRCampaignActivity), 0..1 MS, required by invariant when the
-  visit Task carries more than one activity. Per-activity results count events by this
-  link, not by product code; a co-pack delivered as two administrations names the same
-  activity on both.
+  extension (canonical ICRCampaignActivity), 0..1 MS. R4 `Task.instantiatesCanonical` is
+  0..1, so a visit that delivers several activities is a Task **without**
+  `instantiatesCanonical`. Conformance rule (stated in the IG text, not a FHIRPath
+  invariant, because an event cannot see its Task): an event must carry
+  `campaign-activity` whenever its visit Task has no `instantiatesCanonical` and its
+  campaign lists more than one activity. Per-activity results count events by this link,
+  not by product code; a co-pack delivered as two administrations names the same activity
+  on both.
 
 - `Task.status` for a household visit: `completed` when the household was reached and any
   person outcome was recorded; `failed` when the household was not reached (closed, not
   found); `requested` when not yet visited.
-- `treated-count` = distinct people with at least one event `status = completed` at the
-  visit.
+- `treated-count` = people treated at the visit. On a visit that delivers several
+  activities, `output[treatedCount]` repeats, one per activity, each with the
+  `campaign-activity` extension on the output (the slice becomes 0..*; at most one per
+  activity, and exactly one unqualified entry when the Task has `instantiatesCanonical`).
 - **Two ways to count coverage, never added together.** The IG supports tally-only
-  capture, where a Task carries `treated-count` and no person-level events. So a coverage
-  numerator is computed per visit Task: if the Task references delivery events
-  (`output[delivery-event]`), count **distinct people** with a `completed` event for the
-  activity; otherwise use its `treated-count`. A visit never contributes both. The unit is
-  people for the person Measures (two SPAQ administrations to one child count once) and
-  households for `icr-household-coverage`.
+  capture, where a Task carries `treated-count` and no person-level events. A coverage
+  numerator is computed per visit Task and activity:
+  - use the events when they are complete for that activity, that is, the number of
+    distinct people with a `completed` event for the activity equals the activity's
+    `treated-count` (or the Task has no `treated-count` for it);
+  - otherwise use the `treated-count`. A visit with some events recorded and others only
+    tallied is counted by its tally.
+  A visit and activity never contribute both. The unit is people for the person Measures
+  (two SPAQ administrations to one child count once) and households for
+  `icr-household-coverage`.
 - `not-done` events never count in a numerator; they feed missed-child lists and
   follow-up Tasks.
 
@@ -478,10 +488,13 @@ Corrections to [[digit]] that follow from these decisions:
 2. **Many-to-one source index.** The importer keeps a table of DIGIT row id → visit id and
    ICR resource ids. When a source row changes or is deleted, the visit it belongs to is
    recomputed (status, counts, outputs, identifiers). When a correction moves rows out of
-   a visit, the visit keeps its id for the rows that remain; the moved rows join or start
-   another visit, and references to the old visit (`partOf` on revisit Tasks,
-   `referring-task` on referrals) are updated through the index. A visit left with no rows
-   is deleted. Resource ids are built from `clientReferenceId`, never switched to the
+   a visit, the visit keeps its id for the rows that remain; the moved rows join an
+   existing visit or start a new one. **Visit ids are never reused**: a new visit takes
+   `<prefix>-visit-<clientReferenceId of its first row>` only if that id has never been
+   in the index (it has, if the row seeded the visit it is leaving), otherwise a fresh
+   UUID. References to the old visit (`partOf` on revisit Tasks, `referring-task` on
+   referrals) are updated through the index. A visit left with no rows is deleted and its
+   id retired. Resource ids are built from `clientReferenceId`, never switched to the
    server `id` after sync; the server `id` is an identifier.
 3. **Registration.** A `ProjectBeneficiary` from a separate registration phase maps to a
    register Task with `registered-count`, `voucher` and `entitlement`; one registered
@@ -490,9 +503,12 @@ Corrections to [[digit]] that follow from these decisions:
 4. **Project targets.** `Project.targets.target` is mapped to an at-risk denominator only
    where the tenant confirms it is the eligible population. Where it is a performance goal
    (for example 80 % of eligible people) it is specific to that campaign and area, so it
-   maps to a `Goal` resource referenced from the campaign's `CarePlan.goal`
-   (`target.measure`, `target.detailQuantity`, `addresses` the geography in a note or
-   extension), not to the shared protocol's `goal`. Project-target Groups get
+   maps to a `Goal` resource referenced from the campaign's `CarePlan.goal`, not to the
+   shared protocol's `goal`. The Goal has `lifecycleStatus = accepted`, a `description`
+   (for example "Reach 80 % of eligible children"), `subject` = the ICRTargetPopulation
+   the goal is measured against (R4 `Goal.subject` takes a Group, not a Location; the
+   geography comes from that Group's `characteristic[geography]`), and
+   `target.measure` + `target.detailQuantity` (or `detailRatio`) for the figure. Project-target Groups get
    `denominatorSource` from the campaign's configuration where it names the source,
    `govt-estimate` only where the figure is known to be official, and `unknown`
    otherwise. `estimateDate` is left absent when unknown; the import date is provenance,
@@ -585,3 +601,10 @@ Changes in v0.3.0:
 - Unknown estimate dates stay absent; `unknown` source unless the figure is official;
   campaign-specific performance goals go on `CarePlan.goal`, not the protocol.
 - ConceptMap notes go in `target.comment` (R4 `cmd-1`).
+
+A third check the same day found three items partly resolved and two R4 gaps, fixed in
+v0.3.0 before commit: a mixed events-and-tally visit is counted by its tally; per-activity
+`treated-count`; the multi-activity rule uses a Task with no `instantiatesCanonical` (R4
+allows one); visit ids are never reused after a split; active membership compares
+`period.end` with now; the performance-goal `Goal` has a Group subject, a lifecycle status
+and a description.

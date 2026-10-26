@@ -310,12 +310,14 @@ ICRCampaignTask with `for` = the household Group, and each per-person task becom
 person's delivery event(s), referenced from the Task's `output`.
 
 - **Visit key:** campaign round + household + worker + a visit window (source tasks whose
-  client times fall within 2 hours of the first, configurable). A failed morning attempt
-  and an afternoon revisit are two visits; two campaigns reaching the same household on
-  the same day are two Tasks.
+  client times fall within 2 hours of the visit's latest row, configurable). This is a
+  heuristic, since DIGIT has no visit identifier; better source evidence (one sync batch)
+  is used first. A failed morning attempt and an afternoon revisit are two visits; two
+  campaigns reaching the same household on the same day are two Tasks.
 - **Site sessions:** in fixed-post or site delivery, tasks group by round + site + worker
   + session window into a Task with `for` = the site Location. The delivery workflow
-  decides household vs site grouping, not whether the person has a household record.
+  decides household vs site grouping, not whether the person has a household record:
+  a person with a household who comes to a fixed post is part of the site session.
 - **People not given the dose** (refused, excluded, absent) get a delivery event with
   `status = not-done` and `statusReason`, so the person who needs follow-up is known
   while the visit stays one Task ([[ig-gaps-from-digit]], "Per-person outcomes").
@@ -448,8 +450,10 @@ use their server `id` or code. Every resource carries the DIGIT `id` and
 `clientReferenceId` as identifiers under per-instance system URIs, and a `meta.tag` for
 the instance.
 
-Visit Tasks are built from several DIGIT rows. Their id comes from the visit key, and the
-importer keeps a **source index** (DIGIT row id → ICR resource ids). When a row changes,
+Visit Tasks are built from several DIGIT rows. A visit's id is assigned once, from the
+`clientReferenceId` of its first row, stored in a **source index** (DIGIT row id → visit
+id and ICR resource ids) and never reused ([[ig-gaps-from-digit]], "Effect on the DIGIT
+mapping"). When a row changes,
 is deleted, or moves to a different visit key, every Task it contributed to is recomputed
 (status, counts, outputs, identifiers); a Task left with no rows is deleted.
 
@@ -599,7 +603,7 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | --- | --- |
 | `id`, `clientReferenceId` | `identifier` |
 | `projectId` | `basedOn` → the round for the task's cycle (from `additionalFields.cycleIndex`, or by date); `location` partly, through the project lookup |
-| `projectBeneficiaryId` → beneficiary | `for` → the household ICRDeliveryUnit (per-person DIGIT tasks are grouped into the household's visit Task); the site Location for people with no household |
+| `projectBeneficiaryId` → beneficiary | `for` → the household ICRDeliveryUnit (per-person DIGIT tasks are grouped into the household's visit Task); the site Location in fixed-post or site delivery |
 | `address` (lat/long, locality) | `location` → the dwelling Location, or the locality when no dwelling exists |
 | `status` | `status` plus output slices (table below) |
 | `actualStartDate`, `actualEndDate` (or `clientAuditDetails.createdTime`) | `executionPeriod` |
