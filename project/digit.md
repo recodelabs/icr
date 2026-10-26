@@ -1,8 +1,8 @@
 ---
 title: DIGIT HCM and the ICR — data model comparison and mapping to FHIR
-version: 0.1.0
-last_modified: 2026-10-26T16:48:00Z
-status: analysis; no importer built yet
+version: 0.2.0
+last_modified: 2026-10-26T19:55:00Z
+status: analysis; IG additions decided in ig-gaps-from-digit; no importer built yet
 tags:
   - icr
   - digit
@@ -14,7 +14,7 @@ tags:
 
 # DIGIT HCM and the ICR — data model comparison and mapping to FHIR
 
-<sub>`v0.1.0 · Last modified Oct 26, 2026 at 12:48 PM EDT`</sub>
+<sub>`v0.2.0 · Last modified Oct 26, 2026 at 3:55 PM EDT`</sub>
 
 DIGIT Health Campaign Management (HCM) is eGov Foundation's open-source campaign system:
 Java/Spring microservices on the DIGIT platform, a Flutter field app that works offline,
@@ -43,15 +43,18 @@ into Locations, Measures and MeasureReports. The ICR side is described in [[ig-s
 - **A DIGIT task is a visit plus what was delivered.** One `Task` row carries the visit
   status and the delivered products inline (`TaskResource`). The ICR splits this into an
   `ICRCampaignTask` and one delivery event per product (Immunization,
-  MedicationAdministration or SupplyDelivery, chosen by product type).
+  MedicationAdministration or SupplyDelivery, chosen by product type). In SMC and polio
+  campaigns DIGIT writes one task per person; the ICR keeps one Task per household visit,
+  so those per-person tasks become delivery events under one household Task.
 - **DIGIT's `deliveryStrategy` is not the ICR's delivery strategy.** In DIGIT it means
   `DIRECT` (dose given under observation) or `INDIRECT` (handed to a caregiver). That maps
   to `directlyObserved` on MedicationAdministration. The ICR's delivery strategy
   (house-to-house, fixed post, …) is implied by DIGIT's app modules and has to be set per
   campaign.
-- **The mapping exposes six gaps in the ICR IG**: a head-of-household marker, referrals,
+- **The mapping exposed six gaps in the ICR IG**: a head-of-household marker, referrals,
   household-count denominators, stock counts at a node, the registration step, and
-  microplan resource estimates (see "Gaps in the ICR that the mapping exposes").
+  microplan resource estimates. How each will be filled was decided on Oct 26, 2026 and is
+  recorded in [[ig-gaps-from-digit]]; the mapping below uses those decisions.
 - **Much of DIGIT is out of ICR scope**: attendance, worker payments, face authentication,
   complaints, GPS location trails, device tracking. These stay in DIGIT.
 
@@ -150,7 +153,7 @@ How the pieces fit:
 | Campaign (`eg_cm_campaign_details`) + root `Project` | `ICRCampaign` (CarePlan), the umbrella | Good |
 | Cycle (dates on the campaign) | `ICRCampaign` round, `partOf` the umbrella, `campaignRound` = cycle number | Good |
 | Child `Project` per boundary | No one-to-one resource. Its boundary → `targetGeography`; its `targets` → `ICRTargetPopulation` | Structural difference |
-| `Project.targets` (`baseline`, `target`) | `ICRTargetPopulation` (Group, `actual=false`) | Partial: ICR counts persons; DIGIT also targets households |
+| `Project.targets` (`baseline`, `target`) | `ICRTargetPopulation` (Group, `actual=false`), `unit-of-count` person or household | Good (household unit decided) |
 | `census` | `ICRTargetPopulation` with source, date, planning flag | Good |
 | Co-delivery per-intervention targets | `CarePlan.activity.detail` + `planning-denominator` per activity | Good (matches the integrated-round targets added Oct 2026) |
 | `Boundary` + hierarchy | `ICRLocation` (`type = admin-unit`, `partOf`, boundary GeoJSON) | Good |
@@ -158,15 +161,15 @@ How the pieces fit:
 | `plan_facility_linkage` | Catchment `ICRLocation` with `catchment-of` | Good |
 | `Individual` (beneficiary) | `ICRPatient` | Good |
 | `Individual` (worker, `isSystemUser`) / HRMS user | `Practitioner` + `PractitionerRole` | Good |
-| `Household` + `HouseholdMember` | `ICRDeliveryUnit` (Group, `actual=true`) + dwelling `ICRLocation` | Good, except head of household |
-| `ProjectBeneficiary` | No resource; identifiers on the Group/Patient and the Task's `for` | Gap |
-| `Task` | `ICRCampaignTask` | Good |
+| `Household` + `HouseholdMember` | `ICRDeliveryUnit` (Group, `actual=true`) + dwelling `ICRLocation`; head and relationships in `relationship-to-head` | Good (head marker decided) |
+| `ProjectBeneficiary` | A `register` Task when registration was a separate visit; otherwise `taskOrigin = field-registered` on the delivery Task | Good (decided) |
+| `Task` | `ICRCampaignTask` (one per household visit; DIGIT per-person tasks are grouped) | Good, with grouping |
 | `TaskResource` (`isDelivered = true`) | `ICRImmunizationEvent` / `ICRMedicationAdministration` / `ICRSupplyDistribution` | Good, by product type |
 | `TaskResource` (`isDelivered = false`) + task status | `ICRCampaignTask.output` reason slices | Good with a code map |
 | `SideEffect` | `ICRAdverseEvent` | Good |
-| `Referral`, `HFReferral` | None | Gap |
+| `Referral`, `HFReferral` | `ICRReferral` (ServiceRequest), `ICRReferralFulfilment` (Task) | Good (decided) |
 | `Stock` | `ICRSupplyMovement` (SupplyDelivery) | Good, with pairing work |
-| `StockReconciliation` | `stockAccountability` on a movement (partial) | Gap |
+| `StockReconciliation` | `ICRStockCount` (Observation) | Good (decided) |
 | `ServiceDefinition` / `Service` | `Questionnaire` / `ICRCampaignFormResponse` | Good |
 | LQAS / independent-monitoring checklists | `ICRSurveyCoverage` (after aggregation) | Good |
 | `AttendanceRegister` + `Staff` + `Attendee` | `ICRCareTeam` | Partial: closest thing to a team in DIGIT |
@@ -297,6 +300,17 @@ chooses the event type from the product's type:
 
 Product types are configured per tenant, so this is a per-instance lookup, not a fixed rule.
 
+**Per-person tasks.** In household campaigns (bednets) a DIGIT task is for the household,
+which matches the ICR. In individual-beneficiary campaigns (SMC, polio) DIGIT writes one
+task per person per delivery. The ICR's principle 8 is one Task per visit, with person
+detail in the delivery events; a Task for a single person is only for chasing a missed or
+zero-dose individual. So the importer groups the per-person tasks of one household from
+the same visit (same household, worker and day) into one ICRCampaignTask with `for` = the
+household Group, and each per-person task becomes that person's delivery event(s),
+referenced from the Task's `output`. Tasks for people with no household (a person
+registered at a fixed post) group by worker, site and day into a site-session Task with
+`for` = the site Location.
+
 ### 4. "Delivery strategy" means different things
 
 | DIGIT field | Values | ICR equivalent |
@@ -317,9 +331,11 @@ project: `beneficiaryClientReferenceId`, `tag` (the voucher or QR code), and
 `dateOfRegistration`. Bednet campaigns register in one phase and distribute in a later
 one, so "registered but not yet served" is a real count.
 
-The ICR has no registration resource. A delivery unit exists, and Tasks act on it. The
-importer can carry the `tag` as an identifier on the Group or Patient, but the
-registration event and date have nowhere to go. See gap 5 below.
+The ICR handles this with a `register` activity and Task ([[ig-gaps-from-digit]] §5): a
+registration that was its own visit becomes a register Task for the household, with the
+voucher and entitlement as outputs, and the distribution that redeems the voucher carries
+the same code. A registration made during the delivery visit is recorded only as
+`taskOrigin = field-registered` on that visit's Task.
 
 ### 6. Denominators: targets and census
 
@@ -338,9 +354,9 @@ confirmed figure are two Groups, and the confirmed one is the planning denominat
 
 Two differences:
 
-- `ICRTargetPopulation` counts persons (`type = person`). Bednet campaigns target
-  **households**. The ICR has `targetHouseholds` only on the CareTeam workload, not as a
-  denominator. See gap 3.
+- `ICRTargetPopulation` counts persons by default. Bednet campaigns target
+  **households**; these become ICRTargetPopulation figures with
+  `unit-of-count = household` ([[ig-gaps-from-digit]] §3).
 - DIGIT's `baseline` vs `target` maps to `denominatorType` `total-population` vs
   `at-risk`, and the `target` Group is the planning denominator.
 
@@ -384,8 +400,8 @@ product, quantity and parties) into one movement, keeping both DIGIT ids as iden
 Losses and damage go to `stockAccountability.notUsable`.
 
 `StockReconciliation` is a physical count at a facility on a date (`physicalCount` vs
-`calculatedCount`). The ICR's `stockAccountability` sits on an issuance, not on a node.
-See gap 4.
+`calculatedCount`). It maps to `ICRStockCount`, an Observation on the facility Location
+([[ig-gaps-from-digit]] §4).
 
 ### 10. Identity and privacy
 
@@ -507,7 +523,7 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | child `Project.address.boundary` / `census.boundary_code` | `characteristic[geography]` → the Location |
 | `targets[].baseline` | a Group with `denominatorType = total-population`, `quantity` = baseline |
 | `targets[].target` | a Group with `denominatorType = at-risk`, `quantity` = target, `isPlanningDenominator = true` |
-| `targets[].beneficiaryType = HOUSEHOLD` | no person denominator; see gap 3 |
+| `targets[].beneficiaryType = HOUSEHOLD` | `extension[unitOfCount] = household` on the same Groups |
 | `census.total_population` | `quantity` |
 | `census.population_by_demographics` (variable + distribution) | one Group per band, with age / sex `characteristic` |
 | `census.additional_field` (key, value), for example target by age band | one Group per target figure, `denominatorType = at-risk` |
@@ -541,8 +557,8 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | `householdType` (`FAMILY`, `COMMUNITY`) | `code` (`household`, `community`) |
 | `memberCount` | `quantity` |
 | `HouseholdMember.individualId` | `member.entity` → the ICRPatient |
-| `HouseholdMember.isHeadOfHousehold` | no element; list the head first (as the IG example does) and see gap 1 |
-| member relationships (`relationshipType`) | no element; `RelatedPerson` if needed |
+| `HouseholdMember.isHeadOfHousehold` | `member.extension[relationshipToHead] = head` (several heads allowed) |
+| member relationships (`relationshipType`) | `relationship-to-head` when the relative is the head (ConceptMap from DIGIT's configured types to the ICR value set); other pairs deferred |
 | `address.latitude` / `longitude`, `address.locality` | `extension[groupLocation]` → a dwelling `ICRLocation` (`type = household`, `position`, `partOf` = the locality) |
 | `isDeleted` (household split or moved) | `Group.active = false`; keep the resource |
 
@@ -553,7 +569,8 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | `beneficiaryClientReferenceId` | resolves to the ICRDeliveryUnit (household campaigns) or ICRPatient (individual campaigns) |
 | `tag` (voucher or QR code) | `identifier` on that Group or Patient (system: per-instance voucher system) |
 | `projectId` | the campaign, through the project lookup |
-| `dateOfRegistration` | nowhere today; see gap 5 |
+| `dateOfRegistration` | `executionPeriod` of the register Task (separate registration visit only) |
+| (separate registration phase) | a register ICRCampaignTask: `for` = the household Group, `output[voucher]` = `tag`, `output[entitlement]` |
 
 ### Task → ICRCampaignTask
 
@@ -561,7 +578,7 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | --- | --- |
 | `id`, `clientReferenceId` | `identifier` |
 | `projectId` | `basedOn` → the round for the task's cycle (from `additionalFields.cycleIndex`, or by date); `location` partly, through the project lookup |
-| `projectBeneficiaryId` → beneficiary | `for` → ICRDeliveryUnit or ICRPatient |
+| `projectBeneficiaryId` → beneficiary | `for` → the household ICRDeliveryUnit (per-person DIGIT tasks are grouped into the household's visit Task); the site Location for people with no household |
 | `address` (lat/long, locality) | `location` → the dwelling Location, or the locality when no dwelling exists |
 | `status` | `status` plus output slices (table below) |
 | `actualStartDate`, `actualEndDate` (or `clientAuditDetails.createdTime`) | `executionPeriod` |
@@ -582,7 +599,7 @@ configurations, and their ICR equivalents:
 | `ADMINISTRATION_FAILED`, `NOT_ADMINISTERED` | `failed` | `missedReason` from `deliveryComment` |
 | `BENEFICIARY_REFUSED` | `completed` | `noncomplianceReason = refusal` |
 | `INELIGIBLE` | `completed` | `exclusionReason` (age, pregnancy, illness — from the eligibility checklist) |
-| `BENEFICIARY_REFERRED` | `completed` | `exclusionReason` or `missedReason` as applicable; the referral itself is gap 2 |
+| `BENEFICIARY_REFERRED` | `completed` | `referred-count`; the referral itself is an `ICRReferral` |
 | `CLOSED_HOUSEHOLD` | `failed` | `missedReason = absent` (household closed); revisit Task with `partOf` |
 | `NOT_VISITED` | `requested` (not yet done) | none |
 
@@ -604,7 +621,9 @@ One event per `TaskResource` with `isDelivered = true`:
 | (link back) | the Task's `output` (`delivery-event`) references each event | | |
 
 `isDelivered = false` creates no event; its `deliveryComment` goes to the Task's
-`missedReason` or `exclusionReason` through a code map.
+`missedReason` or `exclusionReason` through a code map. When per-person DIGIT tasks are
+grouped into one household Task, `treatedCount` is the number of people with a delivered
+resource, and `BENEFICIARY_REFERRED` statuses add to `referred-count`.
 
 ### SideEffect → ICRAdverseEvent
 
@@ -633,9 +652,30 @@ One event per `TaskResource` with `isDelivered = true`:
 | `dateOfEntry` / client time | `occurrenceDateTime` |
 | (always) | `recordOrigin = campaign` |
 
-`StockReconciliation`: `physicalCount` → `stockAccountability.remaining`,
-`physicalCount = calculatedCount` → `concordant`, attached to the last issuance to that
-facility. This is a workaround; see gap 4.
+### StockReconciliation → ICRStockCount
+
+| DIGIT | FHIR |
+| --- | --- |
+| `facilityId` | `subject` → the facility Location |
+| `productVariantId` | `extension[suppliedItem]` (ConceptMap) |
+| `physicalCount` | `valueQuantity` (base unit) |
+| `calculatedCount` | `component[expected]` |
+| `dateOfReconciliation` | `effectiveDateTime` |
+| `referenceId` (`PROJECT`) | `basedOn` → the campaign |
+| `commentsOnReconciliation` | `note` |
+
+### Referral and HFReferral → ICRReferral and ICRReferralFulfilment
+
+| DIGIT | FHIR |
+| --- | --- |
+| `Referral.projectBeneficiaryId` → individual | `ICRReferral.subject` |
+| `Referral.referrerId` | `requester` |
+| `Referral.recipientType` / `recipientId` (staff or facility) | `performer`; `locationReference` for a facility |
+| `Referral.reasons[]` | `reasonCode` (ConceptMap to `ICRReferralReasonVS`) |
+| `Referral.sideEffect` | `reasonReference` → the ICRAdverseEvent |
+| client time | `authoredOn` |
+| project | `basedOn` → the campaign |
+| `HFReferral` at the receiving facility | `ICRReferralFulfilment` (Task, `focus` = the referral, `owner` = the facility); `symptom` → the referral's `reasonCode` when no field referral exists |
 
 ### ServiceDefinition and Service → Questionnaire and ICRCampaignFormResponse
 
@@ -676,9 +716,9 @@ are survey data: aggregate them per lot or area into `ICRSurveyCoverage`.
 | DIGIT | FHIR |
 | --- | --- |
 | `plan_configuration` | the campaign while `intent = plan`; the configuration name and files as identifiers |
-| `plan_configuration_assumptions` (key, value), `operations` (input · operator · assumption → output) | no element; see gap 6 |
+| `plan_configuration_assumptions` (key, value), `operations` (input · operator · assumption → output) | `component`s on each `ICRResourceEstimate` (the assumptions that apply to it) |
 | `plan.locality` | the Location the plan row is for |
-| `plan_resource` (resource type, estimated number), for example nets or tablets needed | `CarePlan.activity.detail.quantity` per activity (campaign total); per locality, no element (gap 6) |
+| `plan_resource` (resource type, estimated number), for example nets or tablets needed | `ICRResourceEstimate`: `subject` = the locality, `code` from `ICRResourceTypeVS`, `valueQuantity` |
 | `plan_target` (metric, value, unit) | `ICRTargetPopulation` |
 | `plan_activity` (code, planned dates, dependencies) | readiness activities; `CarePlan.activity.detail.scheduled` where they match a delivery activity |
 
@@ -699,6 +739,8 @@ are survey data: aggregate them per lot or area into `ICRSurveyCoverage`.
 ## Worked example: an SMC cycle-1 visit
 
 A DIGIT SMC task: a child in a household receives SPAQ (day 1, observed) in cycle 1.
+The worker also gives SPAQ to the child's sibling at the same visit, which DIGIT records
+as a second task.
 
 ```json
 {
@@ -720,13 +762,17 @@ A DIGIT SMC task: a child in a household receives SPAQ (day 1, observed) in cycl
 
 becomes, in the ICR:
 
-- `Task/ng-T-2026-08-001234` (ICRCampaignTask): `basedOn` → `CarePlan/ng-smc-2026-c1` (the
-  cycle-1 round, `partOf` the SMC 2026 umbrella), `for` → the child's ICRPatient,
+- One `ICRCampaignTask` for the household visit, with a deterministic id built from the
+  household, worker and day, and both DIGIT task ids as identifiers: `basedOn` →
+  `CarePlan/ng-smc-2026-c1` (the cycle-1 round, `partOf` the SMC 2026 umbrella),
+  `for` → the household ICRDeliveryUnit,
   `location` → the dwelling Location (`partOf` = Location for `NG_KN_LOC_0457`),
   `instantiatesCanonical` → the SPAQ day-1 ICRCampaignActivity, `status = completed`,
-  `output[treatedCount] = 1`, `deliveryStrategy = house-to-house` (from configuration),
+  `output[treatedCount] = 2`, `output[delivery-event]` → both administrations,
+  `deliveryStrategy = house-to-house` (from configuration),
   `taskOrigin = field-registered`, `owner` → the worker's CareTeam.
-- `MedicationAdministration/ng-T-2026-08-001234-1` (ICRMedicationAdministration):
+- `MedicationAdministration/ng-T-2026-08-001234-1` (ICRMedicationAdministration), and a
+  second one for the sibling from the other DIGIT task:
   `medicationCodeableConcept` = ATC `P01BD51` (sulfadoxine-pyrimethamine) and `P01BA06`
   (amodiaquine) — SPAQ is a co-pack, so the ConceptMap from `PVAR-SPAQ-3-11M` gives two
   codings, or two administrations; decide once in the ICR's MDA medication value set —
@@ -767,33 +813,19 @@ campaign and the locality.
 - **Duplicates:** DIGIT cannot guarantee one record per person. Expect duplicate
   individuals across devices; the ICR side should not merge them automatically.
 
-## Gaps in the ICR that the mapping exposes
+## Gaps in the ICR that the mapping exposed
 
-These are proposed IG changes, to be considered for [[ig-summary-v2]] §13:
+The mapping found six things the IG could not record. The decisions for each, with the
+rejected options and the element-level design, are in [[ig-gaps-from-digit]]:
 
-1. **Head of household.** DIGIT stores `isHeadOfHousehold` on the member; the IG relies on
-   listing the head first. Proposed: a `householdRole` extension on `Group.member`
-   (`head` | `member`), which also covers ITN and household-linkage use.
-2. **Referrals.** DIGIT records referrals of beneficiaries to staff or facilities
-   (`Referral`, with reasons), and health-facility referrals for fever cases (`HFReferral`).
-   The IG has none. Proposed: an `ICRReferral` profile on `ServiceRequest` (`subject`,
-   `requester`, `performer` = facility, `reasonCode`, `basedOn` = campaign), with the
-   referral outcome as an `ICRCampaignTask` output.
-3. **Household-count denominators.** Bednet campaigns target households. Proposed: allow
-   `ICRTargetPopulation` to count households (a `unit` extension, `persons` | `households`),
-   or a separate household-denominator profile.
-4. **Stock counts at a node.** DIGIT's `StockReconciliation` is a count at a facility on a
-   date. Proposed: a stock-count profile (an `Observation` on the facility Location with the
-   product as `focus`, or the R5 `InventoryReport` pattern), with `stockAccountability`
-   kept for issuances.
-5. **Registration.** Registration and its date are explicit in DIGIT and drive "registered
-   but not served" counts. Proposed: an `ICRCampaignTask` with a `register` code (no
-   delivery events), or a `registrationDate` extension on the delivery unit.
-6. **Microplan resource estimates.** DIGIT's microplan stores, per locality, the estimated
-   quantity of each resource and the assumptions and formulas that produced it. The IG has
-   team workload (`workloadTarget`) but no commodity estimate per area. This overlaps with
-   Crosscut's microplanning lane ([[microplan]]); decide there whether the ICR holds plan
-   estimates or only the resulting targets.
+| Gap | Decision |
+| --- | --- |
+| Head of household | `relationship-to-head` extension on `ICRDeliveryUnit.member`; several heads allowed |
+| Referrals | `ICRReferral` (ServiceRequest) + `ICRReferralFulfilment` (Task); reason codes mapped to SNOMED CT |
+| Household denominators | `unit-of-count` on `ICRTargetPopulation`; `icr-household-coverage` Measure |
+| Stock counts at a facility | `ICRStockCount` (Observation) |
+| Registration | `register` activity and Task when registration is a separate visit; `voucher` and `entitlement` outputs |
+| Microplan resource estimates | `ICRResourceEstimate` (Observation) |
 
 ## Import levels
 
