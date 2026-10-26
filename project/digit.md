@@ -1,7 +1,7 @@
 ---
 title: DIGIT HCM and the ICR — data model comparison and mapping to FHIR
-version: 0.2.0
-last_modified: 2026-10-26T19:55:00Z
+version: 0.3.0
+last_modified: 2026-10-26T22:45:00Z
 status: analysis; IG additions decided in ig-gaps-from-digit; no importer built yet
 tags:
   - icr
@@ -14,7 +14,7 @@ tags:
 
 # DIGIT HCM and the ICR — data model comparison and mapping to FHIR
 
-<sub>`v0.2.0 · Last modified Oct 26, 2026 at 3:55 PM EDT`</sub>
+<sub>`v0.3.0 · Last modified Oct 26, 2026 at 6:45 PM EDT`</sub>
 
 DIGIT Health Campaign Management (HCM) is eGov Foundation's open-source campaign system:
 Java/Spring microservices on the DIGIT platform, a Flutter field app that works offline,
@@ -162,7 +162,7 @@ How the pieces fit:
 | `Individual` (beneficiary) | `ICRPatient` | Good |
 | `Individual` (worker, `isSystemUser`) / HRMS user | `Practitioner` + `PractitionerRole` | Good |
 | `Household` + `HouseholdMember` | `ICRDeliveryUnit` (Group, `actual=true`) + dwelling `ICRLocation`; head and relationships in `relationship-to-head` | Good (head marker decided) |
-| `ProjectBeneficiary` | A `register` Task when registration was a separate visit; otherwise `taskOrigin = field-registered` on the delivery Task | Good (decided) |
+| `ProjectBeneficiary` | `registered-count` on the visit Task; a `register` Task when registration was a separate visit | Good (decided) |
 | `Task` | `ICRCampaignTask` (one per household visit; DIGIT per-person tasks are grouped) | Good, with grouping |
 | `TaskResource` (`isDelivered = true`) | `ICRImmunizationEvent` / `ICRMedicationAdministration` / `ICRSupplyDistribution` | Good, by product type |
 | `TaskResource` (`isDelivered = false`) + task status | `ICRCampaignTask.output` reason slices | Good with a code map |
@@ -218,7 +218,7 @@ flowchart LR
   FAC --> LOC
   HH --> DU
   IND --> PAT
-  PB -.identifiers.-> DU
+  PB -.registered-count · voucher.-> CT
   TK --> CT
   TR --> EV
   SE --> AE
@@ -288,9 +288,10 @@ actual dates, address, and a `resources[]` list of what was given (product varia
 quantity, `isDelivered`, `deliveryComment`). There is no separate dose record.
 
 The ICR keeps the visit (`ICRCampaignTask`) and the doses (delivery events) separate, and
-every delivery event carries its own `campaign` link and `recordOrigin`. So each DIGIT
-task produces one `ICRCampaignTask` and zero or more delivery events, and the importer
-chooses the event type from the product's type:
+every delivery event carries its own `campaign` link and `recordOrigin`. So DIGIT tasks
+are grouped into one `ICRCampaignTask` per visit (see "Per-person tasks" below), each
+DIGIT task resource becomes a delivery event, and the importer chooses the event type
+from the product's type:
 
 | DIGIT product type (MDMS) | ICR delivery event |
 | --- | --- |
@@ -304,12 +305,20 @@ Product types are configured per tenant, so this is a per-instance lookup, not a
 which matches the ICR. In individual-beneficiary campaigns (SMC, polio) DIGIT writes one
 task per person per delivery. The ICR's principle 8 is one Task per visit, with person
 detail in the delivery events; a Task for a single person is only for chasing a missed or
-zero-dose individual. So the importer groups the per-person tasks of one household from
-the same visit (same household, worker and day) into one ICRCampaignTask with `for` = the
-household Group, and each per-person task becomes that person's delivery event(s),
-referenced from the Task's `output`. Tasks for people with no household (a person
-registered at a fixed post) group by worker, site and day into a site-session Task with
-`for` = the site Location.
+zero-dose individual. So the importer groups the per-person tasks of one visit into one
+ICRCampaignTask with `for` = the household Group, and each per-person task becomes that
+person's delivery event(s), referenced from the Task's `output`.
+
+- **Visit key:** campaign round + household + worker + a visit window (source tasks whose
+  client times fall within 2 hours of the first, configurable). A failed morning attempt
+  and an afternoon revisit are two visits; two campaigns reaching the same household on
+  the same day are two Tasks.
+- **Site sessions:** in fixed-post or site delivery, tasks group by round + site + worker
+  + session window into a Task with `for` = the site Location. The delivery workflow
+  decides household vs site grouping, not whether the person has a household record.
+- **People not given the dose** (refused, excluded, absent) get a delivery event with
+  `status = not-done` and `statusReason`, so the person who needs follow-up is known
+  while the visit stays one Task ([[ig-gaps-from-digit]], "Per-person outcomes").
 
 ### 4. "Delivery strategy" means different things
 
@@ -334,8 +343,9 @@ one, so "registered but not yet served" is a real count.
 The ICR handles this with a `register` activity and Task ([[ig-gaps-from-digit]] §5): a
 registration that was its own visit becomes a register Task for the household, with the
 voucher and entitlement as outputs, and the distribution that redeems the voucher carries
-the same code. A registration made during the delivery visit is recorded only as
-`taskOrigin = field-registered` on that visit's Task.
+the same voucher identifier. A registration made during the delivery visit adds to that
+visit Task's `registered-count` output. `taskOrigin` keeps its own meaning (planned from
+the microplan or created on discovery) and is not used to record registration.
 
 ### 6. Denominators: targets and census
 
@@ -427,11 +437,19 @@ support geographic coverage ("areas visited") if a country wants it.
 
 ## Mapping
 
-All ids are deterministic so a re-run updates the same resources: `<prefix>-<digit id>`,
-with a prefix per DIGIT instance and tenant (as the DHIS2 import uses `sle-<uid>`). Where
-the server `id` is not yet assigned, use `clientReferenceId`. Every resource carries the
-DIGIT `id` and `clientReferenceId` as identifiers under per-instance system URIs, and a
-`meta.tag` for the instance.
+All ids are deterministic so a re-run updates the same resources:
+`<prefix>-<clientReferenceId>`, with a prefix per DIGIT instance and tenant (as the DHIS2
+import uses `sle-<uid>`). The id is always built from `clientReferenceId`, which exists
+before sync and never changes; it is not switched to the server `id` later, which would
+create duplicates. Entities with no `clientReferenceId` (boundaries, products, projects)
+use their server `id` or code. Every resource carries the DIGIT `id` and
+`clientReferenceId` as identifiers under per-instance system URIs, and a `meta.tag` for
+the instance.
+
+Visit Tasks are built from several DIGIT rows. Their id comes from the visit key, and the
+importer keeps a **source index** (DIGIT row id → ICR resource ids). When a row changes,
+is deleted, or moves to a different visit key, every Task it contributed to is recomputed
+(status, counts, outputs, identifiers); a Task left with no rows is deleted.
 
 ### Boundary → ICRLocation
 
@@ -485,7 +503,7 @@ ICR's product codes with a **ConceptMap per instance**:
 | --- | --- |
 | `code`, `name` | `PlanDefinition.name`, `title`; `url` built from the code |
 | `group` (disease group) | `addresses` on the campaign (Condition); the protocol `type` is the ICR campaign type (`vaccination-sia`, `mda`, `itn-distribution`, `smc`), set by ConceptMap |
-| `beneficiaryType` (`HOUSEHOLD`, `INDIVIDUAL`) | which `for` the Tasks use (`ICRDeliveryUnit` or `ICRPatient`) |
+| `beneficiaryType` (`HOUSEHOLD`, `INDIVIDUAL`) | the subject of the delivery events (household Group or person); visit Tasks are for the household or site either way |
 | `eligibilityCriteria[]`, `validMinAge`, `validMaxAge` | `subject` (age-band Group) |
 | `cycles[]` | see the campaign table: each cycle becomes a round |
 | `cycles[].deliveries[]` | ordered `action` entries, with `relatedAction` and `mandatoryWaitSinceLastDeliveryInDays` as the offset |
@@ -522,7 +540,8 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | --- | --- |
 | child `Project.address.boundary` / `census.boundary_code` | `characteristic[geography]` → the Location |
 | `targets[].baseline` | a Group with `denominatorType = total-population`, `quantity` = baseline |
-| `targets[].target` | a Group with `denominatorType = at-risk`, `quantity` = target, `isPlanningDenominator = true` |
+| `targets[].target` | where the tenant confirms it is the eligible population: a Group with `denominatorType = at-risk`, `quantity` = target, `isPlanningDenominator = true`. Where it is a goal (for example 80 % of the eligible), it maps to the protocol's `goal`, not a denominator |
+| (provenance of project targets) | `denominatorSource` from the campaign's configuration, else `govt-estimate`; `estimateDate` = the campaign's creation date where nothing better is known |
 | `targets[].beneficiaryType = HOUSEHOLD` | `extension[unitOfCount] = household` on the same Groups |
 | `census.total_population` | `quantity` |
 | `census.population_by_demographics` (variable + distribution) | one Group per band, with age / sex `characteristic` |
@@ -557,7 +576,7 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | `householdType` (`FAMILY`, `COMMUNITY`) | `code` (`household`, `community`) |
 | `memberCount` | `quantity` |
 | `HouseholdMember.individualId` | `member.entity` → the ICRPatient |
-| `HouseholdMember.isHeadOfHousehold` | `member.extension[relationshipToHead] = head` (several heads allowed) |
+| `HouseholdMember.isHeadOfHousehold` | `member.extension[relationshipToHead]`: the first head = `head` (the reference head), any other head = `co-head` |
 | member relationships (`relationshipType`) | `relationship-to-head` when the relative is the head (ConceptMap from DIGIT's configured types to the ICR value set); other pairs deferred |
 | `address.latitude` / `longitude`, `address.locality` | `extension[groupLocation]` → a dwelling `ICRLocation` (`type = household`, `position`, `partOf` = the locality) |
 | `isDeleted` (household split or moved) | `Group.active = false`; keep the resource |
@@ -567,7 +586,7 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | DIGIT | FHIR |
 | --- | --- |
 | `beneficiaryClientReferenceId` | resolves to the ICRDeliveryUnit (household campaigns) or ICRPatient (individual campaigns) |
-| `tag` (voucher or QR code) | `identifier` on that Group or Patient (system: per-instance voucher system) |
+| `tag` (voucher or QR code) | `output[voucher]` (Identifier, system per campaign round) on the register Task; not stored on the Group or Patient |
 | `projectId` | the campaign, through the project lookup |
 | `dateOfRegistration` | `executionPeriod` of the register Task (separate registration visit only) |
 | (separate registration phase) | a register ICRCampaignTask: `for` = the household Group, `output[voucher]` = `tag`, `output[entitlement]` |
@@ -586,22 +605,28 @@ own `planning-denominator`, the same shape the warehouse's `IcrCampaignActivity`
 | `createdBy` (user) | `owner` → the worker's CareTeam; the worker as `requester` or a `performer`-style extension |
 | dose criterion / delivery in `additionalFields` | `instantiatesCanonical` → the ICRCampaignActivity |
 | (set per campaign) | `extension[deliveryStrategy]` |
-| (registration-and-delivery flows) | `extension[taskOrigin] = field-registered` |
+| beneficiaries registered at this visit | `output[registeredCount]` |
+| (whether the visit was planned) | `extension[taskOrigin]`: `pre-planned` when the importer can match the visit to a planned household list, otherwise `field-registered` |
 | `code` | a fixed code per activity type (`deliver`, `administer`) |
 | `additionalFields` | mapped per instance; unmapped keys dropped |
 
-Task status values are configured in MDMS per campaign. The values seen in DIGIT's sample
-configurations, and their ICR equivalents:
+Task status values are configured in MDMS per campaign. Each DIGIT status is a
+**per-person** outcome when tasks are per person, so it maps to that person's delivery
+event; the visit Task's status is reduced from all of them. The values seen in DIGIT's
+sample configurations:
 
-| DIGIT task status | `Task.status` | Task outputs and events |
+| DIGIT task status | Person's delivery event | Visit Task |
 | --- | --- | --- |
-| `ADMINISTRATION_SUCCESS`, `DELIVERED` | `completed` | `treatedCount`; delivery events for each delivered resource |
-| `ADMINISTRATION_FAILED`, `NOT_ADMINISTERED` | `failed` | `missedReason` from `deliveryComment` |
-| `BENEFICIARY_REFUSED` | `completed` | `noncomplianceReason = refusal` |
-| `INELIGIBLE` | `completed` | `exclusionReason` (age, pregnancy, illness — from the eligibility checklist) |
-| `BENEFICIARY_REFERRED` | `completed` | `referred-count`; the referral itself is an `ICRReferral` |
-| `CLOSED_HOUSEHOLD` | `failed` | `missedReason = absent` (household closed); revisit Task with `partOf` |
-| `NOT_VISITED` | `requested` (not yet done) | none |
+| `ADMINISTRATION_SUCCESS`, `DELIVERED` | `status = completed` | counts in `treatedCount` |
+| `ADMINISTRATION_FAILED`, `NOT_ADMINISTERED` | `status = not-done`, `statusReason` from `deliveryComment` (missed reasons) | `missedReason` |
+| `BENEFICIARY_REFUSED` | `status = not-done`, `statusReason` = refusal | `noncomplianceReason` |
+| `INELIGIBLE` | `status = not-done`, `statusReason` = exclusion reason (age, pregnancy, illness) | `exclusionReason` |
+| `BENEFICIARY_REFERRED` | `not-done` or `completed` as recorded, plus an `ICRReferral` | `referred-count` |
+| `CLOSED_HOUSEHOLD` | no event | `status = failed`, `missedReason = absent`; revisit Task with `partOf` |
+| `NOT_VISITED` | no event | `status = requested` |
+
+The visit Task is `completed` when the household was reached and any person outcome was
+recorded, `failed` when it was not reached, and `requested` when not yet visited.
 
 ### TaskResource → delivery events
 
@@ -672,10 +697,11 @@ resource, and `BENEFICIARY_REFERRED` statuses add to `referred-count`.
 | `Referral.referrerId` | `requester` |
 | `Referral.recipientType` / `recipientId` (staff or facility) | `performer`; `locationReference` for a facility |
 | `Referral.reasons[]` | `reasonCode` (ConceptMap to `ICRReferralReasonVS`) |
-| `Referral.sideEffect` | `reasonReference` → the ICRAdverseEvent |
+| `Referral.sideEffect` | `supportingInfo` → the ICRAdverseEvent (R4 `reasonReference` cannot reference an AdverseEvent) |
 | client time | `authoredOn` |
 | project | `basedOn` → the campaign |
-| `HFReferral` at the receiving facility | `ICRReferralFulfilment` (Task, `focus` = the referral, `owner` = the facility); `symptom` → the referral's `reasonCode` when no field referral exists |
+| `HFReferral` at the receiving facility | `ICRReferralFulfilment` (Task, `focus` = the referral, `owner` = the facility's Organization, `location` = its Location) |
+| `HFReferral` with no field `Referral` | the importer creates an `ICRReferral` (id `<prefix>-hfr-<id>`, `reasonCode` from `symptom`, no requester); a field referral for the same person and facility that arrives later replaces it ([[ig-gaps-from-digit]] §2) |
 
 ### ServiceDefinition and Service → Questionnaire and ICRCampaignFormResponse
 
@@ -726,11 +752,11 @@ are survey data: aggregate them per lot or area into `ICRSurveyCoverage`.
 
 | DIGIT | FHIR |
 | --- | --- |
-| `id`, `clientReferenceId` | `identifier`; the resource id from `id` (or `clientReferenceId` before sync) |
+| `id`, `clientReferenceId` | `identifier`; the resource id from `clientReferenceId` (server `id` only for entities without one) |
 | `clientAuditDetails.createdTime` | the event time (`occurrence[x]`, `effective[x]`, `authored`, `executionPeriod.start`) |
 | `auditDetails.lastModifiedTime` | not mapped; the FHIR server sets `meta.lastUpdated` |
 | `auditDetails.createdBy` / `clientAuditDetails.createdBy` | the performer or author, through the user → Practitioner lookup |
-| `isDeleted = true` | delete the resource, or `status = entered-in-error` for events |
+| `isDeleted = true` | delete the resource, or `status = entered-in-error` for events; for a row that feeds a visit Task, recompute the Task through the source index |
 | `rowVersion` | not mapped |
 | `tenantId` | the country server (one ICR server per country) and the identifier system prefix |
 | `additionalFields` | per-instance mapping to IG elements; unmapped keys dropped |
@@ -763,21 +789,24 @@ as a second task.
 becomes, in the ICR:
 
 - One `ICRCampaignTask` for the household visit, with a deterministic id built from the
-  household, worker and day, and both DIGIT task ids as identifiers: `basedOn` →
+  round, the household and the visit window's start, and both DIGIT task ids as
+  identifiers: `basedOn` →
   `CarePlan/ng-smc-2026-c1` (the cycle-1 round, `partOf` the SMC 2026 umbrella),
   `for` → the household ICRDeliveryUnit,
   `location` → the dwelling Location (`partOf` = Location for `NG_KN_LOC_0457`),
   `instantiatesCanonical` → the SPAQ day-1 ICRCampaignActivity, `status = completed`,
   `output[treatedCount] = 2`, `output[delivery-event]` → both administrations,
   `deliveryStrategy = house-to-house` (from configuration),
-  `taskOrigin = field-registered`, `owner` → the worker's CareTeam.
-- `MedicationAdministration/ng-T-2026-08-001234-1` (ICRMedicationAdministration), and a
-  second one for the sibling from the other DIGIT task:
-  `medicationCodeableConcept` = ATC `P01BD51` (sulfadoxine-pyrimethamine) and `P01BA06`
-  (amodiaquine) — SPAQ is a co-pack, so the ConceptMap from `PVAR-SPAQ-3-11M` gives two
-  codings, or two administrations; decide once in the ICR's MDA medication value set —
-  `subject` → the child, `effectiveDateTime` = 2026-08-01,
-  `campaign` → the cycle-1 round, `recordOrigin = campaign`, `directlyObserved = true`.
+  `taskOrigin = field-registered` (no planned household list), `owner` → the worker's
+  CareTeam.
+- Two `ICRMedicationAdministration`s per child, because SPAQ is a co-pack of two drugs and
+  ICRMedicationAdministration takes a single `medicationCodeableConcept` (two codings in
+  one CodeableConcept would mean two codes for the same drug, not two drugs):
+  `ng-T-2026-08-001234-sp` with ATC `P01BD51` (sulfadoxine-pyrimethamine) and
+  `ng-T-2026-08-001234-aq` with ATC `P01BA06` (amodiaquine). Each has `subject` → the
+  child, `effectiveDateTime` = 2026-08-01, `campaign` → the cycle-1 round,
+  `recordOrigin = campaign`, `directlyObserved = true`. The sibling's DIGIT task gives two
+  more. `treatedCount` counts people (2), not administrations (4).
 
 The project `P-LOC-0457` does not become a CarePlan; the importer looks it up to find the
 campaign and the locality.
@@ -820,11 +849,11 @@ rejected options and the element-level design, are in [[ig-gaps-from-digit]]:
 
 | Gap | Decision |
 | --- | --- |
-| Head of household | `relationship-to-head` extension on `ICRDeliveryUnit.member`; several heads allowed |
+| Head of household | `relationship-to-head` extension on `ICRDeliveryUnit.member`; one reference head plus co-heads |
 | Referrals | `ICRReferral` (ServiceRequest) + `ICRReferralFulfilment` (Task); reason codes mapped to SNOMED CT |
-| Household denominators | `unit-of-count` on `ICRTargetPopulation`; `icr-household-coverage` Measure |
+| Household denominators | `unit-of-count` modifier extension on `ICRTargetPopulation`; `icr-household-coverage` Measure |
 | Stock counts at a facility | `ICRStockCount` (Observation) |
-| Registration | `register` activity and Task when registration is a separate visit; `voucher` and `entitlement` outputs |
+| Registration | `registered-count` output on any visit Task; a `register` Task when registration is a separate visit, with `voucher` and `entitlement` outputs |
 | Microplan resource estimates | `ICRResourceEstimate` (Observation) |
 
 ## Import levels
@@ -835,12 +864,17 @@ country can stop at any of them:
 | Level | ICR resources | Needs |
 | --- | --- | --- |
 | 1. Plan and aggregate | Locations, facilities, catchments, protocol, campaign and rounds, target populations, `ICRAdministrativeCoverage` computed from DIGIT task counts per area | Read access; no person data leaves DIGIT |
-| 2. Events | Level 1 + Tasks, delivery events, adverse events, supply movements, CareTeams, form responses — with `for` / `subject` pointing at pseudonymous Patients and Groups (ids only, no names) | Agreement on event-level sharing |
+| 2. Events | Level 1 + Tasks, delivery events, adverse events, supply movements, CareTeams, form responses — with `for` / `subject` pointing at pseudonymous ICRPatients and Groups | Agreement on event-level sharing |
 | 3. Persons | Level 2 + names, birth dates, identifiers, dwellings | Data-sharing agreement, consent policy (`ICRConsent`), and the IG's person-data governance |
 
 Level 2 is enough for stratified coverage (sex × age band), zero-dose counts and
-cross-round analysis, if the pseudonymous Patient carries gender and birth date (or age
-band). Names and national IDs are needed only for cross-campaign person linkage.
+cross-round analysis. ICRPatient requires an identifier, a name, gender and birth date, so
+a pseudonymous level-2 Patient carries: a pseudonymous `registryId`; `name` present only
+as a `data-absent-reason` extension with value `masked`; `gender`; and `birthDate`, which
+may be reduced to year and month. An age band alone does not satisfy `birthDate`; where
+only an age band is shared, `birthDate` also carries `data-absent-reason = masked` and the
+band goes in the IG's age extension. Names and national IDs are needed only for
+cross-campaign person linkage.
 
 ## How an importer would work
 
