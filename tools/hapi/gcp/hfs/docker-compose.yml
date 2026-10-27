@@ -1,17 +1,17 @@
-# Uganda ICR server on the Helios FHIR Server (hfs) instead of HAPI — an A/B copy of the
-# icr-uga stack to test hfs as a HAPI replacement. Same shape as country/docker-compose.yml:
-# its own FHIR engine + Postgres, a FHIR Info Gateway in front that only accepts tokens from
-# the Uganda Keycloak realm, behind the main stack's Caddy. Observatory uses its existing
-# `uga` API key, just pointed at uga-fhs.healthcampaigns.org — auth is unchanged.
+# A named ICR server on the Helios FHIR Server (hfs) instead of HAPI. One compose project per
+# instance (icr-<SERVER>), each with its own hfs, Postgres, FHIR Info Gateway and daily backup,
+# behind the main stack's Caddy. The instance name is free — a country (uga), a programme, a
+# tenant, whatever. This is the go-forward template for ICR servers; hfs.sh drives it.
 #
 #   https://$FHIR_HOST/fhir   the gateway (API key required; /fhir/metadata is open)
 #
 # hfs serves the FHIR base at root (/metadata); the gateway exposes it at /fhir and strips the
-# prefix forwarding to PROXY_TO, so the public base is …/fhir, identical to HAPI.
+# prefix forwarding to PROXY_TO, so the public base is …/fhir, identical to HAPI. First boot
+# seeds ~1,372 spec SearchParameters into Postgres (a minute or two) before it listens.
 #
-# Run from /opt/icr-hapi/gcp on the VM with the env file hfs/uga-fhs.env:
-#   sudo docker compose -p icr-ugahfs -f hfs/docker-compose.yml --env-file hfs/uga-fhs.env up -d
-name: icr-ugahfs
+# Run from /opt/icr-hapi/gcp on the VM via hfs.sh (or directly):
+#   sudo docker compose -p icr-<name> -f hfs/docker-compose.yml --env-file hfs/<name>.env up -d
+name: icr-${SERVER:?set in the env file}
 services:
   db:
     image: postgres:15-alpine
@@ -36,11 +36,10 @@ services:
       timeout: 3s
       retries: 20
 
-  # Helios FHIR Server, Postgres backend. Reached only through the gateway; HFS_BASE_URL is
-  # the internal proxy target (= the gateway's PROXY_TO), which the gateway rewrites to its
-  # public base so paging/Bundle links come out right — same trick as HAPI's server_address.
-  # First boot seeds ~1,372 spec SearchParameters into Postgres (a minute or two) before the
-  # server starts listening.
+  # Helios FHIR Server, Postgres backend. Reached only through the gateway; HFS_BASE_URL is the
+  # internal proxy target (= the gateway's PROXY_TO), which the gateway rewrites to its public
+  # base so paging/Bundle links come out right. The service stays `hfs` (not `<name>-hfs`): it is
+  # only on this instance's own network, so it never collides with another instance's.
   hfs:
     image: ghcr.io/heliossoftware/hfs:latest
     restart: unless-stopped
@@ -58,8 +57,9 @@ services:
       # auth is handled by the gateway in front, so hfs itself stays open
       HFS_AUTH_ENABLED: "false"
 
-  # Same image/settings as the country gateway; tokens must come from the Uganda realm so the
-  # existing `uga` key opens this copy too. BACKEND_TYPE HAPI = plain FHIR REST passthrough.
+  # Same image/settings as the main stack's gateway; tokens must come from this instance's realm
+  # (TOKEN_ISSUER), so a key for one instance opens no other. BACKEND_TYPE HAPI = plain FHIR REST
+  # passthrough. Joins the shared network as <SERVER>-gateway, which sites/<SERVER>.caddy proxies to.
   gateway:
     image: us-docker.pkg.dev/fhir-proxy-build/stable/fhir-gateway:v0.5.0
     restart: unless-stopped
@@ -79,7 +79,7 @@ services:
     networks:
       default:
       shared:
-        aliases: ["ugahfs-gateway"]
+        aliases: ["${SERVER}-gateway"]
 
   # A pg_dump into the backups volume once a day after 02:00 UTC, the last 14 kept.
   backup:
@@ -93,14 +93,14 @@ services:
       PGUSER: hfs
       PGDATABASE: fhir
       PGPASSWORD: ${POSTGRES_PASSWORD}
-      COUNTRY: ugahfs
+      SERVER: ${SERVER}
     entrypoint:
       - sh
       - -c
       - |
         set -o pipefail
         while true; do
-          f=/backups/$$COUNTRY-$$(date -u +%Y%m%d).sql.gz
+          f=/backups/$$SERVER-$$(date -u +%Y%m%d).sql.gz
           if [ ! -f $$f ] && [ $$(date -u +%H) -ge 2 ]; then
             pg_dump | gzip > $$f.tmp && mv $$f.tmp $$f && echo "backup $$f" || rm -f $$f.tmp
             ls -1t /backups/*.sql.gz | tail -n +15 | xargs -r rm --
