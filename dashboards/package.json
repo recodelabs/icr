@@ -13,7 +13,7 @@
     "@observablehq/framework": "1.13.4",
     "@recodelabs/observatory-cli": "^0.2.0",
     "@recodelabs/observatory-components": "^0.2.0",
-    "@recodelabs/observatory-gate": "^0.3.0"
+    "@recodelabs/observatory-gate": "^0.3.4"
   },
   "devDependencies": {
     "wrangler": "^4"
