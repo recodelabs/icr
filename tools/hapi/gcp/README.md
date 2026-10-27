@@ -251,12 +251,18 @@ sudo ./hfs.sh up NAME                 # start / apply config    down NAME: stop 
 sudo ./hfs.sh backup NAME             # pg_dump now             ps: every instance's containers
 ```
 
+**Web UI.** `sudo ./hfs.sh ui NAME` adds hfs's own web UI on the instance's host:
+`https://HOST/fhir` stays the API behind the gateway (API keys, unchanged), and everything else
+goes to a second hfs process (`hfs-ui`, profile `ui`) on the same Postgres, with auth on and
+Keycloak sign-in at `https://HOST/ui`. Anyone with an account in the instance's realm can sign
+in; the realm's `hfs-ui` client (`hfs/ui-client.sh`) grants `user/*.rs`, so it is read-only.
+
 Copy data from an existing HAPI server with `hfs/migrate.py` (conformance first, batch bundles,
 PUT by id; run it in a container on both compose networks — see the header in the file).
 
 > [!note] The live Uganda instance
-> Uganda was the first hfs cutover, done by hand before this template: compose project
-> `icr-ugahfs`, reusing the `uga` realm, with `sites/uga.caddy` repointed from the old HAPI
-> gateway to `ugahfs-gateway` (backup `sites/uga.caddy.hapi.bak`). It is equivalent to
-> `hfs.sh add ugahfs fhir-uga.healthcampaigns.org uga`. The HAPI `icr-uga` and `icr-digit`
-> stacks are stopped (volumes kept).
+> Uganda was the first hfs cutover: compose project `icr-ugahfs` (env `hfs/ugahfs.env`), reusing
+> the `uga` realm, at `fhir-uga.healthcampaigns.org` — `/fhir` the API, `/ui` the web UI. It is
+> equivalent to `hfs.sh add ugahfs fhir-uga.healthcampaigns.org uga` then `hfs.sh ui ugahfs`;
+> its Caddy site is `sites/ugahfs.caddy` (the HAPI-era one is kept as `sites/uga.caddy.hapi.bak`).
+> The HAPI `icr-uga` and `icr-digit` stacks are stopped (volumes kept).
