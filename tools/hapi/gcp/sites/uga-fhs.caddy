@@ -1,0 +1,6 @@
+# Uganda-on-hfs ICR server (hfs/docker-compose.yml, env file hfs/uga-fhs.env): the gateway
+# only; hfs itself has no public address.
+uga-fhs.healthcampaigns.org {
+	encode gzip
+	reverse_proxy ugahfs-gateway:8080
+}

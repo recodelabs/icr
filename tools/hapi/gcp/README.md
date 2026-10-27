@@ -227,3 +227,43 @@ public base URL.
 > [!warning] The R2 parquet is the only full copy of the registry
 > `tools/warehouse/refresh.sh --push` mirrors `data/` to R2 with deletes. Run `refresh.sh` (no
 > `--push`) against a loaded server first, so `data/parquet/locations` holds part files.
+
+## hfs A/B (experimental): Uganda on the Helios FHIR Server
+
+`hfs/` is an A/B copy of the Uganda server running the [Helios FHIR Server](https://github.com/HeliosSoftware/hfs)
+(hfs, Rust, R4) on Postgres instead of HAPI, to test hfs as a HAPI replacement. It is the
+same shape as a country stack — its own FHIR engine + Postgres + a FHIR Info Gateway + daily
+backup, behind the main stack's Caddy — reusing the **`uga` Keycloak realm**, so Observatory's
+existing `uga` API key works against both `fhir-uga` (HAPI) and `uga-fhs` (hfs) unchanged.
+
+```
+FHIR base URL   https://uga-fhs.healthcampaigns.org/fhir    same gateway + uga realm as fhir-uga
+```
+
+hfs serves the FHIR base at root (`/metadata`); the gateway exposes it at `/fhir` and strips
+the prefix forwarding to hfs, so the public base is `…/fhir`, identical to HAPI.
+
+Deploy (from `/opt/icr-hapi/gcp` on the VM; point `uga-fhs.healthcampaigns.org` at the VM,
+Cloudflare DNS only, first):
+
+```bash
+cp hfs/uga-fhs.env.example hfs/uga-fhs.env   # set POSTGRES_PASSWORD
+sudo docker compose -p icr-ugahfs -f hfs/docker-compose.yml --env-file hfs/uga-fhs.env up -d
+sudo docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile   # picks up sites/uga-fhs.caddy
+```
+
+Copy Uganda's data HAPI → hfs (hfs uses its own schema, so this is a resource copy, not a
+pg_dump). `hfs/migrate.py` pages the source and writes batch bundles, conformance first:
+
+```bash
+cid=$(sudo docker run -d --network icr-uga_default -v $PWD/hfs/migrate.py:/mig.py:ro python:3-alpine sleep 900)
+sudo docker network connect icr-ugahfs_default $cid
+sudo docker exec $cid python3 /mig.py        # SRC=uga HAPI, DST=hfs by default
+sudo docker rm -f $cid
+```
+
+Verified so far: base path reconciled by the gateway; auth identical (no token → 401,
+metadata open); 3,176 Uganda resources copied, 0 failed; custom ICR SearchParameters filter
+correctly (e.g. `CarePlan?target-geography=Location/uga-w-sheema`). Still to validate: a full
+`tools/warehouse/refresh.sh` against `uga-fhs` compared to `fhir-uga` (the `geography`/`quadkey`
+params and the ViewDefinitions end to end).

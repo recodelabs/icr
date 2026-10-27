@@ -1,0 +1,2 @@
+# The env file holds the database password; it lives on the VM only.
+*.env
