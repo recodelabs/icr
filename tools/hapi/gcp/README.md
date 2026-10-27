@@ -227,3 +227,36 @@ public base URL.
 > [!warning] The R2 parquet is the only full copy of the registry
 > `tools/warehouse/refresh.sh --push` mirrors `data/` to R2 with deletes. Run `refresh.sh` (no
 > `--push`) against a loaded server first, so `data/parquet/locations` holds part files.
+
+## ICR servers on the Helios FHIR Server (hfs)
+
+`hfs/` and `hfs.sh` are the go-forward way to run a named ICR server on the
+[Helios FHIR Server](https://github.com/HeliosSoftware/hfs) (hfs, Rust, R4) on Postgres,
+instead of HAPI's `country.sh`/`country/`. Each instance is one compose project
+(`hfs/docker-compose.yml`, `icr-<name>`) with its own hfs, Postgres, FHIR Info Gateway and
+daily backup, behind the main stack's Caddy. The name is free — a country, a programme, a
+tenant — so it isn't tied to `country`.
+
+hfs serves the FHIR base at root; the gateway exposes it at `/fhir` and strips the prefix
+forwarding to hfs, so the public base is `…/fhir`, identical to HAPI. Auth is unchanged: the
+gateway validates tokens from the instance's Keycloak realm, so an API key opens only its own
+instance. hfs seeds ~1,372 spec SearchParameters into Postgres on first boot (a minute or two)
+before it listens.
+
+```bash
+# point fhir-<name>.healthcampaigns.org at the VM (Cloudflare, DNS only) first, then on the VM:
+sudo ./hfs.sh add NAME HOST [REALM]   # env file, Caddy site, realm (new, or REALM to reuse one), start
+sudo ./hfs.sh key NAME create loader  # an API key in the instance's realm
+sudo ./hfs.sh up NAME                 # start / apply config    down NAME: stop (data stays)
+sudo ./hfs.sh backup NAME             # pg_dump now             ps: every instance's containers
+```
+
+Copy data from an existing HAPI server with `hfs/migrate.py` (conformance first, batch bundles,
+PUT by id; run it in a container on both compose networks — see the header in the file).
+
+> [!note] The live Uganda instance
+> Uganda was the first hfs cutover, done by hand before this template: compose project
+> `icr-ugahfs`, reusing the `uga` realm, with `sites/uga.caddy` repointed from the old HAPI
+> gateway to `ugahfs-gateway` (backup `sites/uga.caddy.hapi.bak`). It is equivalent to
+> `hfs.sh add ugahfs fhir-uga.healthcampaigns.org uga`. The HAPI `icr-uga` and `icr-digit`
+> stacks are stopped (volumes kept).
