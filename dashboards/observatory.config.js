@@ -13,7 +13,11 @@ export default {
     // The gate's users and sessions; `observatory deploy` applies its migrations first.
     d1: "observatory"
   },
-  brand: {title: "Campaign Dashboards", accent: "#0b57d0", logo: null},
+  // Admins edit the sites' Markdown in the gate (/_obs/edit/); each save commits to main here
+  // through the GitHub App "Observatory Analytics" (recodelabs, installed on this repo only).
+  // Its private key is the Worker secret GITHUB_APP_PRIVATE_KEY.
+  repo: {github: "recodelabs/icr", branch: "main", root: "dashboards", app: 5445395},
+  brand: {title: "Campaign Dashboards", accent: "#0b57d0", logo: "/_obs/observatory.svg"},
   warehouses: {
     // tools/warehouse/refresh.sh --push writes the main warehouse to the bucket root.
     main: {r2: "", local: "../data"},
