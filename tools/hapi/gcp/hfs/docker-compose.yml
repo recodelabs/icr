@@ -30,6 +30,11 @@ services:
     shm_size: 256m
     volumes:
       - pgdata:/var/lib/postgresql/data
+    # hfs-ui is also on the shared network, where the main stack's Postgres is `db` too, so it
+    # reaches this one by its unique alias
+    networks:
+      default:
+        aliases: ["${SERVER}-db"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hfs -d fhir"]
       interval: 5s
@@ -80,6 +85,39 @@ services:
       default:
       shared:
         aliases: ["${SERVER}-gateway"]
+
+  # Optional (profile `ui`, set by `hfs.sh ui`): hfs's web UI with Keycloak sign-in, on the same
+  # host as the API: https://$FHIR_HOST/ui (Caddy sends /fhir to the gateway, the rest here). A second hfs process on the same Postgres — hfs runs several nodes on one
+  # store, sessions included — with auth on, so the API instance above keeps its auth off behind
+  # the gateway and API keys need no SMART scopes. Signed-in users get the scope `user/*.rs` from
+  # the realm's `hfs-ui` client (hfs/ui-client.sh): read and search only. Joins the shared network
+  # as <SERVER>-ui for Caddy, and to reach Keycloak (the auth host) through Caddy's alias.
+  hfs-ui:
+    image: ghcr.io/heliossoftware/hfs:latest
+    profiles: [ui]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HFS_STORAGE_BACKEND: postgres
+      HFS_DATABASE_URL: postgresql://hfs:${POSTGRES_PASSWORD}@${SERVER}-db:5432/fhir
+      HFS_SERVER_HOST: 0.0.0.0
+      HFS_SERVER_PORT: "8080"
+      HFS_BASE_URL: https://${FHIR_HOST}
+      HFS_DEFAULT_FHIR_VERSION: R4
+      HFS_LOG_LEVEL: info
+      HFS_AUTH_ENABLED: "true"
+      HFS_AUTH_ISSUER: ${TOKEN_ISSUER}
+      HFS_AUTH_JWKS_URL: ${TOKEN_ISSUER}/protocol/openid-connect/certs
+      HFS_UI_LOGIN_CLIENT_ID: hfs-ui
+      HFS_UI_LOGIN_SCOPES: openid profile email user/*.rs
+      # Import (bulk-submit) needs system/bulk-submit, which the hfs-ui client doesn't grant
+      HFS_BULK_SUBMIT_ENABLED: "false"
+    networks:
+      default:
+      shared:
+        aliases: ["${SERVER}-ui"]
 
   # A pg_dump into the backups volume once a day after 02:00 UTC, the last 14 kept.
   backup:

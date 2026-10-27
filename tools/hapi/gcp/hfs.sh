@@ -7,6 +7,7 @@
 #   ./hfs.sh add NAME HOST [REALM]    set up an instance: env file, Caddy site, realm, start it
 #   ./hfs.sh up NAME                  start it, or apply changed config
 #   ./hfs.sh down NAME               stop it (the data stays)
+#   ./hfs.sh ui NAME                 add hfs's web UI with Keycloak sign-in at https://HOST/ui (read-only)
 #   ./hfs.sh key NAME create KEY     API key in the instance's realm (also: list, rotate KEY, revoke KEY)
 #   ./hfs.sh backup NAME             pg_dump now (the backup service also makes one daily)
 #   ./hfs.sh ps                      every instance's containers
@@ -19,14 +20,16 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-usage() { sed -n '7,13p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+usage() { sed -n '7,14p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
 name_ok() { [[ "${1:-}" =~ ^[a-z][a-z0-9]{1,15}$ ]] || { echo "NAME: lowercase letters and digits, e.g. uga" >&2; exit 2; }; }
 env_file() { echo "hfs/$1.env"; }
 realm_of() { grep -E '^REALM=' "$(env_file "$1")" | cut -d= -f2-; }
 instance() {
   local env; env=$(env_file "$1")
   [ -f "$env" ] || { echo "no $env; run ./hfs.sh add $1 HOST first" >&2; exit 1; }
-  docker compose -p "icr-$1" -f hfs/docker-compose.yml --env-file "$env" "${@:2}"
+  # an instance with a UI_HOST also runs the hfs-ui service (profile ui)
+  local prof=(); grep -qE '^UI=1' "$env" && prof=(--profile ui)
+  docker compose -p "icr-$1" -f hfs/docker-compose.yml --env-file "$env" ${prof[@]+"${prof[@]}"} "${@:2}"
 }
 main() { docker compose "$@"; }   # the main stack (docker-compose.yml here: Caddy, Keycloak)
 keys() { local realm=$1; shift; main exec -T -e REALM="$realm" keycloak bash -s -- "$@" < gateway/api-key.sh; }
@@ -66,6 +69,21 @@ case "$cmd" in
    ./hfs.sh key $name create KEY     an API key for the person or tool that loads data
    https://$host/fhir/metadata       open without a key once hfs is up
 EOF
+    ;;
+  ui)
+    # The UI shares the API's host: Caddy sends /fhir to the gateway (API keys), the rest to hfs-ui.
+    name=${2:-}; name_ok "$name"
+    env=$(env_file "$name"); [ -f "$env" ] || { echo "no instance $name" >&2; exit 1; }
+    host=$(grep -E '^FHIR_HOST=' "$env" | cut -d= -f2-)
+    grep -qE '^UI=1' "$env" || echo "UI=1" >> "$env"
+    site=sites/$name.caddy
+    printf '# %s ICR server on hfs (hfs/docker-compose.yml, env file %s): /fhir → the gateway (API key),\n# everything else → hfs web UI with Keycloak sign-in at /ui.\n%s {\n\tencode gzip\n\thandle /fhir* {\n\t\treverse_proxy %s-gateway:8080\n\t}\n\tredir / /ui 302\n\thandle {\n\t\treverse_proxy %s-ui:8080\n\t}\n}\n' \
+      "$name" "$env" "$host" "$name" "$name" > "$site"
+    echo "== wrote $site"
+    main exec -T -e REALM="$(realm_of "$name")" -e UI_HOST="$host" keycloak bash -s < hfs/ui-client.sh
+    instance "$name" up -d
+    main exec -T caddy caddy reload --config /etc/caddy/Caddyfile
+    echo "== https://$host/ui — sign in with a $(realm_of "$name") realm account (read-only); the API stays at /fhir"
     ;;
   up) name_ok "${2:-}"; instance "$2" up -d ;;
   down) name_ok "${2:-}"; instance "$2" stop ;;
