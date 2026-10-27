@@ -35,7 +35,7 @@ export default {
     // the Worker secret OIDC_UGA_SECRET.
     oidc: [{id: "uga", name: "Uganda (Keycloak)", issuer: "https://auth.healthcampaigns.org/realms/uga"}],
     // Admins see every site and manage users at /_obs/admin.
-    admins: [{email: "mberg@ona.io"}, {oidc: "uga", group: "/dashboards-admins"}],
+    admins: [{email: "mberg@ona.io"}, {email: "mberg@recodelabs.org"}, {oidc: "uga", group: "/dashboards-admins"}],
     // Everyone else signs in by email. A verified ona.io address is active at once; others wait
     // for an admin's approval, and adminNotify gets an email about each.
     email: {allowedDomains: ["ona.io"], from: "dashboards@healthcampaigns.org", adminNotify: "mberg@ona.io"}
