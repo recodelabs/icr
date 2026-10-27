@@ -1,7 +1,7 @@
 ---
 title: IG additions from the DIGIT mapping — design decisions
-version: 0.3.0
-last_modified: 2026-10-26T23:30:00Z
+version: 0.4.0
+last_modified: 2026-10-27T00:15:00Z
 status: decided; reviewed twice by Codex (Oct 26, 2026); not yet implemented in the IG
 tags:
   - icr
@@ -12,7 +12,7 @@ tags:
 
 # IG additions from the DIGIT mapping — design decisions
 
-<sub>`v0.3.0 · Last modified Oct 26, 2026 at 7:30 PM EDT`</sub>
+<sub>`v0.4.0 · Last modified Oct 26, 2026 at 8:15 PM EDT`</sub>
 
 Mapping DIGIT HCM onto the ICR ([[digit]]) showed six things the IG cannot yet record.
 This note records what was decided for each, the options that were rejected and why, and
@@ -412,8 +412,10 @@ cannot be recomputed from the ICR. The source plan is referenced through `derive
 **Rejected.** Campaign totals only on `CarePlan.activity.detail.quantity`; leaving
 estimates out of the ICR.
 
-**Open.** Whether Crosscut's microplanning outputs land in `ICRResourceEstimate`. If they
-do, the resource-type codes should be agreed with Crosscut before the IG release.
+> [!note] Crosscut
+> Crosscut's microplanning outputs are not being aligned with `ICRResourceEstimate` for
+> now. The profile is designed from the DIGIT microplan only. If Crosscut alignment comes
+> up later, agree the `ICRResourceTypeCS` codes with them before the IG release.
 
 ## Per-person outcomes in a household visit
 
