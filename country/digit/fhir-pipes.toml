@@ -1,0 +1,39 @@
+# fhir-pipes settings for the DIGIT demo warehouse (warehouse/). DIGIT is a demo tenant, not a
+# country: its server holds eGov's DIGIT HCM demo data (fake), transformed to ICR profiles (see
+# project/digit.md). Paths are relative to this file. Run warehouse.sh, which assembles the
+# views (build/views/) and runs:
+#
+#   FHIR_PIPES_CLIENT_ID=… FHIR_PIPES_CLIENT_SECRET=… \
+#     fhir-pipes refresh --config country/digit/fhir-pipes.toml --only locations,views
+#
+# warehouse.sh --push uploads it to the digit/ folder of the `icr` R2 bucket. Unlike Uganda's
+# folder, digit/ is not an SDI: it stays private, and there is no Portolan catalog.
+
+data = "warehouse"
+
+# The views are the IG's ViewDefinitions plus the DIGIT ones in views/ (delivery events, supply,
+# households, people, locations, activities), which the IG does not have yet. warehouse.sh copies
+# both into build/views/. The IG's come from $IG_VIEWS: for now the build of PR #224
+# (ig/digit-additions, which adds IcrCampaignTaskOutput); once #224 is merged, from
+# ../../ig/fsh-generated/resources, which warehouse.sh falls back to.
+views = "build/views"
+profile = "../../ig/fhir-pipes-profile.toml"
+
+[server]
+base = "https://fhir-digit.healthcampaigns.org/fhir"
+name = "digit"
+token_url = "https://auth.healthcampaigns.org/realms/digit/protocol/openid-connect/token"
+
+[tables]
+# IcrCampaignActivity → campaign_activity; DigitSupplyDelivery → digit_supply_delivery
+strip_prefix = ["icr_"]
+
+# No [partition]: the main and Uganda warehouses partition every table by country, looked up
+# from the location registry. DIGIT's boundaries carry no ISO or P-code, so the lookup gives no
+# country, and the demo is one tenant anyway. Tables are written unpartitioned.
+
+# No [tiles]: DIGIT's boundaries have no geometry, so there is nothing to tile. Facilities and
+# dwellings are points; the site draws them from a parquet file.
+
+# No [push]: fhir-pipes pushes to the root of a bucket, and this warehouse is the bucket's
+# digit/ folder, so warehouse.sh --push uploads it with rclone.

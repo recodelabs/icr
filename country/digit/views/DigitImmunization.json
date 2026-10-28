@@ -1,0 +1,73 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitImmunization",
+  "name": "DigitImmunization",
+  "title": "DIGIT vaccinations",
+  "status": "draft",
+  "description": "One row per Immunization given (completed) or not given (not-done) in a campaign.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Immunization",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "event_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code"
+        },
+        {
+          "name": "status_reason",
+          "path": "statusReason.coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "campaign_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)",
+          "type": "string"
+        },
+        {
+          "name": "activity",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)",
+          "type": "canonical"
+        },
+        {
+          "name": "patient_id",
+          "path": "patient.getReferenceKey(Patient)",
+          "type": "string"
+        },
+        {
+          "name": "occurrence",
+          "path": "occurrence.ofType(dateTime)",
+          "type": "dateTime"
+        },
+        {
+          "name": "vaccine_code",
+          "path": "vaccineCode.coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "vaccine",
+          "path": "vaccineCode.text",
+          "type": "string"
+        },
+        {
+          "name": "location_id",
+          "path": "location.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "dose_value",
+          "path": "doseQuantity.value",
+          "type": "decimal"
+        }
+      ]
+    }
+  ]
+}

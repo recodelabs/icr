@@ -37,8 +37,10 @@ redeploy.
 |---|---|---|---|---|
 | Main warehouse (Nigeria demo, Sierra Leone demo, IG examples) | `hapi.healthcampaigns.org` | `data/` | the bucket root (`parquet/`, `tiles/`, `catalog.sql` …) | none |
 | Uganda warehouse | `fhir-uga.healthcampaigns.org` | `country/uganda/warehouse/` | `uga/` | none |
+| DIGIT demo warehouse | `fhir-digit.healthcampaigns.org` | `country/digit/warehouse/` | `digit/` | none |
 | Main dashboards | main warehouse | `dashboards/sites/main/` | `_site/campaignhq/` | https://dashboards.healthcampaigns.org |
 | Uganda dashboards | Uganda warehouse | `dashboards/sites/uganda/` | `_site/campaignhq/ug/` | https://dashboards.healthcampaigns.org/ug/ |
+| DIGIT demo dashboards | DIGIT demo warehouse | `dashboards/sites/digit/` | `_site/campaignhq/digit/` | https://dashboards.healthcampaigns.org/digit/ |
 | Sierra Leone dashboards | local `data/` only | `dashboards/sites/sldash/`, `dashboards/sites/sl-redux/` | `_site/campaignhq/dhis2-sl*/` | `/dhis2-sl/`, `/dhis2-sl-redux/` |
 | SDI | both warehouses | | the same folders | https://sdi.healthcampaigns.org (main), `/uga/` |
 
@@ -76,11 +78,33 @@ country/uganda/warehouse.sh --push
 - **Why rclone:** fhir-pipes can only push to the root of a bucket.
 - **API key:** read from `~/.config/icr/uga-matt.env`, or another file given in `KEY_FILE`.
 
+## Update the DIGIT warehouse
+
+```bash
+country/digit/warehouse.sh --push
+```
+
+- **What it does:** copies the IG's ViewDefinitions and the DIGIT ones in
+  `country/digit/views/` into `country/digit/build/views/`, runs `fhir-pipes refresh` with
+  `country/digit/fhir-pipes.toml` (locations and views; no tiles and no catalog, because
+  DIGIT's boundaries have no geometry), then uploads `warehouse/` to `r2:icr/digit/` with
+  rclone. `digit/` is private: there is no SDI for it.
+- **The data:** DIGIT HCM demo data (fake), imported into the ICR through the DIGIT mapping.
+  DIGIT is a demo tenant, not a country, so the tables are not partitioned by country.
+- **Incremental by default**, like the others; add `--full` after a reload or deletes on
+  the server. The first run downloads about 220,000 Locations twice (once for the
+  `locations` table, once for the `digit_location` view) and takes several minutes.
+- **The IG's views** come from `$IG_VIEWS`. Until PR #224 (`ig/digit-additions`, which adds
+  `IcrCampaignTaskOutput`) is merged, the script uses that branch's build in its worktree
+  when it exists; after the merge it uses `ig/fsh-generated/resources` (build the IG first).
+- **API key:** read from `~/.config/icr/digit-loader.env`, or another file given in
+  `KEY_FILE`.
+
 ## Redeploy the dashboards
 
 ```bash
 cd dashboards && npm install      # once, and after package.json changes
-npx observatory deploy main uganda
+npx observatory deploy main uganda digit
 ```
 
 - **The sites and where they go** are in `dashboards/observatory.config.js`.
@@ -112,7 +136,7 @@ npx observatory deploy main uganda
 ```bash
 rclone cat r2:icr/manifest.json | python3 -c "import json,sys; print(json.load(sys.stdin)['refreshed_at'])"
 rclone cat r2:icr/uga/manifest.json | python3 -c "import json,sys; print(json.load(sys.stdin)['refreshed_at'])"
-for p in "" coverage ug/ ug/plan dhis2-sl/; do curl -s -o /dev/null -w "%{http_code} /$p\n" https://dashboards.healthcampaigns.org/$p; done
+for p in "" coverage ug/ ug/plan digit/ dhis2-sl/; do curl -s -o /dev/null -w "%{http_code} /$p\n" https://dashboards.healthcampaigns.org/$p; done
 curl -s -o /dev/null -w "%{http_code}\n" https://sdi.healthcampaigns.org/uga/parquet/campaign_activity/country=UGA/part-0.parquet  # must be 404
 ```
 
@@ -132,7 +156,8 @@ can respond with 200 and still fail in its DuckDB queries.
   duckdb/duckdb-wasm CI the first time.
 - **The IG built:** run `sushi build .` in `ig/`. The views are read from
   `ig/fsh-generated/resources`.
-- **API keys:** the Uganda key in `~/.config/icr/uga-matt.env`. The main server is read
+- **API keys:** the Uganda key in `~/.config/icr/uga-matt.env`, the DIGIT key in
+  `~/.config/icr/digit-loader.env`. The main server is read
   through its open address for now.
 - **The dashboards' npm packages:** run `npm install` in `dashboards/`. All four sites
   share them.

@@ -1,0 +1,83 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitMedicationAdministration",
+  "name": "DigitMedicationAdministration",
+  "title": "DIGIT drug administrations",
+  "status": "draft",
+  "description": "One row per MedicationAdministration: a drug given (completed) or not given (not-done) to a person in a campaign visit.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "MedicationAdministration",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "event_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code"
+        },
+        {
+          "name": "status_reason",
+          "path": "statusReason.first().coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "status_reason_text",
+          "path": "statusReason.first().text",
+          "type": "string"
+        },
+        {
+          "name": "campaign_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)",
+          "type": "string"
+        },
+        {
+          "name": "activity",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)",
+          "type": "canonical"
+        },
+        {
+          "name": "patient_id",
+          "path": "subject.getReferenceKey(Patient)",
+          "type": "string"
+        },
+        {
+          "name": "effective",
+          "path": "effective.ofType(dateTime)",
+          "type": "dateTime"
+        },
+        {
+          "name": "medication_code",
+          "path": "medication.ofType(CodeableConcept).coding.where(system = 'http://www.whocc.no/atc').code.first()",
+          "type": "code"
+        },
+        {
+          "name": "medication",
+          "path": "medication.ofType(CodeableConcept).text",
+          "type": "string"
+        },
+        {
+          "name": "dose_value",
+          "path": "dosage.dose.value",
+          "type": "decimal"
+        },
+        {
+          "name": "dose_unit",
+          "path": "dosage.dose.unit",
+          "type": "string"
+        },
+        {
+          "name": "directly_observed",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/directly-observed-consumption').value.ofType(boolean)",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}

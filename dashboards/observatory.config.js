@@ -22,13 +22,18 @@ export default {
     // tools/warehouse/refresh.sh --push writes the main warehouse to the bucket root.
     main: {r2: "", local: "../data"},
     // country/uganda/warehouse.sh --push writes Uganda's to uga/.
-    uga: {r2: "uga/", local: "../country/uganda/warehouse"}
+    uga: {r2: "uga/", local: "../country/uganda/warehouse"},
+    // country/digit/warehouse.sh --push writes the DIGIT demo tenant's to digit/.
+    digit: {r2: "digit/", local: "../country/digit/warehouse"}
   },
   // Who sees what. A site without `access` needs sign-in. Admins (auth.admins) see every site.
   sites: [
     {name: "main", path: "/", dir: "sites/main", warehouse: "main", access: "public"},
     {name: "uganda", path: "/ug/", dir: "sites/uganda", warehouse: "uga",
      access: [{oidc: "uga", group: "/dashboards"}, {emailDomain: "ona.io"}, {role: "admin"}]},
+    // DIGIT HCM demo data (fake), imported into the ICR through the DIGIT mapping.
+    {name: "digit", path: "/digit/", dir: "sites/digit", warehouse: "digit",
+     access: [{emailDomain: "ona.io"}, {role: "admin"}]},
     // The Sierra Leone DHIS2 demo sites read the raw Location download in the local data/,
     // which is not pushed, so they have no warehouse and always build from this machine's copy.
     {name: "sldash", path: "/dhis2-sl/", dir: "sites/sldash", access: "public"},

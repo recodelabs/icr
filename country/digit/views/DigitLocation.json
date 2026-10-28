@@ -1,0 +1,82 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitLocation",
+  "name": "DigitLocation",
+  "title": "DIGIT locations",
+  "status": "draft",
+  "description": "One row per Location, with or without coordinates: boundaries (admin units, which on the DIGIT server have no geometry), facilities and household dwellings. fhir-pipes' location table leaves out locations without geometry, so this view is the source for the boundary hierarchies.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Location",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "location_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "name",
+          "path": "name",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code"
+        },
+        {
+          "name": "type",
+          "path": "type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs').code.first()",
+          "type": "code",
+          "description": "admin-unit | facility | dwelling | …"
+        },
+        {
+          "name": "type_text",
+          "path": "type.where(coding.empty()).text.first()",
+          "type": "string",
+          "description": "DIGIT's own type, e.g. 'PHU (DIGIT SIERRALEONE hierarchy, level 7)'"
+        },
+        {
+          "name": "part_of_id",
+          "path": "partOf.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "boundary_system",
+          "path": "identifier.where(system.contains('/digit-demo/boundary/')).system.first()",
+          "type": "uri",
+          "description": "The boundary code's identifier system; its last segment names the DIGIT hierarchy"
+        },
+        {
+          "name": "boundary_code",
+          "path": "identifier.where(system.contains('/digit-demo/boundary/')).value.first()",
+          "type": "string"
+        },
+        {
+          "name": "code",
+          "path": "identifier.value.first()",
+          "type": "string",
+          "description": "The first identifier (DIGIT code or id)"
+        },
+        {
+          "name": "organization_id",
+          "path": "managingOrganization.getReferenceKey(Organization)",
+          "type": "string"
+        },
+        {
+          "name": "lat",
+          "path": "position.latitude",
+          "type": "decimal"
+        },
+        {
+          "name": "lon",
+          "path": "position.longitude",
+          "type": "decimal"
+        }
+      ]
+    }
+  ]
+}

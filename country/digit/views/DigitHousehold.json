@@ -1,0 +1,55 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitHousehold",
+  "name": "DigitHousehold",
+  "title": "DIGIT households",
+  "status": "draft",
+  "description": "One row per household (ICRDeliveryUnit: Group, actual = true).",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Group",
+  "where": [
+    {
+      "path": "actual = true"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "group_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "name",
+          "path": "name",
+          "type": "string"
+        },
+        {
+          "name": "active",
+          "path": "active",
+          "type": "boolean"
+        },
+        {
+          "name": "quantity",
+          "path": "quantity",
+          "type": "unsignedInt",
+          "description": "Number of members"
+        },
+        {
+          "name": "location_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/group-location').value.ofType(Reference).getReferenceKey(Location)",
+          "type": "string",
+          "description": "The dwelling Location"
+        },
+        {
+          "name": "household_code",
+          "path": "identifier.where(system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/household').value.first()",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
