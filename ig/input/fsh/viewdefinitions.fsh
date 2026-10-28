@@ -224,9 +224,13 @@ the care team. `strategy` and `origin` are the task's delivery strategy and
 whether it was pre-planned from the microplan or field-registered on discovery
 — the field-registered count per area measures how incomplete the microplan's
 enumeration was. The tally columns are the coded `Task.output` entries
-(`treated_count` is the scalar result; the house-to-house axes are
-`houses_visited`, `eligible_present`, `eligible_absent`,
+(`treated_count` is the result of a single-activity visit; the house-to-house
+axes are `houses_visited`, `eligible_present`, `eligible_absent`,
 `children_already_marked`); `missed_reason` is the first missed-reason output.
+A visit that delivers several activities has no `activity` and no
+`treated_count` here: its per-activity tallies are rows of
+`IcrCampaignTaskOutput`, which also carries the single-activity tallies, so
+per-activity results should be read from that view.
 Microplan-vs-monitoring dashboards are this table at two points in time.
 """
 * url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTask"
@@ -257,6 +261,7 @@ Microplan-vs-monitoring dashboards are this table at two points in time.
 * select[0].column[5].name = "activity"
 * select[0].column[5].path = "instantiatesCanonical"
 * select[0].column[5].type = "canonical"
+* select[0].column[5].description = "The activity of a single-activity visit (Task.instantiatesCanonical); null on a visit that delivers several activities"
 * select[0].column[6].name = "for_location_id"
 * select[0].column[6].path = "for.getReferenceKey(Location)"
 * select[0].column[6].type = "string"
@@ -293,9 +298,9 @@ Microplan-vs-monitoring dashboards are this table at two points in time.
 * select[0].column[15].path = "lastModified"
 * select[0].column[15].type = "dateTime"
 * select[0].column[16].name = "treated_count"
-* select[0].column[16].path = "output.where(type.coding.code = 'treated-count').first().value.ofType(unsignedInt)"
+* select[0].column[16].path = "output.where(type.coding.code = 'treated-count' and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty()).first().value.ofType(unsignedInt)"
 * select[0].column[16].type = "unsignedInt"
-* select[0].column[16].description = "Persons treated / vaccinated at this visit (scalar tally)"
+* select[0].column[16].description = "Persons treated / vaccinated at a single-activity visit: the treated-count that names no activity, of which a valid Task has at most one (icr-task-treated-per-activity). Null on a visit that delivers several activities; per-activity tallies are in IcrCampaignTaskOutput"
 * select[0].column[17].name = "houses_visited"
 * select[0].column[17].path = "output.where(type.coding.code = 'houses-visited').first().value.ofType(unsignedInt)"
 * select[0].column[17].type = "unsignedInt"
@@ -316,19 +321,101 @@ Microplan-vs-monitoring dashboards are this table at two points in time.
 * select[0].column[22].path = "statusReason.text"
 * select[0].column[22].type = "string"
 
+Instance: IcrCampaignTaskOutput
+InstanceOf: $ViewDefinition
+Usage: #definition
+Title: "ICR campaign task tallies per activity"
+Description: """
+One row per ICRCampaignTask × activity tally (`treated-count` output): the
+people treated or vaccinated at a visit, **per activity**. A visit that delivers
+several activities has no `Task.instantiatesCanonical` and one `treated-count`
+per activity, each naming its activity in the output's `campaign-activity`
+extension; a single-activity visit has one `treated-count` and its activity is
+the Task's `instantiatesCanonical`. `activity` takes the output's activity, or
+the Task's when the output names none; `activity_from` says which (`output` |
+`task`). Join to `IcrCampaignTask` on `task_id` for the visit, and to
+`IcrCampaignActivity` on `campaign_id` + `activity` for the activity's target.
+Tasks with no `treated-count` have no rows.
+"""
+* url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTaskOutput"
+* name = "IcrCampaignTaskOutput"
+* title = "ICR campaign task tallies per activity"
+* status = #draft
+* fhirVersion = #4.0.1
+* resource = #Task
+* where[0].path = "basedOn.exists()"
+* where[0].description = "Tasks that execute a campaign — the ICRCampaignTask profile"
+* select[0].column[0].name = "task_id"
+* select[0].column[0].path = "getResourceKey()"
+* select[0].column[0].type = "id"
+* select[0].column[0].description = "Join key to IcrCampaignTask"
+* select[0].column[1].name = "campaign_id"
+* select[0].column[1].path = "basedOn.first().getReferenceKey(CarePlan)"
+* select[0].column[1].type = "string"
+* select[0].column[2].name = "location_id"
+* select[0].column[2].path = "location.getReferenceKey(Location)"
+* select[0].column[2].type = "string"
+* select[0].column[2].description = "Where the work happened — join key to the location registry"
+* select[0].column[3].name = "for_group_id"
+* select[0].column[3].path = "for.getReferenceKey(Group)"
+* select[0].column[3].type = "string"
+* select[0].column[4].name = "for_location_id"
+* select[0].column[4].path = "for.getReferenceKey(Location)"
+* select[0].column[4].type = "string"
+* select[0].column[5].name = "status"
+* select[0].column[5].path = "status"
+* select[0].column[5].type = "code"
+* select[0].column[6].name = "lineage"
+* select[0].column[6].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/data-lineage').value.ofType(code)"
+* select[0].column[6].type = "code"
+* select[0].column[7].name = "execution_start"
+* select[0].column[7].path = "executionPeriod.start"
+* select[0].column[7].type = "dateTime"
+// Tallies that name their activity
+* select[1].unionAll[0].forEach = "output.where(type.coding.code = 'treated-count' and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').exists())"
+* select[1].unionAll[0].column[0].name = "activity"
+* select[1].unionAll[0].column[0].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)"
+* select[1].unionAll[0].column[0].type = "canonical"
+* select[1].unionAll[0].column[0].description = "The activity this tally is for: the output's campaign-activity, else the Task's instantiatesCanonical"
+* select[1].unionAll[0].column[1].name = "activity_from"
+* select[1].unionAll[0].column[1].path = "'output'"
+* select[1].unionAll[0].column[1].type = "code"
+* select[1].unionAll[0].column[1].description = "output (the tally's campaign-activity) | task (Task.instantiatesCanonical)"
+* select[1].unionAll[0].column[2].name = "treated_count"
+* select[1].unionAll[0].column[2].path = "value.ofType(unsignedInt)"
+* select[1].unionAll[0].column[2].type = "unsignedInt"
+* select[1].unionAll[0].column[2].description = "People treated or vaccinated at the visit for this activity"
+// Tallies that name none: the activity is the Task's
+* select[1].unionAll[1].column[0].name = "activity"
+* select[1].unionAll[1].column[0].path = "instantiatesCanonical"
+* select[1].unionAll[1].column[0].type = "canonical"
+* select[1].unionAll[1].column[1].name = "activity_from"
+* select[1].unionAll[1].column[1].path = "'task'"
+* select[1].unionAll[1].column[1].type = "code"
+* select[1].unionAll[1].select[0].forEach = "output.where(type.coding.code = 'treated-count' and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty())"
+* select[1].unionAll[1].select[0].column[0].name = "treated_count"
+* select[1].unionAll[1].select[0].column[0].path = "value.ofType(unsignedInt)"
+* select[1].unionAll[1].select[0].column[0].type = "unsignedInt"
+
 Instance: IcrCoverage
 InstanceOf: $ViewDefinition
 Usage: #definition
 Title: "ICR coverage reports"
 Description: """
-One row per coverage report (MeasureReport): the **results** — people reached
-and coverage, whether from administrative tallies (`source = administrative`),
-a post-campaign survey (`survey`) or LQAS (`lqas`), and whether preliminary
-(`lineage = realtime`) or final (`reconciled`). Joined to the campaign
-calendar on `campaign_id` this gives people reached and coverage per round;
-grouping by `campaign_id` and `source` puts administrative and survey figures
-side by side. Strata (sex, age band, delivery strategy, disposition,
-geography) are in the companion view `IcrCoverageStrata`.
+One row per coverage report (MeasureReport) × result group: the **results** —
+the number reached and coverage, whether from administrative tallies
+(`source = administrative`), a post-campaign survey (`survey`) or LQAS (`lqas`),
+and whether preliminary (`lineage = realtime`) or final (`reconciled`). What
+is counted depends on the Measure: people for the person Measures, households
+for `icr-household-coverage`, implementation units for geographic coverage and
+readiness. Most coverage Measures have one group (`group_code` empty);
+`icr-household-coverage` has two, `distribution` and `registration`, so its
+reports give two rows, keyed by `report_id` + `group_code`. Joined to the
+campaign calendar on `campaign_id` this gives reach and coverage per round;
+grouping by `campaign_id`, `measure` and `source` puts administrative and
+survey figures side by side. Strata (sex, age band, delivery strategy,
+disposition, geography) are in the companion view `IcrCoverageStrata`, keyed
+the same way.
 """
 * url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage"
 * name = "IcrCoverage"
@@ -374,43 +461,55 @@ geography) are in the companion view `IcrCoverageStrata`.
 * select[0].column[10].name = "reported"
 * select[0].column[10].path = "date"
 * select[0].column[10].type = "dateTime"
-* select[0].column[11].name = "numerator"
-* select[0].column[11].path = "group.first().population.where(code.coding.code = 'numerator').first().count"
-* select[0].column[11].type = "integer"
-* select[0].column[11].description = "People reached (administrative) or sampled and covered (survey / LQAS)"
-* select[0].column[12].name = "denominator"
-* select[0].column[12].path = "group.first().population.where(code.coding.code = 'denominator').first().count"
-* select[0].column[12].type = "integer"
-* select[0].column[12].description = "Planning denominator (administrative) or sample size (survey / LQAS)"
-* select[0].column[13].name = "score"
-* select[0].column[13].path = "group.first().measureScore.value"
-* select[0].column[13].type = "decimal"
-* select[0].column[13].description = "Coverage as a proportion 0–1 (the ICR coverage Measures are proportion-scored; multiply by 100 for percent)"
-* select[0].column[14].name = "ci_low"
-* select[0].column[14].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('low').value.ofType(decimal)"
-* select[0].column[14].type = "decimal"
-* select[0].column[15].name = "ci_high"
-* select[0].column[15].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('high').value.ofType(decimal)"
-* select[0].column[15].type = "decimal"
-* select[0].column[16].name = "sample_design"
-* select[0].column[16].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/sample-design').value.ofType(string)"
-* select[0].column[16].type = "string"
-* select[0].column[17].name = "reporter"
-* select[0].column[17].path = "reporter.display"
-* select[0].column[17].type = "string"
-* select[0].column[18].name = "activity"
-* select[0].column[18].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)"
-* select[0].column[18].type = "canonical"
-* select[0].column[18].description = "In an integrated campaign, the activity this report covers — join with campaign_id to IcrCampaignActivity for that activity's target. Empty for a single-intervention campaign"
+* select[0].column[11].name = "ci_low"
+* select[0].column[11].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('low').value.ofType(decimal)"
+* select[0].column[11].type = "decimal"
+* select[0].column[12].name = "ci_high"
+* select[0].column[12].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/confidence-interval').extension('high').value.ofType(decimal)"
+* select[0].column[12].type = "decimal"
+* select[0].column[13].name = "sample_design"
+* select[0].column[13].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/sample-design').value.ofType(string)"
+* select[0].column[13].type = "string"
+* select[0].column[14].name = "reporter"
+* select[0].column[14].path = "reporter.display"
+* select[0].column[14].type = "string"
+* select[0].column[15].name = "activity"
+* select[0].column[15].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)"
+* select[0].column[15].type = "canonical"
+* select[0].column[15].description = "In an integrated campaign, the activity this report covers — join with campaign_id to IcrCampaignActivity for that activity's target. Empty for a single-intervention campaign"
+// One row per result group; a report with no group keeps one row with empty results
+* select[1].forEachOrNull = "group"
+* select[1].column[0].name = "group_code"
+* select[1].column[0].path = "code.coding.first().code"
+* select[1].column[0].type = "code"
+* select[1].column[0].description = "Which result of the Measure this row is (ICRCoverageGroupCS: distribution | registration for icr-household-coverage); empty for a single-group Measure. With report_id, the key of the row"
+* select[1].column[1].name = "group_label"
+* select[1].column[1].path = "code.coding.first().display"
+* select[1].column[1].type = "string"
+* select[1].column[2].name = "numerator"
+* select[1].column[2].path = "population.where(code.coding.code = 'numerator').first().count"
+* select[1].column[2].type = "integer"
+* select[1].column[2].description = "The number reached, in the Measure's unit: people (administrative person Measures), households (icr-household-coverage: households served or registered), implementation units (geographic coverage, readiness), or sampled and covered (survey / LQAS)"
+* select[1].column[3].name = "denominator"
+* select[1].column[3].path = "population.where(code.coding.code = 'denominator').first().count"
+* select[1].column[3].type = "integer"
+* select[1].column[3].description = "The number targeted, in the same unit: the planning denominator (administrative; households for icr-household-coverage) or the sample size (survey / LQAS)"
+* select[1].column[4].name = "score"
+* select[1].column[4].path = "measureScore.value"
+* select[1].column[4].type = "decimal"
+* select[1].column[4].description = "Coverage as a proportion 0–1 (the ICR coverage Measures are proportion-scored; multiply by 100 for percent)"
 
 Instance: IcrCoverageStrata
 InstanceOf: $ViewDefinition
 Usage: #definition
 Title: "ICR coverage strata"
 Description: """
-One row per stratum of a coverage report: the disaggregations (sex, age band,
-delivery strategy, disposition, geography) declared by the ICR coverage
-Measures. Join to `IcrCoverage` on `report_id`.
+One row per stratum of each result group of a coverage report: the
+disaggregations (sex, age band, delivery strategy, disposition, geography)
+declared by the ICR coverage Measures. Counts are in the Measure's unit
+(people, households for `icr-household-coverage`, implementation units). Join
+to `IcrCoverage` on `report_id` + `group_code` (`group_code` is empty for a
+single-group Measure).
 """
 * url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverageStrata"
 * name = "IcrCoverageStrata"
@@ -425,24 +524,29 @@ Measures. Join to `IcrCoverage` on `report_id`.
 * select[0].column[1].name = "campaign_id"
 * select[0].column[1].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)"
 * select[0].column[1].type = "string"
-* select[1].forEach = "group.first().stratifier"
-* select[1].column[0].name = "stratifier"
+* select[1].forEach = "group"
+* select[1].column[0].name = "group_code"
 * select[1].column[0].path = "code.coding.first().code"
 * select[1].column[0].type = "code"
-* select[1].column[0].description = "sex | age-band | delivery-strategy | disposition | geography | dose-history"
-* select[1].select[0].forEach = "stratum"
-* select[1].select[0].column[0].name = "stratum"
-* select[1].select[0].column[0].path = "value.text"
-* select[1].select[0].column[0].type = "string"
-* select[1].select[0].column[1].name = "numerator"
-* select[1].select[0].column[1].path = "population.where(code.coding.code = 'numerator').first().count"
-* select[1].select[0].column[1].type = "integer"
-* select[1].select[0].column[2].name = "denominator"
-* select[1].select[0].column[2].path = "population.where(code.coding.code = 'denominator').first().count"
-* select[1].select[0].column[2].type = "integer"
-* select[1].select[0].column[3].name = "score"
-* select[1].select[0].column[3].path = "measureScore.value"
-* select[1].select[0].column[3].type = "decimal"
+* select[1].column[0].description = "The result group the stratum belongs to (ICRCoverageGroupCS: distribution | registration); empty for a single-group Measure. Join to IcrCoverage on report_id + group_code"
+* select[1].select[0].forEach = "stratifier"
+* select[1].select[0].column[0].name = "stratifier"
+* select[1].select[0].column[0].path = "code.coding.first().code"
+* select[1].select[0].column[0].type = "code"
+* select[1].select[0].column[0].description = "sex | age-band | delivery-strategy | disposition | geography | dose-history"
+* select[1].select[0].select[0].forEach = "stratum"
+* select[1].select[0].select[0].column[0].name = "stratum"
+* select[1].select[0].select[0].column[0].path = "value.text"
+* select[1].select[0].select[0].column[0].type = "string"
+* select[1].select[0].select[0].column[1].name = "numerator"
+* select[1].select[0].select[0].column[1].path = "population.where(code.coding.code = 'numerator').first().count"
+* select[1].select[0].select[0].column[1].type = "integer"
+* select[1].select[0].select[0].column[2].name = "denominator"
+* select[1].select[0].select[0].column[2].path = "population.where(code.coding.code = 'denominator').first().count"
+* select[1].select[0].select[0].column[2].type = "integer"
+* select[1].select[0].select[0].column[3].name = "score"
+* select[1].select[0].select[0].column[3].path = "measureScore.value"
+* select[1].select[0].select[0].column[3].type = "decimal"
 
 Instance: IcrLocationStatus
 InstanceOf: $ViewDefinition

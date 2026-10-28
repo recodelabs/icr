@@ -132,7 +132,7 @@ Usage: #definition
 * title = "ICR Household Coverage"
 * description = "Households reached ÷ households targeted, in two groups: distribution coverage (households that received the activity's product) and registration coverage (households registered into the round). The denominator is the activity's planning denominator, an ICRTargetPopulation with unit-of-count = household. Placeholder CQL pending executable logic."
 * scoring = $MeasureScoring#proportion "Proportion"
-* group[0].code.text = "Distribution coverage"
+* group[0].code = $CoverageGroup#distribution "Distribution coverage"
 * group[0].description = "Households that received the activity's product in the round ÷ households targeted"
 * group[0].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group[0].population[0].criteria.language = #text/cql
@@ -143,7 +143,7 @@ Usage: #definition
 * group[0].stratifier[0].code = $CoverageStratifier#geography "Geography"
 * group[0].stratifier[0].criteria.language = #text/cql
 * group[0].stratifier[0].criteria.expression = "The household's residence (group-location), by admin level"
-* group[1].code.text = "Registration coverage"
+* group[1].code = $CoverageGroup#registration "Registration coverage"
 * group[1].description = "Households registered into the round ÷ households targeted"
 * group[1].population[0].code = $MeasurePopulation#numerator "Numerator"
 * group[1].population[0].criteria.language = #text/cql

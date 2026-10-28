@@ -624,6 +624,15 @@ Description: "Observation and component codes for a physical stock count at a fa
 * #stock-count "Physical stock count" "The quantity of one product physically counted at a place on a date (ICRStockCount.code, fixed)."
 * #expected-stock-balance "Expected stock balance" "The balance the stock record says should be there at the time of the count (ICRStockCount.component[expected])."
 
+CodeSystem: ICRCoverageGroupCS
+Id: icr-coverage-group-cs
+Title: "ICR Coverage Group"
+Description: "Codes that identify the groups of a coverage Measure with more than one group, and the matching MeasureReport.group, so each group's result has a stable key (the coverage views' group_code). A single-group coverage Measure leaves its group uncoded."
+* ^caseSensitive = true
+* ^experimental = false
+* #distribution "Distribution coverage" "icr-household-coverage: households that received the activity's product ÷ households targeted."
+* #registration "Registration coverage" "icr-household-coverage: households registered into the round ÷ households targeted."
+
 CodeSystem: ICRIdentifierTypeCS
 Id: icr-identifier-type-cs
 Title: "ICR Identifier Type"

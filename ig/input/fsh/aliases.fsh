@@ -94,4 +94,5 @@ Alias: $ReferralCategory = https://icr.healthcampaigns.org/CodeSystem/icr-referr
 Alias: $CountUnit = https://icr.healthcampaigns.org/CodeSystem/icr-count-unit-cs
 Alias: $ResourceType = https://icr.healthcampaigns.org/CodeSystem/icr-resource-type-cs
 Alias: $StockObservation = https://icr.healthcampaigns.org/CodeSystem/icr-stock-observation-cs
+Alias: $CoverageGroup = https://icr.healthcampaigns.org/CodeSystem/icr-coverage-group-cs
 Alias: $IdentifierType = https://icr.healthcampaigns.org/CodeSystem/icr-identifier-type-cs
