@@ -148,7 +148,9 @@ and `is_planning`. `denominator_type` separates an all-ages figure
 eligible subset (`at-risk`); `is_calculated` marks a rollup or interpolation
 rather than an independently sourced count. Two total-population rows for the
 same `location_id` and `estimate_date` from different `source`s are the
-comparison the Campaign Targeting dashboard draws.
+comparison the Campaign Targeting dashboard draws. `unit` says what `quantity`
+counts: null or `person` for people, `household` or `structure` for household
+and IRS targets, which must not be summed with person counts.
 """
 * url = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
 * name = "IcrTargetPopulation"
@@ -203,6 +205,10 @@ comparison the Campaign Targeting dashboard draws.
 * select[0].column[12].path = "characteristic.where(code.coding.code = 'travel-time').first().value.ofType(CodeableConcept).coding.first().code"
 * select[0].column[12].type = "code"
 * select[0].column[12].description = "Accessibility stratum of the estimate (walk-lt-1h | walk-1h-4h | walk-gt-4h | drive-…); null for an all-of-the-geography figure"
+* select[0].column[13].name = "unit"
+* select[0].column[13].path = "modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value.ofType(code)"
+* select[0].column[13].type = "code"
+* select[0].column[13].description = "What quantity counts: person | household | structure (unit-of-count). Null means person"
 
 Instance: IcrCampaignTask
 InstanceOf: $ViewDefinition
