@@ -1,0 +1,23 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/UgandaTargets"
+name = "UgandaTargets"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "Uganda ICHD targets"
+description = """
+One row per campaign, activity and target Group: the campaign's status and place (name, admin
+level and region), the activity key and status, and the target Group's code, display, count and
+age band.
+"""
+
+[[depends_on]]
+label = "activity"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignActivity"
+
+[[depends_on]]
+label = "calendar"
+resource = "https://icr.healthcampaigns.org/uganda/Library/IcrCampaignCalendarByArea"
+
+[[depends_on]]
+label = "target_population"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"

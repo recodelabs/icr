@@ -3,7 +3,7 @@
 # the uga/ folder of the `icr` R2 bucket. See README.md.
 #
 #   ./warehouse.sh            refresh: locations, the IG's views (campaigns, targets, tasks…),
-#                             admin tiles, Portolan catalog of the locations
+#                             the dashboards' Libraries (uganda_tasks…), admin tiles, Portolan catalog of the locations
 #   ./warehouse.sh --push     and upload it
 #
 # In R2, uga/ holds the whole warehouse; the SDI (https://sdi.healthcampaigns.org/uga/) serves only
@@ -17,7 +17,10 @@ set -a; . "${KEY_FILE:-$HOME/.config/icr/uga-matt.env}"; set +a
 export FHIR_PIPES_CLIENT_ID="$FHIR_CLIENT_ID" FHIR_PIPES_CLIENT_SECRET="$FHIR_CLIENT_SECRET"
 export DUCKDB_AGENT_MODE=0   # keep DuckDB 2.0's agent banner out of fhir-pipes' output
 
-fhir-pipes refresh --config fhir-pipes.toml --only locations,views,tiles,hooks
+# The dashboards' Libraries (SQL in dashboards/sites/uganda/analytics/) as Library JSON, which the
+# libraries step runs over the view tables and location_hierarchy.
+fhir-pipes libraries build ../../dashboards/sites/uganda/analytics --out ../../dashboards/sites/uganda/analytics/build
+fhir-pipes refresh --config fhir-pipes.toml --only locations,views,libraries,tiles,hooks
 # The catalog hook writes the collection's README; this is the root's, from warehouse/.portolan/.
 (cd warehouse && portolan readme . --no-recursive >/dev/null)
 
