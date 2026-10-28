@@ -80,3 +80,18 @@ Alias: $CostAllocationBasis = https://icr.healthcampaigns.org/CodeSystem/icr-cos
 Alias: $FundingSource = https://icr.healthcampaigns.org/CodeSystem/icr-funding-source-cs
 Alias: $CostComponent = https://icr.healthcampaigns.org/CodeSystem/icr-cost-component-cs
 Alias: $CostFigure = https://icr.healthcampaigns.org/CodeSystem/icr-cost-figure-cs
+
+// --- DIGIT-mapping additions (project/ig-gaps-from-digit.md) ---
+// HL7 v3 terminology (THO), used by the relationship-to-head value set
+Alias: $V3RoleCode = http://terminology.hl7.org/CodeSystem/v3-RoleCode
+Alias: $V3NullFlavor = http://terminology.hl7.org/CodeSystem/v3-NullFlavor
+// SNOMED CT: the target of the referral-reason ConceptMap only; ICR data carries ICR codes
+Alias: $SCT = http://snomed.info/sct
+Alias: $MeasurePopulationVS = http://hl7.org/fhir/ValueSet/measure-population
+Alias: $HouseholdRelationship = https://icr.healthcampaigns.org/CodeSystem/icr-household-relationship-cs
+Alias: $ReferralReason = https://icr.healthcampaigns.org/CodeSystem/icr-referral-reason-cs
+Alias: $ReferralCategory = https://icr.healthcampaigns.org/CodeSystem/icr-referral-category-cs
+Alias: $CountUnit = https://icr.healthcampaigns.org/CodeSystem/icr-count-unit-cs
+Alias: $ResourceType = https://icr.healthcampaigns.org/CodeSystem/icr-resource-type-cs
+Alias: $StockObservation = https://icr.healthcampaigns.org/CodeSystem/icr-stock-observation-cs
+Alias: $IdentifierType = https://icr.healthcampaigns.org/CodeSystem/icr-identifier-type-cs

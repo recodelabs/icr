@@ -546,6 +546,87 @@ Description: "The standard axes of what a campaign visit produced — the coded 
 * #revisit-outcome "Revisit outcome" "Outcome of a person-targeted follow-up revisit: already-vaccinated | vaccinated-on-revisit | still-missing."
 * #delivery-event "Delivery event reference" "Reference to an Immunization / MedicationAdministration / supply event captured inside the visit workflow."
 * #coverage-report "Coverage report reference" "Reference to the stratified MeasureReport that disaggregates this visit's tally."
+* #referred-count "Persons referred" "Number of people referred at this visit (each referral is an ICRReferral), so visit tallies need not count ServiceRequests and count-only capture can still report referrals."
+* #registered-count "Persons registered" "Number of people registered into the campaign at this visit — on a separate registration visit or during a delivery visit alike."
+* #registered-household "Household registered" "A household (ICRDeliveryUnit) registered into the campaign at this visit: on a household visit the Task's own household, on a site session each household registered there. A household can be registered without any new person being registered. Households registered in a round = the distinct registered-household references."
+* #voucher "Voucher issued" "The voucher or QR code issued at registration, as an Identifier with one system per campaign round. The distribution that redeems it carries the same system and value as an identifier of type voucher."
+* #entitlement "Entitlement" "What the registered household is due, as a Quantity (for example 3 LLINs)."
+
+// --- DIGIT-mapping additions (project/ig-gaps-from-digit.md) -------------------
+
+CodeSystem: ICRHouseholdRelationshipCS
+Id: icr-household-relationship-cs
+Title: "ICR Household Relationship"
+Description: "The three household-roster codes HL7 v3 RoleCode does not provide: the household's reference head, any other head (co-head), and a member not related to the reference head. Used with v3 RoleCode in ICRRelationshipToHeadVS (relationship-to-head extension on ICRDeliveryUnit.member)."
+* ^caseSensitive = true
+* ^experimental = false
+* #head "Head (reference person)" "The household's reference head: the one member every other member's relationship code is relative to. At most one active member per household (icr-du-one-head)."
+* #co-head "Co-head" "Another head of the household beside the reference head. The co-head's own relationship to the reference head is not recorded in this version."
+* #non-relative "Not related" "A household member not related to the reference head (lodger, domestic worker, unrelated dependant)."
+
+CodeSystem: ICRReferralReasonCS
+Id: icr-referral-reason-cs
+Title: "ICR Referral Reason"
+Description: "Why a campaign worker referred a person to a facility (ICRReferral.reasonCode). ICR-defined codes with a published map to SNOMED CT (ConceptMap icr-referral-reason-to-snomed), following the WHO SMART Guidelines pattern of IG-defined concepts mapped to international terminologies, which keeps SNOMED licensing out of the data."
+* ^caseSensitive = true
+* ^experimental = false
+* #vaccine-adverse-event "Adverse event after a vaccine" "An adverse event following a campaign vaccine dose, causality not assessed (ICRAdverseEvent keeps causality separate)."
+* #drug-adverse-event "Adverse event after a drug" "An adverse event following an MDA or chemoprevention drug, causality not assessed."
+* #fever "Fever" "Fever found at the campaign contact."
+* #suspected-malaria "Suspected malaria" "Suspected malaria found at the campaign contact (for example during SMC)."
+* #acute-malnutrition "Acute malnutrition" "Acute malnutrition, for example a red MUAC measurement; the severity comes from the measurement."
+* #zero-dose-to-routine "Zero-dose child, to routine immunization" "A zero-dose child referred to routine immunization services."
+* #illness "Excluded for illness" "Illness found at the campaign contact that excluded the person from the intervention."
+* #pregnancy "Pregnancy" "A pregnant woman excluded from MDA and referred to antenatal care."
+* #other "Other" "Another reason; record it in text."
+
+CodeSystem: ICRReferralCategoryCS
+Id: icr-referral-category-cs
+Title: "ICR Referral Category"
+Description: "The category that marks a ServiceRequest as a referral made during campaign work (ICRReferral.category, fixed)."
+* ^caseSensitive = true
+* ^experimental = false
+* #campaign-referral "Campaign referral" "A referral of a person from campaign work (a household visit, site session or follow-up) to a facility or provider."
+
+CodeSystem: ICRCountUnitCS
+Id: icr-count-unit-cs
+Title: "ICR Count Unit"
+Description: "What a target-population count counts (unit-of-count modifier extension on ICRTargetPopulation). Group.quantity counts members of Group.type, and R4 Group.type has no household value, so the unit is carried by a modifier extension. Absent means person."
+* ^caseSensitive = true
+* ^experimental = false
+* #person "Person" "The count is a number of people (the default when unit-of-count is absent)."
+* #household "Household" "The count is a number of households (ITN campaigns, household registration)."
+* #structure "Structure" "The count is a number of structures (IRS)."
+
+CodeSystem: ICRResourceTypeCS
+Id: icr-resource-type-cs
+Title: "ICR Resource Type"
+Description: "The kind of resource a microplan estimates per area (ICRResourceEstimate.code). First version, from the DIGIT microplan."
+* ^caseSensitive = true
+* ^experimental = false
+* #commodity "Commodity" "A quantity of a product (nets, tablets, doses); the product is named in the supplied-item extension."
+* #teams "Teams" "Number of delivery teams."
+* #team-days "Team-days" "Number of team working days."
+* #supervisors "Supervisors" "Number of supervisors."
+* #vehicles "Vehicles" "Number of vehicles."
+* #cold-chain-equipment "Cold-chain equipment" "Number of vaccine carriers, cold boxes and similar cold-chain items."
+
+CodeSystem: ICRStockObservationCS
+Id: icr-stock-observation-cs
+Title: "ICR Stock Observation Code"
+Description: "Observation and component codes for a physical stock count at a facility, warehouse or staging post (ICRStockCount)."
+* ^caseSensitive = true
+* ^experimental = false
+* #stock-count "Physical stock count" "The quantity of one product physically counted at a place on a date (ICRStockCount.code, fixed)."
+* #expected-stock-balance "Expected stock balance" "The balance the stock record says should be there at the time of the count (ICRStockCount.component[expected])."
+
+CodeSystem: ICRIdentifierTypeCS
+Id: icr-identifier-type-cs
+Title: "ICR Identifier Type"
+Description: "Identifier.type codes for ICR-specific identifiers."
+* ^caseSensitive = true
+* ^experimental = false
+* #voucher "Voucher" "A registration voucher or QR code issued to a household, carried on the distribution that redeems it. Same system and value as the register Task's voucher output, so issued vs redeemed is a match on (system, value)."
 
 // --- cost-v1: campaign cost -----------------------------------------------------
 // The cost axis the field-evidence review flagged (§13.2 "campaign-cost axes").
