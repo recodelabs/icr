@@ -10,16 +10,25 @@
 // visit-level result (the tally) and may additionally reference events captured
 // inside the visit workflow.
 
+// Per-person outcomes (project/ig-gaps-from-digit.md): an eligible person not given
+// a vaccine or drug gets a not-done event, and the event says why.
+Invariant: icr-not-done-reason
+Description: "A not-done vaccine or drug event records why it was not given (statusReason)."
+Severity: #error
+Expression: "status = 'not-done' implies statusReason.exists()"
+
 Profile: ICRImmunizationEvent
 Parent: Immunization
 Id: ICRImmunizationEvent
 Title: "ICR Immunization Event"
 Description: "A vaccination delivery event: CVX-coded, with lot accountability and the required campaign-vs-routine record origin."
 * ^experimental = false
+* obeys icr-not-done-reason
 * status MS
 * status ^short = "completed | not-done — an eligible person not vaccinated at the visit gets a not-done event with statusReason; not-done events never count in a coverage numerator"
 * statusReason MS
-* statusReason ^short = "Why the dose was not given (status = not-done): a code from ICRMissedReasonVS, ICRNoncomplianceReasonVS or ICRExclusionReasonVS"
+* statusReason from ICRNotDoneReasonVS (extensible)
+* statusReason ^short = "Why the dose was not given: missed, refused or excluded (ICRNotDoneReasonVS). Required when status = not-done (icr-not-done-reason)"
 * vaccineCode MS
 * vaccineCode from $VaccineCodeVS (extensible)
 * vaccineCode ^short = "CVX-coded; local codes map back via ConceptMap (working doc §8)"
@@ -48,10 +57,12 @@ Id: ICRMedicationAdministration
 Title: "ICR Medication Administration"
 Description: "An MDA treatment event: ATC-coded preventive chemotherapy with directly-observed consumption, dosage derived from a dose-pole height Observation, and the required record origin."
 * ^experimental = false
+* obeys icr-not-done-reason
 * status MS
 * status ^short = "completed | not-done — an eligible person not treated at the visit gets a not-done event with statusReason; not-done events never count in a coverage numerator"
 * statusReason MS
-* statusReason ^short = "Why the drug was not given (status = not-done): a code from ICRMissedReasonVS, ICRNoncomplianceReasonVS or ICRExclusionReasonVS"
+* statusReason from ICRNotDoneReasonVS (extensible)
+* statusReason ^short = "Why the drug was not given: missed, refused or excluded (ICRNotDoneReasonVS). Required when status = not-done (icr-not-done-reason)"
 * medication[x] only CodeableConcept
 * medicationCodeableConcept from ICRMDAMedicationVS (extensible)
 * medicationCodeableConcept ^short = "WHO ATC-coded (albendazole, ivermectin, praziquantel, azithromycin…)"

@@ -353,6 +353,15 @@ Description: "How a household member relates to the household's reference head â
 * $V3RoleCode#FAMMEMB "family member"
 * $V3NullFlavor#UNK "unknown"
 
+ValueSet: ICRNotDoneReasonVS
+Id: icr-not-done-reason
+Title: "ICR Not-done Reason"
+Description: "Why an eligible person was not given a vaccine or drug at a campaign contact: missed (ICRMissedReasonVS), refused (ICRNoncomplianceReasonVS) or excluded (ICRExclusionReasonVS). Binding: extensible on statusReason of ICRImmunizationEvent and ICRMedicationAdministration."
+* ^experimental = false
+* include codes from valueset ICRMissedReasonVS
+* include codes from valueset ICRNoncomplianceReasonVS
+* include codes from valueset ICRExclusionReasonVS
+
 ValueSet: ICRReferralReasonVS
 Id: icr-referral-reason
 Title: "ICR Referral Reason"

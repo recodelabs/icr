@@ -108,11 +108,13 @@ Expression: "extension('https://icr.healthcampaigns.org/StructureDefinition/deli
 
 // Per-activity tallies (project/ig-gaps-from-digit.md, per-person outcomes). R4
 // Task.instantiatesCanonical is 0..1, so a visit that delivers several activities
-// is a Task without it, and its treated-count repeats, one per activity.
+// is a Task without it, and its treated-count repeats, one per activity. Without
+// instantiatesCanonical the Task does not say which activity a tally is for, so
+// every tally names it, a single tally included.
 Invariant: icr-task-treated-per-activity
-Description: "treated-count: when there is more than one entry, each names its activity (campaign-activity) and no activity appears twice; a Task with instantiatesCanonical has at most one entry, without campaign-activity."
+Description: "treated-count: on a Task without instantiatesCanonical every entry names its activity (campaign-activity) and no activity appears twice; a Task with instantiatesCanonical has at most one entry, without campaign-activity."
 Severity: #error
-Expression: "(output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).count() > 1 implies output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).all(extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').exists())) and output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.isDistinct() and (instantiatesCanonical.exists() implies output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty())"
+Expression: "(instantiatesCanonical.empty() implies output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).all(extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').exists())) and (instantiatesCanonical.exists() implies (output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).count() <= 1 and output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty())) and output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.isDistinct()"
 
 Profile: ICRCampaignTask
 Parent: Task
@@ -192,9 +194,9 @@ Description: "The assignable, trackable operational unit of work — one Task pe
     entitlement 0..1
 * output[treatedCount].type = $TaskOutputType#treated-count
 * output[treatedCount].value[x] only unsignedInt
-* output[treatedCount] ^short = "People treated or vaccinated at the visit. On a visit that delivers several activities (a Task without instantiatesCanonical), one entry per activity, each naming it in extension[campaignActivity]; otherwise a single entry without it (icr-task-treated-per-activity)"
+* output[treatedCount] ^short = "People treated or vaccinated at the visit. On a Task without instantiatesCanonical (a visit that delivers several activities), one entry per activity, each naming it in extension[campaignActivity], even when only one activity has a tally; on a Task with instantiatesCanonical, a single entry without it (icr-task-treated-per-activity)"
 * output[treatedCount].extension contains CampaignActivity named campaignActivity 0..1 MS
-* output[treatedCount].extension[campaignActivity] ^short = "The activity this tally is for, on a visit that delivers several activities"
+* output[treatedCount].extension[campaignActivity] ^short = "The activity this tally is for; required when the Task has no instantiatesCanonical"
 * output[housesVisited].type = $TaskOutputType#houses-visited
 * output[housesVisited].value[x] only unsignedInt
 * output[housesVisited] ^short = "(house-to-house, area/team-day granularity) Houses visited"
@@ -234,7 +236,11 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * output[registeredHousehold] ^short = "Each household registered into the campaign at this visit: the for household on a household visit, every household registered there on a site session. Households registered = distinct references in the round"
 * output[voucher].type = $TaskOutputType#voucher
 * output[voucher].value[x] only Identifier
-* output[voucher] ^short = "The voucher or QR code issued, with one system per campaign round; the redeeming ICRSupplyDistribution carries the same system and value as an identifier of type voucher"
+* output[voucher].valueIdentifier.system 1..1 MS
+* output[voucher].valueIdentifier.system ^short = "The campaign round's voucher namespace: the same system the redeeming ICRSupplyDistribution uses in identifier[voucher]"
+* output[voucher].valueIdentifier.value 1..1 MS
+* output[voucher].valueIdentifier.value ^short = "The voucher or QR code, as printed; the redeeming distribution carries the same value"
+* output[voucher] ^short = "The voucher or QR code issued, with one system per campaign round; the redeeming ICRSupplyDistribution carries the same system and value as an identifier of type voucher, so issued vs redeemed is a match on (system, value)"
 * output[entitlement].type = $TaskOutputType#entitlement
 * output[entitlement].value[x] only Quantity
 * output[entitlement] ^short = "What the household is due, for example 3 LLINs"

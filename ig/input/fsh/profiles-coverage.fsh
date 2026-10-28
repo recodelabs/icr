@@ -4,14 +4,23 @@
 // behind these reports align with the reporting minimums ministries already owe
 // (WHO JAP, ICG M&E minimum dataset, ESPEN treatment-coverage schema, WHO EPI).
 
-// Coverage reports name their denominator (project/ig-gaps-from-digit.md §3). The
-// person coverage Measures are icr-admin-coverage, icr-mda-treatment-coverage and
-// icr-zero-dose-coverage. resolve() needs the denominator Groups to be available to
-// the validator (in the same Bundle or on the server).
-Invariant: icr-coverage-denominator-unit
-Description: "On an icr-household-coverage report every denominator Group has unit-of-count = household; on a person coverage report (icr-admin-coverage, icr-mda-treatment-coverage, icr-zero-dose-coverage) no denominator Group has a unit other than person."
+// Coverage reports name their denominator (project/ig-gaps-from-digit.md §3). This
+// applies to the Measures whose denominator is a target population:
+// icr-household-coverage (households) and icr-admin-coverage and
+// icr-mda-treatment-coverage (people). Other coverage Measures divide by a count
+// that is not a target population (people reached, survey sample, units
+// targeted). Each marked reference must resolve before its unit is tested: a
+// reference the validator cannot resolve fails the unit check rather than passing
+// unseen (R4 resolve() drops unresolved items), hence warning severity.
+Invariant: icr-coverage-denominator-named
+Description: "A report for icr-household-coverage, icr-admin-coverage or icr-mda-treatment-coverage that reports a denominator count names the target population(s) it divided by in evaluatedResource, marked evaluated-role = denominator."
 Severity: #warning
-Expression: "(measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-household-coverage') implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').resolve().all(modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value = 'household')) and ((measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-admin-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-zero-dose-coverage')) implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').resolve().all(modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').empty() or modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value = 'person'))"
+Expression: "((measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-household-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-admin-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage')) and group.population.where(code.coding.where(code = 'denominator').exists() and count.exists()).exists()) implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').exists()"
+
+Invariant: icr-coverage-denominator-unit
+Description: "Every marked denominator resolves to a Group, and on an icr-household-coverage report has unit-of-count = household; on an icr-admin-coverage or icr-mda-treatment-coverage report it has no unit other than person. A denominator the validator cannot resolve fails this check."
+Severity: #warning
+Expression: "(measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-household-coverage') implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').all(resolve().exists() and resolve().modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value = 'household')) and ((measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-admin-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage')) implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').all(resolve().exists() and (resolve().modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').empty() or resolve().modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value = 'person')))"
 
 Profile: ICRAdministrativeCoverage
 Parent: MeasureReport
@@ -19,7 +28,7 @@ Id: ICRAdministrativeCoverage
 Title: "ICR Administrative Coverage"
 Description: "Administrative coverage: doses/treatments delivered ÷ planning denominator, computed from tallies. Carries denominator provenance and is permanently marked source=administrative. Names the ICRTargetPopulation(s) it divided by in evaluatedResource[denominator]."
 * ^experimental = false
-* obeys icr-coverage-denominator-unit
+* obeys icr-coverage-denominator-named and icr-coverage-denominator-unit
 * status MS
 * type MS
 * measure MS
@@ -37,7 +46,7 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * evaluatedResource ^slicing.rules = #open
 * evaluatedResource contains denominator 0..* MS
 * evaluatedResource[denominator] only Reference(ICRTargetPopulation)
-* evaluatedResource[denominator] ^short = "The ICRTargetPopulation(s) this report divided by, marked evaluated-role = denominator. On an icr-household-coverage report each has unit-of-count = household; on a person coverage report none has a non-person unit (icr-coverage-denominator-unit)"
+* evaluatedResource[denominator] ^short = "The ICRTargetPopulation(s) this report divided by, marked evaluated-role = denominator. Expected whenever an icr-household-coverage, icr-admin-coverage or icr-mda-treatment-coverage report gives a denominator count (icr-coverage-denominator-named). Each must resolve; on icr-household-coverage each has unit-of-count = household, on the person Measures none has a non-person unit (icr-coverage-denominator-unit)"
 * evaluatedResource[denominator].extension contains EvaluatedRole named evaluatedRole 1..1 MS
 * evaluatedResource[denominator].extension[evaluatedRole].valueCode = #denominator
 * extension contains
