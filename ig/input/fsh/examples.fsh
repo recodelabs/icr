@@ -195,6 +195,22 @@ Usage: #example
 * gender = #female
 * birthDate = "2019-08-21"
 
+Instance: example-co-head
+InstanceOf: ICRPatient
+Title: "Example Co-head of Household"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* identifier[nationalId].system = $NationalId
+* identifier[nationalId].value = "SL-1993-02-0051208"
+* name.given = "Isatu"
+* name.family = "Kamara"
+* gender = #female
+* birthDate = "1993-02-17"
+
+// The head is identified by its code, not by list order: one reference head
+// (head), another head (co-head), and each other member's relationship to the
+// reference head. DAU is a v3 RoleCode descendant of CHILD, valid as it stands
+// because the value set includes CHILD with its descendants.
 Instance: example-household-enumerated
 InstanceOf: ICRDeliveryUnit
 Title: "Example Household — fully enumerated"
@@ -203,10 +219,15 @@ Usage: #example
 * type = #person
 * actual = true
 * code = $GroupKind#household "Household"
-* quantity = 3
+* quantity = 4
 * member[0].entity = Reference(example-head)
-* member[1].entity = Reference(example-sibling)
-* member[2].entity = Reference(example-child)
+* member[0].extension[relationshipToHead].valueCodeableConcept = $HouseholdRelationship#head "Head (reference person)"
+* member[1].entity = Reference(example-co-head)
+* member[1].extension[relationshipToHead].valueCodeableConcept = $HouseholdRelationship#co-head "Co-head"
+* member[2].entity = Reference(example-sibling)
+* member[2].extension[relationshipToHead].valueCodeableConcept = $V3RoleCode#DAU "natural daughter"
+* member[3].entity = Reference(example-child)
+* member[3].extension[relationshipToHead].valueCodeableConcept = $V3RoleCode#DAU "natural daughter"
 * extension[groupLocation].valueReference = Reference(example-dwelling)
 
 // Person-data governance: the head of household permits the child's campaign
@@ -584,6 +605,9 @@ Usage: #example
 * output[3].valueUnsignedInt = 1
 * output[4].type = $TaskOutputType#delivery-event "Delivery event reference"
 * output[4].valueReference = Reference(example-mcv-dose)
+// The zero-dose child was also referred to routine immunization (example-referral)
+* output[5].type = $TaskOutputType#referred-count "Persons referred"
+* output[5].valueUnsignedInt = 1
 
 // --- Delivery events ----------------------------------------------------------
 
@@ -659,6 +683,9 @@ Usage: #example
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 48250
 * group.measureScore.value = 0.99
+// The report names the target population it divided by
+* evaluatedResource[denominator] = Reference(example-target-population)
+* evaluatedResource[denominator].extension[evaluatedRole].valueCode = #denominator
 * extension[coverageSource].valueCode = #administrative
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
 * extension[dataLineage].valueCode = #reconciled
@@ -1752,3 +1779,306 @@ Usage: #example
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
 * extension[denominatorType].valueCode = #at-risk
 * extension[dataLineage].valueCode = #reconciled
+
+// --- DIGIT-mapping additions (project/ig-gaps-from-digit.md) -------------------
+
+// Referrals (§2). At the mop-up visit the zero-dose child was vaccinated and
+// referred to Rokupr CHC for routine immunization; the CHC's follow-up is the
+// fulfilment Task. The child was seen, so the fulfilment and the referral are
+// both completed.
+
+Instance: example-referral
+InstanceOf: ICRReferral
+Title: "Referral — zero-dose child to routine immunization, Rokupr CHC"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #completed
+* intent = #order
+* category = $ReferralCategory#campaign-referral "Campaign referral"
+* priority = #routine
+* subject = Reference(example-child)
+* basedOn = Reference(example-mr-sia-2026)
+* requester.display = "Fatmata Sesay (vaccinator, mop-up team 4)"
+* performer = Reference(example-facility-org)
+* locationReference = Reference(example-facility)
+* authoredOn = "2026-06-24T09:45:00Z"
+* occurrenceDateTime = "2026-07-01"
+* reasonCode = $ReferralReason#zero-dose-to-routine "Zero-dose child, to routine immunization"
+* supportingInfo = Reference(example-mcv-dose)
+* note.text = "Child had never been vaccinated; MCV given at the mop-up visit. Caregiver asked to bring the child for the routine schedule."
+* extension[referringTask].valueReference = Reference(example-mopup-task)
+
+Instance: example-referral-fulfilment
+InstanceOf: ICRReferralFulfilment
+Title: "Referral fulfilment — zero-dose child seen at Rokupr CHC"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* status = #completed
+* businessStatus.text = "Arrived and seen"
+* intent = #order
+* focus = Reference(example-referral)
+* for = Reference(example-child)
+* owner = Reference(example-facility-org)
+* location = Reference(example-facility)
+* executionPeriod.start = "2026-07-01T10:20:00Z"
+* executionPeriod.end = "2026-07-01T10:35:00Z"
+
+// A facility referral with no field referral (a DIGIT HFReferral): the importer
+// creates the ICRReferral from the facility record — requester absent, an
+// identifier with the facility record's id, id <prefix>-hfr-<HFReferral id> —
+// and the facility record itself maps to the fulfilment.
+
+Instance: example-hfr-referral
+InstanceOf: ICRReferral
+Title: "Referral created from a facility record — fever, Rokupr CHC"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* identifier.system = "https://example.org/digit/hf-referral"
+* identifier.value = "HFR-0042"
+* status = #completed
+* intent = #order
+* category = $ReferralCategory#campaign-referral "Campaign referral"
+* subject = Reference(example-sibling)
+* basedOn = Reference(example-mr-sia-2026)
+* performer = Reference(example-facility-org)
+* locationReference = Reference(example-facility)
+* authoredOn = "2026-06-22T14:10:00Z"
+* reasonCode = $ReferralReason#fever "Fever"
+* note.text = "Created from the facility referral record; no field referral was received."
+
+Instance: example-hfr-fulfilment
+InstanceOf: ICRReferralFulfilment
+Title: "Referral fulfilment — facility record HFR-0042, Rokupr CHC"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mr-sia "MR SIA (Sierra Leone)"
+* identifier.system = "https://example.org/digit/hf-referral"
+* identifier.value = "HFR-0042"
+* status = #completed
+* businessStatus.text = "Arrived and seen"
+* intent = #order
+* focus = Reference(example-hfr-referral)
+* for = Reference(example-sibling)
+* owner = Reference(example-facility-org)
+* location = Reference(example-facility)
+* executionPeriod.start = "2026-06-22T14:10:00Z"
+* executionPeriod.end = "2026-06-22T14:40:00Z"
+
+// A two-phase ITN campaign (§3, §5): teams register households house to house
+// and issue vouchers; households redeem them later at a fixed post. The campaign
+// target counts households (unit-of-count = household), and after registration
+// the importer records the registered-household count as another estimate.
+
+Instance: example-itn-register-activity
+InstanceOf: ICRCampaignActivity
+Title: "Register households — ITN activity definition"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #active
+* kind = #Task
+* title = "Register households house to house, work out the net entitlement and issue a voucher"
+* code.text = "Register"
+* topic = $CampaignType#itn-distribution "ITN mass distribution"
+
+Instance: example-itn-protocol
+InstanceOf: ICRCampaignProtocol
+Title: "ITN mass distribution protocol — registration then distribution"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #active
+* version = "1.0.0"
+* title = "ITN mass distribution: house-to-house registration, then fixed-post distribution"
+* type = $CampaignType#itn-distribution "ITN mass distribution"
+* extension[deliveryStrategy][0].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[deliveryStrategy][1].valueCodeableConcept = $DeliveryStrategy#fixed-post "Fixed post"
+* goal.description.text = "≥90% of targeted households receive their full net entitlement"
+* action[0].title = "Register households and issue vouchers"
+* action[0].definitionCanonical = Canonical(example-itn-register-activity)
+* action[1].title = "Distribute nets against vouchers, 1 net per 2 household members"
+* action[1].definitionCanonical = Canonical(example-itn-activity)
+
+Instance: example-target-population-itn-households
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — households, Rokupr (ITN 2026)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* type = #person
+* actual = false
+* name = "Households, Rokupr settlement (ITN 2026 planning denominator)"
+* modifierExtension[unitOfCount].valueCode = #household
+* quantity = 640
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-settlement)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#govt-estimate "Government estimate"
+* extension[estimateDate].valueDate = "2026-05-20"
+* extension[isPlanningDenominator].valueBoolean = true
+
+Instance: example-itn-round
+InstanceOf: ICRCampaign
+Title: "ITN mass distribution, Rokupr — August 2026"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* instantiatesCanonical = Canonical(example-itn-protocol)
+* status = #active
+* intent = #order
+* title = "ITN mass distribution, Rokupr settlement, August 2026"
+* category = $CampaignType#itn-distribution "ITN mass distribution"
+* subject = Reference(example-target-population-itn-households)
+* period.start = "2026-08-03"
+* period.end = "2026-08-17"
+* activity[0].detail.instantiatesCanonical = Canonical(example-itn-register-activity)
+* activity[0].detail.status = #completed
+* activity[0].detail.scheduledPeriod.start = "2026-08-03"
+* activity[0].detail.scheduledPeriod.end = "2026-08-08"
+* activity[0].detail.extension[planningDenominator].valueReference = Reference(example-target-population-itn-households)
+* activity[1].detail.instantiatesCanonical = Canonical(example-itn-activity)
+* activity[1].detail.status = #in-progress
+* activity[1].detail.scheduledPeriod.start = "2026-08-15"
+* activity[1].detail.scheduledPeriod.end = "2026-08-17"
+* activity[1].detail.extension[planningDenominator].valueReference = Reference(example-target-population-itn-households)
+* extension[targetGeography].valueReference = Reference(example-settlement)
+* extension[planningDenominator].valueReference = Reference(example-target-population-itn-households)
+
+// A separate registration visit: created at the visit (never generated per
+// household in advance), for = the household, the register activity, and the
+// registration outputs, including the voucher and the household's entitlement.
+Instance: example-itn-register-task
+InstanceOf: ICRCampaignTask
+Title: "ITN registration visit — Rokupr block 4, house 12"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #completed
+* intent = #order
+* code.text = "Register household for ITN distribution"
+* basedOn = Reference(example-itn-round)
+* instantiatesCanonical = Canonical(example-itn-register-activity)
+* for = Reference(example-household-enumerated)
+* location = Reference(example-dwelling)
+* executionPeriod.start = "2026-08-04T11:00:00Z"
+* executionPeriod.end = "2026-08-04T11:15:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[taskOrigin].valueCode = #field-registered
+* output[registeredCount].type = $TaskOutputType#registered-count "Persons registered"
+* output[registeredCount].valueUnsignedInt = 4
+* output[registeredHousehold].type = $TaskOutputType#registered-household "Household registered"
+* output[registeredHousehold].valueReference = Reference(example-household-enumerated)
+* output[eligiblePresent].type = $TaskOutputType#eligible-present "Eligible persons present"
+* output[eligiblePresent].valueUnsignedInt = 4
+* output[eligibleAbsent].type = $TaskOutputType#eligible-absent "Eligible persons absent"
+* output[eligibleAbsent].valueUnsignedInt = 0
+* output[voucher].type = $TaskOutputType#voucher "Voucher issued"
+* output[voucher].valueIdentifier.system = "https://example.org/itn-rokupr-2026/voucher"
+* output[voucher].valueIdentifier.value = "RKP-0412"
+* output[entitlement].type = $TaskOutputType#entitlement "Entitlement"
+* output[entitlement].valueQuantity = 2 '{Net}' "nets"
+
+// The registered-household count, written after registration: another estimate
+// for the same area, from local enumeration (microcensus), dated at the last
+// registration day and naming the round it was counted in. Not is-calculated:
+// a direct count is independent evidence.
+Instance: example-target-population-itn-registered
+InstanceOf: ICRTargetPopulation
+Title: "Example Target Population — households registered, Rokupr (ITN 2026 enumeration)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* identifier.system = "urn:ietf:rfc:3986"
+* identifier.value = "https://icr.healthcampaigns.org/CarePlan/example-itn-round"
+* identifier.type.text = "Campaign round counted in"
+* type = #person
+* actual = false
+* name = "Households registered, Rokupr settlement (ITN 2026 registration count)"
+* modifierExtension[unitOfCount].valueCode = #household
+* quantity = 655
+* characteristic[geography].code = $GroupCharacteristic#geography "Geographic scope"
+* characteristic[geography].valueReference = Reference(example-settlement)
+* characteristic[geography].exclude = false
+* extension[denominatorSource].valueCodeableConcept = $DenominatorSource#microcensus "Microcensus / enumeration"
+* extension[estimateDate].valueDate = "2026-08-08"
+* extension[isPlanningDenominator].valueBoolean = false
+
+// The handover that redeems the voucher: the voucher is an identifier of type
+// voucher with the same system and value as the register Task's output, beside
+// the distribution's own identifier. Issued vs redeemed is a match on (system, value).
+Instance: example-itn-redemption
+InstanceOf: ICRSupplyDistribution
+Title: "ITN distribution redeeming voucher RKP-0412"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* identifier[voucher].type = $IdentifierType#voucher "Voucher"
+* identifier[voucher].system = "https://example.org/itn-rokupr-2026/voucher"
+* identifier[voucher].value = "RKP-0412"
+* identifier[1].system = "https://example.org/itn-rokupr-2026/distribution"
+* identifier[1].value = "DIST-2026-08-15-0031"
+* status = #completed
+* suppliedItem.quantity = 2 '{Net}' "nets"
+* suppliedItem.itemCodeableConcept = $CommodityClass#llin "Long-lasting insecticidal net (LLIN)"
+* destination = Reference(example-fixed-post)
+* occurrenceDateTime = "2026-08-15T09:20:00Z"
+* extension[campaign].valueReference = Reference(example-itn-round)
+* extension[campaignActivity].valueCanonical = Canonical(example-itn-activity)
+* extension[recipient].valueReference = Reference(example-household-enumerated)
+* extension[recordOrigin].valueCode = #campaign
+
+// The ITN microplan's net estimate for the settlement (§6): computed from the
+// household target with two numeric assumptions. The formula itself is not kept.
+Instance: example-resource-estimate-nets
+InstanceOf: ICRResourceEstimate
+Title: "Resource estimate — LLINs for Rokupr (ITN 2026 microplan)"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* identifier[0].system = "https://example.org/microplan/plan"
+* identifier[0].value = "ITN-RKP-2026"
+* identifier[1].system = "https://example.org/microplan/plan-row"
+* identifier[1].value = "ITN-RKP-2026-0007"
+* status = #final
+* code = $ResourceType#commodity "Commodity"
+* subject = Reference(example-settlement)
+* basedOn = Reference(example-itn-round)
+* effectiveDateTime = "2026-06-10"
+* performer.display = "Kambia District Health Management Team, malaria programme"
+* method.text = "Microplanning tool"
+* valueQuantity = 1408 '{Net}' "nets"
+* component[0].code.text = "Nets per household"
+* component[0].valueQuantity = 2 '{Net}' "nets per household"
+* component[1].code.text = "Buffer stock"
+* component[1].valueQuantity = 10 '%' "%"
+* extension[suppliedItem].valueCodeableConcept = $CommodityClass#llin "Long-lasting insecticidal net (LLIN)"
+* extension[basis].valueReference = Reference(example-target-population-itn-households)
+
+// A physical stock count at the community staging point after the MDA round
+// (§4): 480 tablets counted where the record expects 500. The basis is the
+// receipt the record was computed from.
+Instance: example-stock-count
+InstanceOf: ICRStockCount
+Title: "Stock count — albendazole, Rokupr staging point, after the February 2026 round"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* status = #final
+* code = $StockObservation#stock-count "Physical stock count"
+* subject = Reference(example-settlement)
+* effectiveDateTime = "2026-02-13T09:00:00Z"
+* valueQuantity = 480 '{tbl}' "tablets"
+* component[expected].code = $StockObservation#expected-stock-balance "Expected stock balance"
+* component[expected].valueQuantity = 500 '{tbl}' "tablets"
+* extension[suppliedItem].valueCodeableConcept = $ATC#P02CA03 "albendazole"
+* extension[basis].valueReference = Reference(example-albendazole-supply)
+* basedOn = Reference(example-mda-round)
+* performer.display = "Rokupr PHU in-charge"
+* note.text = "20 tablets short of the record; under review with the CDD team."
+
+// A per-person outcome in a household visit: an eligible child excluded for
+// acute illness gets a not-done administration with the reason, so a follow-up
+// Task can target that child. not-done events never count in a numerator.
+Instance: example-albendazole-not-done
+InstanceOf: ICRMedicationAdministration
+Title: "Albendazole not given — excluded for acute illness"
+Usage: #example
+* meta.tag[+] = $ProjectTag#mda "MDA (Rokupr)"
+* status = #not-done
+* statusReason = $ExclusionReason#acute-illness "Acute illness / clinical contraindication"
+* medicationCodeableConcept = $ATC#P02CA03 "albendazole"
+* subject = Reference(example-sibling)
+* effectiveDateTime = "2026-02-10T11:05:00Z"
+* extension[campaign].valueReference = Reference(example-mda-round)
+* extension[campaignActivity].valueCanonical = Canonical(example-albendazole-activity)
+* extension[recordOrigin].valueCode = #campaign
