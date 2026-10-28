@@ -210,7 +210,7 @@ comparison the Campaign Targeting dashboard draws.
 * select[0].column[13].name = "code"
 * select[0].column[13].path = "code.coding.first().code"
 * select[0].column[13].type = "code"
-* select[0].column[13].description = "What the Group counts, e.g. the target column of Uganda's ICHD targets (Group.code)"
+* select[0].column[13].description = "What the Group counts (Group.code), e.g. a campaign target column"
 * select[0].column[14].name = "code_text"
 * select[0].column[14].path = "code.text"
 * select[0].column[14].type = "string"
