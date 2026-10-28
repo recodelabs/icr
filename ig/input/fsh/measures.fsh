@@ -20,7 +20,7 @@ Usage: #definition
 * scoring = $MeasureScoring#proportion "Proportion"
 * group.population[0].code = $MeasurePopulation#numerator "Numerator"
 * group.population[0].criteria.language = #text/cql
-* group.population[0].criteria.expression = "Doses/treatments administered in the period (record-origin = campaign); when the report names a campaign-activity, only that activity's (its product, or events from tasks instantiating it)"
+* group.population[0].criteria.expression = "Doses/treatments administered in the period (record-origin = campaign); when the report names a campaign-activity, only that activity's (events naming it in campaign-activity, or from tasks instantiating it). Counted per visit Task and activity, never both ways: the distinct people with a completed event for the activity when the events are complete (their number equals the activity's treated-count, or the Task has none), otherwise the Task's treated-count. not-done events never count"
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].criteria.language = #text/cql
 * group.population[1].criteria.expression = "Planning denominator: when the report names a campaign-activity, the planning-denominator(s) on the campaign's activity.detail for that activity (summed when several); otherwise, or when that activity names none, the campaign's planning-denominator"
@@ -113,6 +113,47 @@ Usage: #definition
 * group.stratifier[1].code = $CoverageStratifier#geography "Geography"
 * group.stratifier[1].criteria.language = #text/cql
 * group.stratifier[1].criteria.expression = "Admin level of the reporting unit"
+
+// --- DIGIT-mapping additions (project/ig-gaps-from-digit.md §3) ---------------
+// Household coverage for ITN and other household-targeted campaigns. Both groups
+// divide by the activity's planning denominator, which must count households
+// (unit-of-count = household; icr-coverage-denominator-unit). Geography follows the
+// household's residence (group-location), not the handover place. A household
+// counts once per group however many handovers or registrations it had.
+
+Instance: icr-household-coverage
+InstanceOf: Measure
+Title: "ICR Household Coverage Measure"
+Usage: #definition
+* url = "https://icr.healthcampaigns.org/Measure/icr-household-coverage"
+* status = #active
+* experimental = false
+* name = "ICRHouseholdCoverage"
+* title = "ICR Household Coverage"
+* description = "Households reached ÷ households targeted, in two groups: distribution coverage (households that received the activity's product) and registration coverage (households registered into the round). The denominator is the activity's planning denominator, an ICRTargetPopulation with unit-of-count = household. Placeholder CQL pending executable logic."
+* scoring = $MeasureScoring#proportion "Proportion"
+* group[0].code.text = "Distribution coverage"
+* group[0].description = "Households that received the activity's product in the round ÷ households targeted"
+* group[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group[0].population[0].criteria.language = #text/cql
+* group[0].population[0].criteria.expression = "Distinct households (ICRDeliveryUnit) that are the extension[recipient] of an ICRSupplyDistribution with status = completed, suppliedItem.quantity > 0, the activity's product, and extension[campaign] = the round; counted where the household's group-location lies within the report geography"
+* group[0].population[1].code = $MeasurePopulation#denominator "Denominator"
+* group[0].population[1].criteria.language = #text/cql
+* group[0].population[1].criteria.expression = "The activity's planning denominator (CarePlan.activity.detail planning-denominator, or the campaign's), which must have unit-of-count = household"
+* group[0].stratifier[0].code = $CoverageStratifier#geography "Geography"
+* group[0].stratifier[0].criteria.language = #text/cql
+* group[0].stratifier[0].criteria.expression = "The household's residence (group-location), by admin level"
+* group[1].code.text = "Registration coverage"
+* group[1].description = "Households registered into the round ÷ households targeted"
+* group[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group[1].population[0].criteria.language = #text/cql
+* group[1].population[0].criteria.expression = "Distinct households in output[registeredHousehold] of the round's ICRCampaignTasks, counted where the household's group-location lies within the report geography"
+* group[1].population[1].code = $MeasurePopulation#denominator "Denominator"
+* group[1].population[1].criteria.language = #text/cql
+* group[1].population[1].criteria.expression = "The activity's planning denominator, which must have unit-of-count = household"
+* group[1].stratifier[0].code = $CoverageStratifier#geography "Geography"
+* group[1].stratifier[0].criteria.language = #text/cql
+* group[1].stratifier[0].criteria.expression = "The household's residence (group-location), by admin level"
 
 // --- v0.21.0 additions (forms-v1 round) ---------------------------------------
 
