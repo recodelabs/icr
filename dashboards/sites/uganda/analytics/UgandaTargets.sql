@@ -14,4 +14,4 @@ SELECT a.campaign_id, c.status AS campaign_status, c.location_id, c.location_nam
 FROM activity AS a
 JOIN calendar AS c ON c.campaign_id = a.campaign_id
 LEFT JOIN target_population AS p ON p.group_id = a.denominator_id
-ORDER BY c.admin_level, region, c.location_name
+ORDER BY c.admin_level, region, c.location_name, a.activity_key, group_id
