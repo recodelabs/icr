@@ -950,6 +950,8 @@ Usage: #example
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 3200
 * group.measureScore.value = 0.91
+* evaluatedResource[denominator] = Reference(example-target-population-sth)
+* evaluatedResource[denominator].extension[evaluatedRole].valueCode = #denominator
 // The drug × sex × age-band × disposition cube the ESPEN treatment form collects,
 // carried as MeasureReport stratifiers keyed by the standard ICRCoverageStratifier
 // axes the Measure (icr-mda-treatment-coverage) declares — the canonical, now-
@@ -1277,7 +1279,22 @@ Usage: #example
 * type = $CampaignType#mda "Mass drug administration"
 * subjectCodeableConcept.text = "Entire population 2 years and older (national SCH policy)"
 * goal.description.text = "≥75% epidemiological coverage of the eligible population"
+* action.title = "Administer praziquantel, dose by dose-pole height"
+* action.definitionCanonical = Canonical(example-praziquantel-activity)
 * extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#community-directed "Community-directed"
+
+Instance: example-praziquantel-activity
+InstanceOf: ICRCampaignActivity
+Title: "Administer praziquantel — SCH MDA activity definition"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #active
+* kind = #Task
+* title = "Administer praziquantel (schistosomiasis preventive chemotherapy)"
+* code.text = "Treat"
+* topic = $CampaignType#mda "Mass drug administration (NTD preventive chemotherapy)"
+* productCodeableConcept = $ATC#P02BA01 "praziquantel"
+* dosage.text = "40 mg/kg single dose; tablet count determined by dose-pole height band"
 
 Instance: example-target-population-sac
 InstanceOf: ICRTargetPopulation
@@ -1353,6 +1370,7 @@ Usage: #example
 * intent = #order
 * code.text = "School-based praziquantel administration, enrolled cohort"
 * basedOn = Reference(example-sch-descoped-round)
+* instantiatesCanonical = Canonical(example-praziquantel-activity)
 * for = Reference(example-school-cohort)
 * location = Reference(example-school)
 * executionPeriod.start = "2026-09-09T09:00:00Z"
@@ -1775,12 +1793,43 @@ Usage: #example
 * group.population[1].code = $MeasurePopulation#denominator "Denominator"
 * group.population[1].count = 19300
 * group.measureScore.value = 0.97
+* evaluatedResource[denominator] = Reference(example-target-population-u5)
+* evaluatedResource[denominator].extension[evaluatedRole].valueCode = #denominator
 * extension[coverageSource].valueCode = #administrative
 * extension[denominatorSource].valueCodeableConcept = $DenominatorSource#grid3 "GRID3 modelled estimate"
 * extension[denominatorType].valueCode = #at-risk
 * extension[dataLineage].valueCode = #reconciled
 
 // --- DIGIT-mapping additions (project/ig-gaps-from-digit.md) -------------------
+
+// A household visit in the integrated round that delivers both activities: R4
+// Task.instantiatesCanonical is 0..1, so the Task has none, and each tally names
+// its activity (icr-task-treated-per-activity). IcrCampaignTaskOutput gives one
+// row per activity; IcrCampaignTask leaves activity and treated_count empty.
+Instance: example-integrated-visit-task
+InstanceOf: ICRCampaignTask
+Title: "Integrated household visit — MR and nOPV2, Rokupr block 4, house 12"
+Usage: #example
+* meta.tag[+] = $ProjectTag#integrated "Integrated campaign (Kambia)"
+* status = #completed
+* intent = #order
+* code.text = "House-to-house visit: MR (9 months–14 years) and nOPV2 (0–59 months)"
+* basedOn = Reference(example-integrated-round)
+* for = Reference(example-household-enumerated)
+* owner = Reference(example-careteam)
+* location = Reference(example-dwelling)
+* executionPeriod.start = "2026-09-15T10:00:00Z"
+* executionPeriod.end = "2026-09-15T10:25:00Z"
+* extension[deliveryStrategy].valueCodeableConcept = $DeliveryStrategy#house-to-house "House-to-house"
+* extension[taskOrigin].valueCode = #pre-planned
+* output[treatedCount][0].type = $TaskOutputType#treated-count "Persons treated / vaccinated (scalar tally)"
+* output[treatedCount][0].valueUnsignedInt = 2
+* output[treatedCount][0].extension[campaignActivity].valueCanonical = Canonical(example-mcv-activity)
+* output[treatedCount][1].type = $TaskOutputType#treated-count "Persons treated / vaccinated (scalar tally)"
+* output[treatedCount][1].valueUnsignedInt = 1
+* output[treatedCount][1].extension[campaignActivity].valueCanonical = Canonical(example-nopv2-activity)
+* output[eligiblePresent].type = $TaskOutputType#eligible-present "Eligible persons present"
+* output[eligiblePresent].valueUnsignedInt = 2
 
 // Referrals (§2). At the mop-up visit the zero-dose child was vaccinated and
 // referred to Rokupr CHC for routine immunization; the CHC's follow-up is the
@@ -2018,6 +2067,38 @@ Usage: #example
 * extension[campaignActivity].valueCanonical = Canonical(example-itn-activity)
 * extension[recipient].valueReference = Reference(example-household-enumerated)
 * extension[recordOrigin].valueCode = #campaign
+
+// Household coverage for the ITN round: two result groups, keyed by
+// ICRCoverageGroupCS, over the household planning denominator it names.
+Instance: example-household-coverage
+InstanceOf: ICRAdministrativeCoverage
+Title: "Household coverage — ITN Rokupr, August 2026"
+Usage: #example
+* meta.tag[+] = $ProjectTag#gallery "Gallery"
+* status = #complete
+* type = #summary
+* measure = "https://icr.healthcampaigns.org/Measure/icr-household-coverage"
+* subject = Reference(example-settlement)
+* period.start = "2026-08-03"
+* period.end = "2026-08-17"
+* reporter.display = "Kambia District Health Management Team, malaria programme"
+* extension[campaign].valueReference = Reference(example-itn-round)
+* group[0].code = $CoverageGroup#distribution "Distribution coverage"
+* group[0].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group[0].population[0].count = 598
+* group[0].population[1].code = $MeasurePopulation#denominator "Denominator"
+* group[0].population[1].count = 640
+* group[0].measureScore.value = 0.934
+* group[1].code = $CoverageGroup#registration "Registration coverage"
+* group[1].population[0].code = $MeasurePopulation#numerator "Numerator"
+* group[1].population[0].count = 655
+* group[1].population[1].code = $MeasurePopulation#denominator "Denominator"
+* group[1].population[1].count = 640
+* group[1].measureScore.value = 1.023
+* evaluatedResource[denominator] = Reference(example-target-population-itn-households)
+* evaluatedResource[denominator].extension[evaluatedRole].valueCode = #denominator
+* extension[coverageSource].valueCode = #administrative
+* extension[dataLineage].valueCode = #reconciled
 
 // The ITN microplan's net estimate for the settlement (§6): computed from the
 // household target with two numeric assumptions. The formula itself is not kept.
