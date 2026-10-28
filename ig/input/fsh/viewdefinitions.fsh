@@ -298,7 +298,7 @@ Microplan-vs-monitoring dashboards are this table at two points in time.
 * select[0].column[15].path = "lastModified"
 * select[0].column[15].type = "dateTime"
 * select[0].column[16].name = "treated_count"
-* select[0].column[16].path = "output.where(type.coding.code = 'treated-count' and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty()).first().value.ofType(unsignedInt)"
+* select[0].column[16].path = "output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists() and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty()).first().value.ofType(unsignedInt)"
 * select[0].column[16].type = "unsignedInt"
 * select[0].column[16].description = "Persons treated / vaccinated at a single-activity visit: the treated-count that names no activity, of which a valid Task has at most one (icr-task-treated-per-activity). Null on a visit that delivers several activities; per-activity tallies are in IcrCampaignTaskOutput"
 * select[0].column[17].name = "houses_visited"
@@ -372,7 +372,7 @@ Tasks with no `treated-count` have no rows.
 * select[0].column[7].path = "executionPeriod.start"
 * select[0].column[7].type = "dateTime"
 // Tallies that name their activity
-* select[1].unionAll[0].forEach = "output.where(type.coding.code = 'treated-count' and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').exists())"
+* select[1].unionAll[0].forEach = "output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists() and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').exists())"
 * select[1].unionAll[0].column[0].name = "activity"
 * select[1].unionAll[0].column[0].path = "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)"
 * select[1].unionAll[0].column[0].type = "canonical"
@@ -392,7 +392,7 @@ Tasks with no `treated-count` have no rows.
 * select[1].unionAll[1].column[1].name = "activity_from"
 * select[1].unionAll[1].column[1].path = "'task'"
 * select[1].unionAll[1].column[1].type = "code"
-* select[1].unionAll[1].select[0].forEach = "output.where(type.coding.code = 'treated-count' and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty())"
+* select[1].unionAll[1].select[0].forEach = "output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists() and extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty())"
 * select[1].unionAll[1].select[0].column[0].name = "treated_count"
 * select[1].unionAll[1].select[0].column[0].path = "value.ofType(unsignedInt)"
 * select[1].unionAll[1].select[0].column[0].type = "unsignedInt"
@@ -410,7 +410,7 @@ is counted depends on the Measure: people for the person Measures, households
 for `icr-household-coverage`, implementation units for geographic coverage and
 readiness. Most coverage Measures have one group (`group_code` empty);
 `icr-household-coverage` has two, `distribution` and `registration`, so its
-reports give two rows, keyed by `report_id` + `group_code`. Joined to the
+reports give two rows, keyed by `report_id` + `group_code` (join null-safely: `group_code IS NOT DISTINCT FROM`, since single-group reports leave it empty). Joined to the
 campaign calendar on `campaign_id` this gives reach and coverage per round;
 grouping by `campaign_id`, `measure` and `source` puts administrative and
 survey figures side by side. Strata (sex, age band, delivery strategy,
@@ -480,11 +480,11 @@ the same way.
 // One row per result group; a report with no group keeps one row with empty results
 * select[1].forEachOrNull = "group"
 * select[1].column[0].name = "group_code"
-* select[1].column[0].path = "code.coding.first().code"
+* select[1].column[0].path = "code.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-group-cs').first().code"
 * select[1].column[0].type = "code"
 * select[1].column[0].description = "Which result of the Measure this row is (ICRCoverageGroupCS: distribution | registration for icr-household-coverage); empty for a single-group Measure. With report_id, the key of the row"
 * select[1].column[1].name = "group_label"
-* select[1].column[1].path = "code.coding.first().display"
+* select[1].column[1].path = "code.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-group-cs').first().display"
 * select[1].column[1].type = "string"
 * select[1].column[2].name = "numerator"
 * select[1].column[2].path = "population.where(code.coding.code = 'numerator').first().count"
@@ -508,8 +508,9 @@ One row per stratum of each result group of a coverage report: the
 disaggregations (sex, age band, delivery strategy, disposition, geography)
 declared by the ICR coverage Measures. Counts are in the Measure's unit
 (people, households for `icr-household-coverage`, implementation units). Join
-to `IcrCoverage` on `report_id` + `group_code` (`group_code` is empty for a
-single-group Measure).
+to `IcrCoverage` on `report_id` and, null-safely, `group_code`
+(`c.group_code IS NOT DISTINCT FROM s.group_code`): it is empty for a
+single-group Measure, so plain `=` would drop those rows.
 """
 * url = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverageStrata"
 * name = "IcrCoverageStrata"
@@ -526,9 +527,9 @@ single-group Measure).
 * select[0].column[1].type = "string"
 * select[1].forEach = "group"
 * select[1].column[0].name = "group_code"
-* select[1].column[0].path = "code.coding.first().code"
+* select[1].column[0].path = "code.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-coverage-group-cs').first().code"
 * select[1].column[0].type = "code"
-* select[1].column[0].description = "The result group the stratum belongs to (ICRCoverageGroupCS: distribution | registration); empty for a single-group Measure. Join to IcrCoverage on report_id + group_code"
+* select[1].column[0].description = "The result group the stratum belongs to (ICRCoverageGroupCS: distribution | registration); empty for a single-group Measure. Join to IcrCoverage on report_id and group_code with a null-safe comparison (IS NOT DISTINCT FROM)"
 * select[1].select[0].forEach = "stratifier"
 * select[1].select[0].column[0].name = "stratifier"
 * select[1].select[0].column[0].path = "code.coding.first().code"

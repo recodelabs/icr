@@ -13,7 +13,12 @@ COPY (
   WITH cal AS (SELECT * FROM read_parquet('$DATA/parquet/campaign_calendar/**/*.parquet', hive_partitioning=true, union_by_name=true)),
        pop AS (SELECT group_id, quantity FROM read_parquet('$DATA/parquet/target_population/**/*.parquet', hive_partitioning=true, union_by_name=true)),
        loc AS (SELECT id, name, admin_level, admin1_name FROM read_parquet('$DATA/parquet/locations/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true) WHERE type = 'admin-unit'),
-       cov AS (SELECT * FROM read_parquet('$DATA/parquet/coverage/**/*.parquet', hive_partitioning=true, union_by_name=true)),
+       -- One result per report for campaign coverage: a household report has distribution and registration
+       -- groups (IcrCoverage group_code); keep distribution and single-group rows. UNION BY NAME adds an
+       -- empty group_code to a warehouse built before the column existed.
+       cov AS (SELECT * FROM (SELECT * FROM read_parquet('$DATA/parquet/coverage/**/*.parquet', hive_partitioning=true, union_by_name=true)
+                              UNION ALL BY NAME SELECT NULL::VARCHAR AS group_code WHERE false)
+               WHERE group_code IS NULL OR group_code = 'distribution'),
        -- Short names for the activities; anything not listed shows its id.
        label AS (SELECT * FROM (VALUES ('nga-demo-act-mr', 'MR'), ('nga-demo-act-nopv2', 'Polio (nOPV2)'), ('nga-demo-act-alb', 'Albendazole'),
                                        ('nga-demo-act-mcv', 'Measles'), ('nga-demo-act-ivm-alb', 'Ivermectin + albendazole'),
