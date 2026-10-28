@@ -18,7 +18,9 @@ export FHIR_PIPES_CLIENT_ID="$FHIR_CLIENT_ID" FHIR_PIPES_CLIENT_SECRET="$FHIR_CL
 export DUCKDB_AGENT_MODE=0   # keep DuckDB 2.0's agent banner out of fhir-pipes' output
 
 # The dashboards' Libraries (SQL in dashboards/sites/uganda/analytics/) as Library JSON, which the
-# libraries step runs over the view tables and location_hierarchy.
+# libraries step runs over the view tables and location_hierarchy. build/ is emptied first, so a
+# Library that was renamed or deleted stops running.
+rm -rf ../../dashboards/sites/uganda/analytics/build
 fhir-pipes libraries build ../../dashboards/sites/uganda/analytics --out ../../dashboards/sites/uganda/analytics/build
 fhir-pipes refresh --config fhir-pipes.toml --only locations,views,libraries,tiles,hooks
 # The catalog hook writes the collection's README; this is the root's, from warehouse/.portolan/.
