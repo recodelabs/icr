@@ -106,6 +106,14 @@ Description: "House-to-house tally outputs (houses-visited, eligible-present, el
 Severity: #warning
 Expression: "extension('https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy').value.ofType(CodeableConcept).coding.exists(code = 'house-to-house') or output.type.coding.where(code = 'houses-visited' or code = 'eligible-present' or code = 'eligible-absent' or code = 'children-already-marked').empty()"
 
+// Per-activity tallies (project/ig-gaps-from-digit.md, per-person outcomes). R4
+// Task.instantiatesCanonical is 0..1, so a visit that delivers several activities
+// is a Task without it, and its treated-count repeats, one per activity.
+Invariant: icr-task-treated-per-activity
+Description: "treated-count: when there is more than one entry, each names its activity (campaign-activity) and no activity appears twice; a Task with instantiatesCanonical has at most one entry, without campaign-activity."
+Severity: #error
+Expression: "(output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).count() > 1 implies output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).all(extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').exists())) and output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.isDistinct() and (instantiatesCanonical.exists() implies output.where(type.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-task-output-type-cs' and code = 'treated-count').exists()).extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').empty())"
+
 Profile: ICRCampaignTask
 Parent: Task
 Id: ICRCampaignTask
@@ -113,7 +121,7 @@ Title: "ICR Campaign Task"
 Description: "The assignable, trackable operational unit of work — one Task per site-session (for = the site Location) or per household, community, or school-cohort visit (for = the delivery-unit Group). Every Task points at its campaign via basedOn (the CarePlan is never updated as tasks are created). Tasks may be pre-planned from the microplan or field-registered on discovery (the required task-origin code records which). Whether Tasks are assigned at village or household level is a configuration choice (working doc §7.4)."
 * ^experimental = false
 * status MS
-* status ^short = "requested → in-progress → completed / failed"
+* status ^short = "requested → in-progress → completed / failed. On a household visit: completed when the household was reached and any person outcome recorded, failed when it was not reached (closed, not found), requested when not yet visited"
 * intent MS
 * code 1..1 MS
 * code ^short = "The activity being performed"
@@ -122,7 +130,7 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * basedOn ^short = "The campaign (round) this task executes. Tasks point at the campaign — the CarePlan is never updated as tasks are created"
 * instantiatesCanonical MS
 * instantiatesCanonical only Canonical(ICRCampaignActivity)
-* instantiatesCanonical ^short = "The activity this task carries out — the structured definition-to-execution link (same convention as CarePlan → Protocol). Carries the work definition (product, dose, intervention code) so multi-activity campaigns stay queryable per activity; Task.code is only the human-readable label. Optional: an ad-hoc field task may have no single activity"
+* instantiatesCanonical ^short = "The activity this task carries out — the structured definition-to-execution link (same convention as CarePlan → Protocol). Carries the work definition (product, dose, intervention code) so multi-activity campaigns stay queryable per activity; Task.code is only the human-readable label. Optional: an ad-hoc field task, or a visit that delivers several activities (R4 allows one), has none; its delivery events then name their activity in campaign-activity"
 // for: a delivery-unit Group when the unit has members (household, community,
 // school cohort); a Location when it does not (a fixed/temporary-post site, a
 // structure under IRS, an area target) — plus Patient as the
@@ -168,7 +176,7 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * output ^slicing.rules = #open
 * output.type from ICRTaskOutputTypeVS (extensible)
 * output contains
-    treatedCount 0..1 and
+    treatedCount 0..* and
     housesVisited 0..1 and
     eligiblePresent 0..1 and
     eligibleAbsent 0..1 and
@@ -176,9 +184,17 @@ Description: "The assignable, trackable operational unit of work — one Task pe
     missedReason 0..* and
     noncomplianceReason 0..* and
     exclusionReason 0..* and
-    revisitOutcome 0..1
+    revisitOutcome 0..1 and
+    referredCount 0..1 and
+    registeredCount 0..1 and
+    registeredHousehold 0..* and
+    voucher 0..1 and
+    entitlement 0..1
 * output[treatedCount].type = $TaskOutputType#treated-count
 * output[treatedCount].value[x] only unsignedInt
+* output[treatedCount] ^short = "People treated or vaccinated at the visit. On a visit that delivers several activities (a Task without instantiatesCanonical), one entry per activity, each naming it in extension[campaignActivity]; otherwise a single entry without it (icr-task-treated-per-activity)"
+* output[treatedCount].extension contains CampaignActivity named campaignActivity 0..1 MS
+* output[treatedCount].extension[campaignActivity] ^short = "The activity this tally is for, on a visit that delivers several activities"
 * output[housesVisited].type = $TaskOutputType#houses-visited
 * output[housesVisited].value[x] only unsignedInt
 * output[housesVisited] ^short = "(house-to-house, area/team-day granularity) Houses visited"
@@ -207,7 +223,22 @@ Description: "The assignable, trackable operational unit of work — one Task pe
 * output[revisitOutcome].value[x] only CodeableConcept
 * output[revisitOutcome].valueCodeableConcept from ICRRevisitOutcomeVS (extensible)
 * output[revisitOutcome] ^short = "On a person-targeted follow-up Task: already-vaccinated | vaccinated-on-revisit | still-missing"
-* obeys icr-task-h2h-outputs
+* output[referredCount].type = $TaskOutputType#referred-count
+* output[referredCount].value[x] only unsignedInt
+* output[referredCount] ^short = "People referred at this visit (each referral is an ICRReferral whose referring-task is this Task)"
+* output[registeredCount].type = $TaskOutputType#registered-count
+* output[registeredCount].value[x] only unsignedInt
+* output[registeredCount] ^short = "People registered into the campaign at this visit — on a register Task or a delivery Task alike"
+* output[registeredHousehold].type = $TaskOutputType#registered-household
+* output[registeredHousehold].value[x] only Reference(ICRDeliveryUnit)
+* output[registeredHousehold] ^short = "Each household registered into the campaign at this visit: the for household on a household visit, every household registered there on a site session. Households registered = distinct references in the round"
+* output[voucher].type = $TaskOutputType#voucher
+* output[voucher].value[x] only Identifier
+* output[voucher] ^short = "The voucher or QR code issued, with one system per campaign round; the redeeming ICRSupplyDistribution carries the same system and value as an identifier of type voucher"
+* output[entitlement].type = $TaskOutputType#entitlement
+* output[entitlement].value[x] only Quantity
+* output[entitlement] ^short = "What the household is due, for example 3 LLINs"
+* obeys icr-task-h2h-outputs and icr-task-treated-per-activity
 * extension contains
     DeliveryStrategy named deliveryStrategy 1..1 MS and
     TaskOrigin named taskOrigin 1..1 MS and

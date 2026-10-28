@@ -4,12 +4,22 @@
 // behind these reports align with the reporting minimums ministries already owe
 // (WHO JAP, ICG M&E minimum dataset, ESPEN treatment-coverage schema, WHO EPI).
 
+// Coverage reports name their denominator (project/ig-gaps-from-digit.md §3). The
+// person coverage Measures are icr-admin-coverage, icr-mda-treatment-coverage and
+// icr-zero-dose-coverage. resolve() needs the denominator Groups to be available to
+// the validator (in the same Bundle or on the server).
+Invariant: icr-coverage-denominator-unit
+Description: "On an icr-household-coverage report every denominator Group has unit-of-count = household; on a person coverage report (icr-admin-coverage, icr-mda-treatment-coverage, icr-zero-dose-coverage) no denominator Group has a unit other than person."
+Severity: #warning
+Expression: "(measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-household-coverage') implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').resolve().all(modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value = 'household')) and ((measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-admin-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-mda-treatment-coverage') or measure.startsWith('https://icr.healthcampaigns.org/Measure/icr-zero-dose-coverage')) implies evaluatedResource.where(extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value = 'denominator').resolve().all(modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').empty() or modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value = 'person'))"
+
 Profile: ICRAdministrativeCoverage
 Parent: MeasureReport
 Id: ICRAdministrativeCoverage
 Title: "ICR Administrative Coverage"
-Description: "Administrative coverage: doses/treatments delivered ÷ planning denominator, computed from tallies. Carries denominator provenance and is permanently marked source=administrative."
+Description: "Administrative coverage: doses/treatments delivered ÷ planning denominator, computed from tallies. Carries denominator provenance and is permanently marked source=administrative. Names the ICRTargetPopulation(s) it divided by in evaluatedResource[denominator]."
 * ^experimental = false
+* obeys icr-coverage-denominator-unit
 * status MS
 * type MS
 * measure MS
@@ -21,6 +31,15 @@ Description: "Administrative coverage: doses/treatments delivered ÷ planning de
 * group.stratifier MS
 * group.stratifier.code from ICRCoverageStratifierVS (extensible)
 * group.stratifier ^short = "Disaggregation by the standard axes (sex, age-band, delivery-strategy, disposition, geography) the Measure declares — extensible binding to ICRCoverageStratifierVS, so custom country axes stay legal (v0.19.0)"
+* evaluatedResource MS
+* evaluatedResource ^slicing.discriminator.type = #value
+* evaluatedResource ^slicing.discriminator.path = "extension('https://icr.healthcampaigns.org/StructureDefinition/evaluated-role').value"
+* evaluatedResource ^slicing.rules = #open
+* evaluatedResource contains denominator 0..* MS
+* evaluatedResource[denominator] only Reference(ICRTargetPopulation)
+* evaluatedResource[denominator] ^short = "The ICRTargetPopulation(s) this report divided by, marked evaluated-role = denominator. On an icr-household-coverage report each has unit-of-count = household; on a person coverage report none has a non-person unit (icr-coverage-denominator-unit)"
+* evaluatedResource[denominator].extension contains EvaluatedRole named evaluatedRole 1..1 MS
+* evaluatedResource[denominator].extension[evaluatedRole].valueCode = #denominator
 * extension contains
     Campaign named campaign 0..1 MS and
     CampaignActivity named campaignActivity 0..1 MS and

@@ -49,8 +49,23 @@ Description: "The actual Group of people a campaign Task acts on — a household
 * member.entity ^short = "The enumerated individuals — the mainline capture mode for community-and-household campaigns; never a sub-Group"
 * quantity MS
 * quantity ^short = "Head-count fallback where individuals are not enumerated (register-level MDA); coexists with an enumerated member list"
+* member.extension contains RelationshipToHead named relationshipToHead 0..1 MS
+* member.extension[relationshipToHead] ^short = "How this member relates to the household's reference head: head for the reference head, co-head for other heads, otherwise a relationship to the reference head (v3 RoleCode, with descendants). The head is identified by this code, not by list order"
+* obeys icr-du-one-head and icr-du-head
 * extension contains GroupLocation named groupLocation 1..1 MS
 * extension[groupLocation] ^short = "Residence/base, not service point: the dwelling (household), settlement/community point (community), or school (school-cohort)"
+
+// Head-of-household invariants (project/ig-gaps-from-digit.md §1). An active member,
+// for both: inactive is not true, and period.end is absent or later than now.
+Invariant: icr-du-one-head
+Description: "At most one active member is coded head (the reference head); other heads are coded co-head."
+Severity: #error
+Expression: "member.where((inactive.empty() or inactive = false) and (period.end.empty() or period.end > now()) and extension('https://icr.healthcampaigns.org/StructureDefinition/relationship-to-head').value.ofType(CodeableConcept).coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-household-relationship-cs' and code = 'head').exists()).count() <= 1"
+
+Invariant: icr-du-head
+Description: "A household with at least one active member should have an active member coded head."
+Severity: #warning
+Expression: "(code.coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-group-kind-cs' and code = 'household').exists() and member.where((inactive.empty() or inactive = false) and (period.end.empty() or period.end > now())).exists()) implies member.where((inactive.empty() or inactive = false) and (period.end.empty() or period.end > now()) and extension('https://icr.healthcampaigns.org/StructureDefinition/relationship-to-head').value.ofType(CodeableConcept).coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-household-relationship-cs' and code = 'head').exists()).exists()"
 
 Profile: ICRTargetPopulation
 Parent: Group
@@ -61,7 +76,9 @@ Description: "A target-population denominator: a conceptual cohort (actual=false
 * type = #person
 * actual = false
 * quantity 1..1 MS
-* quantity ^short = "The denominator count"
+* quantity ^short = "The denominator count, in the unit of modifierExtension[unitOfCount] (absent ⇒ persons)"
+* modifierExtension contains UnitOfCount named unitOfCount 0..1 MS
+* modifierExtension[unitOfCount] ^short = "person | household | structure — what quantity counts; absent ⇒ person. A modifier: a consumer that does not understand it must not read quantity as people. type stays person, the nearest R4 value"
 * characteristic MS
 * characteristic ^short = "Age band, sex, eligibility rule, geography"
 * characteristic ^slicing.discriminator.type = #pattern
