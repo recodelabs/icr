@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/IcrIndicatorValueByArea"
+name = "IcrIndicatorValueByArea"
+version = "0.1.0"
+status = "draft"
+kind = "SQLView"
+title = "Indicator values with their place in the location hierarchy"
+description = """
+Each IcrIndicatorValue row with its Location's place in the location hierarchy (LocationHierarchy, joined on location_id): admin_level, admin0..4_name and _code, country and path. The view's own location_name is kept.
+"""
+
+[[depends_on]]
+label = "indicator_value"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorValue"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

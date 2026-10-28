@@ -1,0 +1,14 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/UgandaTasks"
+name = "UgandaTasks"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "Uganda campaign tasks"
+description = """
+One row per campaign task, with the activity key and the name and region (admin level 1) of the
+Location where the work happens.
+"""
+
+[[depends_on]]
+label = "task"
+resource = "https://icr.healthcampaigns.org/uganda/Library/IcrCampaignTaskByArea"

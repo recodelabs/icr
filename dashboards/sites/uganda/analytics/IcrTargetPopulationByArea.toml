@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/IcrTargetPopulationByArea"
+name = "IcrTargetPopulationByArea"
+version = "0.1.0"
+status = "draft"
+kind = "SQLView"
+title = "Target populations with their place in the location hierarchy"
+description = """
+Each IcrTargetPopulation row with its Location's place in the location hierarchy (LocationHierarchy, joined on location_id): location_name, admin_level, admin0..4_name and _code, country and path.
+"""
+
+[[depends_on]]
+label = "target_population"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"
