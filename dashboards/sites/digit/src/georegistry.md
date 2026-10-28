@@ -9,23 +9,27 @@ sql:
 
 # Georegistry
 
-The places on the DIGIT server, each a FHIR Location. DIGIT's boundaries come in several hierarchies, one per demo country or set-up, and each boundary points at its parent with `partOf`. The boundaries have names and codes but no geometry, so they cannot be drawn on a map. Health facilities and household dwellings have coordinates and are shown below.
+The places on the DIGIT server, each a FHIR Location. DIGIT's boundaries come in several hierarchies, one per demo country or set-up, and each boundary points at its parent with `partOf`. DIGIT holds names and codes for its boundaries but no geometry.
+
+Boundaries exist only for the Nigerian states and LGAs that were matched to GRID3 in the ICR's location registry: 168 units in the ADMIN hierarchy (states and LGAs) and the NIGERIA hierarchy (provinces and districts, which are Nigeria's states and LGAs). Each carries the GRID3 boundary, its P-code and the id of the matching ICR Location; where GRID3 spells the name differently, GRID3's spelling is kept as an alias. All other boundaries have no geometry. Health facilities and household dwellings have coordinates.
 
 ```js
 import {toRows, fmtInt} from "./components/digit.js";
-import {pointsMap, KINDS} from "./components/points-map.js";
+import {pointsMap, KINDS, BOUNDARY_LAYERS} from "./components/points-map.js";
 ```
 
 ```js
 const units = toRows(await sql`SELECT * FROM boundaries`);
 const byId = new Map(units.map((d) => [d.location_id, d]));
 const pointRows = toRows(await sql`SELECT * FROM points`);
+const admin = await FileAttachment("data/admin.geojson").json();
 const hierarchies = d3.rollups(units, (v) => v.length, (d) => d.hierarchy ?? "unknown").sort((a, b) => b[1] - a[1]);
 ```
 
 <div class="grid" style="gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr))">
   <div class="card"><h2>Boundary hierarchies</h2><span class="big">${hierarchies.length}</span><div class="muted">${hierarchies.map(([h]) => h).join(", ")}</div></div>
-  <div class="card"><h2>Boundaries</h2><span class="big">${fmtInt(units.length)}</span><div class="muted">admin units, no geometry</div></div>
+  <div class="card"><h2>Boundaries</h2><span class="big">${fmtInt(units.length)}</span><div class="muted">admin units</div></div>
+  <div class="card"><h2>With a GRID3 boundary</h2><span class="big">${fmtInt(units.filter((d) => d.has_boundary).length)}</span><div class="muted">Nigerian states and LGAs</div></div>
   <div class="card"><h2>Health facilities</h2><span class="big">${fmtInt(d3.sum(units, (d) => d.facilities))}</span><div class="muted">under a boundary; ${fmtInt(pointRows.filter((d) => d.kind === "facility").length)} with coordinates</div></div>
   <div class="card"><h2>Household dwellings</h2><span class="big">${fmtInt(pointRows.filter((d) => d.kind === "dwelling").length)}</span><div class="muted">with coordinates</div></div>
 </div>
@@ -34,7 +38,7 @@ const hierarchies = d3.rollups(units, (v) => v.length, (d) => d.hierarchy ?? "un
 
 ```js
 const levels = d3.rollups(units, (v) => ({hierarchy: v[0].hierarchy ?? "unknown", level: v[0].level, level_name: v[0].level_name, boundaries: v.length,
-  facilities: d3.sum(v, (d) => d.facilities)}), (d) => d.hierarchy, (d) => d.level)
+  facilities: d3.sum(v, (d) => d.facilities), with_boundary: v.filter((d) => d.has_boundary).length}), (d) => d.hierarchy, (d) => d.level)
   .flatMap(([, ls]) => ls.map(([, v]) => v))
   .sort((a, b) => d3.ascending(a.hierarchy, b.hierarchy) || d3.ascending(a.level, b.level));
 ```
@@ -58,9 +62,9 @@ Plot.plot({
 
 ```js
 Inputs.table(levels, {
-  columns: ["hierarchy", "level", "level_name", "boundaries", "facilities"],
-  header: {hierarchy: "Hierarchy", level: "Level", level_name: "Level name", boundaries: "Boundaries", facilities: "Facilities directly under them"},
-  format: {boundaries: fmtInt, facilities: fmtInt},
+  columns: ["hierarchy", "level", "level_name", "boundaries", "with_boundary", "facilities"],
+  header: {hierarchy: "Hierarchy", level: "Level", level_name: "Level name", boundaries: "Boundaries", with_boundary: "With a GRID3 boundary", facilities: "Facilities directly under them"},
+  format: {boundaries: fmtInt, with_boundary: (v) => v ? fmtInt(v) : "", facilities: fmtInt},
   select: false, rows: 12
 })
 ```
@@ -75,16 +79,20 @@ const hierarchy = view(hierarchyInput);
 ```
 
 ```js
-const inHierarchy = units.filter((d) => (d.hierarchy ?? "unknown") === hierarchy);
-const search = view(Inputs.search(inHierarchy, {placeholder: "Search name or code…", columns: ["name", "code", "level_name", "parent_name"]}));
+const onlyMatched = view(Inputs.toggle({label: "Only units with a GRID3 boundary", value: false}));
+```
+
+```js
+const inHierarchy = units.filter((d) => (d.hierarchy ?? "unknown") === hierarchy && (!onlyMatched || d.has_boundary));
+const search = view(Inputs.search(inHierarchy, {placeholder: "Search name, code or P-code…", columns: ["name", "code", "pcode", "alias", "level_name", "parent_name"]}));
 ```
 
 ```js
 const picked = view(Inputs.table(search, {
-  columns: ["name", "level", "level_name", "parent_name", "code", "child_boundaries", "facilities"],
-  header: {name: "Boundary", level: "Level", level_name: "Level name", parent_name: "Parent", code: "Code", child_boundaries: "Boundaries under it", facilities: "Facilities"},
-  format: {child_boundaries: fmtInt, facilities: fmtInt},
-  width: {name: 220, level: 50, parent_name: 200, code: 260},
+  columns: ["name", "level", "level_name", "parent_name", "code", "has_boundary", "pcode", "child_boundaries", "facilities"],
+  header: {name: "Boundary", level: "Level", level_name: "Level name", parent_name: "Parent", code: "Code", has_boundary: "GRID3 boundary", pcode: "P-code", child_boundaries: "Boundaries under it", facilities: "Facilities"},
+  format: {child_boundaries: fmtInt, facilities: fmtInt, has_boundary: (v) => v ? "yes" : ""},
+  width: {name: 200, level: 50, parent_name: 160, code: 240, has_boundary: 70, pcode: 70},
   multiple: false, required: false, rows: 15
 }));
 ```
@@ -97,17 +105,37 @@ const children = picked ? units.filter((d) => d.part_of_id === picked.location_i
 ```js
 display(html`<div class="card">${picked ? html`<div style="font-weight: 600; font-size: 15px">${picked.name}</div>
   <div class="muted" style="margin-bottom: 8px">${picked.level_name}, level ${picked.level} of the ${picked.hierarchy} hierarchy · <code>${picked.location_id}</code></div>
+  ${picked.has_boundary ? html`<div style="margin-bottom: 8px">GRID3 boundary · P-code ${picked.pcode} · ICR Location <code>${picked.icr_location_id}</code>${picked.alias ? ` · GRID3 spelling: ${picked.alias}` : ""}</div>` : ""}
   <div style="margin-bottom: 8px">${ancestors(picked).map((a) => html`<span>${a.name} <span class="muted">(${a.level_name})</span> › </span>`)}<b>${picked.name}</b></div>
   <div>${children.length ? `${fmtInt(children.length)} boundaries directly under it: ${children.slice(0, 40).map((c) => c.name).join(", ")}${children.length > 40 ? ", …" : ""}.` : "No boundaries under it."}
   ${picked.facilities ? `${fmtInt(picked.facilities)} facilities.` : ""} ${picked.other_places ? `${fmtInt(picked.other_places)} other places (dwellings).` : ""}</div>`
   : html`<span class="muted">No boundary selected.</span>`}</div>`);
 ```
 
-## Facilities and dwellings
+## Map of the boundaries, facilities and dwellings
+
+The map draws the GRID3 boundaries of one hierarchy at a time, since the ADMIN and NIGERIA hierarchies both cover parts of Nigeria, with the facilities and dwellings on top. LGAs can be shaded by a count over all campaigns: household dwellings, households registered or visits. A place counts towards an LGA when it sits under the LGA in DIGIT's hierarchy (`partOf`); its coordinates are not used for this.
 
 ```js
-const kindInput = Inputs.checkbox(KINDS.map(([k]) => k), {label: "Show", value: KINDS.map(([k]) => k), format: (k) => KINDS.find((x) => x[0] === k)[1]});
-const kinds = view(kindInput);
+const mapHierarchies = [...new Set(admin.features.map((f) => f.properties.hierarchy))].sort();
+const SHADE_BY = [[null, "No shading"], ["dwellings", "Household dwellings"], ["households", "Households registered"], ["visits", "Visits"]];
+const LAYER_OPTIONS = [...KINDS, ...BOUNDARY_LAYERS];
+```
+
+<div style="display: flex; flex-wrap: wrap; gap: 4px 24px">
+  <div>${mapHierarchyInput}</div>
+  <div>${shadeInput}</div>
+</div>
+<div>${layerInput}</div>
+
+```js
+const mapHierarchyInput = Inputs.select(mapHierarchies, {label: "Boundaries of", value: mapHierarchies.includes("NIGERIA") ? "NIGERIA" : mapHierarchies[0],
+  format: (h) => `${h} (${admin.features.filter((f) => f.properties.hierarchy === h).length} units)`});
+const mapHierarchy = Generators.input(mapHierarchyInput);
+const shadeInput = Inputs.select(SHADE_BY, {label: "Shade LGAs by", format: ([, l]) => l});
+const shadeBy = Generators.input(shadeInput);
+const layerInput = Inputs.checkbox(LAYER_OPTIONS.map(([k]) => k), {label: "Show", value: LAYER_OPTIONS.map(([k]) => k), format: (k) => LAYER_OPTIONS.find((x) => x[0] === k)[1]});
+const layers = Generators.input(layerInput);
 ```
 
 <div class="grid" style="gap: 12px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr)">
@@ -116,28 +144,41 @@ const kinds = view(kindInput);
 </div>
 
 ```js
-const mapEl = pointsMap(pointRows, {height: 580});
+const mapEl = pointsMap(pointRows, {height: 600, admin});
 const clicked = Generators.input(mapEl);
 ```
 
 ```js
-mapEl.setKinds(kinds);
+mapEl.setKinds(layers);
+mapEl.setHierarchy(mapHierarchy);
+mapEl.setShade(shadeBy[0] ? {property: shadeBy[0], label: shadeBy[1].toLowerCase()} : null);
 ```
 
 ```js
+const row = (label, value) => html`<tr><td class="muted" style="padding-right: 8px; vertical-align: top">${label}</td><td style="word-break: break-word">${value ?? "—"}</td></tr>`;
 const inspector = !clicked
-  ? html`<div class="muted">Click a point on the map.</div>`
+  ? html`<div class="muted">Click a boundary or a point on the map.</div>`
+  : clicked.layer === "boundary"
+  ? html`<div>
+      <div style="font-weight: 600">${clicked.name ?? "—"}</div>
+      <div class="muted">${clicked.level_name}, ${clicked.hierarchy} hierarchy</div>
+      <table style="font-size: 12px; margin-top: 6px">
+        ${row("Location id", clicked.id)}${row("In", clicked.parent)}${row("P-code", clicked.pcode)}
+        ${row("ICR Location", clicked.icr_location_id)}${clicked.alias ? row("GRID3 spelling", clicked.alias) : ""}
+        ${row("Dwellings", fmtInt(clicked.dwellings))}${row("Households registered", fmtInt(clicked.households))}${row("Visits", fmtInt(clicked.visits))}
+      </table>
+    </div>`
   : html`<div>
       <div style="font-weight: 600">${clicked.name ?? "—"}</div>
       <div class="muted">${KINDS.find(([k]) => k === clicked.kind)?.[1]}</div>
       <table style="font-size: 12px; margin-top: 6px">
-        <tr><td class="muted" style="padding-right: 8px">Location id</td><td style="word-break: break-all">${clicked.id}</td></tr>
-        <tr><td class="muted" style="padding-right: 8px">In</td><td>${clicked.boundary ?? "—"}</td></tr>
-        <tr><td class="muted" style="padding-right: 8px">Hierarchy</td><td>${clicked.hierarchy ?? "—"}</td></tr>
-        <tr><td class="muted" style="padding-right: 8px">Position</td><td>${clicked.lngLat.map((x) => x.toFixed(5)).reverse().join(", ")}</td></tr>
+        ${row("Location id", clicked.id)}${row("In", clicked.boundary)}${row("Hierarchy", clicked.hierarchy)}
+        ${row("Position", clicked.lngLat.map((x) => x.toFixed(5)).reverse().join(", "))}
       </table>
     </div>`;
 ```
+
+<div class="muted" style="font-size: 12px">Boundaries: GRID3 Nigeria, through the ICR's location registry.</div>
 
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }

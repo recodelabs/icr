@@ -10,9 +10,14 @@ country.
   target, rounds); households registered, people, visits, people treated and nets
   distributed, in total and by campaign type.
 - **Georegistry** (`/georegistry`): DIGIT's boundary hierarchies with their boundaries by
-  level, a searchable table of boundaries that shows each one's parents and children, and
-  the health facilities and household dwellings on a map. The boundaries have no geometry
-  on the server, so the map shows points only.
+  level, a searchable table of boundaries that shows each one's parents and children, its
+  P-code and whether it has a GRID3 boundary, and a map. DIGIT holds no geometry; only the
+  168 Nigerian states and LGAs matched to GRID3 in the ICR's location registry (ADMIN:
+  STATE → LGA, NIGERIA: PROVINCE → DISTRICT) carry a boundary, with the P-code, the ICR
+  Location id and GRID3's spelling as an alias. The map draws those boundaries for one
+  hierarchy at a time, can shade the LGAs by dwellings, households registered or visits
+  (all campaigns, counted through DIGIT's `partOf` hierarchy), and puts the facilities and
+  dwellings on top.
 - **Campaign delivery** (`/delivery`): for one campaign, with its rounds together or one
   round: registrations and visits by day, visit outcomes and their reasons, doses not
   given by reason, people treated by activity and nets distributed.
@@ -32,12 +37,14 @@ The warehouse tables are fhir-pipes runs of ViewDefinitions (`country/digit/fhir
   and indicator views, which are empty for DIGIT;
 - the DIGIT views in `country/digit/views/` (written by `make.py` there), for what the IG
   has no views for yet: `digit_location` (every Location, including the boundaries that
-  fhir-pipes' `locations` table leaves out because they have no geometry),
-  `digit_household`, `digit_patient`, `digit_medication_administration`,
+  fhir-pipes' `locations` table leaves out because they have no geometry;
+  with `pcode`, `icr_location_id`, `alias` and `has_boundary`), `digit_household`, `digit_patient`, `digit_medication_administration`,
   `digit_immunization`, `digit_supply_delivery`, `digit_task_output`, `digit_campaign_period`, `digit_activity` and
   `digit_protocol`.
 
-The pages use only these tables, not SQL on FHIR Libraries.
+The boundary polygons (`src/data/admin.geojson.sh`) come from fhir-pipes' `locations`
+table, which holds the 168 GRID3 polygons (`geom_type=polygon`) beside the dwellings and
+facilities. The pages use only these tables, not SQL on FHIR Libraries.
 
 ## Refresh and build
 

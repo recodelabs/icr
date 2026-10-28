@@ -67,6 +67,30 @@
           "type": "string"
         },
         {
+          "name": "pcode",
+          "path": "identifier.where(system = 'https://icr.healthcampaigns.org/identifiers/pcode').value.first()",
+          "type": "string",
+          "description": "P-code, on the Nigerian states and LGAs matched to GRID3"
+        },
+        {
+          "name": "icr_location_id",
+          "path": "identifier.where(system = 'https://icr.healthcampaigns.org/identifiers/icr-location').value.first()",
+          "type": "string",
+          "description": "The matching Location in the ICR's location registry (e.g. nga-na)"
+        },
+        {
+          "name": "alias",
+          "path": "alias.first()",
+          "type": "string",
+          "description": "GRID3's spelling, where it differs"
+        },
+        {
+          "name": "has_boundary",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/location-boundary-geojson').exists()",
+          "type": "boolean",
+          "description": "Whether the Location carries a boundary (GRID3, from the ICR's registry)"
+        },
+        {
           "name": "lat",
           "path": "position.latitude",
           "type": "decimal"

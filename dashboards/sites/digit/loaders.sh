@@ -14,7 +14,7 @@ IST_DAY() { echo "CAST(timezone('Asia/Kolkata', CAST($1 AS TIMESTAMPTZ)) AS DATE
 # T <table> <columns>: SQL that reads a view table, or, while the bulk load has not yet written
 # any rows for it, an empty table with the given columns ("name TYPE, …"), so pages still build.
 T() {
-  if compgen -G "$W/$1/*.parquet" >/dev/null || compgen -G "$W/$1/**/*.parquet" >/dev/null; then
+  if [ -n "$(find "$W/$1" -name '*.parquet' -print -quit 2>/dev/null)" ]; then
     echo "(SELECT * FROM read_parquet('$W/$1/**/*.parquet', union_by_name=true))"
   else
     local cols="" c
