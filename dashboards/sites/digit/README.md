@@ -14,10 +14,11 @@ country.
   P-code and whether it has a GRID3 boundary, and a map. DIGIT holds no geometry; only the
   168 Nigerian states and LGAs matched to GRID3 in the ICR's location registry (ADMIN:
   STATE → LGA, NIGERIA: PROVINCE → DISTRICT) carry a boundary, with the P-code, the ICR
-  Location id and GRID3's spelling as an alias. The map draws those boundaries for one
-  hierarchy at a time, can shade the LGAs by dwellings, households registered or visits
-  (all campaigns, counted through DIGIT's `partOf` hierarchy), and puts the facilities and
-  dwellings on top.
+  Location id and GRID3's spelling as an alias. The map draws all of Nigeria's GRID3 states
+  (37) and LGAs (774) with a light outline and highlights the 138 GRID3 units that DIGIT has
+  (both hierarchies can match the same unit) with a grey fill and a darker border. Only
+  those can be shaded by dwellings, households registered or visits (all campaigns,
+  counted through DIGIT's `partOf` hierarchy). The facilities and dwellings are on top.
 - **Campaign delivery** (`/delivery`): for one campaign, with its rounds together or one
   round: registrations and visits by day, visit outcomes and their reasons, doses not
   given by reason, people treated by activity and nets distributed.
@@ -42,9 +43,11 @@ The warehouse tables are fhir-pipes runs of ViewDefinitions (`country/digit/fhir
   `digit_immunization`, `digit_supply_delivery`, `digit_task_output`, `digit_campaign_period`, `digit_activity` and
   `digit_protocol`.
 
-The boundary polygons (`src/data/admin.geojson.sh`) come from fhir-pipes' `locations`
-table, which holds the 168 GRID3 polygons (`geom_type=polygon`) beside the dwellings and
-facilities. The pages use only these tables, not SQL on FHIR Libraries.
+The boundary polygons (`src/data/admin.geojson.sh`, about 1.1 MB, 0.3 MB compressed) are
+the warehouse's `grid3_nga` table: the main warehouse's GRID3 states and LGAs for Nigeria,
+which `warehouse.sh` copies in from `r2:icr/parquet/locations/country=NGA/...` after each
+refresh. A unit is in DIGIT when a DIGIT Location carries its `icr-location` identifier
+(`digit_location.icr_location_id`). The pages use only these tables, not SQL on FHIR Libraries.
 
 ## Refresh and build
 

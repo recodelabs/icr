@@ -8,11 +8,12 @@
 #   ./warehouse.sh --full     download everything again (after deletes or a reload on the server)
 #
 # The dashboards (dashboards/sites/digit, observatory deploy) build from r2:icr/digit/. Nothing in
-# it is public: there is no SDI for DIGIT and no map tiles (the boundaries have no geometry).
+# it is public: there is no SDI for DIGIT and no map tiles. It also holds grid3_nga, Nigeria's
+# GRID3 states and LGAs from the main warehouse, for the georegistry map.
 #
-# The views: the IG's ViewDefinitions from $IG_VIEWS, plus the DIGIT ones in views/. Until PR #224
-# (ig/digit-additions, which adds IcrCampaignTaskOutput) is merged, point IG_VIEWS at that branch's
-# build; by default this uses the #224 worktree's build when it exists, else ../../ig's.
+# The views: the IG's ViewDefinitions from $IG_VIEWS, plus the DIGIT ones in views/. PR #224
+# (IcrCampaignTaskOutput) is merged; by default this still uses that branch's worktree build when
+# it exists, else ../../ig's, which needs rebuilding on main (sushi build . in ig/).
 #
 # The key comes from ~/.config/icr/digit-loader.env (or $KEY_FILE). Needs fhir-pipes (0.6), duckdb
 # and rclone with the r2 remote, and the IG built (sushi build . in ig/).
@@ -36,12 +37,28 @@ if [ -z "${IG_VIEWS:-}" ]; then
   if [ -d "$PR224" ]; then IG_VIEWS=$PR224; else IG_VIEWS=../../ig/fsh-generated/resources; fi
 fi
 [ -f "$IG_VIEWS/Binary-IcrCampaignTask.json" ] || { echo "no IG views in $IG_VIEWS: run sushi build . in ig/" >&2; exit 1; }
+[ -f "$IG_VIEWS/Binary-IcrCampaignTaskOutput.json" ] || echo "note: $IG_VIEWS has no IcrCampaignTaskOutput; rebuild the IG (sushi build . in ig/)" >&2
 echo "== IG views from $IG_VIEWS"
 rm -rf build/views && mkdir -p build/views
 cp "$IG_VIEWS"/Binary-Icr*.json build/views/
 cp views/Digit*.json build/views/
 
 fhir-pipes refresh --config fhir-pipes.toml --only locations,views ${FULL[@]+"${FULL[@]}"}
+
+# All of Nigeria's states and LGAs (GRID3, from the ICR's location registry: the main
+# warehouse's NGA admin-unit polygons), so the map can show the DIGIT units among them. Copied
+# after the refresh, which replaces parquet/. $NGA_BOUNDARIES can name a local copy instead.
+NGA_BOUNDARIES=${NGA_BOUNDARIES:-r2:icr/parquet/locations/country=NGA/geom_type=polygon/type=admin-unit/part-0.parquet}
+mkdir -p build warehouse/parquet/grid3_nga
+case "$NGA_BOUNDARIES" in
+  r2:*) rclone copyto --checksum "$NGA_BOUNDARIES" build/nga-admin.parquet; NGA_SRC=build/nga-admin.parquet ;;
+  *) NGA_SRC=$NGA_BOUNDARIES ;;
+esac
+duckdb -c "LOAD spatial;
+COPY (SELECT id, name, admin_level, admin1_name, pcode, geometry
+      FROM read_parquet('$NGA_SRC') WHERE admin_level IN (1, 2) ORDER BY admin_level, id)
+TO 'warehouse/parquet/grid3_nga/part-0.parquet' (FORMAT PARQUET);"
+echo "== grid3_nga: $(duckdb -noheader -list -c "SELECT count(*) FROM 'warehouse/parquet/grid3_nga/part-0.parquet'") Nigerian states and LGAs"
 
 if [ "$PUSH" = 1 ]; then
   # fhir-pipes' own push syncs to the root of a bucket; this warehouse lives in a folder of one.
