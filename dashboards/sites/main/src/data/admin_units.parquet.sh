@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Admin units (states + LGAs) with centroids, for labels, filters and map fitting.
+# Not a Library: it needs the locations table's geometry, and a Library can read only views,
+# other Libraries and LocationHierarchy.
 set -euo pipefail
 DATA="${DATA:-$(cd "$(dirname "$0")/../../../../../data" && pwd)}"
 duckdb -c "

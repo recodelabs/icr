@@ -3,6 +3,8 @@
 # the task (status, origin, day, tallies) joined to its settlement point, its facility
 # (campaign_id = mp-polio-2026-r2-<facility id>) and catchment, and the settlement's
 # under-5 planning denominator and WorldPop total.
+# Not a Library: it needs the settlement and facility points (lon, lat) and facility levels from
+# the locations table, which a Library cannot read (LocationHierarchy has neither).
 set -euo pipefail
 DATA="${DATA:-$(cd "$(dirname "$0")/../../../../../data" && pwd)}"
 duckdb -c "
