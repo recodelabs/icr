@@ -275,7 +275,9 @@ Keycloak sign-in. `matchbot/docker-compose.yml` (compose project `icr-matchbot`)
 services:
 
 - `app`: match-bot's web app under gunicorn, built from a pinned field-kit commit
-  (`FIELD_KIT_REF` in `matchbot/Dockerfile`). Uploads and the gazetteer cache are volumes.
+  (`FIELD_KIT_REF` in `matchbot/Dockerfile`) on James McKinnon's `community-geocoder` branch,
+  which has the Community Geocoder and the ICR SDI/FHIR import and is not yet on `main`. Uploads
+  (each browser session's project) and the gazetteer cache are volumes.
 - `proxy`: oauth2-proxy, the only service on the main stack's network; Caddy
   (`sites/matchbot.caddy`) sends the host to it. It signs people in with the `matchbot` client in
   realm `matchbot` (`matchbot/keycloak-client.sh`).
