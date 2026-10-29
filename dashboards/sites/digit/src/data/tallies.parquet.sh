@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# People treated per campaign and activity as the tasks report them (IcrCampaignTaskOutput, added
-# by PR #224: one row per task and activity tally). The DIGIT import records each dose as an event
+# People treated per campaign and activity as the tasks report them (IcrCampaignTaskOutput in the
+# IG: one row per task and activity tally). The DIGIT import records each dose as an event
 # and writes treated-count outputs on only some tasks, so the delivery page counts the events and
 # shows these totals beside them.
 set -euo pipefail

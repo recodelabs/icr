@@ -10,9 +10,8 @@
 # The dashboards (dashboards/sites/digit, observatory deploy) build from r2:icr/digit/. Nothing in
 # it is public: there is no SDI for DIGIT and no map tiles (the boundaries have no geometry).
 #
-# The views: the IG's ViewDefinitions from $IG_VIEWS, plus the DIGIT ones in views/. Until PR #224
-# (ig/digit-additions, which adds IcrCampaignTaskOutput) is merged, point IG_VIEWS at that branch's
-# build; by default this uses the #224 worktree's build when it exists, else ../../ig's.
+# The views: the IG's ViewDefinitions (../../ig/fsh-generated/resources, or $IG_VIEWS), plus the
+# DIGIT ones in views/.
 #
 # The key comes from ~/.config/icr/digit-loader.env (or $KEY_FILE). Needs fhir-pipes (0.6), duckdb
 # and rclone with the r2 remote, and the IG built (sushi build . in ig/).
@@ -31,10 +30,7 @@ for a in "$@"; do
   esac
 done
 
-PR224=../../.claude/worktrees/agent-ae0f8141a1de285a3/ig/fsh-generated/resources
-if [ -z "${IG_VIEWS:-}" ]; then
-  if [ -d "$PR224" ]; then IG_VIEWS=$PR224; else IG_VIEWS=../../ig/fsh-generated/resources; fi
-fi
+IG_VIEWS=${IG_VIEWS:-../../ig/fsh-generated/resources}
 [ -f "$IG_VIEWS/Binary-IcrCampaignTask.json" ] || { echo "no IG views in $IG_VIEWS: run sushi build . in ig/" >&2; exit 1; }
 echo "== IG views from $IG_VIEWS"
 rm -rf build/views && mkdir -p build/views
