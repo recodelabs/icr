@@ -11,9 +11,8 @@
 # it is public: there is no SDI for DIGIT and no map tiles. It also holds grid3_nga, Nigeria's
 # GRID3 states and LGAs from the main warehouse, for the georegistry map.
 #
-# The views: the IG's ViewDefinitions from $IG_VIEWS, plus the DIGIT ones in views/. PR #224
-# (IcrCampaignTaskOutput) is merged; by default this still uses that branch's worktree build when
-# it exists, else ../../ig's, which needs rebuilding on main (sushi build . in ig/).
+# The views: the IG's ViewDefinitions (../../ig/fsh-generated/resources, or $IG_VIEWS), plus the
+# DIGIT ones in views/.
 #
 # The key comes from ~/.config/icr/digit-loader.env (or $KEY_FILE). Needs fhir-pipes (0.6), duckdb
 # and rclone with the r2 remote, and the IG built (sushi build . in ig/).
@@ -32,10 +31,7 @@ for a in "$@"; do
   esac
 done
 
-PR224=../../.claude/worktrees/agent-ae0f8141a1de285a3/ig/fsh-generated/resources
-if [ -z "${IG_VIEWS:-}" ]; then
-  if [ -d "$PR224" ]; then IG_VIEWS=$PR224; else IG_VIEWS=../../ig/fsh-generated/resources; fi
-fi
+IG_VIEWS=${IG_VIEWS:-../../ig/fsh-generated/resources}
 [ -f "$IG_VIEWS/Binary-IcrCampaignTask.json" ] || { echo "no IG views in $IG_VIEWS: run sushi build . in ig/" >&2; exit 1; }
 [ -f "$IG_VIEWS/Binary-IcrCampaignTaskOutput.json" ] || echo "note: $IG_VIEWS has no IcrCampaignTaskOutput; rebuild the IG (sushi build . in ig/)" >&2
 echo "== IG views from $IG_VIEWS"

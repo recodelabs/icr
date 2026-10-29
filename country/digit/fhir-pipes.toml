@@ -13,9 +13,7 @@ data = "warehouse"
 
 # The views are the IG's ViewDefinitions plus the DIGIT ones in views/ (delivery events, supply,
 # households, people, locations, activities), which the IG does not have yet. warehouse.sh copies
-# both into build/views/. The IG's come from $IG_VIEWS: for now the build of PR #224
-# (ig/digit-additions, which adds IcrCampaignTaskOutput); once #224 is merged, from
-# ../../ig/fsh-generated/resources, which warehouse.sh falls back to.
+# both into build/views/. The IG's come from ../../ig/fsh-generated/resources (or $IG_VIEWS).
 views = "build/views"
 profile = "../../ig/fhir-pipes-profile.toml"
 

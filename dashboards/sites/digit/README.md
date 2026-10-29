@@ -34,7 +34,7 @@ site builds while the server is still being loaded.
 The warehouse tables are fhir-pipes runs of ViewDefinitions (`country/digit/fhir-pipes.toml`):
 
 - the IG's views: `campaign_calendar`, `campaign_activity`, `campaign_task`,
-  `campaign_task_output` (from PR #224, see below), `target_population` and the coverage
+  `campaign_task_output`, `target_population` and the coverage
   and indicator views, which are empty for DIGIT;
 - the DIGIT views in `country/digit/views/` (written by `make.py` there), for what the IG
   has no views for yet: `digit_location` (every Location, including the boundaries that
@@ -59,10 +59,8 @@ cd dashboards && npx observatory deploy digit  # R2 warehouse → build → /dig
 For a preview, `npx observatory dev digit` (data from the cached R2 warehouse), or with
 `--local` from `country/digit/warehouse/` (run `warehouse.sh` first).
 
-`warehouse.sh` takes the IG's views from `$IG_VIEWS`. Until PR #224 (`ig/digit-additions`,
-which adds `IcrCampaignTaskOutput`) is merged, it uses that branch's build in its worktree
-(`.claude/worktrees/agent-ae0f8141a1de285a3/ig/fsh-generated/resources`) when it exists;
-after the merge, rebuild the IG on `main` and it falls back to `ig/fsh-generated/resources`.
+`warehouse.sh` takes the IG's views from `ig/fsh-generated/resources` (run `sushi build .` in
+`ig/` first), or from `$IG_VIEWS`.
 The delivery page counts people treated from the delivery events, because the DIGIT import
 records each dose as an event; it writes per-activity tallies (`treated-count`) on only some
 tasks, and the page shows their totals beside the events.
