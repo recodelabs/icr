@@ -40,7 +40,16 @@ $K update "clients/$cid" -r "$REALM" \
   -s "attributes.\"post.logout.redirect.uris\"=https://$HOST/*"
 echo "== $CLIENT in realm $REALM → https://$HOST/oauth2/callback" >&2
 
-# oauth2-proxy reads the email from the ID token (default scopes basic, profile, email); the
-# ID token's audience is the client id, which it checks. The secret is the last line of stdout.
+# oauth2-proxy's keycloak-oidc provider checks the access token's audience, which Keycloak sets
+# to `account` unless an audience mapper adds the client.
+if ! $K get "clients/$cid/protocol-mappers/models" -r "$REALM" --fields name 2>/dev/null | grep -q '"matchbot-audience"'; then
+  $K create "clients/$cid/protocol-mappers/models" -r "$REALM" -s name=matchbot-audience \
+    -s protocol=openid-connect -s protocolMapper=oidc-audience-mapper \
+    -s 'config."included.client.audience"=matchbot' -s 'config."access.token.claim"=true' \
+    -s 'config."id.token.claim"=false' >/dev/null
+  echo "== added audience mapper matchbot-audience" >&2
+fi
+
+# The secret is the last line of stdout.
 $K get "clients/$cid/client-secret" -r "$REALM" --fields value | tr -d '\n ' \
   | grep -o '"value":"[^"]*"' | cut -d'"' -f4 | sed 's/^/CLIENT_SECRET=/'
