@@ -23,6 +23,9 @@ boundary_extensions = [
 # Spatial index cells (quadkey, geohash, h3): the quadkey and quadkey_level
 # columns, `fhir-pipes index`, and the cells diff recomputes after a move.
 spatial_index_extension = "https://icr.healthcampaigns.org/StructureDefinition/spatial-index"
+# The catchment-of extension: catchment_of (the Location a catchment area serves) in the
+# catchment tiles. Needs a fhir-pipes with DuckDB 2.0 lambda syntax in tiles.rs.
+catchment_extension = "https://icr.healthcampaigns.org/StructureDefinition/catchment-of"
 # The type code of an administrative unit: admin_level, tier, the adminN
 # columns and country all follow the chain of these.
 admin_unit_type = "admin-unit"
