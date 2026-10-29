@@ -234,12 +234,6 @@ can respond with 200 and still fail in its DuckDB queries.
 
 ## Known issues to raise with fhir-pipes
 
-- The catchment tiles have no `catchment_of` property, so the main site's georegistry
-  inspector shows no "Catchment of" row. fhir-pipes writes it only when the profile names
-  `[location] catchment_extension`, and with that key its tiles step fails under DuckDB 2.0:
-  the SQL it builds (`catchment_of` in `src/warehouse/tiles.rs`) uses the `e -> …` lambda
-  syntax, which DuckDB 2.0 refuses. Add the key to `ig/fhir-pipes-profile.toml` once
-  fhir-pipes writes `lambda e: …` there.
 - Date-only values such as `executionPeriod.start` are written as UTC-midnight timestamps,
   so they show the previous day west of UTC.
 - A full location extract shows no progress.
