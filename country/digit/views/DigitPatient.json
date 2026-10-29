@@ -1,0 +1,38 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitPatient",
+  "name": "DigitPatient",
+  "title": "DIGIT people",
+  "status": "draft",
+  "description": "One row per Patient (the people registered in households).",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Patient",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "patient_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "gender",
+          "path": "gender",
+          "type": "code"
+        },
+        {
+          "name": "birth_date",
+          "path": "birthDate",
+          "type": "date"
+        },
+        {
+          "name": "deceased",
+          "path": "deceased.ofType(boolean)",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}

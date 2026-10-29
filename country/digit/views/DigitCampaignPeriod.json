@@ -1,0 +1,33 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitCampaignPeriod",
+  "name": "DigitCampaignPeriod",
+  "title": "DIGIT campaign periods",
+  "status": "draft",
+  "description": "One row per campaign with its period as dateTimes. IcrCampaignCalendar writes the period as dates, and DIGIT's periods start at local midnight in India Standard Time (18:30 UTC the day before), so the date alone is a day early.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "CarePlan",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "campaign_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "period_start",
+          "path": "period.start",
+          "type": "dateTime"
+        },
+        {
+          "name": "period_end",
+          "path": "period.end",
+          "type": "dateTime"
+        }
+      ]
+    }
+  ]
+}
