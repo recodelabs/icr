@@ -269,8 +269,9 @@ ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
   --no-feature-limit --no-tile-size-limit`) and streamed with HTTP range requests,
   so only the tiles in view are fetched. Layer toggles, state / LGA filters (the
   map zooms to the unit), and a click on any facility, settlement, catchment or LGA
-  lists the feature's properties straight from the tile — a catchment shows
-  `catchment_of`, the site it belongs to (`src/components/georegistry-map.js`).
+  lists the feature's properties straight from the tile (`src/components/georegistry-map.js`).
+  A catchment would show `catchment_of`, the site it belongs to, but the tiles lack it for
+  now (see "Known issues" in `tools/warehouse/README.md`).
 - **About the data** (`/about`).
 
 ## Sierra Leone dashboards (`sldash/`)

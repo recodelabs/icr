@@ -45,8 +45,10 @@ dashboards/node_modules/
 dashboards/sites/*/dist/
 # Library JSON that warehouse.sh builds from dashboards/sites/uganda/analytics/*.sql
 dashboards/sites/uganda/analytics/build/
-# Library JSON that tools/warehouse/refresh.sh builds from dashboards/sites/main/analytics/*.sql
+# Library JSON built by hand from dashboards/sites/main/analytics/*.sql (tools/warehouse/fhir-pipes.toml)
 dashboards/sites/main/analytics/build/
+# A tools/warehouse/refresh.sh run's own config and Library JSON, removed when the run ends
+tools/warehouse/.run.*
 dashboards/sites/*/src/.observablehq/
 dashboards/worker/.wrangler/
 dashboards/worker/.dev.vars
