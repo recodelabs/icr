@@ -117,8 +117,8 @@ country/digit/warehouse.sh --push
 - **What it does:** copies the IG's ViewDefinitions and the DIGIT ones in
   `country/digit/views/` into `country/digit/build/views/`, runs `fhir-pipes refresh` with
   `country/digit/fhir-pipes.toml` (locations and views; no tiles and no catalog: DIGIT holds
-  no geometry, and only 168 Nigerian states and LGAs carry a GRID3 boundary from the ICR's
-  registry, which the site draws from the `locations` table), then uploads `warehouse/` to `r2:icr/digit/` with
+  no geometry), then copies Nigeria's GRID3 states and LGAs from the main warehouse in R2
+  into `parquet/grid3_nga/` for the georegistry map, then uploads `warehouse/` to `r2:icr/digit/` with
   rclone. `digit/` is private: there is no SDI for it.
 - **The data:** DIGIT HCM demo data (fake), imported into the ICR through the DIGIT mapping.
   DIGIT is a demo tenant, not a country, so the tables are not partitioned by country.

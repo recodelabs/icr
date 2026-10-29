@@ -31,8 +31,8 @@ strip_prefix = ["icr_"]
 # country, and the demo is one tenant anyway. Tables are written unpartitioned.
 
 # No [tiles]: DIGIT holds no geometry. Only 168 Nigerian states and LGAs carry a boundary (GRID3,
-# from the ICR's location registry); the site draws those from the locations table as GeoJSON,
-# and the facilities and dwellings from a parquet file.
+# from the ICR's location registry). The site draws all of Nigeria's GRID3 states and LGAs (grid3_nga,
+# copied in by warehouse.sh) as GeoJSON, and the facilities and dwellings from a parquet file.
 
 # No [push]: fhir-pipes pushes to the root of a bucket, and this warehouse is the bucket's
 # digit/ folder, so warehouse.sh --push uploads it with rclone.

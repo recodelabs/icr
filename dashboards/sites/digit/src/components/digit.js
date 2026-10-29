@@ -1,4 +1,6 @@
 // Labels and formatting shared by the DIGIT demo pages.
+import * as d3 from "npm:d3";
+import * as Inputs from "npm:@observablehq/inputs";
 
 export const CAMPAIGN_TYPES = {
   "smc": "Seasonal malaria chemoprevention",
@@ -10,7 +12,17 @@ export const CAMPAIGN_TYPES = {
 };
 export const typeLabel = (t) => CAMPAIGN_TYPES[t] ?? t ?? "other";
 
-export const toRows = (table) => Array.from(table, (r) => {
+// The country selector shared by the overview and the delivery page. `country` is on every
+// campaign row (data/campaigns.parquet.sh derives it from the campaign's DIGIT hierarchy).
+export function countryInput(umbrellas, {value = "All"} = {}) {
+  const counts = d3.rollup(umbrellas, (v) => v.length, (d) => d.country ?? "Unknown");
+  const countries = [...counts.keys()].sort((a, b) => (a === "Unknown") - (b === "Unknown") || d3.descending(counts.get(a), counts.get(b)));
+  return Inputs.select(["All", ...countries], {label: "Country", value,
+    format: (c) => c === "All" ? `All countries (${umbrellas.length})` : `${c} (${counts.get(c)})`});
+}
+export const inCountry = (country) => (d) => country === "All" || (d.country ?? "Unknown") === country;
+
+export const toRows =(table) => Array.from(table, (r) => {
   const o = typeof r.toJSON === "function" ? r.toJSON() : {...r};
   for (const k in o) if (typeof o[k] === "bigint") o[k] = Number(o[k]);
   return o;
