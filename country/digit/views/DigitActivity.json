@@ -1,0 +1,58 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitActivity",
+  "name": "DigitActivity",
+  "title": "DIGIT campaign activities",
+  "status": "draft",
+  "description": "One row per ActivityDefinition (ICRCampaignActivity): the activity's title and product.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "ActivityDefinition",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "activity_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "url",
+          "path": "url",
+          "type": "uri"
+        },
+        {
+          "name": "title",
+          "path": "title",
+          "type": "string"
+        },
+        {
+          "name": "code",
+          "path": "code.text",
+          "type": "string"
+        },
+        {
+          "name": "campaign_type",
+          "path": "topic.first().coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "product_class",
+          "path": "product.ofType(CodeableConcept).coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs').code.first()",
+          "type": "code"
+        },
+        {
+          "name": "product_atc",
+          "path": "product.ofType(CodeableConcept).coding.where(system = 'http://www.whocc.no/atc').code.first()",
+          "type": "code"
+        },
+        {
+          "name": "product",
+          "path": "product.ofType(CodeableConcept).text",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

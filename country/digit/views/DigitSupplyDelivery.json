@@ -1,0 +1,110 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitSupplyDelivery",
+  "name": "DigitSupplyDelivery",
+  "title": "DIGIT supply records",
+  "status": "draft",
+  "description": "One row per SupplyDelivery: distributions to households (ICRSupplyDistribution) and stock movements between facilities and teams (ICRSupplyMovement), told apart by `profile`.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "SupplyDelivery",
+  "select": [
+    {
+      "column": [
+        {
+          "name": "supply_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "profile",
+          "path": "meta.profile.first()",
+          "type": "canonical"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code",
+          "description": "completed (received) | in-progress (dispatched, not received) | …"
+        },
+        {
+          "name": "campaign_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign').value.ofType(Reference).getReferenceKey(CarePlan)",
+          "type": "string"
+        },
+        {
+          "name": "activity",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/campaign-activity').value.ofType(canonical)",
+          "type": "canonical"
+        },
+        {
+          "name": "item_class",
+          "path": "suppliedItem.item.ofType(CodeableConcept).coding.where(system = 'https://icr.healthcampaigns.org/CodeSystem/icr-commodity-class-cs').code.first()",
+          "type": "code"
+        },
+        {
+          "name": "item_code",
+          "path": "suppliedItem.item.ofType(CodeableConcept).coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "item",
+          "path": "suppliedItem.item.ofType(CodeableConcept).text",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "path": "suppliedItem.quantity.value",
+          "type": "decimal"
+        },
+        {
+          "name": "unit",
+          "path": "suppliedItem.quantity.unit",
+          "type": "string"
+        },
+        {
+          "name": "supplier",
+          "path": "supplier.reference",
+          "type": "string",
+          "description": "Organization, Practitioner or Location reference"
+        },
+        {
+          "name": "destination_id",
+          "path": "destination.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "recipient_group_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/distribution-recipient').value.ofType(Reference).getReferenceKey(Group)",
+          "type": "string"
+        },
+        {
+          "name": "issued_to_team_id",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/issued-to-team').value.ofType(Reference).getReferenceKey(CareTeam)",
+          "type": "string"
+        },
+        {
+          "name": "part_of_id",
+          "path": "partOf.first().getReferenceKey(SupplyDelivery)",
+          "type": "string"
+        },
+        {
+          "name": "occurrence",
+          "path": "occurrence.ofType(dateTime)",
+          "type": "dateTime"
+        },
+        {
+          "name": "returned",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/stock-accountability').extension('returned').value.ofType(Quantity).value",
+          "type": "decimal"
+        },
+        {
+          "name": "not_usable",
+          "path": "extension('https://icr.healthcampaigns.org/StructureDefinition/stock-accountability').extension('notUsable').value.ofType(Quantity).value",
+          "type": "decimal"
+        }
+      ]
+    }
+  ]
+}

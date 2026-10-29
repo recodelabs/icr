@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/IcrCampaignTaskByArea"
+name = "IcrCampaignTaskByArea"
+version = "0.1.0"
+status = "draft"
+kind = "SQLView"
+title = "Campaign tasks with their places in the location hierarchy"
+description = """
+Each IcrCampaignTask row with two places in the location hierarchy (LocationHierarchy): the Location the task acts on (for_location_id; for_name, for_admin_level, for_admin0..4_name and _code, for_path) and the Location where the work happens (location_id; the same columns prefixed location_). country is the for Location's.
+"""
+
+[[depends_on]]
+label = "task"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignTask"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

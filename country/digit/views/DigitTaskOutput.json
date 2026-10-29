@@ -1,0 +1,73 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "https://icr.healthcampaigns.org/ViewDefinition/DigitTaskOutput",
+  "name": "DigitTaskOutput",
+  "title": "DIGIT task outputs",
+  "status": "draft",
+  "description": "One row per Task output (registered household, delivery event, missed or refusal reason, counts), with the Task's campaign and status.",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "resource": "Task",
+  "where": [
+    {
+      "path": "basedOn.exists()"
+    }
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "task_id",
+          "path": "getResourceKey()",
+          "type": "id"
+        },
+        {
+          "name": "campaign_id",
+          "path": "basedOn.first().getReferenceKey(CarePlan)",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "path": "status",
+          "type": "code"
+        },
+        {
+          "name": "code",
+          "path": "code.text",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "forEach": "output",
+      "column": [
+        {
+          "name": "output_type",
+          "path": "type.coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "value_code",
+          "path": "value.ofType(CodeableConcept).coding.first().code",
+          "type": "code"
+        },
+        {
+          "name": "value_text",
+          "path": "value.ofType(CodeableConcept).text",
+          "type": "string"
+        },
+        {
+          "name": "value_count",
+          "path": "value.ofType(unsignedInt)",
+          "type": "unsignedInt"
+        },
+        {
+          "name": "value_reference",
+          "path": "value.ofType(Reference).reference",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

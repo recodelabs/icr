@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/IcrCampaignCalendarByArea"
+name = "IcrCampaignCalendarByArea"
+version = "0.1.0"
+status = "draft"
+kind = "SQLView"
+title = "Campaigns with their place in the location hierarchy"
+description = """
+Each IcrCampaignCalendar row with its Location's place in the location hierarchy (LocationHierarchy, joined on location_id): location_name, admin_level, admin0..4_name and _code, country and path.
+"""
+
+[[depends_on]]
+label = "calendar"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

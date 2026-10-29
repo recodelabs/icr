@@ -43,6 +43,8 @@ data/tiles/
 # dashboards (Observable Framework sites, built with Observatory)
 dashboards/node_modules/
 dashboards/sites/*/dist/
+# Library JSON that warehouse.sh builds from dashboards/sites/uganda/analytics/*.sql
+dashboards/sites/uganda/analytics/build/
 dashboards/sites/*/src/.observablehq/
 dashboards/worker/.wrangler/
 dashboards/worker/.dev.vars

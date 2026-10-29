@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/IcrCoverageByArea"
+name = "IcrCoverageByArea"
+version = "0.1.0"
+status = "draft"
+kind = "SQLView"
+title = "Coverage reports with their place in the location hierarchy"
+description = """
+Each IcrCoverage row with its Location's place in the location hierarchy (LocationHierarchy, joined on location_id): location_name, admin_level, admin0..4_name and _code, country and path.
+"""
+
+[[depends_on]]
+label = "coverage"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

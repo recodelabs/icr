@@ -1,9 +1,9 @@
 # fhir-pipes settings for Uganda's warehouse (warehouse/): the Uganda ICR server's locations, the
 # IG's ViewDefinitions over its campaigns, targets and tasks, and map tiles. Paths are relative to
-# this file. Run warehouse.sh, which runs:
+# this file. Run warehouse.sh, which builds the dashboard Libraries and then runs:
 #
 #   FHIR_PIPES_CLIENT_ID=… FHIR_PIPES_CLIENT_SECRET=… \
-#     fhir-pipes refresh --config country/uganda/fhir-pipes.toml --only locations,views,tiles,hooks
+#     fhir-pipes refresh --config country/uganda/fhir-pipes.toml --only locations,views,libraries,tiles,hooks
 #
 # warehouse.sh --push uploads it to the uga/ folder of the `icr` R2 bucket. That folder is also
 # Uganda's SDI (https://sdi.healthcampaigns.org/uga/, served by tools/sdi), which serves only the
@@ -14,6 +14,10 @@
 data = "warehouse"
 views = "../../ig/fsh-generated/resources"
 profile = "../../ig/fhir-pipes-profile.toml"
+# The Uganda dashboards' SQL on FHIR Libraries (the …ByArea SQLViews and the Uganda* SQLQueries),
+# built to JSON by warehouse.sh from dashboards/sites/uganda/analytics/. Each SQLQuery's result is a
+# table: UgandaTasks → uganda_tasks.
+libraries = ["../../dashboards/sites/uganda/analytics/build"]
 
 [server]
 base = "https://fhir-uga.healthcampaigns.org/fhir"

@@ -123,6 +123,10 @@ Campaigns without activity details have no rows here; their target is
 * select[1].column[3].name = "activity_end"
 * select[1].column[3].path = "scheduled.ofType(Period).end"
 * select[1].column[3].type = "date"
+* select[1].column[4].name = "activity_key"
+* select[1].column[4].path = "instantiatesCanonical.first().replaceMatches('^.*/', '')"
+* select[1].column[4].type = "string"
+* select[1].column[4].description = "The activity canonical's last path segment, e.g. the code that names the activity"
 * select[1].select[0].forEachOrNull = "extension('https://icr.healthcampaigns.org/StructureDefinition/planning-denominator')"
 * select[1].select[0].column[0].name = "denominator_id"
 * select[1].select[0].column[0].path = "value.ofType(Reference).getReferenceKey(Group)"
@@ -205,10 +209,18 @@ and IRS targets, which must not be summed with person counts.
 * select[0].column[12].path = "characteristic.where(code.coding.code = 'travel-time').first().value.ofType(CodeableConcept).coding.first().code"
 * select[0].column[12].type = "code"
 * select[0].column[12].description = "Accessibility stratum of the estimate (walk-lt-1h | walk-1h-4h | walk-gt-4h | drive-…); null for an all-of-the-geography figure"
-* select[0].column[13].name = "unit"
-* select[0].column[13].path = "modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value.ofType(code)"
+* select[0].column[13].name = "code"
+* select[0].column[13].path = "code.coding.first().code"
 * select[0].column[13].type = "code"
-* select[0].column[13].description = "What quantity counts: person | household | structure (unit-of-count). Null means person"
+* select[0].column[13].description = "What the Group counts (Group.code), e.g. a campaign target column"
+* select[0].column[14].name = "code_text"
+* select[0].column[14].path = "code.text"
+* select[0].column[14].type = "string"
+* select[0].column[14].description = "Group.code.text, the human-readable name of what the Group counts"
+* select[0].column[15].name = "unit"
+* select[0].column[15].path = "modifierExtension.where(url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count').value.ofType(code)"
+* select[0].column[15].type = "code"
+* select[0].column[15].description = "What quantity counts: person | household | structure (unit-of-count). Null means person"
 
 Instance: IcrCampaignTask
 InstanceOf: $ViewDefinition
@@ -320,6 +332,10 @@ Microplan-vs-monitoring dashboards are this table at two points in time.
 * select[0].column[22].name = "status_reason"
 * select[0].column[22].path = "statusReason.text"
 * select[0].column[22].type = "string"
+* select[0].column[23].name = "activity_key"
+* select[0].column[23].path = "instantiatesCanonical.replaceMatches('^.*/', '')"
+* select[0].column[23].type = "string"
+* select[0].column[23].description = "The activity canonical's last path segment, e.g. the code that names the activity"
 
 Instance: IcrCampaignTaskOutput
 InstanceOf: $ViewDefinition

@@ -1,0 +1,18 @@
+url = "https://icr.healthcampaigns.org/uganda/Library/UgandaPopulation"
+name = "UgandaPopulation"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "Uganda population estimates"
+description = """
+One row per administrative unit: the Ministry of Health's total population 2026 and catch
+population 2025 and WorldPop's 2026 total, from the target-population Groups.
+"""
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"
+
+[[depends_on]]
+label = "target_population"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"

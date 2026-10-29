@@ -13,6 +13,7 @@ npm `@recodelabs/observatory-cli`); its components package supplies the shared m
 |---|---|---|---|
 | Campaign Dashboards (Nigeria demo, IG examples) | `/` | `sites/main/` | the main warehouse (R2 bucket root; local copy `data/`) |
 | Uganda campaign dashboards | `/ug/` | `sites/uganda/` | the Uganda warehouse (R2 `uga/`; local copy `country/uganda/warehouse/`) |
+| DIGIT demo (DIGIT HCM demo data, fake) | `/digit/` | `sites/digit/` | the DIGIT demo warehouse (R2 `digit/`; local copy `country/digit/warehouse/`) |
 | Sierra Leone DHIS2 dashboards | `/dhis2-sl/` | `sites/sldash/` | the local `data/` only |
 | The same, redrawn | `/dhis2-sl-redux/` | `sites/sl-redux/` | the local `data/` only |
 
