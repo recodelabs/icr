@@ -10,6 +10,7 @@ tags:
   - fhir
   - integration
   - data-model
+public: true
 ---
 
 # DIGIT HCM and the ICR — data model comparison and mapping to FHIR
