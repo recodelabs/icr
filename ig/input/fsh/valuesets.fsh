@@ -184,7 +184,7 @@ Description: "Settlement / special-population classification of a Location. Bind
 ValueSet: ICRMDAMedicationVS
 Id: icr-mda-medication
 Title: "ICR MDA Medication"
-Description: "WHO ATC-coded preventive-chemotherapy medications. Binding: extensible — local formulary codes map back via ConceptMap. Includes the full ATC system; typical PC-NTD codes are albendazole P02CA03, ivermectin P02CA01, praziquantel P02BA01, azithromycin J01FA10, diethylcarbamazine P02CB02. Restricting to a PC-NTD subtree is deferred until country formularies are reviewed."
+Description: "WHO ATC-coded preventive-chemotherapy medications. Binding: extensible — local formulary codes map back via ConceptMap. Includes the full ATC system; typical PC-NTD codes are albendazole P02CA03, ivermectin P02CF01, praziquantel P02BA01, azithromycin J01FA10, diethylcarbamazine P02CB02. Restricting to a PC-NTD subtree is deferred until country formularies are reviewed."
 * ^experimental = false
 * include codes from system $ATC
 
@@ -324,3 +324,61 @@ Title: "ICR Report Source"
 Description: "Sources of MeasureReport figures. Binding: extensible on the report-source extension."
 * ^experimental = false
 * include codes from system ICRReportSourceCS
+
+// --- DIGIT-mapping additions (project/ig-gaps-from-digit.md) -------------------
+
+// The census / DHS household-roster categories. Each v3 RoleCode category is
+// included with its descendants (filter is-a), so a form that records SON, WIFE
+// or HUSB is valid as it stands; FAMMEMB is the single code only, because its
+// descendants are every family relationship. CHLDADOPT, CHLDFOST and STPCHLD are
+// also under CHILD; they are listed for the census category they stand for.
+ValueSet: ICRRelationshipToHeadVS
+Id: icr-relationship-to-head
+Title: "ICR Relationship to Head of Household"
+Description: "How a household member relates to the household's reference head — the question census and DHS household rosters ask. The three ICR codes (head, co-head, non-relative), the HL7 v3 RoleCode categories with their descendants (spouse, child, child-in-law, grandchild, parent, parent-in-law, sibling, adopted / foster / stepchild), v3 FAMMEMB for other relatives (code only; it is broader than the census 'other relative', so keep the source category in text where it matters) and v3 NullFlavor UNK for don't know. Binding: extensible on the relationship-to-head extension."
+* ^experimental = false
+* $HouseholdRelationship#head "Head (reference person)"
+* $HouseholdRelationship#co-head "Co-head"
+* $HouseholdRelationship#non-relative "Not related"
+* include codes from system $V3RoleCode where concept is-a #SPS
+* include codes from system $V3RoleCode where concept is-a #CHILD
+* include codes from system $V3RoleCode where concept is-a #CHLDINLAW
+* include codes from system $V3RoleCode where concept is-a #GRNDCHILD
+* include codes from system $V3RoleCode where concept is-a #PRN
+* include codes from system $V3RoleCode where concept is-a #PRNINLAW
+* include codes from system $V3RoleCode where concept is-a #SIB
+* include codes from system $V3RoleCode where concept is-a #CHLDADOPT
+* include codes from system $V3RoleCode where concept is-a #CHLDFOST
+* include codes from system $V3RoleCode where concept is-a #STPCHLD
+* $V3RoleCode#FAMMEMB "family member"
+* $V3NullFlavor#UNK "unknown"
+
+ValueSet: ICRNotDoneReasonVS
+Id: icr-not-done-reason
+Title: "ICR Not-done Reason"
+Description: "Why an eligible person was not given a vaccine or drug at a campaign contact: missed (ICRMissedReasonVS), refused (ICRNoncomplianceReasonVS) or excluded (ICRExclusionReasonVS). Binding: extensible on statusReason of ICRImmunizationEvent and ICRMedicationAdministration."
+* ^experimental = false
+* include codes from valueset ICRMissedReasonVS
+* include codes from valueset ICRNoncomplianceReasonVS
+* include codes from valueset ICRExclusionReasonVS
+
+ValueSet: ICRReferralReasonVS
+Id: icr-referral-reason
+Title: "ICR Referral Reason"
+Description: "Reasons for a campaign referral. Binding: extensible on ICRReferral.reasonCode. Mapped to SNOMED CT by ConceptMap icr-referral-reason-to-snomed."
+* ^experimental = false
+* include codes from system ICRReferralReasonCS
+
+ValueSet: ICRCountUnitVS
+Id: icr-count-unit
+Title: "ICR Count Unit"
+Description: "Units a target-population count can count: person, household, structure. Binding: required on the unit-of-count modifier extension."
+* ^experimental = false
+* include codes from system ICRCountUnitCS
+
+ValueSet: ICRResourceTypeVS
+Id: icr-resource-type
+Title: "ICR Resource Type"
+Description: "Kinds of resource a microplan estimates. Binding: required on ICRResourceEstimate.code."
+* ^experimental = false
+* include codes from system ICRResourceTypeCS

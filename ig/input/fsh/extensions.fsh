@@ -54,8 +54,8 @@ Context: CarePlan, CarePlan.activity.detail
 Extension: CampaignActivity
 Id: campaign-activity
 Title: "Campaign Activity"
-Description: "The activity of an integrated campaign that this report covers: the ICRCampaignActivity a CarePlan.activity.detail of the campaign instantiates. The report's denominator is then that activity's planning denominator and its numerator counts only that activity's doses or treatments. Absent on a report for a single-intervention campaign, or for a campaign as a whole."
-Context: MeasureReport
+Description: "The activity of an integrated campaign that this record belongs to: the ICRCampaignActivity a CarePlan.activity.detail of the campaign instantiates. On a coverage report, the report's denominator is then that activity's planning denominator and its numerator counts only that activity's doses or treatments; absent on a report for a single-intervention campaign, or for a campaign as a whole. On a delivery event (Immunization, MedicationAdministration, SupplyDelivery), the activity the dose, treatment or handover was for: per-activity results count events by this link, not by product code. An event must carry it whenever its visit Task has no instantiatesCanonical and its campaign lists more than one activity (a conformance rule stated in the IG text, since an event cannot see its Task). On a Task output, the activity a per-activity tally (treated-count) is for, on a visit that delivers several activities."
+Context: MeasureReport, Immunization, MedicationAdministration, SupplyDelivery, Task.output
 * ^experimental = false
 * value[x] only Canonical(ICRCampaignActivity)
 
@@ -495,3 +495,67 @@ Context: MeasureReport
 * ^experimental = false
 * value[x] only CodeableConcept
 * value[x] from ICRReportSourceVS (extensible)
+
+// --- DIGIT-mapping additions (project/ig-gaps-from-digit.md) -------------------
+
+Extension: RelationshipToHead
+Id: relationship-to-head
+Title: "Relationship to Head of Household"
+Description: "How a household member relates to the household's reference head — the question census and DHS household rosters ask. The reference head is coded head; every other code is relative to that person; other heads are coded co-head. When the reference head changes, re-code the other members from the source if it gives relationships to the new head, otherwise remove the codes rather than keep codes that refer to someone else (the earlier codes stay in the Group's version history)."
+Context: Group.member
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRRelationshipToHeadVS (extensible)
+
+Extension: UnitOfCount
+Id: unit-of-count
+Title: "Unit of Count"
+Description: "What the target population's Group.quantity counts: persons, households or structures. A modifier extension: Group.quantity counts members of Group.type, R4 Group.type has no household value, and the Group keeps type = person, so a system that does not understand this extension must not read quantity as a number of people. Absent means person. One figure per Group: a campaign's household target and its person target are separate Groups."
+Context: Group
+* ^experimental = false
+* . ^isModifier = true
+* . ^isModifierReason = "Changes the meaning of Group.quantity from a number of people to a number of households or structures."
+* value[x] only code
+* value[x] from ICRCountUnitVS (required)
+
+Extension: ReferringTask
+Id: referring-task
+Title: "Referring Task"
+Description: "The campaign visit (ICRCampaignTask) at which a referral was made. R4 ServiceRequest has no element for the event that produced the request."
+Context: ServiceRequest
+* ^experimental = false
+* value[x] only Reference(ICRCampaignTask)
+
+Extension: SuppliedItem
+Id: supplied-item
+Title: "Supplied Item"
+Description: "The product an Observation is about — the product counted (ICRStockCount) or estimated (ICRResourceEstimate) — coded as on the supply movements and distributions (ICRSuppliedItemVS), so counts, estimates and movements of one product join on one code."
+Context: Observation
+* ^experimental = false
+* value[x] only CodeableConcept
+* value[x] from ICRSuppliedItemVS (extensible)
+
+Extension: StockCountBasis
+Id: stock-count-basis
+Title: "Stock Count Basis"
+Description: "A supply movement since the last count that the expected balance of a stock count was computed from. R4 Observation.derivedFrom cannot reference a SupplyDelivery."
+Context: Observation
+* ^experimental = false
+* value[x] only Reference(ICRSupplyMovement)
+
+Extension: EstimateBasis
+Id: estimate-basis
+Title: "Estimate Basis"
+Description: "A target population a microplan resource estimate was computed from. R4 Observation.derivedFrom cannot reference a Group."
+Context: Observation
+* ^experimental = false
+* value[x] only Reference(ICRTargetPopulation)
+
+Extension: EvaluatedRole
+Id: evaluated-role
+Title: "Evaluated Resource Role"
+Description: "The role a resource listed in MeasureReport.evaluatedResource played in the figures: denominator for the ICRTargetPopulation(s) a coverage report divided by. Codes are the measure population codes (numerator, denominator, …)."
+Context: MeasureReport.evaluatedResource
+* ^experimental = false
+* value[x] only code
+* value[x] from $MeasurePopulationVS (required)
