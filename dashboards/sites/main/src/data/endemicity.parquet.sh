@@ -1,21 +1,13 @@
 #!/usr/bin/env bash
-# Endemicity assertions (from the IG ViewDefinition IcrLocationStatus) for the
-# dashboard: every assertion with its LGA/state names, plus a flag for the
-# current one per LGA × property (newest wins).
+# Endemicity assertions (IcrLocationStatus) for the NTD page: every assertion with its LGA and
+# state names, plus a flag for the current one per LGA x property (newest wins).
+# The SQL lives in the Library analytics/MainEndemicity.sql; the refresh writes its result to the warehouse
+# as main_endemicity (partitioned by country). This loader copies it, in the Library's order.
 set -euo pipefail
 DATA="${DATA:-$(cd "$(dirname "$0")/../../../../../data" && pwd)}"
+P() { echo "read_parquet('$DATA/parquet/$1/**/*.parquet', hive_partitioning=true, union_by_name=true, hive_types_autocast=false)"; }
 duckdb -c "
 COPY (
-  WITH s AS (SELECT * FROM read_parquet('$DATA/parquet/location_status/**/*.parquet', hive_partitioning=true, union_by_name=true)),
-       loc AS (SELECT id, name, admin_level, admin1_name FROM read_parquet('$DATA/parquet/locations/country=*/**/*.parquet', hive_partitioning=true, union_by_name=true) WHERE type = 'admin-unit')
-  SELECT s.observation_id, s.location_id, l.name AS location_name, l.admin1_name AS state, l.admin_level,
-         s.property,
-         regexp_replace(s.property, '-endemicity$', '') AS disease,
-         s.status, s.effective, year(s.effective) AS effective_year,
-         s.performer, s.method, s.evidence,
-         s.figure_label, s.figure_value, s.figure_unit,
-         s.country,
-         row_number() OVER (PARTITION BY s.location_id, s.property ORDER BY s.effective DESC) = 1 AS is_current
-  FROM s LEFT JOIN loc l ON l.id = s.location_id
-  ORDER BY s.property, l.admin1_name, l.name, s.effective
+  SELECT * FROM $(P main_endemicity)
+  ORDER BY property, state, location_name, effective, observation_id
 ) TO '/dev/stdout' (FORMAT PARQUET);"

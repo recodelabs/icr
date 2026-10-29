@@ -111,7 +111,9 @@ npx observatory dev main --port 3030 --host 0.0.0.0   # other options go to Fram
 
 The data loaders in each site's `src/data/` need `duckdb` on the PATH. They read the
 warehouse folder in `DATA`, which observatory sets, and fall back to the local copy when
-run on their own.
+run on their own. In the main and Uganda sites most of the SQL is in SQL on FHIR Libraries
+in `analytics/`, which the warehouse refresh runs; their loaders copy the result tables
+(see `tools/warehouse/README.md`).
 
 **DuckDB 2.0 in the browser.** Framework 1.13.4 comes with DuckDB-Wasm 1.29.0 (DuckDB
 1.1.1). For pages that use DuckDB, observatory swaps in DuckDB-Wasm built for DuckDB 2.0.0
@@ -213,7 +215,8 @@ ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
   Pan or zoom one and the other follows. Hover for the LGA's figures. Both ramps
   rescale to the selection (the rounds ramp runs 0 → busiest LGA in the current
   year / programme, so a single year still shows contrast). Boundaries come from `admin.pmtiles` (layers
-  `states`, `lgas`; `promoteId: id` so feature-state is keyed by the registry
+  `admin1` for the states and `admin2` for the LGAs, `ADMIN_LAYERS` in
+  `src/components/map.js`; `promoteId: id` so feature-state is keyed by the registry
   Location id).
 - **Timeline** — toggle between *By state* (one lane per state, one bar per state
   round coloured by programme; overlaps are two programmes in the same state at the
@@ -266,8 +269,9 @@ ruled out because it caps files at 25 MiB, and DuckDB-WASM's engine is larger.
   --no-feature-limit --no-tile-size-limit`) and streamed with HTTP range requests,
   so only the tiles in view are fetched. Layer toggles, state / LGA filters (the
   map zooms to the unit), and a click on any facility, settlement, catchment or LGA
-  lists the feature's properties straight from the tile — a catchment shows
-  `catchment_of`, the site it belongs to (`src/components/georegistry-map.js`).
+  lists the feature's properties straight from the tile (`src/components/georegistry-map.js`).
+  A catchment would show `catchment_of`, the site it belongs to, but the tiles lack it for
+  now (see "Known issues" in `tools/warehouse/README.md`).
 - **About the data** (`/about`).
 
 ## Sierra Leone dashboards (`sldash/`)
@@ -289,7 +293,8 @@ boundaries only. The default is OpenStreetMap as a placeholder.
 ## Adding data
 
 New columns: extend the ViewDefinitions in the IG (`ig/input/fsh/viewdefinitions.fsh`),
-run the refresh, then add the join in `src/data/campaigns.parquet.sh`. New tables
+add the column to the Library `sites/main/analytics/MainCampaigns.sql`, then run the
+refresh. New tables
 (e.g. delivery events for "people reached"): a new ViewDefinition becomes a new
 folder under `data/parquet/` automatically; add a loader here and query it with
 `sql`.

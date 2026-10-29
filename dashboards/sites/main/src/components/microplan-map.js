@@ -3,7 +3,7 @@
 // or by coverage), and the facilities as markers. Rows come from the microplan loader.
 import maplibregl from "npm:maplibre-gl@5";
 import {PMTiles} from "npm:pmtiles@4";
-import {protocol, DEFAULT_BASEMAP} from "./map.js";
+import {protocol, DEFAULT_BASEMAP, ADMIN_LAYERS} from "./map.js";
 
 /** Task status: a status palette, fixed order (dataviz: never reused for series). */
 export const STATUS = [
@@ -93,7 +93,7 @@ export function microplanMap({urls, lga, height = 600, basemap = DEFAULT_BASEMAP
      paint: {"fill-color": "rgba(0,0,0,0)", "fill-opacity": 0.5}},
     {id: "settlement-catchment-line", type: "line", source: "catchments", "source-layer": "settlement_catchments", minzoom: 10,
      paint: {"line-color": "#b45309", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.3, 13, 0.9], "line-opacity": 0.6}},
-    {id: "lga-line", type: "line", source: "admin", "source-layer": "lgas", filter: lgaFilter,
+    {id: "lga-line", type: "line", source: "admin", "source-layer": ADMIN_LAYERS.lgas, filter: lgaFilter,
      paint: {"line-color": "#0f172a", "line-width": 2, "line-dasharray": [3, 2]}},
     {id: "settlement-pt", type: "circle", source: "settlements",
      paint: {"circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 2.2, 11, 4.5, 13, 7],

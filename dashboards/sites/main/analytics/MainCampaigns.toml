@@ -1,0 +1,32 @@
+url = "https://icr.healthcampaigns.org/main/Library/MainCampaigns"
+name = "MainCampaigns"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "Campaigns with their targets and results"
+description = """
+One row per campaign: its level, programme, administrative unit and state, people targeted
+(the planning denominator, else the largest per-activity target), the per-activity targets,
+and its results: administrative coverage (reconciled), the latest realtime figure, the LQAS
+verdict and the survey estimate. The SQL is DuckDB's.
+"""
+
+[[depends_on]]
+label = "calendar"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar"
+
+[[depends_on]]
+label = "activity"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignActivity"
+
+[[depends_on]]
+label = "target_population"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
+
+[[depends_on]]
+label = "coverage"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

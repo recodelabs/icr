@@ -31,6 +31,15 @@ Framework runs each site's data loaders (`src/data/*.sh`) over the warehouse and
 small files shaped for the pages into the build. New data therefore shows only after a
 redeploy.
 
+Most of the main and Uganda dashboards' SQL is not in the loaders. It is in SQL on FHIR
+Libraries in each site's `analytics/` folder (`<name>.sql` with a `<name>.toml` beside it):
+SQLViews, which other Libraries read, and SQLQueries, whose results the refresh writes to
+the warehouse as tables (`MainCampaigns` becomes `parquet/main_campaigns/`). The loaders
+that use them only copy those tables. A change to a Library's SQL therefore needs a
+refresh (`--libraries` is enough) before the redeploy. The main site shares the generic
+`Icr…ByArea` SQLViews with Uganda's: `dashboards/sites/main/analytics/` links to the files
+in `dashboards/sites/uganda/analytics/`.
+
 ## The pieces
 
 | Piece | Source | Local copy | In R2 (`icr` bucket) | Public address |
@@ -54,17 +63,38 @@ FHIR_BASE=https://hapi.healthcampaigns.org/fhir SERVER_NAME=hapi-gcp \
   tools/warehouse/refresh.sh --push
 ```
 
-- `refresh.sh` runs `fhir-pipes refresh` with `tools/warehouse/fhir-pipes.toml`, in this
-  order: locations, views, tiles, manifest, the catalog hook, then the push.
+- `refresh.sh` first builds the main dashboards' Libraries
+  (`dashboards/sites/main/analytics/*.sql`) into Library JSON in a directory of its own
+  (`tools/warehouse/.run.*`), and writes a copy of `tools/warehouse/fhir-pipes.toml` whose
+  `libraries` points there. It then runs `fhir-pipes refresh` with that copy, in this order:
+  locations, views, tiles, libraries (each SQLQuery's result as a table `main_…`),
+  manifest, the catalog hook, then the push. Both are removed when the run ends, so two runs
+  at once never share Library files, and a Library that fails to build stops the run before
+  anything is downloaded.
+- **The fhir-pipes build:** every command that uses `tools/warehouse/fhir-pipes.toml` needs
+  a fhir-pipes newer than 0.6.0. 0.6.0 refuses the config's `libraries` key and has no
+  `libraries` command. `~/.local/bin/fhir-pipes` is such a build (the old 0.6.0 is kept as
+  `~/.local/bin/fhir-pipes-0.6.0-old`, for rolling back only). refresh.sh uses `FHIR_PIPES`,
+  else `fhir-pipes` on the `PATH` with `~/.local/bin` first, and stops with a message when
+  that binary has no `libraries` command.
 - Set `FHIR_BASE` and `SERVER_NAME` as above. The config's default server is a local HAPI
   (`localhost:3447`).
 - **Incremental by default:** only what changed is downloaded. Add `--full` after records
   were deleted on the server. A full run takes about 30 minutes, nearly all of it spent
   extracting the 350,000 locations, and prints no progress while it does.
-- **Narrower runs:** `--views` (seconds) and `--tiles` refresh only that part.
+- **Narrower runs:** `--views` (seconds) and `--locations` refresh that part and rerun the
+  Libraries, since fhir-pipes runs them whenever their input tables change. `--libraries`
+  reruns only the Libraries, after a change to their SQL, over the tables already in the
+  warehouse: a new warehouse needs a run with views first, or the step stops on the
+  missing view tables. `--tiles` rebuilds only the tiles.
 - **Push only, without refreshing:**
-  `fhir-pipes refresh --config tools/warehouse/fhir-pipes.toml --data data --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp --only push`.
-  Add `--dry-run` to see what it would copy and delete.
+  `"${FHIR_PIPES:-$HOME/.local/bin/fhir-pipes}" refresh --config tools/warehouse/fhir-pipes.toml --data data --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp --only push`.
+  Add `--dry-run` to see what it would copy and delete. Push only from a warehouse whose
+  tables and catalog files you mean to publish: the push mirrors it to R2, which the
+  dashboards and the SDI read.
+- **Running fhir-pipes by hand** with `tools/warehouse/fhir-pipes.toml` and a step that
+  loads the Libraries reads them from `dashboards/sites/main/analytics/build/`. Build it
+  first: `"$FHIR_PIPES" libraries build dashboards/sites/main/analytics --out dashboards/sites/main/analytics/build`.
 
 ## Update the Uganda warehouse
 
@@ -146,7 +176,10 @@ can respond with 200 and still fail in its DuckDB queries.
 
 ## What the tools need
 
-- **fhir-pipes** 0.6 or later (ohs-foundation/fhir-pipes-rs), at `~/.local/bin/fhir-pipes`.
+- **fhir-pipes** (ohs-foundation/fhir-pipes-rs), a build newer than 0.6.0 with the
+  `libraries` command, at `~/.local/bin/fhir-pipes` (a `cargo build --release` of main).
+  All three warehouses use it. The main and Uganda configs have Libraries, which 0.6.0
+  refuses, and the admin tile layer names the sites draw (`admin0`…) are the newer build's.
 - **duckdb** (2.0, with the spatial extension), **tippecanoe**, and **portolan** for the
   catalog hook.
 - **rclone** with the `r2` remote for the `icr` bucket.
@@ -178,7 +211,15 @@ can respond with 200 and still fail in its DuckDB queries.
   run the sites through `observatory`, not `observable` directly.
 - **Portolan metadata beside the data.** Warehouse folders hold Portolan files
   (`items.parquet`, `collection.json`) next to the tables. Read tables with globs that
-  start at `country=*/`, as `data/catalog.sql` and the loaders do.
+  start at `country=*/`, as `data/catalog.sql` and the loaders do. The Library results
+  (`main_…`, `uganda_…`) have no Portolan files, so their loaders read
+  `<table>/**/*.parquet`, which also finds an unpartitioned result's `part-0.parquet`.
+- **Map tile layer names.** fhir-pipes after 0.6.0 names the layers of `admin.pmtiles`
+  by admin level: `admin0`, `admin1`, `admin2`. 0.6.0 named them `country`, `states` and
+  `lgas`. The sites' maps use the new names (`ADMIN_LAYERS` in
+  `dashboards/sites/main/src/components/map.js`, `UGANDA_LAYERS` in the Uganda site). The
+  profile could rename the layers (`[location] admin_layers`); it does not, because the
+  maps and the SDI styles use the level names, which fit every country.
 - **Lock file.** `.refresh.lock` in a warehouse folder is fhir-pipes' run lock: a run holds
   an operating-system lock on it, so two refreshes of one warehouse take turns, and the lock
   ends with the process. The empty file stays by design and never blocks a later run.
@@ -193,8 +234,12 @@ can respond with 200 and still fail in its DuckDB queries.
 
 ## Known issues to raise with fhir-pipes
 
-- Tile layers are named `states` and `lgas` for every country, so Uganda's regions and
-  districts get those names (`src/warehouse/tiles.rs`).
+- The catchment tiles have no `catchment_of` property, so the main site's georegistry
+  inspector shows no "Catchment of" row. fhir-pipes writes it only when the profile names
+  `[location] catchment_extension`, and with that key its tiles step fails under DuckDB 2.0:
+  the SQL it builds (`catchment_of` in `src/warehouse/tiles.rs`) uses the `e -> …` lambda
+  syntax, which DuckDB 2.0 refuses. Add the key to `ig/fhir-pipes-profile.toml` once
+  fhir-pipes writes `lambda e: …` there.
 - Date-only values such as `executionPeriod.start` are written as UTC-midnight timestamps,
   so they show the previous day west of UTC.
 - A full location extract shows no progress.

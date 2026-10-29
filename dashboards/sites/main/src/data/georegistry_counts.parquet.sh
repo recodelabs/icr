@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Feature counts per layer × state × LGA (× facility level) for the Georegistry page's
 # KPIs and cascading filters.
+# Not a Library: it counts every Location by type and facility level, columns of the locations
+# table that LocationHierarchy, the only Location input a Library has, does not carry.
 set -euo pipefail
 DATA="${DATA:-$(cd "$(dirname "$0")/../../../../../data" && pwd)}"
 duckdb -c "

@@ -26,6 +26,12 @@ export const DEFAULT_BASEMAP = {
   saturation: -0.9
 };
 
+// The layers of admin.pmtiles. fhir-pipes names them by admin level (fhir-pipes #140): admin0
+// the country, admin1 the states, admin2 the LGAs. The ICR profile names no levels, because a
+// profile that does (`[location] admin_layers`) does not load in fhir-pipes 0.6.0, which other
+// warehouses still refresh with.
+export const ADMIN_LAYERS = {country: "admin0", states: "admin1", lgas: "admin2"};
+
 // One pmtiles protocol shared by every map on the page (and by georegistry-map.js).
 export const protocol = new Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -181,7 +187,7 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   }
 
   const sources = {
-    admin: {type: "vector", url: "pmtiles://admin", promoteId: {lgas: "id", states: "id"}},
+    admin: {type: "vector", url: "pmtiles://admin", promoteId: {[ADMIN_LAYERS.lgas]: "id", [ADMIN_LAYERS.states]: "id"}},
     // Label anchors as points (one per state) so names are not repeated per tile.
     labels: {type: "geojson", data: {type: "FeatureCollection", features: labels.map((d) => ({
       type: "Feature", id: d.id, properties: {name: d.name}, geometry: {type: "Point", coordinates: [d.lon, d.lat]}}))}}
@@ -201,11 +207,11 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
                  paint: {"raster-opacity": basemap.opacity ?? 0.5, "raster-saturation": basemap.saturation ?? 0}});
   }
   layers.push(
-    {id: "lga-fill", type: "fill", source: "admin", "source-layer": "lgas",
+    {id: "lga-fill", type: "fill", source: "admin", "source-layer": ADMIN_LAYERS.lgas,
      paint: {"fill-color": rampExpression(M, M.categorical ? null : M.stops(1)), "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.95, 0.8]}},
-    {id: "lga-line", type: "line", source: "admin", "source-layer": "lgas",
+    {id: "lga-line", type: "line", source: "admin", "source-layer": ADMIN_LAYERS.lgas,
      paint: {"line-color": "#94a3b8", "line-width": 0.4}},
-    {id: "state-line", type: "line", source: "admin", "source-layer": "states",
+    {id: "state-line", type: "line", source: "admin", "source-layer": ADMIN_LAYERS.states,
      paint: {"line-color": "#334155", "line-width": 1.2}},
     {id: "state-label", type: "symbol", source: "labels",
      layout: {"text-field": ["get", "name"], "text-size": 12, "text-font": ["Open Sans Semibold"], "text-allow-overlap": false},
@@ -259,9 +265,9 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     const f = e.features?.[0];
     if (!f) return;
     map.getCanvas().style.cursor = "pointer";
-    if (hovered !== null && hovered !== f.id) map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: false});
+    if (hovered !== null && hovered !== f.id) map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id: hovered}, {hover: false});
     hovered = f.id;
-    map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: true});
+    map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id: hovered}, {hover: true});
     const s = stats.get(f.id);
     const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("en");
     const body = !s ? (M.categorical ? "no assertion" : M.popup ? "no estimate in this selection" : "no campaigns in this selection")
@@ -277,7 +283,7 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   });
   map.on("mouseleave", "lga-fill", () => {
     map.getCanvas().style.cursor = "";
-    if (hovered !== null) map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: false});
+    if (hovered !== null) map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id: hovered}, {hover: false});
     hovered = null;
     popup.remove();
   });
@@ -287,7 +293,7 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
   let applied = new Set();
   function apply(rows) {
     // Clear previous counts, then set the new ones.
-    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: 0, targeted: null, coverage: null, status: null, population: null, delta: null});
+    for (const id of applied) map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id}, {count: 0, targeted: null, coverage: null, status: null, population: null, delta: null});
     applied = new Set();
     stats = new Map();
     for (const r of rows) {
@@ -310,7 +316,7 @@ export function campaignMap({pmtiles, bounds, height = 520, basemap = DEFAULT_BA
     }
     for (const [id, s] of stats) {
       s.coverage = s.reportedTargeted > 0 ? s.reached / s.reportedTargeted : null;
-      map.setFeatureState({source: "admin", sourceLayer: "lgas", id}, {count: s.count, targeted: s.targeted, coverage: s.coverage, status: s.status ?? null,
+      map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id}, {count: s.count, targeted: s.targeted, coverage: s.coverage, status: s.status ?? null,
         population: s.worldpop ?? null, delta: s.delta_share ?? null});
       applied.add(id);
     }

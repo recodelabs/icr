@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Boundaries of the admin units that have DHIS2 indicator values, simplified for the
 # indicator map (a GeoJSON source keyed by Location id, so no tile build is needed).
+# Not a Library: it needs the locations table's geometry, and a Library can read only views,
+# other Libraries and LocationHierarchy.
 set -euo pipefail
 DATA="${DATA:-$(cd "$(dirname "$0")/../../../../../data" && pwd)}"
 has() { [ -n "$(find "$1" -path '*/country=*' -name '*.parquet' 2>/dev/null | head -1)" ]; }

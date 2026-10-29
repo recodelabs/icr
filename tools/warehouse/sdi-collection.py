@@ -51,8 +51,9 @@ TYPES = {
 # archive → (title, default-visible layers, style file, style title). A catalog can rename the
 # titles in .portolan/collections/locations/tiles.json ({"admin": {"title": …, "style_title": …},
 # "thumbnail_title": …}), e.g. Uganda's regions and districts where Nigeria has states and LGAs.
+# fhir-pipes names the admin layers by level: admin0 the country, admin1 and admin2 below it.
 TILES = {
-    "admin": ("Administrative boundaries (country, states, LGAs)", ["lgas", "states", "country"], "default", "Administrative boundaries"),
+    "admin": ("Administrative boundaries (country, states, LGAs)", ["admin2", "admin1", "admin0"], "default", "Administrative boundaries"),
     "facilities": ("Health facilities", ["facilities"], "facilities", "Health facilities by level"),
     "settlements": ("Settlements", ["settlements"], "settlements", "Settlements by type"),
 }

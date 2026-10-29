@@ -4,7 +4,7 @@
 // state / LGA, and points clicked to inspect.
 import maplibregl from "npm:maplibre-gl@5";
 import {PMTiles} from "npm:pmtiles@4";
-import {protocol, DEFAULT_BASEMAP} from "./map.js";
+import {protocol, DEFAULT_BASEMAP, ADMIN_LAYERS} from "./map.js";
 
 export const FACILITY_LEVELS = [
   ["Teaching/Tertiary Hospital", "#7c2d12"],
@@ -19,9 +19,9 @@ const facilityColor = ["match", ["get", "facility_level"], ...FACILITY_LEVELS.fl
 
 /** The layers the page can toggle: id → {label, source, sourceLayer, kind}. */
 export const LAYERS = {
-  country: {label: "Country", source: "admin", sourceLayer: "country", kind: "polygon"},
-  states: {label: "States", source: "admin", sourceLayer: "states", kind: "polygon"},
-  lgas: {label: "LGAs", source: "admin", sourceLayer: "lgas", kind: "polygon"},
+  country: {label: "Country", source: "admin", sourceLayer: ADMIN_LAYERS.country, kind: "polygon"},
+  states: {label: "States", source: "admin", sourceLayer: ADMIN_LAYERS.states, kind: "polygon"},
+  lgas: {label: "LGAs", source: "admin", sourceLayer: ADMIN_LAYERS.lgas, kind: "polygon"},
   facilities: {label: "Health facilities", source: "facilities", sourceLayer: "facilities", kind: "point", minzoom: 4},
   settlements: {label: "Settlements", source: "settlements", sourceLayer: "settlements", kind: "point", minzoom: 8},
   facilityCatchments: {label: "Facility catchments", source: "catchments", sourceLayer: "facility_catchments", kind: "polygon", minzoom: 6},
@@ -61,10 +61,10 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
     layers.push({id: "basemap", type: "raster", source: "basemap", paint: {"raster-opacity": basemap.opacity ?? 0.5, "raster-saturation": basemap.saturation ?? 0}});
   }
   layers.push(
-    {id: "lgas-fill", type: "fill", source: "admin", "source-layer": "lgas", paint: {"fill-color": "#cbd5e1", "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.35, 0.08]}},
-    {id: "lgas-line", type: "line", source: "admin", "source-layer": "lgas", paint: {"line-color": "#94a3b8", "line-width": 0.6}},
-    {id: "states-line", type: "line", source: "admin", "source-layer": "states", paint: {"line-color": "#334155", "line-width": 1.4}},
-    {id: "country-line", type: "line", source: "admin", "source-layer": "country", paint: {"line-color": "#0f172a", "line-width": 2.2, "line-dasharray": [3, 2]}},
+    {id: "lgas-fill", type: "fill", source: "admin", "source-layer": ADMIN_LAYERS.lgas, paint: {"fill-color": "#cbd5e1", "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.35, 0.08]}},
+    {id: "lgas-line", type: "line", source: "admin", "source-layer": ADMIN_LAYERS.lgas, paint: {"line-color": "#94a3b8", "line-width": 0.6}},
+    {id: "states-line", type: "line", source: "admin", "source-layer": ADMIN_LAYERS.states, paint: {"line-color": "#334155", "line-width": 1.4}},
+    {id: "country-line", type: "line", source: "admin", "source-layer": ADMIN_LAYERS.country, paint: {"line-color": "#0f172a", "line-width": 2.2, "line-dasharray": [3, 2]}},
     // Catchment polygons sit between the admin boundaries and the points: facility catchments
     // tile their LGA, settlement catchments nest inside them.
     ...(urls.catchments ? [
@@ -179,11 +179,11 @@ export function georegistryMap({urls, height = 640, basemap = DEFAULT_BASEMAP, l
   map.on("mousemove", "lgas-fill", (e) => {
     const f = e.features?.[0]; if (!f) return;
     if (map.queryRenderedFeatures(e.point, {layers: [...POINT_LAYERS, ...CATCHMENT_FILLS]}).length) return;  // points and catchments win
-    if (hovered !== null && hovered !== f.id) map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: false});
-    hovered = f.id; map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: true});
+    if (hovered !== null && hovered !== f.id) map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id: hovered}, {hover: false});
+    hovered = f.id; map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id: hovered}, {hover: true});
     popup.setLngLat(e.lngLat).setHTML(`<div style="font:12px system-ui;line-height:1.35"><b>${f.properties.name}</b> LGA, ${f.properties.admin1_name}<br><span style="color:#64748b">${f.properties.pcode ?? ""}</span></div>`).addTo(map);
   });
-  map.on("mouseleave", "lgas-fill", () => { if (hovered !== null) map.setFeatureState({source: "admin", sourceLayer: "lgas", id: hovered}, {hover: false}); hovered = null; popup.remove(); });
+  map.on("mouseleave", "lgas-fill", () => { if (hovered !== null) map.setFeatureState({source: "admin", sourceLayer: ADMIN_LAYERS.lgas, id: hovered}, {hover: false}); hovered = null; popup.remove(); });
   map.on("click", "lgas-fill", (e) => {
     if (map.queryRenderedFeatures(e.point, {layers: [...POINT_LAYERS, ...CATCHMENT_FILLS]}).length) return;
     const f = e.features?.[0]; if (!f) return;

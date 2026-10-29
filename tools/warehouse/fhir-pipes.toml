@@ -1,6 +1,8 @@
 # fhir-pipes settings for the ICR warehouse (data/). Paths are relative to this file.
-# tools/warehouse/refresh.sh runs it; directly:
+# tools/warehouse/refresh.sh runs it, after building the Libraries below; directly, with a
+# fhir-pipes newer than 0.6.0:
 #
+#   fhir-pipes libraries build dashboards/sites/main/analytics --out dashboards/sites/main/analytics/build
 #   fhir-pipes refresh --config tools/warehouse/fhir-pipes.toml \
 #     --server https://hapi.healthcampaigns.org/fhir --server-name hapi-gcp
 #
@@ -12,6 +14,12 @@ data = "../../data"
 views = "../../ig/fsh-generated/resources"
 # The ICR profile: its columns, admin units and codes (fhir-pipes docs/profiles.md).
 profile = "../../ig/fhir-pipes-profile.toml"
+# The main dashboards' SQL on FHIR Libraries (the Main* SQLQueries and the …ByArea SQLViews they
+# read), built to JSON from dashboards/sites/main/analytics/. refresh.sh builds them for each run
+# into a directory of its own and runs a copy of this file with this line pointing there; run by
+# hand, build them here first (see the commands above). Each SQLQuery's result is a table:
+# MainCampaigns → main_campaigns. This file needs a fhir-pipes newer than 0.6.0 (see README.md).
+libraries = ["../../dashboards/sites/main/analytics/build"]
 
 [server]
 base = "http://localhost:3447/fhir"
