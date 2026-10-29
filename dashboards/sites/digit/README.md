@@ -19,6 +19,11 @@ country.
   (both hierarchies can match the same unit) with a grey fill and a darker border. Only
   those can be shaded by dwellings, households registered or visits (all campaigns,
   counted through DIGIT's `partOf` hierarchy). The facilities and dwellings are on top.
+- **Campaign calendar** (`/calendar`): one row per campaign with its period in grey and its
+  cycle rounds as bars coloured by campaign type, today marked, for a country, a campaign
+  type and a date range; hover shows dates, status, type, country, target area, target,
+  visits and households registered. It follows the main dashboard's timeline
+  (`sites/main/src/index.md`), which is inline Plot code rather than a shared component.
 - **Campaign delivery** (`/delivery`): a country, then one campaign of that country, with
   its rounds together or one round: registrations and visits by day; a map of visits (or
   households registered) per Nigerian LGA, with how many are mapped and how many are not;

@@ -176,16 +176,22 @@ display(places.length ? Inputs.table(placeSearch, {
 ## Movements by day
 
 ```js
-const byDay = d3.flatRollup(rows, (v) => v.length, (d) => +d.day, (d) => d.record === "receipt" ? "received" : d.pending ? "pending" : "dispatched")
-  .map(([day, s, n]) => ({day: new Date(day), state: LABELS[s], n}));
+// Every dispatch counts as dispatched, as on the map and the cards; the ones not yet received are
+// a part of them, so each state gets its own row rather than a stack.
+const byDay = [
+  ...d3.flatRollup(dispatches, (v) => v.length, (d) => +d.day).map(([day, n]) => ({day: new Date(day), state: LABELS.dispatched, n})),
+  ...d3.flatRollup(receipts, (v) => v.length, (d) => +d.day).map(([day, n]) => ({day: new Date(day), state: LABELS.received, n})),
+  ...d3.flatRollup(pending, (v) => v.length, (d) => +d.day).map(([day, n]) => ({day: new Date(day), state: LABELS.pending, n}))
+];
 display(byDay.length ? Plot.plot({
-  width, height: 240, x: {type: "utc", label: null, domain: [d3.utcDay.offset(d3.min(byDay, (d) => d.day), -7), d3.utcDay.offset(d3.max(byDay, (d) => d.day), 8)]}, y: {label: "Movements", grid: true},
+  width, height: 330, marginLeft: 50, marginRight: 190,
+  x: {type: "utc", label: null, domain: [d3.utcDay.offset(d3.min(byDay, (d) => d.day), -7), d3.utcDay.offset(d3.max(byDay, (d) => d.day), 8)]},
+  y: {label: "Movements", grid: true},
+  fy: {label: null, domain: STATES.map(([, l]) => l)},
   color: {legend: true, domain: STATES.map(([, l]) => l), range: STATES.map(([, , c]) => c)},
-  marks: [Plot.rectY(byDay, {x: "day", y: "n", fill: "state", interval: "day", tip: true}), Plot.ruleY([0])]
+  marks: [Plot.rectY(byDay, {x: "day", y: "n", fy: "state", fill: "state", interval: "day", tip: true}), Plot.ruleY([0])]
 }) : html`<p class="muted">No movements.</p>`);
 ```
-
-<div class="muted" style="font-size: 12px">In the chart, "Dispatched" counts the dispatches that have a matching receipt; "Dispatched, not yet received" the ones that do not.</div>
 
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
