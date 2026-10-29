@@ -266,3 +266,31 @@ PUT by id; run it in a container on both compose networks — see the header in 
 > equivalent to `hfs.sh add ugahfs fhir-uga.healthcampaigns.org uga` then `hfs.sh ui ugahfs`;
 > its Caddy site is `sites/ugahfs.caddy` (the HAPI-era one is kept as `sites/uga.caddy.hapi.bak`).
 > The HAPI `icr-uga` and `icr-digit` stacks are stopped (volumes kept).
+
+## Match-bot
+
+[Match-bot](https://github.com/crosscutio/field-kit/tree/main/match-bot) (Crosscut's tool for
+reconciling place names across datasets) runs at `https://matchbot.healthcampaigns.org`, behind
+Keycloak sign-in. `matchbot/docker-compose.yml` (compose project `icr-matchbot`) has three
+services:
+
+- `app`: match-bot's web app under gunicorn, built from a pinned field-kit commit
+  (`FIELD_KIT_REF` in `matchbot/Dockerfile`). Uploads and the gazetteer cache are volumes.
+- `proxy`: oauth2-proxy, the only service on the main stack's network; Caddy
+  (`sites/matchbot.caddy`) sends the host to it. It signs people in with the `matchbot` client in
+  realm `matchbot` (`matchbot/keycloak-client.sh`).
+- `cleanup`: deletes uploads of sessions older than 14 days, daily; the app never removes them.
+
+The chat box is off: it needs the Claude Code CLI, which the image does not include. Matching,
+lookups, suggestions and geocoding don't use it.
+
+```bash
+# point matchbot.healthcampaigns.org at the VM (Cloudflare, DNS only) first, then on the VM:
+sudo ./matchbot.sh add matchbot.healthcampaigns.org   # realm and client, env file, Caddy site, start
+sudo ./matchbot.sh user someone@example.org           # add a user; prints a temporary password
+sudo ./matchbot.sh up                                 # rebuild / apply config   down: stop (data stays)
+sudo ./matchbot.sh logs
+```
+
+`matchbot/matchbot.env` (made by `add`, not in git) holds the host, the client secret, the
+cookie secret and the main network's name; see `matchbot/matchbot.env.example`.
