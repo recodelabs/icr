@@ -70,8 +70,31 @@
           "description": "Organization, Practitioner or Location reference"
         },
         {
+          "name": "supplier_display",
+          "path": "supplier.display",
+          "type": "string",
+          "description": "Set when the sender was not exported (no reference)"
+        },
+        {
+          "name": "receiver",
+          "path": "receiver.first().reference",
+          "type": "string",
+          "description": "A Practitioner: stock issued to a field worker"
+        },
+        {
           "name": "destination_id",
           "path": "destination.getReferenceKey(Location)",
+          "type": "string"
+        },
+        {
+          "name": "stock_records",
+          "path": "identifier.where(system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/stock').count()",
+          "type": "integer",
+          "description": "How many DIGIT stock rows the movement was made from: 2 for a dispatch and its receipt paired, 1 for an unpaired row"
+        },
+        {
+          "name": "waybill",
+          "path": "identifier.where(system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/waybill').value.first()",
           "type": "string"
         },
         {

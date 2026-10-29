@@ -30,8 +30,15 @@ A campaign's country (`country` in `campaigns.parquet`, used by both pages) come
 DIGIT hierarchy of its target area, or of its visits when it has none: NIGERIA and ADMIN
 are Nigeria, SIERRALEONE Sierra Leone, DEMOGABON Gabon, and MICROPLAN Chad (its provinces
 are Lac, N'Djamena and Ouaddaï). Campaigns with neither are "Unknown".
-- **Stock** (`/stock`): stock movements by product and by facility or team, dispatched
-  against received, and by day.
+- **Stock** (`/stock`): stock movements for a country and campaign (every movement names
+  its campaign): dispatched, received, and dispatched but not yet received, by product, by
+  facility or field worker, by day, and on a map of Nigeria's LGAs (circles per LGA, or per
+  state for state stores; facilities placed through DIGIT's `partOf` hierarchy, since almost
+  none has coordinates). In the demo data the import paired no dispatch with its receipt
+  (no matching waybill), so each movement is one DIGIT record; "not yet received" is a
+  dispatch with no receipt of the same sender, receiver, product and quantity, matched one
+  to one in date order (`src/data/stock.parquet.sh`). Stock outside Nigeria or with field
+  workers is counted below the map.
 
 ## Data
 
