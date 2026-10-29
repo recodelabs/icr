@@ -5,14 +5,18 @@ sql:
   tasks: data/tasks.parquet
   events: data/events.parquet
   tallies: data/tallies.parquet
+  lga_visits: data/lga_visits.parquet
 ---
+
+<link rel="stylesheet" href="npm:maplibre-gl@5/dist/maplibre-gl.css">
 
 # Campaign delivery
 
 What the field teams recorded for one campaign: household registrations and visits (ICRCampaignTask), the outcome of each visit, the drugs and vaccines given to people (MedicationAdministration, Immunization) and the nets handed to households (ICRSupplyDistribution). A campaign with cycles shows all its rounds together, or one round.
 
 ```js
-import {toRows, fmtInt, fmtDay, typeLabel} from "./components/digit.js";
+import {toRows, fmtInt, fmtPct, fmtDay, typeLabel, countryInput, inCountry} from "./components/digit.js";
+import {lgaMap} from "./components/lga-map.js";
 ```
 
 ```js
@@ -20,14 +24,21 @@ const campaignRows = toRows(await sql`SELECT * FROM campaigns`);
 const taskRows = toRows(await sql`SELECT * FROM tasks`);
 const eventRows = toRows(await sql`SELECT * FROM events`);
 const tallyRows = toRows(await sql`SELECT * FROM tallies`);
+const lgaVisitRows = toRows(await sql`SELECT * FROM lga_visits`);
+const admin = await FileAttachment("data/admin.geojson").json();
 const activity = d3.rollup([...taskRows.map((d) => [d.umbrella_id, d.tasks]), ...eventRows.map((d) => [d.umbrella_id, d.events])], (v) => d3.sum(v, (d) => d[1]), (d) => d[0]);
-const umbrellas = campaignRows.filter((d) => d.is_umbrella)
+const allUmbrellas = campaignRows.filter((d) => d.is_umbrella)
   .map((d) => ({...d, records: activity.get(d.campaign_id) ?? 0}))
   .sort((a, b) => d3.descending(a.records, b.records) || d3.ascending(a.title, b.title));
 ```
 
 ```js
-// Campaigns with the most records first.
+const country = view(countryInput(allUmbrellas));
+```
+
+```js
+// The country's campaigns, those with the most records first.
+const umbrellas = allUmbrellas.filter(inCountry(country));
 const campaign = view(Inputs.select(umbrellas, {label: "Campaign", format: (d) => `${d.title} · ${typeLabel(d.campaign_type)}${d.records ? "" : " (no records yet)"}`, value: umbrellas[0], width: 420}));
 ```
 
@@ -48,7 +59,7 @@ const nets = events.filter((d) => d.source === "net" && d.status === "completed"
 ```
 
 <div class="grid" style="gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr))">
-  <div class="card"><h2>Period</h2><span class="big" style="font-size: 16px">${fmtDay(scope.period_start)} to ${fmtDay(scope.period_end)}</span><div class="muted">${scope.status} · ${typeLabel(campaign.campaign_type)}</div></div>
+  <div class="card"><h2>Period</h2><span class="big" style="font-size: 16px">${fmtDay(scope.period_start)} to ${fmtDay(scope.period_end)}</span><div class="muted">${scope.status} · ${typeLabel(campaign.campaign_type)} · ${campaign.country}</div></div>
   <div class="card"><h2>Target</h2><span class="big">${fmtInt(scope.target)}</span><div class="muted">${scope.target_unit === "household" ? "households" : "people"}${scope.location_name ? `, ${scope.location_name}` : ""}</div></div>
   <div class="card"><h2>Households registered</h2><span class="big">${fmtInt(d3.sum(registrations, (d) => d.tasks))}</span><div class="muted">registration tasks</div></div>
   <div class="card"><h2>Visits</h2><span class="big">${fmtInt(d3.sum(visits, (d) => d.tasks))}</span><div class="muted">${fmtInt(d3.sum(visits.filter((d) => d.status === "completed"), (d) => d.tasks))} completed</div></div>
@@ -68,6 +79,63 @@ display(daily.length ? Plot.plot({
   color: {legend: true, domain: ["Household registrations", "Visits"], range: ["#94a3b8", "#0b57d0"]},
   marks: [Plot.rectY(daily, {x: "day", y: "n", fill: "kind", interval: "day", tip: true}), Plot.ruleY([0])]
 }) : html`<p class="muted">No registrations or visits recorded for this campaign yet.</p>`);
+```
+
+## Where the visits were
+
+Visits per LGA for the campaign and round chosen above, on Nigeria's states and LGAs from GRID3. A visit is placed by its dwelling and counted towards an LGA through DIGIT's hierarchy (`partOf`): the dwelling's DIGIT LGA or district, matched to its GRID3 LGA. Its coordinates are not used. LGAs with a darker border are the ones DIGIT has.
+
+```js
+const MEASURES = [["visits", "visits"], ["households", "households registered"]];
+const measureInput = Inputs.radio(MEASURES, {label: "Show", value: MEASURES[0], format: ([, l]) => l[0].toUpperCase() + l.slice(1)});
+const measure = Generators.input(measureInput);
+const lgaEl = lgaMap(admin, {height: 520});
+const lgaClicked = Generators.input(lgaEl);
+```
+
+```js
+const lgaRows = pick(lgaVisitRows);
+const total = d3.sum(lgaRows, (d) => d[measure[0]]);
+const mapped = d3.sum(lgaRows.filter((d) => d.lga_id != null), (d) => d[measure[0]]);
+const elsewhere = d3.rollups(lgaRows.filter((d) => d.lga_id == null && d[measure[0]] > 0), (v) => d3.sum(v, (d) => d[measure[0]]), (d) => d.hierarchy ?? "no boundary recorded")
+  .sort((a, b) => b[1] - a[1]);
+const perLga = d3.rollup(lgaRows.filter((d) => d.lga_id != null && d[measure[0]] > 0), (v) => d3.sum(v, (d) => d[measure[0]]), (d) => d.lga_id);
+lgaEl.setValues(perLga, measure[1]);
+// Zoom to the campaign's LGAs; a Nigerian campaign without mapped visits shows all of Nigeria.
+lgaEl.fitTo([...perLga.keys()]);
+const hasBoundaries = perLga.size > 0 || campaign.country === "Nigeria";
+```
+
+<div>${measureInput}</div>
+
+```js
+display(html`<p>${total
+  ? html`${fmtInt(mapped)} of ${fmtInt(total)} ${measure[1]} (${fmtPct(mapped / total)}) are on the map, in ${fmtInt(perLga.size)} LGAs.${elsewhere.length ? html` Not mapped: ${elsewhere.map(([h, n]) => `${fmtInt(n)} in ${h === "no boundary recorded" ? "places without a DIGIT boundary" : `the ${h} hierarchy`}`).join(", ")}.` : ""}`
+  : html`<span class="muted">No ${measure[1]} recorded for this campaign yet.</span>`}</p>`);
+if (!hasBoundaries) display(html`<div class="note">No boundaries for this campaign's area: DIGIT holds no geometry, and only Nigeria's states and LGAs are matched to GRID3.</div>`);
+```
+
+```js
+// The map and its inspector, hidden for campaigns outside Nigeria (no boundaries there).
+display(html`<div class="grid" style="gap: 12px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); display: ${hasBoundaries ? "grid" : "none"}">
+  <div class="card" style="padding: 0; overflow: hidden">${lgaEl}</div>
+  <div class="card"><h2>Selected LGA</h2>${lgaInspector}</div>
+</div>`);
+```
+
+```js
+const lgaInspector = !lgaClicked
+  ? html`<div class="muted">Click an LGA on the map.</div>`
+  : html`<div>
+      <div style="font-weight: 600">${lgaClicked.name}</div>
+      <div class="muted">LGA, ${lgaClicked.state ?? ""}${lgaClicked.in_digit ? "" : " · not in DIGIT"}</div>
+      <table style="font-size: 12px; margin-top: 6px">
+        <tr><td class="muted" style="padding-right: 8px">P-code</td><td>${lgaClicked.pcode ?? "—"}</td></tr>
+        <tr><td class="muted" style="padding-right: 8px">ICR Location</td><td>${lgaClicked.id}</td></tr>
+        <tr><td class="muted" style="padding-right: 8px">${lgaClicked.measure[0].toUpperCase() + lgaClicked.measure.slice(1)}</td><td>${fmtInt(lgaClicked.count)}</td></tr>
+      </table>
+      <div class="muted" style="font-size: 12px; margin-top: 6px">For the campaign and round chosen when the LGA was clicked.</div>
+    </div>`;
 ```
 
 ## Visit outcomes
@@ -131,4 +199,5 @@ display(netRows.length
 <style>
 .big { font-size: 28px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .card h2 { font-size: 13px; font-weight: 500; color: var(--theme-foreground-muted); margin: 0 0 4px; }
+.maplibregl-popup-content { padding: 6px 9px; }
 </style>

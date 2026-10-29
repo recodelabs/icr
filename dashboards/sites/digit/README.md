@@ -6,9 +6,9 @@ transformed to the ICR profiles by the DIGIT mapping (`project/digit.md`) and lo
 DIGIT ICR server (https://fhir-digit.healthcampaigns.org/fhir). DIGIT is a demo tenant, not a
 country.
 
-- **Overview** (`/`): what the site is; the campaigns (type, protocol, period, status,
-  target, rounds); households registered, people, visits, people treated and nets
-  distributed, in total and by campaign type.
+- **Overview** (`/`): what the site is; the campaigns (country, type, protocol, period,
+  status, target, rounds); households registered, people, visits, people treated and nets
+  distributed, in total and by campaign type. A country selector filters all of it.
 - **Georegistry** (`/georegistry`): DIGIT's boundary hierarchies with their boundaries by
   level, a searchable table of boundaries that shows each one's parents and children, its
   P-code and whether it has a GRID3 boundary, and a map. DIGIT holds no geometry; only the
@@ -19,9 +19,17 @@ country.
   (both hierarchies can match the same unit) with a grey fill and a darker border. Only
   those can be shaded by dwellings, households registered or visits (all campaigns,
   counted through DIGIT's `partOf` hierarchy). The facilities and dwellings are on top.
-- **Campaign delivery** (`/delivery`): for one campaign, with its rounds together or one
-  round: registrations and visits by day, visit outcomes and their reasons, doses not
-  given by reason, people treated by activity and nets distributed.
+- **Campaign delivery** (`/delivery`): a country, then one campaign of that country, with
+  its rounds together or one round: registrations and visits by day; a map of visits (or
+  households registered) per Nigerian LGA, with how many are mapped and how many are not;
+  visit outcomes and their reasons, doses not given by reason, people treated by activity
+  and nets distributed. Campaigns outside Nigeria get a note instead of the map: DIGIT
+  holds no geometry, and only Nigeria's units are matched to GRID3.
+
+A campaign's country (`country` in `campaigns.parquet`, used by both pages) comes from the
+DIGIT hierarchy of its target area, or of its visits when it has none: NIGERIA and ADMIN
+are Nigeria, SIERRALEONE Sierra Leone, DEMOGABON Gabon, and MICROPLAN Chad (its provinces
+are Lac, N'Djamena and Ouaddaï). Campaigns with neither are "Unknown".
 - **Stock** (`/stock`): stock movements by product and by facility or team, dispatched
   against received, and by day.
 
