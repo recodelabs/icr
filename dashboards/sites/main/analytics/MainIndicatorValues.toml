@@ -1,0 +1,23 @@
+url = "https://icr.healthcampaigns.org/main/Library/MainIndicatorValues"
+name = "MainIndicatorValues"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "DHIS2 indicator values"
+description = """
+One row per indicator, place and period: the DHIS2 value (score times the indicator's factor)
+with its numerator, denominator and period type, the indicator's title and topic, and the
+administrative unit's name, level and state. The SQL is DuckDB's.
+"""
+
+[[depends_on]]
+label = "indicator_value"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorValue"
+
+[[depends_on]]
+label = "indicator"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicator"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

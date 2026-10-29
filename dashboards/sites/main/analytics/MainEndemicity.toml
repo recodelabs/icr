@@ -1,0 +1,14 @@
+url = "https://icr.healthcampaigns.org/main/Library/MainEndemicity"
+name = "MainEndemicity"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "Endemicity assertions per LGA"
+description = """
+Every endemicity assertion (IcrLocationStatus) with its LGA and state names, its disease, and
+whether it is the newest one for that LGA and property.
+"""
+
+[[depends_on]]
+label = "location_status"
+resource = "https://icr.healthcampaigns.org/uganda/Library/IcrLocationStatusByArea"

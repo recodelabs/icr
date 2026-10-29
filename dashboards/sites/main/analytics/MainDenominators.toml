@@ -1,0 +1,15 @@
+url = "https://icr.healthcampaigns.org/main/Library/MainDenominators"
+name = "MainDenominators"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "WorldPop and census denominators per administrative unit"
+description = """
+One row per administrative unit and estimate year: the WorldPop and census-projection total
+populations side by side, with the difference between them, and the unit's name, level, state
+and country.
+"""
+
+[[depends_on]]
+label = "target_population"
+resource = "https://icr.healthcampaigns.org/uganda/Library/IcrTargetPopulationByArea"

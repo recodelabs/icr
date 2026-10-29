@@ -1,0 +1,14 @@
+url = "https://icr.healthcampaigns.org/main/Library/MainIndicatorCatalog"
+name = "MainIndicatorCatalog"
+version = "0.1.0"
+status = "draft"
+kind = "SQLQuery"
+title = "Indicator catalogue"
+description = """
+One row per indicator Measure with a factor (the DHIS2 indicators): its id, title, topic,
+scoring, factor, type, source and descriptions.
+"""
+
+[[depends_on]]
+label = "indicator"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicator"
