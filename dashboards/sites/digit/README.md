@@ -19,6 +19,11 @@ country.
   (both hierarchies can match the same unit) with a grey fill and a darker border. Only
   those can be shaded by dwellings, households registered or visits (all campaigns,
   counted through DIGIT's `partOf` hierarchy). The facilities and dwellings are on top.
+- **Campaign calendar** (`/calendar`): one row per campaign with its period in grey and its
+  cycle rounds as bars coloured by campaign type, today marked, for a country, a campaign
+  type and a date range; hover shows dates, status, type, country, target area, target,
+  visits and households registered. It follows the main dashboard's timeline
+  (`sites/main/src/index.md`), which is inline Plot code rather than a shared component.
 - **Campaign delivery** (`/delivery`): a country, then one campaign of that country, with
   its rounds together or one round: registrations and visits by day; a map of visits (or
   households registered) per Nigerian LGA, with how many are mapped and how many are not;
@@ -30,8 +35,15 @@ A campaign's country (`country` in `campaigns.parquet`, used by both pages) come
 DIGIT hierarchy of its target area, or of its visits when it has none: NIGERIA and ADMIN
 are Nigeria, SIERRALEONE Sierra Leone, DEMOGABON Gabon, and MICROPLAN Chad (its provinces
 are Lac, N'Djamena and Ouaddaï). Campaigns with neither are "Unknown".
-- **Stock** (`/stock`): stock movements by product and by facility or team, dispatched
-  against received, and by day.
+- **Stock** (`/stock`): stock movements for a country and campaign (every movement names
+  its campaign): dispatched, received, and dispatched but not yet received, by product, by
+  facility or field worker, by day, and on a map of Nigeria's LGAs (circles per LGA, or per
+  state for state stores; facilities placed through DIGIT's `partOf` hierarchy, since almost
+  none has coordinates). In the demo data the import paired no dispatch with its receipt
+  (no matching waybill), so each movement is one DIGIT record; "not yet received" is a
+  dispatch with no receipt of the same sender, receiver, product and quantity, matched one
+  to one in date order (`src/data/stock.parquet.sh`). Stock outside Nigeria or with field
+  workers is counted below the map.
 
 ## Data
 

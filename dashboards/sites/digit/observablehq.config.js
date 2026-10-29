@@ -9,6 +9,7 @@ export default {
   pages: [
     {name: "Overview", path: "/"},
     {name: "Georegistry", path: "/georegistry"},
+    {name: "Campaign calendar", path: "/calendar"},
     {name: "Campaign delivery", path: "/delivery"},
     {name: "Stock", path: "/stock"},
     {
