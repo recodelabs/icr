@@ -14,14 +14,14 @@ The pages compare two Bangladesh immunization systems on the same children and p
 
 The loaders in `src/data/` read the Bangladesh warehouse (`$DATA`, which `observatory` sets
 to its copy of `r2:icr/bgd/`; without it, `country/bangladesh/warehouse/`). The warehouse
-comes from the Bangladesh ICR server (`fhir-bgd.healthcampaigns.org`); see
-`country/bangladesh/README.md`.
+is built offline from a FHIR server that is not hosted, and uploaded by
+`country/bangladesh/push.sh`; see `country/bangladesh/README.md`.
 
 `src/data/worldpop-under1.csv` holds WorldPop's children under 1 per place, made by
 `country/bangladesh/worldpop/zonal.py` (WorldPop Global2 R2025A, CC BY 4.0,
 DOI 10.5258/SOTON/WP00841).
 
-The data is aggregated to upazila level and above. It is not public: the warehouse folder
+The figures are aggregated to upazila level and above. They are not public: the warehouse folder
 and the built site are private in R2, and the site needs sign-in.
 
 ## Build and deploy

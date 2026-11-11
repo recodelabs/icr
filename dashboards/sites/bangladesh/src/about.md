@@ -6,7 +6,7 @@ title: About the data
 
 <div style="max-width: 860px">
 
-These dashboards put two Bangladesh immunization systems side by side: the MR campaign's reporting system and the routine immunization records. The two are run separately and use different software, places and targets. Here both were loaded into the Integrated Campaign Registry (ICR), one FHIR server, matched to the same list of places, and compared.
+These dashboards put two Bangladesh immunization systems side by side: the MR campaign's reporting system and the routine immunization records. The two are run separately and use different software, places and targets. Here both were loaded into the Integrated Campaign Registry (ICR), one FHIR server kept offline, matched to the same list of places, and compared.
 
 <figure style="margin: 20px 0; max-width: 860px">
 <svg viewBox="0 0 860 380" width="100%" role="img" aria-label="The campaign DHIS2, the routine e-Tracker and WorldPop are loaded into the ICR, one FHIR server with a shared list of places, which feeds the dashboards" style="font-family: system-ui, sans-serif">
@@ -42,7 +42,7 @@ These dashboards put two Bangladesh immunization systems side by side: the MR ca
 <g>
 <rect x="320" y="28" width="230" height="340" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
 <text x="334" y="52" font-size="14" font-weight="600" fill="#1e293b">The ICR: one FHIR server</text>
-<text x="334" y="70" font-size="11.5" fill="#475569">Helios FHIR Server, sign-in only</text>
+<text x="334" y="70" font-size="11.5" fill="#475569">kept offline</text>
 <rect x="334" y="86" width="202" height="86" rx="6" fill="#fef9c3" stroke="#eab308"/>
 <text x="346" y="108" font-size="12.5" font-weight="600" fill="#1e293b">A shared list of places</text>
 <text x="346" y="126" font-size="11.5" fill="#475569">Each upazila is one record,</text>
@@ -92,7 +92,7 @@ These dashboards put two Bangladesh immunization systems side by side: the MR ca
 
 ### From the campaign DHIS2
 
-- **Places:** the org unit tree, 304,733 units over 7 levels, from the country down to wards, sub-blocks and session sites. The online server holds the country, divisions, districts and upazilas (969 places); the lower levels are kept offline.
+- **Places:** the org unit tree, 304,733 units over 7 levels, from the country down to wards, sub-blocks and session sites.
 - **Indicators:** 143 indicator and data element definitions, loaded as FHIR Measures. The MR campaign uses 35 of them.
 - **The campaign:** one FHIR CarePlan for the 2026 MR campaign.
 - **Values:** about 852,000 values, loaded as FHIR MeasureReports, for the country, 8 divisions, 76 districts and city corporations and 805 upazilas. Each value is for a day, a week, a month or the whole campaign.
@@ -126,6 +126,6 @@ Both systems have figures for 439 upazilas. The comparison pages use those.
 
 ## Where the data is
 
-The data is aggregated: totals per place, with no records of individual children. It is held in the Bangladesh ICR server (a Helios FHIR Server that needs an API key), a private data warehouse built from it, and these dashboards, which need sign-in. None of it is public.
+The data is aggregated: totals per place, with no records of individual children. The FHIR server that holds it is kept offline. A private data warehouse is built from that server, and these dashboards, which need sign-in, are built from the warehouse. None of it is public.
 
 </div>

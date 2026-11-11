@@ -25,7 +25,7 @@ export default {
     uga: {r2: "uga/", local: "../country/uganda/warehouse"},
     // country/digit/warehouse.sh --push writes the DIGIT demo tenant's to digit/.
     digit: {r2: "digit/", local: "../country/digit/warehouse"},
-    // country/bangladesh/warehouse.sh --push writes Bangladesh's to bgd/.
+    // country/bangladesh/push.sh uploads Bangladesh's (built offline) to bgd/.
     bgd: {r2: "bgd/", local: "../country/bangladesh/warehouse"}
   },
   // Who sees what. A site without `access` needs sign-in. Admins (auth.admins) see every site.

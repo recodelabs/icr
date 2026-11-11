@@ -130,6 +130,6 @@ ${item("Bari_Total_Vaccination_MR_Cam_26_Bar", prev ? columns([...divisions.filt
 
 <div class="muted d2-footer">
 Rebuilt from the <b>MR Vaccination Campaign 2026</b> dashboard of the EPI campaign DHIS2 (epicampaign.dghs.gov.bd), from the values imported
-into the Bangladesh ICR server (<code>kiln dhis2 reports</code>, now <code>fhir-pipes dhis2 reports</code>). The values are DHIS2's analytics as of its
+into an offline FHIR server (<code>kiln dhis2 reports</code>, now <code>fhir-pipes dhis2 reports</code>). The values are DHIS2's analytics as of its
 last analytics run (15 September 2026). This site needs sign-in.
 </div>

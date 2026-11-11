@@ -1,7 +1,7 @@
 // Bangladesh EPI dashboards, served at https://dashboards.healthcampaigns.org/bd/ (sign-in only).
 // The 2026 MR campaign (EPI campaign DHIS2) and routine immunization (EPI e-Tracker, through the
-// DGHS GIS dashboard), both imported into the Bangladesh ICR server (fhir-bgd.healthcampaigns.org)
-// and exported with fhir-pipes by country/bangladesh/warehouse.sh; the loaders in src/data read
+// DGHS GIS dashboard), both imported into a FHIR server that is kept offline. Its warehouse is
+// built with fhir-pipes and uploaded by country/bangladesh/push.sh; the loaders in src/data read
 // the warehouse at build time.
 // https://observablehq.com/framework/config
 export default {

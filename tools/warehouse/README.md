@@ -47,7 +47,7 @@ in `dashboards/sites/uganda/analytics/`.
 | Main warehouse (Nigeria demo, Sierra Leone demo, IG examples) | `hapi.healthcampaigns.org` | `data/` | the bucket root (`parquet/`, `tiles/`, `catalog.sql` …) | none |
 | Uganda warehouse | `fhir-uga.healthcampaigns.org` | `country/uganda/warehouse/` | `uga/` | none |
 | DIGIT demo warehouse | `fhir-digit.healthcampaigns.org` | `country/digit/warehouse/` | `digit/` | none |
-| Bangladesh warehouse | `fhir-bgd.healthcampaigns.org` | `country/bangladesh/warehouse/` | `bgd/` | none |
+| Bangladesh warehouse | an offline FHIR server (not hosted) | outside this repo | `bgd/` | none |
 | Main dashboards | main warehouse | `dashboards/sites/main/` | `_site/campaignhq/` | https://dashboards.healthcampaigns.org |
 | Uganda dashboards | Uganda warehouse | `dashboards/sites/uganda/` | `_site/campaignhq/ug/` | https://dashboards.healthcampaigns.org/ug/ |
 | DIGIT demo dashboards | DIGIT demo warehouse | `dashboards/sites/digit/` | `_site/campaignhq/digit/` | https://dashboards.healthcampaigns.org/digit/ |
@@ -136,19 +136,15 @@ country/digit/warehouse.sh --push
 ## Update the Bangladesh warehouse
 
 ```bash
-country/bangladesh/warehouse.sh --push
+country/bangladesh/push.sh /path/to/offline/warehouse
 ```
 
-- **What it does:** runs `fhir-pipes refresh` with `country/bangladesh/fhir-pipes.toml` for the
-  locations, runs the locations transform again with `--keep-without-geometry` (fhir-pipes 0.6
-  leaves out places without a boundary, and some divisions, camps and city zones have none),
-  builds the IG's views, then uploads `warehouse/` to `r2:icr/bgd/` with rclone.
+- **No hosted server:** Bangladesh's FHIR server is kept offline. Its warehouse is built beside
+  it with `fhir-pipes refresh`, and `push.sh` uploads `parquet/`, `tiles/`, `views/` and the
+  manifest to `r2:icr/bgd/` with rclone. Add `--dry-run` to see what it would copy and delete.
 - **The data:** the 2026 MR campaign and routine immunization, aggregated to upazila. `bgd/`
   is private: there is no SDI for it, and the dashboards need sign-in. See
   `country/bangladesh/README.md`.
-- **Incremental by default**; add `--full` after a reload or deletes on the server. The first
-  run downloads about 1.1 million MeasureReports.
-- **API key:** read from `~/.config/icr/bgd-loader.env`, or another file given in `KEY_FILE`.
 
 ## Redeploy the dashboards
 
