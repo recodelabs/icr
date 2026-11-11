@@ -24,7 +24,9 @@ export default {
     // country/uganda/warehouse.sh --push writes Uganda's to uga/.
     uga: {r2: "uga/", local: "../country/uganda/warehouse"},
     // country/digit/warehouse.sh --push writes the DIGIT demo tenant's to digit/.
-    digit: {r2: "digit/", local: "../country/digit/warehouse"}
+    digit: {r2: "digit/", local: "../country/digit/warehouse"},
+    // country/bangladesh/push.sh uploads Bangladesh's (built offline) to bgd/.
+    bgd: {r2: "bgd/", local: "../country/bangladesh/warehouse"}
   },
   // Who sees what. A site without `access` needs sign-in. Admins (auth.admins) see every site.
   sites: [
@@ -34,6 +36,9 @@ export default {
     // DIGIT HCM demo data (fake), imported into the ICR through the DIGIT mapping.
     {name: "digit", path: "/digit/", dir: "sites/digit", warehouse: "digit",
      access: [{emailDomain: "ona.io"}, {role: "admin"}]},
+    // Bangladesh: the 2026 MR campaign and routine immunization, aggregated to upazila. Open to
+    // admins and to accounts an admin has given a grant for this site.
+    {name: "bangladesh", path: "/bd/", dir: "sites/bangladesh", warehouse: "bgd", access: [{role: "admin"}]},
     // The Sierra Leone DHIS2 demo sites read the raw Location download in the local data/,
     // which is not pushed, so they have no warehouse and always build from this machine's copy.
     {name: "sldash", path: "/dhis2-sl/", dir: "sites/sldash", access: "public"},

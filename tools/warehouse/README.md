@@ -47,9 +47,11 @@ in `dashboards/sites/uganda/analytics/`.
 | Main warehouse (Nigeria demo, Sierra Leone demo, IG examples) | `hapi.healthcampaigns.org` | `data/` | the bucket root (`parquet/`, `tiles/`, `catalog.sql` …) | none |
 | Uganda warehouse | `fhir-uga.healthcampaigns.org` | `country/uganda/warehouse/` | `uga/` | none |
 | DIGIT demo warehouse | `fhir-digit.healthcampaigns.org` | `country/digit/warehouse/` | `digit/` | none |
+| Bangladesh warehouse | an offline FHIR server (not hosted) | outside this repo | `bgd/` | none |
 | Main dashboards | main warehouse | `dashboards/sites/main/` | `_site/campaignhq/` | https://dashboards.healthcampaigns.org |
 | Uganda dashboards | Uganda warehouse | `dashboards/sites/uganda/` | `_site/campaignhq/ug/` | https://dashboards.healthcampaigns.org/ug/ |
 | DIGIT demo dashboards | DIGIT demo warehouse | `dashboards/sites/digit/` | `_site/campaignhq/digit/` | https://dashboards.healthcampaigns.org/digit/ |
+| Bangladesh dashboards | Bangladesh warehouse | `dashboards/sites/bangladesh/` | `_site/campaignhq/bd/` | https://dashboards.healthcampaigns.org/bd/ (sign-in) |
 | Sierra Leone dashboards | local `data/` only | `dashboards/sites/sldash/`, `dashboards/sites/sl-redux/` | `_site/campaignhq/dhis2-sl*/` | `/dhis2-sl/`, `/dhis2-sl-redux/` |
 | SDI | both warehouses | | the same folders | https://sdi.healthcampaigns.org (main), `/uga/` |
 
@@ -131,11 +133,24 @@ country/digit/warehouse.sh --push
 - **API key:** read from `~/.config/icr/digit-loader.env`, or another file given in
   `KEY_FILE`.
 
+## Update the Bangladesh warehouse
+
+```bash
+country/bangladesh/push.sh /path/to/offline/warehouse
+```
+
+- **No hosted server:** Bangladesh's FHIR server is kept offline. Its warehouse is built beside
+  it with `fhir-pipes refresh`, and `push.sh` uploads `parquet/`, `tiles/`, `views/` and the
+  manifest to `r2:icr/bgd/` with rclone. Add `--dry-run` to see what it would copy and delete.
+- **The data:** the 2026 MR campaign and routine immunization, aggregated to upazila. `bgd/`
+  is private: there is no SDI for it, and the dashboards need sign-in. See
+  `country/bangladesh/README.md`.
+
 ## Redeploy the dashboards
 
 ```bash
 cd dashboards && npm install      # once, and after package.json changes
-npx observatory deploy main uganda digit
+npx observatory deploy main uganda digit bangladesh
 ```
 
 - **The sites and where they go** are in `dashboards/observatory.config.js`.
