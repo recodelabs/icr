@@ -114,7 +114,8 @@ ${item("MR-1 back up afterwards", kpi("upazilas where MR-1 doses a month in June
 </div>
 
 ```js
-const clampX = (v) => Math.max(0, Math.min(v, 200));
+// Just inside the top of the axis, so values beyond it land in the last bar and not outside it.
+const clampX = (v) => Math.max(0, Math.min(v, 200 - 1e-6));
 const MARGIN = {top: 20, right: 20, bottom: 40, left: 50};
 // Two histograms of the same upazilas, one above the other, with one selection across both:
 // drag to pick a range. The value is [low, high] or null (everything).
@@ -170,7 +171,13 @@ const histogram = (() => {
   return svg;
 })();
 const range = Generators.input(histogram);
+```
+
+```js
+// The map is in its own cell so that resizing the window (which redraws the histogram) does not
+// make a new one; when this cell is replaced, the old map is removed.
 const map = unitMap({geojson: boundaries, height: 560});
+invalidation.then(() => map.map.remove());
 // Click an upazila for a pinned box with its name and monthly doses (hovering shows the ratio only).
 const byId = new Map(upazilas.map((d) => [d.location_id, d]));
 // closeOnClick is off because it would also close the box on the click that opens the next one.

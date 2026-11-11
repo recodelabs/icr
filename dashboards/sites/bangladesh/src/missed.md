@@ -80,7 +80,8 @@ ${item("Short of both routine and WorldPop", kpi("1-year-olds, counted only wher
 </div>
 
 ```js
-const clampX = (v) => Math.max(20, Math.min(v, 160));
+// Just inside the top of the axis, so values beyond it land in the last bar and not outside it.
+const clampX = (v) => Math.max(20, Math.min(v, 160 - 1e-6));
 const THRESHOLDS = Array.from({length: 57}, (_, i) => 20 + i * 2.5);
 const SERIES = [
   {name: "As the campaign reports it: vaccinated ÷ the campaign's own target", field: "own_coverage", color: "#518cc3"},
@@ -136,7 +137,13 @@ const coverageHistogram = (() => {
   return svg;
 })();
 const range = Generators.input(coverageHistogram);
+```
+
+```js
+// The map is in its own cell so that resizing the window (which redraws the histogram) does not
+// make a new one; when this cell is replaced, the old map is removed.
 const map = unitMap({geojson: boundaries, height: 560});
+invalidation.then(() => map.map.remove());
 // Click an upazila for a pinned box with its name and figures (hovering shows the coverage only).
 const byId = new Map(upazilas.map((d) => [d.location_id, d]));
 // closeOnClick is off because it would also close the box on the click that opens the next one.

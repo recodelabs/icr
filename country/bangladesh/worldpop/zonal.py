@@ -1,9 +1,8 @@
 # Sum WorldPop under-1 (f_00 + m_00) per polygon; a cell counts when its centre is inside.
 import json, sys, csv
 import numpy as np, rasterio
-from rasterio.features import geometry_mask
-from rasterio.windows import from_bounds
-from shapely.geometry import shape
+from rasterio.errors import WindowError
+from rasterio.features import geometry_mask, geometry_window
 
 units_path, rasters_dir, out = sys.argv[1:4]
 units = [json.loads(l) for l in open(units_path)]
@@ -13,9 +12,12 @@ for year in (2024, 2025, 2026):
         with rasterio.open(f"{rasters_dir}/bgd_{sex}_00_{year}_CN_100m_R2025A_v1.tif") as src:
             for u in units:
                 g = u["gj"] if isinstance(u["gj"], dict) else json.loads(u["gj"])
-                b = shape(g).bounds
-                win = from_bounds(*b, transform=src.transform).round_offsets().round_lengths()
-                win = win.intersection(rasterio.windows.Window(0, 0, src.width, src.height))
+                # The whole-cell window that encloses the polygon (rounding the bounds' window can
+                # drop an edge row or column whose cell centres are inside).
+                try:
+                    win = geometry_window(src, [g])
+                except WindowError:   # the polygon lies outside the raster
+                    continue
                 a = src.read(1, window=win, masked=True)
                 m = geometry_mask([g], out_shape=a.shape, transform=src.window_transform(win), invert=True)
                 v = float(np.where(m & ~np.ma.getmaskarray(a), a.filled(0), 0).sum())

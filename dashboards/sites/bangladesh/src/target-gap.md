@@ -95,7 +95,8 @@ ${item("Closer to WorldPop", kpi("upazilas where the routine target is the close
 </div>
 
 ```js
-const clampX = (v) => Math.max(20, Math.min(v, 200));
+// Just inside the top of the axis, so values beyond it land in the last bar and not outside it.
+const clampX = (v) => Math.max(20, Math.min(v, 200 - 1e-6));
 const MARGIN = {top: 20, right: 20, bottom: 40, left: 50};
 // A histogram of one ratio that is also a filter: drag to pick a range. Its value is
 // [low, high] or null (everything).
@@ -144,6 +145,19 @@ function brushHistogram(field, label) {
     .attr("pointer-events", "none").attr("display", "none");
   return svg;
 }
+const routineHistogram = brushHistogram("ratio", "Campaign target as % of the routine target →");
+const routineRange = Generators.input(routineHistogram);
+const worldpopHistogram = brushHistogram("campaign_wp", "Campaign target as % of WorldPop children under 1 →");
+const worldpopRange = Generators.input(worldpopHistogram);
+const bandKey = () => html`<div style="display:flex;flex-wrap:wrap;gap:12px;font:11px system-ui;color:#475569;margin-top:6px">
+  ${[["lower", "campaign target lower (under 80%)"], ["same", "about the same (80–125%)"], ["higher", "campaign target higher (over 125%)"]].map(([k, t]) =>
+    html`<span><span style="display:inline-block;width:11px;height:11px;background:${BAND_COLORS[k]};margin-right:4px;vertical-align:-1px"></span>${t}</span>`)}</div>`;
+const HOW = "Each bar counts the upazilas in a 5-point band; 100% means the two figures are equal. Drag across the chart to pick a range, drag the selection to move it or its handles to resize it, and click outside it to clear. Values under 20% or over 200% are drawn at the ends.";
+```
+
+```js
+// The map is in its own cell so that resizing the window (which redraws the histogram) does not
+// make new ones; when this cell is replaced, the old maps are removed.
 // A map whose upazilas open a pinned box with their name and figures when clicked.
 const byId = new Map(upazilas.map((d) => [d.location_id, d]));
 function clickableMap() {
@@ -170,16 +184,9 @@ function clickableMap() {
   });
   return map;
 }
-const routineHistogram = brushHistogram("ratio", "Campaign target as % of the routine target →");
-const routineRange = Generators.input(routineHistogram);
 const routineMap = clickableMap();
-const worldpopHistogram = brushHistogram("campaign_wp", "Campaign target as % of WorldPop children under 1 →");
-const worldpopRange = Generators.input(worldpopHistogram);
 const worldpopMap = clickableMap();
-const bandKey = () => html`<div style="display:flex;flex-wrap:wrap;gap:12px;font:11px system-ui;color:#475569;margin-top:6px">
-  ${[["lower", "campaign target lower (under 80%)"], ["same", "about the same (80–125%)"], ["higher", "campaign target higher (over 125%)"]].map(([k, t]) =>
-    html`<span><span style="display:inline-block;width:11px;height:11px;background:${BAND_COLORS[k]};margin-right:4px;vertical-align:-1px"></span>${t}</span>`)}</div>`;
-const HOW = "Each bar counts the upazilas in a 5-point band; 100% means the two figures are equal. Drag across the chart to pick a range, drag the selection to move it or its handles to resize it, and click outside it to clear. Values under 20% or over 200% are drawn at the ends.";
+invalidation.then(() => { routineMap.map.remove(); worldpopMap.map.remove(); });
 ```
 
 ```js

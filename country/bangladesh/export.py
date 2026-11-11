@@ -3,13 +3,17 @@
 # that has values), with every indicator, the campaign and every value. Lower places (unions,
 # wards, sub-blocks, schools, session sites) stay offline.
 #
-#   python3 -I export.py OFFLINE_WAREHOUSE [OUT]
+#   python3 -I export.py OFFLINE_WAREHOUSE [OUT] [OFFLINE_SERVER]
 #
 # OFFLINE_WAREHOUSE is the offline warehouse folder (it holds raw/bd-local and parquet/); OUT is
-# where the NDJSON files go (default: fhir/ beside this script). Prints the counts.
-import json, os, subprocess, sys
+# where the NDJSON files go (default: fhir/ beside this script). OFFLINE_SERVER is the offline
+# FHIR server's base URL (default http://127.0.0.1:3457/fhir): the campaign's PlanDefinition and
+# ActivityDefinition are read from it, because the snapshot does not hold them. Prints the counts
+# and stops with an error if a value's place is missing.
+import json, os, subprocess, sys, urllib.request
 
-if len(sys.argv) < 2: sys.exit(__doc__ or "usage: export.py OFFLINE_WAREHOUSE [OUT]")
+if len(sys.argv) < 2: sys.exit("usage: export.py OFFLINE_WAREHOUSE [OUT] [OFFLINE_SERVER]")
+SERVER = sys.argv[3] if len(sys.argv) > 3 else "http://127.0.0.1:3457/fhir"
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(sys.argv[1], "raw", "bd-local")
 PARQUET = os.path.join(sys.argv[1], "parquet")
@@ -37,19 +41,19 @@ with open(os.path.join(RAW, "MeasureReport.ndjson")) as src, open(os.path.join(O
         out.write(json.dumps(r, separators=(",", ":"), ensure_ascii=False) + "\n"); reports += 1
 keep |= subjects
 
-places, orgs_needed, dropped_parent = 0, set(), 0
+written, orgs_needed, dropped_parent = set(), set(), 0
 with open(os.path.join(RAW, "locations", "locations.ndjson")) as src, open(os.path.join(OUT, "Location.ndjson"), "w") as out:
     for line in src:
-        if '"id":"' not in line: continue
+        if not line.strip(): continue
         r = json.loads(line)
-        if r["id"] not in keep: continue
+        if r.get("resourceType") != "Location" or r["id"] not in keep: continue
         r = strip(r)
         parent = r.get("partOf", {}).get("reference", "").split("/")[-1]
         if parent and parent not in keep:   # a place with values whose parent is not kept
             dropped_parent += 1; del r["partOf"]
         org = r.get("managingOrganization", {}).get("reference", "")
         if org: orgs_needed.add(org.split("/")[-1])
-        out.write(json.dumps(r, separators=(",", ":"), ensure_ascii=False) + "\n"); places += 1
+        out.write(json.dumps(r, separators=(",", ":"), ensure_ascii=False) + "\n"); written.add(r["id"])
 
 orgs = 0
 with open(os.path.join(RAW, "locations", "organizations.ndjson")) as src, open(os.path.join(OUT, "Organization.ndjson"), "w") as out:
@@ -66,6 +70,17 @@ for name in ("Measure", "CarePlan", "Group"):
             out.write(json.dumps(strip(json.loads(line)), separators=(",", ":"), ensure_ascii=False) + "\n"); n += 1
         small[name] = n
 
-print(json.dumps({"Location": places, "places_with_values": len(subjects), "missing_places": len(subjects - keep),
+# The campaign's protocol and activity definitions, from the offline server.
+for name in ("PlanDefinition", "ActivityDefinition"):
+    with urllib.request.urlopen(f"{SERVER}/{name}?_count=200", timeout=60) as response:
+        entries = json.load(response).get("entry", [])
+    with open(os.path.join(OUT, f"{name}.ndjson"), "w") as out:
+        for e in entries:
+            out.write(json.dumps(strip(e["resource"]), separators=(",", ":"), ensure_ascii=False) + "\n")
+    small[name] = len(entries)
+
+missing = subjects - written
+print(json.dumps({"Location": len(written), "places_with_values": len(subjects), "missing_places": len(missing),
                   "partOf_removed": dropped_parent, "Organization": orgs, "orgs_referenced": len(orgs_needed),
                   "MeasureReport": reports, **small}, indent=1))
+if missing: sys.exit(f"{len(missing)} places with values are not in the Location export, e.g. {sorted(missing)[:5]}")

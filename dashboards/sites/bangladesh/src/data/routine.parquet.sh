@@ -6,8 +6,8 @@
 # shows it, capped at 100), unvaccinated, dropout.
 # target_ok: false when a place's target for the year is more than 3 times, or under a third of,
 # the median of its targets over the three years. The dashboard's targets for a few place-years
-# are off by up to 80,000 times (Bangladesh 2024: 621 million; Boalmari 2026: 189,749); for
-# those, the figures that divide by the target (coverage, zero-dose) are left out (null).
+# are far off; for those, the figures that depend on the target (coverage, zero-dose and other
+# not-yet-vaccinated counts) are left out: value and count are null.
 set -euo pipefail
 PARQUET="${DATA:-$(cd "$(dirname "$0")/../../../../../country/bangladesh/warehouse" && pwd)}/parquet"
 duckdb -c "
@@ -29,7 +29,8 @@ COPY (
          regexp_replace(coalesce(l.admin1_name, ''), ' Division$', '') AS division,
          regexp_replace(coalesce(l.admin2_name, ''), ' District$', '') AS district,
          k.period, CASE WHEN length(k.period) = 4 THEN 'Yearly' ELSE 'Monthly' END AS period_type,
-         k.period_start, k.numerator, k.denominator, k.count,
+         k.period_start, k.numerator, k.denominator,
+         CASE WHEN NOT coalesce(ok.target_ok, true) AND key LIKE '%unvaccinated' THEN NULL ELSE k.count END AS count,
          coalesce(ok.target_ok, true) AS target_ok,
          CASE WHEN NOT coalesce(ok.target_ok, true) AND (key LIKE '%coverage%' OR key LIKE '%unvaccinated') THEN NULL
               WHEN key LIKE '%coverage%' OR key LIKE 'dropout-%' THEN round(k.score * 100, 2) ELSE k.score END AS value
