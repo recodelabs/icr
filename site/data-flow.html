@@ -35,7 +35,7 @@ figure { margin: 0; display: grid; gap: 14px; min-width: 0; }
 .controls button { font-family: var(--display); font-size: 15px; font-weight: 600; background: transparent; border: 1px solid var(--rule);
   color: var(--ink-2); padding: 8px 16px; border-radius: 999px; cursor: pointer; }
 .controls button:hover { border-color: var(--ink-3); color: var(--ink); }
-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, ol.steps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .controls .play { background: var(--accent); color: #fff; border-color: var(--accent); min-width: 88px; }
 .controls .play:hover { color: #fff; border-color: var(--accent-ink); }
 .progress { flex: 1 1 120px; height: 2px; background: var(--rule); position: relative; }
@@ -217,7 +217,7 @@ ol.steps p { margin: 0; font-size: 15.5px; line-height: 1.45; }
   </div>
 
   <ol class="steps" id="steps">
-    <li><button type="button"><span class="n">Load places</span><h2>GRID3 and Overture supply the places</h2><p>Health facilities, settlements and admin boundaries come from GRID3 and Overture, and population from WorldPop. fhir-pipes loads them into the ICR as Locations.</p></button></li>
+    <li><button type="button"><span class="n">Load places</span><h2>GRID3 and Overture supply the places</h2><p>Health facilities, settlements and admin boundaries come from GRID3 and Overture, and population from WorldPop. fhir-pipes loads the places into the ICR as Locations and the population as a Group for each area.</p></button></li>
     <li><button type="button"><span class="n">Keep the IDs</span><h2>Each Location keeps the ID every source gave it</h2><p>The GRID3 ID, the DHIS2 org unit ID and the Overture GERS ID sit side by side. GERS is the preferred shared key because it is global and open. Places Overture does not have are contributed to it, and the GERS ID is added once they match.</p></button></li>
     <li><button type="button"><span class="n">Send to the field</span><h2>The registry goes to ODK as an entity list</h2><p>A data collector picks the facility on a map inside the form. Each submission carries the registry ID, not a typed name.</p></button></li>
     <li><button type="button"><span class="n">Map tools in</span><h2>fhir-pipes maps each tool's records to ICR resources</h2><p>DHIS2, DIGIT, ODK and other tools keep their own formats. FHIR Mapping Language maps turn their records into ICR resources, which are checked and loaded. They join the registry on the IDs they carry.</p></button></li>
@@ -247,11 +247,11 @@ ol.steps p { margin: 0; font-size: 15.5px; line-height: 1.45; }
     5: [['w-wh', 'out', 0, 0], ['w-wh', 'out', 0, .5], ['w-out1', 'out', 0, .2], ['w-out2', 'out', 0, .45], ['w-out3', 'out', 0, .7]],
   };
 
-  let cur = 0, playing = false, stepStart = 0, live = [];
+  let cur = 0, playing = false, stepStart = 0, live = [], clock = 0, last = 0, frozen = false;
 
   function show(n) {
     cur = n;
-    stepStart = performance.now();
+    stepStart = clock;
     svg.classList.toggle('stepping', n > 0);
     for (const el of tagged) {
       const list = (el.dataset.s || el.dataset.only).split(' ');
@@ -280,24 +280,26 @@ ol.steps p { margin: 0; font-size: 15.5px; line-height: 1.45; }
   }
 
   function frame(now) {
+    if (!frozen) clock += now - last;
+    last = now;
     for (const d of live) {
-      let t = ((now / LOOP_MS) + d.phase) % 1;
+      let t = ((clock / LOOP_MS) + d.phase) % 1;
       if (d.rev) t = 1 - t;
       const p = d.path.getPointAtLength(t * d.len);
       d.c.setAttribute('cx', p.x);
       d.c.setAttribute('cy', p.y);
     }
     if (playing) {
-      const f = (now - stepStart) / STEP_MS;
+      const f = (clock - stepStart) / STEP_MS;
       bar.style.width = ((cur - 1 + Math.min(f, 1)) / N * 100) + '%';
       if (f >= 1) show(cur % N + 1);
     }
     requestAnimationFrame(frame);
   }
 
-  playBtn.addEventListener('click', () => setPlaying(!playing));
+  playBtn.addEventListener('click', () => { frozen = playing; setPlaying(!playing); });
   allBtn.addEventListener('click', () => { setPlaying(false); show(0); });
-  stepBtns.forEach((b, i) => b.addEventListener('click', () => { setPlaying(false); show(i + 1); }));
+  stepBtns.forEach((b, i) => b.addEventListener('click', () => { frozen = false; setPlaying(false); show(i + 1); }));
 
   show(0);
   if (!reduce && location.hash !== '#all') setPlaying(true);
