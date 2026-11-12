@@ -6,7 +6,7 @@ records, FML maps, ViewDefinitions and SQLQuery Libraries. It is a port of
 **facilities**: on the demo tenant's export it writes the same Locations and Organizations as
 `transform.py`, apart from the differences listed in `known-differences.toml`.
 
-It needs a fhir-pipes with `[records]` and `[maps]` in `import.toml` (branch
+It needs a fhir-pipes with `[records]`, `[maps]` and `[views]` in `import.toml` (branch
 `feat/import-lenient-records`), and the `duckdb` command.
 
 ## Record types
@@ -17,8 +17,8 @@ connector writes these names, make a folder of links to the files `extract.py` a
 
 | DIGIT export file | Record type | Model | Read by |
 | --- | --- | --- | --- |
-| `boundary_tree.ndjson` | `DIGITBoundaryTree` | `models/StructureDefinition-DIGITBoundaryTree.json` | `DIGITBoundaryTreeToICR`, `StageDIGITBoundaryTree` |
-| `facility.ndjson` | `DIGITFacility` | `models/StructureDefinition-DIGITFacility.json` | `StageDIGITFacility` |
+| `boundary_tree.ndjson` | `DIGITBoundaryTree` | `models/StructureDefinition-DIGITBoundaryTree.json` | the map `DIGITBoundaryTreeToICR`, the view `Boundary` |
+| `facility.ndjson` | `DIGITFacility` | `models/StructureDefinition-DIGITFacility.json` | the view `Facility` |
 | `boundary_hierarchy.ndjson` | `DIGITBoundaryHierarchy` | not yet | (`transform.py` does not read it either) |
 | `product.ndjson`, `product_variant.ndjson` | `DIGITProduct`, `DIGITProductVariant` | not yet | |
 | `mdms_project_type.ndjson` | `DIGITProjectType` | not yet | |
@@ -30,7 +30,7 @@ connector writes these names, make a folder of links to the files `extract.py` a
 | `stock.ndjson` | `DIGITStock` | not yet | |
 | `referral.ndjson` | `DIGITReferral` | not yet | |
 
-A run refuses a record file that no step reads, so for now the folder holds only the first two:
+A run refuses a record file that no step or view reads, so for now the folder holds only the first two:
 
 ```bash
 mkdir -p digit-in
@@ -77,13 +77,27 @@ capitalised. Like Python's `str.title()`, which `transform.py` uses, that gives 
 A facility's `partOf` is its locality boundary only when that boundary was exported; otherwise
 it is left out. A map sees one record, so that lookup is done in SQL:
 
-1. `StageDIGITBoundaryTree` stages every boundary code as a Basic; `StageDIGITFacility` stages
-   each facility's fields as a Basic, one extension per field.
-2. The `StgBoundary` and `StgFacility` views flatten them.
-3. The `DigitFacility` Library joins them: each facility once (the facility search returned
+1. The views `Boundary` and `Facility` read the record files directly: `Boundary` has one row
+   per boundary code of every tree, at any depth, and `Facility` one row per line of
+   `facility.ndjson`, with the line number (`%recordLine`) as `line`.
+2. The `DigitFacility` Library joins them: each facility once (the facility search returned
    96 facilities twice, as identical rows), with `boundaryCode` only when the boundary was
-   exported. Its rows are `DIGITFacilityRow` records.
-4. `DIGITFacilityToICR` maps each row to a Location and an Organization.
+   exported, in the order of the first line of each facility. Its rows are `DIGITFacilityRow`
+   records.
+3. `DIGITFacilityToICR` maps each row to a Location and an Organization.
+
+The facilities are written in the order of `facility.ndjson`, as `transform.py` writes them.
+
+The two views are *record views*: their `resource` is a record type (`DIGITBoundaryTree`,
+`DIGITFacility`), not a FHIR resource type. That goes beyond the SQL on FHIR specification, so
+`import.toml` allows it with `[views] records = "allow"`; see fhir-pipes' `docs/import.md`,
+"Record views". A view reads the records after `[records]` has been applied, as the maps do,
+and `import check` checks the views' paths against the models.
+
+`Boundary` flattens a tree with `forEach` over the top boundaries and a `unionAll` of the
+boundary itself and `repeat: ["children"]`. `repeat: ["boundary", "children"]` from the tree
+would be shorter, but fhir-pipes' FHIRPath engine reads `boundary` on a boundary, which has no
+such member, as the choice element `boundary[x]` and returns its `boundaryType`.
 
 The data test `one row per facility` stops the run if two different rows have one facility id;
 `one boundary per Location id` stops it if two boundary codes would give one Location id
@@ -95,8 +109,8 @@ The data test `one row per facility` stops the run if two different rows have on
 
 | `transform.py` report | Package | Demo tenant |
 | --- | --- | --- |
-| `notes`: "facility: locality boundary not exported (partOf left empty)" | rows of the `DigitFacilityLocalityNotExported` Library, in the run report's step 5 tables | 110 and 110 |
-| `duplicate_ids_refused` (Location 96, Organization 96) | `stg_facility` rows less `digit_facility` rows, in the step 4 tables | 192 (96 each) and 5,258 − 5,162 = 96 |
+| `notes`: "facility: locality boundary not exported (partOf left empty)" | rows of the `DigitFacilityLocalityNotExported` Library, in the run report's step 3 tables | 110 and 110 |
+| `duplicate_ids_refused` (Location 96, Organization 96) | `facility` rows less `digit_facility` rows, in the step 2 tables | 192 (96 each) and 5,258 − 5,162 = 96 |
 | boundary id collision (stops the run) | data test `one boundary per Location id` | none |
 | `counts` by profile | `output` and each step's `resources` | the same for these parts |
 

@@ -16,23 +16,20 @@ unknown = "ignore"
 [maps]
 max_values = 20_000_000
 
+# The views Boundary and Facility read the boundary trees and the facilities
+# from their record files, not from staged resources: a view over a record
+# type goes beyond the SQL on FHIR specification, so it has to be allowed.
+[views]
+records = "allow"
+
 # Boundaries: every boundary of every hierarchy, to the output.
 [[step]]
 map = "DIGITBoundaryTreeToICR"
 from = "DIGITBoundaryTree"
 
-# The boundary codes and the facilities, staged for the DigitFacility Library.
-[[step]]
-map = "StageDIGITBoundaryTree"
-from = "DIGITBoundaryTree"
-stage = true
-
-[[step]]
-map = "StageDIGITFacility"
-from = "DIGITFacility"
-stage = true
-
-# Each facility once, with its boundary when that boundary was exported.
+# Each facility once, with its boundary when that boundary was exported, in
+# the order of facility.ndjson. The Library reads the views Boundary and
+# Facility, which read the record files.
 [[step]]
 library = "DigitFacility"
 
@@ -54,7 +51,7 @@ unique = ["id"]
 name = "one boundary per Location id"
 sql = """
 SELECT regexp_replace(code, '[^A-Za-z0-9.-]', '-', 'g') AS location_id, count(*) AS boundaries
-FROM stg_boundary
+FROM boundary
 GROUP BY 1
 HAVING count(*) > 1
 """

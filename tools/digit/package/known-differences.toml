@@ -28,18 +28,3 @@ resource = "Location"
 path = "alias[]"
 kind = "reference"
 reason = "added to the reference by enrich_grid3.py, a later step"
-
-# transform.py writes facilities in the order of facility.ndjson, which is the order the search
-# API returned them. The package writes them sorted by DIGIT id: the staged facilities go
-# through SQL, which has no file order, and a sorted order is the same on every run.
-[[difference]]
-name = "facility order"
-resource = "Location"
-order = true
-reason = "facilities are written sorted by DIGIT id, not in the order of the export"
-
-[[difference]]
-name = "facility order"
-resource = "Organization"
-order = true
-reason = "facilities are written sorted by DIGIT id, not in the order of the export"

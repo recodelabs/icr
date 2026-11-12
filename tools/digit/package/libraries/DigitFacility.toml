@@ -6,8 +6,8 @@ description = "DIGIT facilities, each once, with the code of the boundary each i
 
 [[depends_on]]
 label = "facility"
-resource = "https://icr.healthcampaigns.org/ViewDefinition/StgFacility"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Facility"
 
 [[depends_on]]
 label = "boundary"
-resource = "https://icr.healthcampaigns.org/ViewDefinition/StgBoundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"
