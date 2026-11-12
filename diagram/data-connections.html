@@ -1,0 +1,293 @@
+<title>ICR data connections</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Follows diagram/index.html and www.healthcampaigns.org: one 1120px column, light paper only,
+   orange for the ICR and data going into it, ink for data going out. */
+:root {
+  color-scheme: light;
+  --paper: #F7F8F5; --paper-2: #EEF1EB; --ink: #17211C; --ink-2: #4A554F; --ink-3: #6F7A74; --rule: #D5DAD3;
+  --hair: #C9CFC7; --accent: #F16427; --accent-ink: #A13A10; --tint: rgba(241,100,39,.13);
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1168px; margin: 0 auto; padding-block: 36px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px; }
+header { display: grid; gap: 10px; }
+.kicker { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink-2); }
+h1 { font-family: var(--display); font-size: clamp(26px, 3.4vw, 40px); font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; margin: 0; max-width: 24ch; text-wrap: balance; }
+header p { margin: 0; max-width: 64ch; color: var(--ink-2); }
+figure { margin: 0; display: grid; gap: 14px; min-width: 0; }
+.frame { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); }
+.frame svg { display: block; width: 100%; height: auto; min-width: 860px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.controls button { font-family: var(--display); font-size: 15px; font-weight: 600; background: transparent; border: 1px solid var(--rule);
+  color: var(--ink-2); padding: 8px 16px; border-radius: 999px; cursor: pointer; }
+.controls button:hover { border-color: var(--ink-3); color: var(--ink); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.controls .play { background: var(--accent); color: #fff; border-color: var(--accent); min-width: 88px; }
+.controls .play:hover { color: #fff; border-color: var(--accent-ink); }
+.progress { flex: 1 1 120px; height: 2px; background: var(--rule); position: relative; }
+.progress i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); }
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; counter-reset: s; }
+ol.steps li { counter-increment: s; min-width: 0; display: grid; }
+ol.steps button { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 6px; align-content: start;
+  border-top: 2px solid var(--rule); padding: 12px 2px 4px; color: var(--ink-2); }
+ol.steps button:hover { border-top-color: var(--ink-3); }
+ol.steps button[aria-current="step"] { border-top-color: var(--accent); color: var(--ink); }
+ol.steps .n { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+ol.steps .n::before { content: counter(s) " · "; }
+ol.steps button[aria-current="step"] .n { color: var(--accent-ink); }
+ol.steps h2 { font-family: var(--display); font-size: 18px; font-weight: 600; line-height: 1.15; margin: 0; color: var(--ink); }
+ol.steps p { margin: 0; font-size: 15.5px; line-height: 1.45; }
+
+/* diagram */
+.bg { fill: var(--paper); }
+.box { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.25; }
+.icr { fill: var(--paper); stroke: var(--accent); stroke-width: 1.75; stroke-dasharray: 7 4; }
+.cell { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1; }
+.chip { fill: var(--paper); stroke: var(--hair); stroke-width: 1; }
+.wire { fill: none; stroke: var(--ink-2); stroke-width: 1.25; }
+.wire.dash { stroke-dasharray: 5 4; }
+.pill { fill: var(--ink); }
+.ah-in, .dot-in, .mk { fill: var(--accent); }
+.ah-out, .dot-out { fill: var(--ink); }
+.dot-in, .dot-out { stroke: var(--paper); stroke-width: 1.5; }
+.tint { fill: var(--tint); }
+.trail { stroke: var(--accent); stroke-width: 1.5; }
+.dg text { font-family: var(--display); fill: var(--ink); }
+.dg .name { font-size: 15.5px; font-weight: 600; }
+.dg .sub { font-size: 12px; fill: var(--ink-2); }
+.dg .body { font-size: 11.5px; }
+.dg .mono, .dg .code, .dg .idk, .dg .pilltext { font-family: var(--mono); }
+.dg .mono { font-size: 9.5px; letter-spacing: .08em; }
+.dg .code { font-size: 9px; fill: var(--ink-3); }
+.dg .idk { font-size: 9.5px; }
+.dg .pilltext { font-size: 10.5px; font-weight: 500; fill: var(--paper); text-anchor: middle; }
+.dg .muted { fill: var(--ink-3); }
+.dg .h-in { fill: var(--accent-ink); font-weight: 500; }
+.dg .h-out { font-weight: 500; }
+.dg .title { font-weight: 700; letter-spacing: -.01em; }
+.dg .cellname { font-size: 13.5px; font-weight: 600; }
+.dg .rowname { font-size: 12.5px; font-weight: 600; }
+[data-s], [data-only] { transition: opacity .45s ease; }
+[data-only] { opacity: 0; }
+.stepping [data-s] { opacity: .3; }
+.stepping [data-s].on, .stepping [data-only].on { opacity: 1; }
+.stepping .on > .box, .stepping .on > .cell { stroke: var(--accent); stroke-width: 2.25; }
+.stepping .wire.on { stroke-width: 2; }
+@media (prefers-reduced-motion: reduce) { [data-s], [data-only] { transition: none; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="kicker">Integrated Campaign Registry</div>
+  <h1>How open place data and campaign tools connect through the ICR</h1>
+  <p>GRID3 and Overture supply the places and their IDs. Campaign tools collect against those places. fhir-pipes moves the data in and out, so the same facility can be followed from the source file to the dashboard.</p>
+</header>
+
+<figure>
+  <div class="frame">
+<svg id="dg" class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 866" width="1280" height="866" role="img" aria-label="Places from GRID3, Overture and WorldPop are loaded into the ICR location registry and keep their source IDs. The registry is sent to ODK as an entity list. DHIS2, DIGIT, ODK and other tools are mapped into the ICR. The ICR is written out as a Parquet warehouse for dashboards, GIS and DHIS2.">
+<defs>
+  <marker id="a-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-in" d="M0,1 L10,5 L0,9 z"/></marker>
+  <marker id="a-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-out" d="M0,1 L10,5 L0,9 z"/></marker>
+</defs>
+<rect class="bg" width="1280" height="866"/>
+
+<text class="mono muted" x="40" y="44">HOW DATA REACHES THE ICR AND LEAVES IT</text>
+<text class="mono" x="40" y="108">PLACES AND POPULATION</text>
+<text class="sub" x="40" y="128">Open reference data</text>
+<text class="mono" x="40" y="322">RECORD</text>
+<text class="sub" x="40" y="342">One registry and</text>
+<text class="sub" x="40" y="358">system of record</text>
+<text class="mono" x="40" y="746">CAMPAIGN TOOLS</text>
+<text class="sub" x="40" y="766">Countries keep the</text>
+<text class="sub" x="40" y="782">tools they use</text>
+<text class="mono" x="950" y="318">ANALYSE AND REPORT</text>
+
+<!-- wires -->
+<path id="w-worldpop" data-s="1" class="wire" d="M296,162 L296,190 L361,190 L361,290" marker-end="url(#a-in)"/>
+<path id="w-grid3" data-s="1" class="wire" d="M482,162 L482,190 L361,190 L361,290" marker-end="url(#a-in)"/>
+<path id="w-overture" data-s="1" class="wire" d="M668,162 L668,190 L361,190 L361,290" marker-end="url(#a-in)"/>
+<path id="w-gers" data-s="2" class="wire dash" d="M700,290 L700,162" marker-start="url(#a-in)" marker-end="url(#a-out)"/>
+<path id="w-entity" data-s="3" class="wire" d="M255,570 L255,722" marker-end="url(#a-out)"/>
+<path id="w-odk" data-s="4" class="wire" d="M335,722 L335,690 L621,690 L621,570" marker-end="url(#a-in)"/>
+<path id="w-dhis2" data-s="4" class="wire" d="M479,722 L479,690 L621,690 L621,570" marker-end="url(#a-in)"/>
+<path id="w-digit" data-s="4" class="wire" d="M663,722 L663,690 L621,690 L621,570" marker-end="url(#a-in)"/>
+<path id="w-other" data-s="4" class="wire" d="M847,722 L847,690 L621,690 L621,570" marker-end="url(#a-in)"/>
+<path id="w-wh" data-s="5" class="wire" d="M750,380 L950,380" marker-end="url(#a-out)"/>
+<path id="w-out1" data-s="5" class="wire" d="M975,430 L975,492 L1005,492" marker-end="url(#a-out)"/>
+<path id="w-out2" data-s="5" class="wire" d="M975,430 L975,567 L1005,567" marker-end="url(#a-out)"/>
+<path id="w-out3" data-s="5" class="wire" d="M975,430 L975,642 L1005,642" marker-end="url(#a-out)"/>
+
+<g id="dots"></g>
+
+<!-- sources -->
+<g data-s="1"><rect class="box" x="210" y="84" width="172" height="78" rx="3"/><text class="name" x="224" y="110">WorldPop</text><text class="sub" x="224" y="129">Population per area</text></g>
+<g data-s="1"><rect class="box" x="396" y="84" width="172" height="78" rx="3"/><text class="name" x="410" y="110">GRID3</text><text class="sub" x="410" y="129">Facilities, settlements,</text><text class="sub" x="410" y="144">ward boundaries</text></g>
+<g data-s="1 2"><rect class="box" x="582" y="84" width="172" height="78" rx="3"/><text class="name" x="596" y="110">Overture Maps</text><text class="sub" x="596" y="129">Admin areas, places,</text><text class="sub" x="596" y="144">buildings, GERS IDs</text></g>
+
+<g data-s="1"><rect class="pill" x="276" y="226" width="170" height="28" rx="14"/><text class="pilltext" x="361" y="244">fhir-pipes import</text></g>
+
+<g data-s="2"><rect class="chip" x="716" y="184" width="214" height="80" rx="2"/>
+<text class="mono h-out" x="728" y="202">ICR → OVERTURE</text><text class="body" x="728" y="217">places Overture does not have</text>
+<text class="mono h-in" x="728" y="238">OVERTURE → ICR</text><text class="body" x="728" y="253">GERS IDs for matched places</text></g>
+
+<!-- the same ID at every step -->
+<rect class="chip" x="950" y="84" width="290" height="206" rx="2"/>
+<text class="mono muted" x="964" y="108">THE SAME ID AT EVERY STEP</text>
+<line class="trail" x1="972" y1="138" x2="972" y2="258"/>
+<g data-s="1 2 3 4 5"><circle class="mk" cx="972" cy="138" r="5"/><text class="rowname" x="988" y="142">GRID3 record</text><text class="code" x="1228" y="142" text-anchor="end">globalid</text></g>
+<g data-s="2 3 4 5"><circle class="mk" cx="972" cy="168" r="5"/><text class="rowname" x="988" y="172">ICR Location</text><text class="code" x="1228" y="172" text-anchor="end">identifier</text></g>
+<g data-s="3 4 5"><circle class="mk" cx="972" cy="198" r="5"/><text class="rowname" x="988" y="202">ODK entity</text><text class="code" x="1228" y="202" text-anchor="end">entity property</text></g>
+<g data-s="4 5"><circle class="mk" cx="972" cy="228" r="5"/><text class="rowname" x="988" y="232">Campaign record</text><text class="code" x="1228" y="232" text-anchor="end">location reference</text></g>
+<g data-s="5"><circle class="mk" cx="972" cy="258" r="5"/><text class="rowname" x="988" y="262">Warehouse row</text><text class="code" x="1228" y="262" text-anchor="end">location column</text></g>
+
+<!-- ICR -->
+<rect class="icr" x="210" y="290" width="540" height="280" rx="4"/>
+<text class="title" x="228" y="324" font-size="24">ICR</text><text class="sub" x="278" y="323">Integrated Campaign Registry</text><text class="mono h-in" x="732" y="322" text-anchor="end">HL7 FHIR R4</text>
+
+<g><rect class="cell" x="226" y="340" width="270" height="212" rx="2"/>
+<text class="name" x="240" y="364">Location registry</text><text class="sub" x="240" y="383">Admin areas, facilities, settlements</text>
+<rect class="chip" x="238" y="396" width="246" height="124" rx="2"/>
+<text class="cellname" x="250" y="417">Gilliri Primary Health Center</text><text class="code" x="250" y="432">Location · facility</text>
+<rect class="tint" data-only="2" x="244" y="442" width="234" height="72" rx="2"/>
+<text class="mono muted" x="250" y="456">IDENTIFIERS, ONE PER SOURCE</text>
+<g data-s="1 2 3 4 5"><text class="idk" x="250" y="474">grid3-globalid</text><text class="idk muted" x="350" y="474">c0164f67-…-9b674</text></g>
+<g data-s="2 3 4 5"><text class="idk" x="250" y="491">overture-gers</text><text class="idk muted" x="350" y="491">added on match</text></g>
+<g data-s="2 3 4 5"><text class="idk" x="250" y="508">dhis2-orgunit</text><text class="idk muted" x="350" y="508">org unit UID</text></g>
+<text class="code" x="240" y="540">Location · Organization · Group</text></g>
+
+<g data-s="4 5"><rect class="cell" x="508" y="340" width="226" height="212" rx="2"/>
+<text class="name" x="522" y="364">Campaign data</text><text class="sub" x="522" y="383">Campaigns, tasks, doses given,</text><text class="sub" x="522" y="398">coverage</text>
+<rect class="chip" x="520" y="430" width="202" height="62" rx="2"/>
+<text class="code" x="532" y="449">MedicationAdministration</text><text class="body" x="532" y="466">Each record points at a</text><text class="body" x="532" y="481">registry Location</text>
+<path class="wire" d="M520,461 L486,461" marker-end="url(#a-out)"/>
+<text class="code" x="522" y="540">CarePlan · Task · MeasureReport</text></g>
+
+<!-- field and tools -->
+<g data-s="3"><rect class="chip" x="268" y="596" width="228" height="62" rx="2"/>
+<text class="mono h-out" x="280" y="614">ICR → ODK · ENTITY LIST</text><text class="body" x="280" y="630">facility name, point, registry ID</text><text class="body" x="280" y="645">picked on a map in the form</text></g>
+
+<g data-s="4"><rect class="pill" x="506" y="606" width="230" height="28" rx="14"/><text class="pilltext" x="621" y="624">fhir-pipes map · check · load</text></g>
+
+<g data-s="3 4"><rect class="box" x="210" y="722" width="170" height="78" rx="3"/><text class="name" x="224" y="748">ODK, Ona Data</text><text class="sub" x="224" y="767">Form submissions,</text><text class="sub" x="224" y="782">entity lists</text></g>
+<g data-s="4"><rect class="box" x="394" y="722" width="170" height="78" rx="3"/><text class="name" x="408" y="748">DHIS2</text><text class="sub" x="408" y="767">Org units, indicators,</text><text class="sub" x="408" y="782">reported values</text></g>
+<g data-s="4"><rect class="box" x="578" y="722" width="170" height="78" rx="3"/><text class="name" x="592" y="748">DIGIT</text><text class="sub" x="592" y="767">Households, tasks,</text><text class="sub" x="592" y="782">deliveries, stock</text></g>
+<g data-s="4"><rect class="box" x="762" y="722" width="170" height="78" rx="3"/><text class="name" x="776" y="748">CommCare, others</text><text class="sub" x="776" y="767">Delivery, supervision</text></g>
+
+<!-- warehouse and outputs -->
+<g data-s="5"><rect class="pill" x="775" y="366" width="150" height="28" rx="14"/><text class="pilltext" x="850" y="384">fhir-pipes refresh</text></g>
+<g data-s="5"><rect class="box" x="950" y="330" width="290" height="100" rx="3"/><text class="name" x="964" y="357">Data warehouse</text><text class="sub" x="964" y="376">Parquet tables, GeoParquet locations</text><text class="code" x="964" y="418">SQL-on-FHIR ViewDefinitions</text></g>
+<g data-s="5"><rect class="box" x="1005" y="462" width="235" height="60" rx="3"/><text class="name" x="1019" y="487">Dashboards and BI</text><text class="sub" x="1019" y="506">DuckDB, Superset, Power BI</text></g>
+<g data-s="5"><rect class="box" x="1005" y="537" width="235" height="60" rx="3"/><text class="name" x="1019" y="562">Maps and GIS</text><text class="sub" x="1019" y="581">QGIS, vector tiles, microplanning</text></g>
+<g data-s="5"><rect class="box" x="1005" y="612" width="235" height="60" rx="3"/><text class="name" x="1019" y="637">DHIS2</text><text class="sub" x="1019" y="656">Campaign results as aggregate data</text></g>
+
+<!-- legend -->
+<path class="wire" d="M210,838 h34" marker-end="url(#a-in)"/><text class="sub" x="254" y="842">data going into the ICR</text>
+<path class="wire" d="M420,838 h34" marker-end="url(#a-out)"/><text class="sub" x="464" y="842">data going out of the ICR</text>
+<rect class="pill" x="640" y="828" width="34" height="20" rx="10"/><text class="sub" x="684" y="842">a fhir-pipes command</text>
+</svg>
+  </div>
+
+  <div class="controls">
+    <button type="button" class="play" id="play">Play</button>
+    <button type="button" id="all">Show all</button>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  </div>
+
+  <ol class="steps" id="steps">
+    <li><button type="button"><span class="n">Load places</span><h2>GRID3 and Overture supply the places</h2><p>Health facilities, settlements and admin boundaries come from GRID3 and Overture, and population from WorldPop. fhir-pipes loads them into the ICR as Locations.</p></button></li>
+    <li><button type="button"><span class="n">Keep the IDs</span><h2>Each Location keeps the ID every source gave it</h2><p>The GRID3 ID, the DHIS2 org unit ID and the Overture GERS ID sit side by side. GERS is the preferred shared key because it is global and open. Places Overture does not have are contributed to it, and the GERS ID is added once they match.</p></button></li>
+    <li><button type="button"><span class="n">Send to the field</span><h2>The registry goes to ODK as an entity list</h2><p>A data collector picks the facility on a map inside the form. Each submission carries the registry ID, not a typed name.</p></button></li>
+    <li><button type="button"><span class="n">Map tools in</span><h2>fhir-pipes maps each tool's records to ICR resources</h2><p>DHIS2, DIGIT, ODK and other tools keep their own formats. FHIR Mapping Language maps turn their records into ICR resources, which are checked and loaded. They join the registry on the IDs they carry.</p></button></li>
+    <li><button type="button"><span class="n">Analyse</span><h2>The ICR is written out as a Parquet warehouse</h2><p>fhir-pipes refresh flattens the records into tables with SQL-on-FHIR views, and the registry into GeoParquet. Dashboards, GIS tools and DHIS2 reporting read those files.</p></button></li>
+  </ol>
+</figure>
+</div>
+
+<script>
+(() => {
+  const svg = document.getElementById('dg');
+  const dotsG = document.getElementById('dots');
+  const playBtn = document.getElementById('play');
+  const allBtn = document.getElementById('all');
+  const bar = document.getElementById('bar');
+  const stepBtns = [...document.querySelectorAll('#steps button')];
+  const tagged = [...svg.querySelectorAll('[data-s], [data-only]')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STEP_MS = 7000, LOOP_MS = 2600, N = stepBtns.length;
+
+  // Dots per step: [path id, kind, reversed, phase]
+  const DOTS = {
+    1: [['w-worldpop', 'in', 0, 0], ['w-grid3', 'in', 0, .33], ['w-overture', 'in', 0, .66]],
+    2: [['w-gers', 'out', 0, 0], ['w-gers', 'in', 1, .5]],
+    3: [['w-entity', 'out', 0, 0], ['w-entity', 'out', 0, .5]],
+    4: [['w-odk', 'in', 0, 0], ['w-dhis2', 'in', 0, .25], ['w-digit', 'in', 0, .5], ['w-other', 'in', 0, .75]],
+    5: [['w-wh', 'out', 0, 0], ['w-wh', 'out', 0, .5], ['w-out1', 'out', 0, .2], ['w-out2', 'out', 0, .45], ['w-out3', 'out', 0, .7]],
+  };
+
+  let cur = 0, playing = false, stepStart = 0, live = [];
+
+  function show(n) {
+    cur = n;
+    stepStart = performance.now();
+    svg.classList.toggle('stepping', n > 0);
+    for (const el of tagged) {
+      const list = (el.dataset.s || el.dataset.only).split(' ');
+      el.classList.toggle('on', list.includes(String(n)));
+    }
+    stepBtns.forEach((b, i) => b.setAttribute('aria-current', i + 1 === n ? 'step' : 'false'));
+    dotsG.replaceChildren();
+    live = [];
+    if (n > 0 && !reduce) {
+      for (const [id, kind, rev, phase] of DOTS[n]) {
+        const path = document.getElementById(id);
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('r', 4.5);
+        c.setAttribute('class', 'dot-' + kind);
+        dotsG.appendChild(c);
+        live.push({ c, path, len: path.getTotalLength(), rev, phase });
+      }
+    }
+    if (!playing) bar.style.width = n ? (n / N * 100) + '%' : '0';
+  }
+
+  function setPlaying(p) {
+    playing = p;
+    playBtn.textContent = p ? 'Pause' : 'Play';
+    if (p) { show(cur && cur < N ? cur : 1); }
+  }
+
+  function frame(now) {
+    for (const d of live) {
+      let t = ((now / LOOP_MS) + d.phase) % 1;
+      if (d.rev) t = 1 - t;
+      const p = d.path.getPointAtLength(t * d.len);
+      d.c.setAttribute('cx', p.x);
+      d.c.setAttribute('cy', p.y);
+    }
+    if (playing) {
+      const f = (now - stepStart) / STEP_MS;
+      bar.style.width = ((cur - 1 + Math.min(f, 1)) / N * 100) + '%';
+      if (f >= 1) show(cur % N + 1);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  playBtn.addEventListener('click', () => setPlaying(!playing));
+  allBtn.addEventListener('click', () => { setPlaying(false); show(0); });
+  stepBtns.forEach((b, i) => b.addEventListener('click', () => { setPlaying(false); show(i + 1); }));
+
+  show(0);
+  if (!reduce && location.hash !== '#all') setPlaying(true);
+  requestAnimationFrame(frame);
+})();
+</script>
