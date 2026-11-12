@@ -31,8 +31,10 @@ const RATIO_BANDS = [
   {name: "About the same", start: LOW, end: HIGH, color: "#ffffbf"},
   {name: "125–150%", start: HIGH, end: 150, color: "#91bfdb"}, {name: "Over 150%", start: 150, end: 1000, color: "#4575b4"}
 ];
-const BAND_COLORS = {lower: "#d74554", same: "#a3b1c2", higher: "#518cc3"};
-const band = (v) => v < LOW ? "lower" : v > HIGH ? "higher" : "same";
+// The histograms use the same five bands and colours as the maps.
+const band = (v) => (RATIO_BANDS.find((b) => v < b.end) ?? RATIO_BANDS.at(-1)).name;
+// The pale middle band needs an outline to show against the page.
+const BAR_STROKE = "#94a3b8";
 ```
 
 ```js
@@ -106,11 +108,12 @@ function brushHistogram(field, label) {
     width: W, height: H, marginTop: MARGIN.top, marginRight: MARGIN.right, marginBottom: MARGIN.bottom, marginLeft: MARGIN.left,
     x: {label, domain: [20, 200]},
     y: {label: "Number of upazilas", grid: true},
-    color: {domain: Object.keys(BAND_COLORS), range: Object.values(BAND_COLORS)},
+    color: {domain: RATIO_BANDS.map((b) => b.name), range: RATIO_BANDS.map((b) => b.color)},
     marks: [
       Plot.rectY(upazilas.filter((d) => d[field] != null), Plot.binX({y: "count"}, {x: (d) => clampX(d[field]), fill: (d) => band(d[field]),
-        thresholds: Array.from({length: 37}, (_, i) => 20 + i * 5), insetLeft: 0.5, insetRight: 0.5})),
-      Plot.ruleX([100], {stroke: "#334155"}),
+        thresholds: Array.from({length: 37}, (_, i) => 20 + i * 5), insetLeft: 0.5, insetRight: 0.5, stroke: BAR_STROKE, strokeWidth: 0.5})),
+      Plot.ruleX([100], {stroke: "#0f172a", strokeWidth: 4}),
+      Plot.text([100], {x: (d) => d, frameAnchor: "top", dy: -14, text: () => "100%", fill: "#0f172a", fontWeight: 600, fontSize: 11}),
       Plot.ruleX([LOW, HIGH], {stroke: "#334155", strokeDasharray: "4,3"}),
       Plot.ruleY([0])
     ]
@@ -124,7 +127,7 @@ function brushHistogram(field, label) {
     bars.each(function () {
       const mid = +this.getAttribute("x") + +this.getAttribute("width") / 2;
       const inside = !selection || (mid >= selection[0] && mid <= selection[1]);
-      d3.select(this).attr("opacity", inside ? 1 : 0.3).attr("stroke", selection && inside ? "#334155" : null).attr("stroke-width", selection && inside ? 0.75 : null);
+      d3.select(this).attr("opacity", inside ? 1 : 0.3).attr("stroke", selection && inside ? "#334155" : BAR_STROKE).attr("stroke-width", selection && inside ? 0.75 : 0.5);
     });
     grip.attr("display", selection ? null : "none");
     if (selection) grip.attr("x", (i) => selection[i] - GRIP.width / 2);
@@ -150,8 +153,8 @@ const routineRange = Generators.input(routineHistogram);
 const worldpopHistogram = brushHistogram("campaign_wp", "Campaign target as % of WorldPop children under 1 →");
 const worldpopRange = Generators.input(worldpopHistogram);
 const bandKey = () => html`<div style="display:flex;flex-wrap:wrap;gap:12px;font:11px system-ui;color:#475569;margin-top:6px">
-  ${[["lower", "campaign target lower (under 80%)"], ["same", "about the same (80–125%)"], ["higher", "campaign target higher (over 125%)"]].map(([k, t]) =>
-    html`<span><span style="display:inline-block;width:11px;height:11px;background:${BAND_COLORS[k]};margin-right:4px;vertical-align:-1px"></span>${t}</span>`)}</div>`;
+  ${RATIO_BANDS.map((b) =>
+    html`<span><span style="display:inline-block;width:11px;height:11px;background:${b.color};border:0.5px solid ${BAR_STROKE};margin-right:4px;vertical-align:-1px"></span>${b.name === "About the same" ? "About the same (80–125%)" : b.name}</span>`)}</div>`;
 const HOW = "Each bar counts the upazilas in a 5-point band; 100% means the two figures are equal. Drag across the chart to pick a range, drag the selection to move it or its handles to resize it, and click outside it to clear. Values under 20% or over 200% are drawn at the ends.";
 ```
 

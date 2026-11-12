@@ -124,7 +124,7 @@ const badTargets = rows(await sql`SELECT location_name, left(period, 4) AS year,
 
 <div class="d2-footer muted">
 
-**Source.** The DGHS GIS Microplanning dashboard (gisdashboard.dghs.gov.bd), which computes these figures from the DHIS2 EPI e-Tracker; downloaded on 20 October 2026 and loaded into the local FHIR server as `bd-ri-*` Measures. Upazila boundaries are the dashboard's; city corporation wards come from the city corporations' own shapefiles.
+**Source.** The DGHS GIS Microplanning dashboard (gisdashboard.dghs.gov.bd), which computes these figures from the DHIS2 EPI e-Tracker; downloaded on 20 October 2026 and loaded into the FHIR server as `bd-ri-*` Measures. Upazila boundaries are the dashboard's; city corporation wards come from the city corporations' own shapefiles.
 
 **Coverage.** Doses ÷ target for the period: the annual target for a year, ÷ 12 for a month, the months so far for 2026. The dashboard's own figure divides by the year-to-date target and caps at 100%; it is shown under the gauge for comparison.
 
