@@ -12,6 +12,7 @@ export default {
     {name: "Routine immunization", path: "/routine"},
     {name: "Routine vs MR campaign", path: "/routine-vs-campaign"},
     {name: "Do routine and the campaign plan for the same children?", path: "/target-gap"},
+    {name: "How do routine targets compare with WorldPop?", path: "/routine-vs-worldpop"},
     {name: "Where the campaign may have missed children", path: "/missed"},
     {name: "Did routine immunization change during the campaign?", path: "/campaign-effect"},
     {name: "About the data", path: "/about"}
