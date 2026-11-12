@@ -113,7 +113,6 @@ function brushHistogram(field, label) {
       Plot.rectY(upazilas.filter((d) => d[field] != null), Plot.binX({y: "count"}, {x: (d) => clampX(d[field]), fill: (d) => band(d[field]),
         thresholds: Array.from({length: 37}, (_, i) => 20 + i * 5), insetLeft: 0.5, insetRight: 0.5, stroke: BAR_STROKE, strokeWidth: 0.5})),
       Plot.ruleX([100], {stroke: "#0f172a", strokeWidth: 4}),
-      Plot.text([100], {x: (d) => d, frameAnchor: "top", dy: -14, text: () => "100%: the two figures are equal", fill: "#0f172a", fontWeight: 600, fontSize: 11}),
       Plot.ruleX([LOW, HIGH], {stroke: "#334155", strokeDasharray: "4,3"}),
       Plot.ruleY([0])
     ]
