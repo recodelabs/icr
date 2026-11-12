@@ -6,8 +6,8 @@ records, FML maps, ViewDefinitions and SQLQuery Libraries. It is a port of
 **facilities**: on the demo tenant's export it writes the same Locations and Organizations as
 `transform.py`, apart from the differences listed in `known-differences.toml`.
 
-It needs a fhir-pipes with `[records]`, `[maps]` and `[views]` in `import.toml` (branch
-`feat/import-lenient-records`), and the `duckdb` command.
+It needs a fhir-pipes with `[records]` and `[views]` in `import.toml` (its `main` branch
+has them), and the `duckdb` command.
 
 ## Record types
 
@@ -17,7 +17,7 @@ connector writes these names, make a folder of links to the files `extract.py` a
 
 | DIGIT export file | Record type | Model | Read by |
 | --- | --- | --- | --- |
-| `boundary_tree.ndjson` | `DIGITBoundaryTree` | `models/StructureDefinition-DIGITBoundaryTree.json` | the map `DIGITBoundaryTreeToICR`, the view `Boundary` |
+| `boundary_tree.ndjson` | `DIGITBoundaryTree` | `models/StructureDefinition-DIGITBoundaryTree.json` | the views `BoundaryTree` and `Boundary` |
 | `facility.ndjson` | `DIGITFacility` | `models/StructureDefinition-DIGITFacility.json` | the view `Facility` |
 | `boundary_hierarchy.ndjson` | `DIGITBoundaryHierarchy` | not yet | (`transform.py` does not read it either) |
 | `product.ndjson`, `product_variant.ndjson` | `DIGITProduct`, `DIGITProductVariant` | not yet | |
@@ -41,8 +41,9 @@ fhir-pipes import run   --package tools/digit/package --in digit-in --out digit-
 fhir-pipes import test  --package tools/digit/package
 ```
 
-`DIGITFacilityRow` (`models/`) is not a record file: it is the shape of a row of the
-`DigitFacility` Library, which `DIGITFacilityToICR` reads.
+`DIGITBoundaryRow` and `DIGITFacilityRow` (`models/`) are not record files: they are the
+shapes of the rows of the `DigitBoundary` and `DigitFacility` Libraries, which
+`DIGITBoundaryToICR` and `DIGITFacilityToICR` read.
 
 ## The records as DIGIT returns them
 
@@ -57,14 +58,28 @@ the run.
 ## Boundaries
 
 `boundary_tree.ndjson` holds one record per hierarchy, with the boundaries nested in
-`children` to any depth. `DIGITBoundaryTreeToICR` maps a tree with a group that calls itself:
-`Children` writes the Location of each child of a boundary, with the boundary as `partOf` and
-the level one below, and then calls itself on that child. The Locations come out in the same
-order as `transform.py` writes them: each parent before its children.
+`children` to any depth. The boundaries are mapped one row at a time:
 
-A tree is one record, so one transform writes all its Locations. The demo's NIGERIA hierarchy
-has 83,194 boundaries, more than the map engine's default limit of 2,000,000 values allows in
-one transform; `import.toml` raises it with `[maps] max_values`.
+1. The view `BoundaryTree` has one row per tree: its line, its hierarchy and the codes of
+   its top boundaries. The view `Boundary` has one row per boundary of every tree, at any
+   depth: its code, server id, boundary type and the codes of its children.
+2. The `DigitBoundary` Library walks the trees from the top boundaries down, with a
+   recursive query, and gives one row per boundary with its hierarchy, its level (0 at the
+   top) and its parent's code. Its rows are `DIGITBoundaryRow` records.
+3. `DIGITBoundaryToICR` maps each row to a Location.
+
+The Locations come out in the same order as `transform.py` writes them: tree by tree in the
+order of the file, and in each tree each boundary before its children, the children in the
+order DIGIT lists them. SQL keeps no order, so the Library builds an explicit sort key on
+the way down: the tree's line (`%recordLine`), then the position of each boundary among its
+siblings. The views give a list of codes as JSON text, so the Library reads the positions
+with `from_json` and `unnest ... WITH ORDINALITY`.
+
+On the demo tenant's export this takes about 11 s and 370 MB for the 113,176 boundaries
+(2.4 s for the views and the Library, the rest for the map on every core). An earlier
+version mapped each tree as one record with a group that called itself; the NIGERIA tree
+(83,194 boundaries) was then one transform on one thread, and the boundaries took 43 s and
+3.5 GB.
 
 The boundary name is made from the code as `transform.py`'s `boundary_name` makes it (DIGIT
 keeps names in its localisation service, which is not exported): the segments after the last
@@ -95,7 +110,7 @@ The two views are *record views*: their `resource` is a record type (`DIGITBound
 and `import check` checks the views' paths against the models.
 
 `Boundary` flattens a tree with `forEach` over the top boundaries and a `unionAll` of the
-boundary itself and `repeat: ["children"]`. `repeat: ["boundary", "children"]` from the tree
+boundary itself and `repeat: ["children"]`. The `DigitFacility` Library reads its `code`. `repeat: ["boundary", "children"]` from the tree
 would be shorter, but fhir-pipes' FHIRPath engine reads `boundary` on a boundary, which has no
 such member, as the choice element `boundary[x]` and returns its `boundaryType`.
 
@@ -109,8 +124,8 @@ The data test `one row per facility` stops the run if two different rows have on
 
 | `transform.py` report | Package | Demo tenant |
 | --- | --- | --- |
-| `notes`: "facility: locality boundary not exported (partOf left empty)" | rows of the `DigitFacilityLocalityNotExported` Library, in the run report's step 3 tables | 110 and 110 |
-| `duplicate_ids_refused` (Location 96, Organization 96) | `facility` rows less `digit_facility` rows, in the step 2 tables | 192 (96 each) and 5,258 − 5,162 = 96 |
+| `notes`: "facility: locality boundary not exported (partOf left empty)" | rows of the `DigitFacilityLocalityNotExported` Library, in the run report's step 4 tables | 110 and 110 |
+| `duplicate_ids_refused` (Location 96, Organization 96) | `facility` rows less `digit_facility` rows, in the step 3 tables | 192 (96 each) and 5,258 − 5,162 = 96 |
 | boundary id collision (stops the run) | data test `one boundary per Location id` | none |
 | `counts` by profile | `output` and each step's `resources` | the same for these parts |
 

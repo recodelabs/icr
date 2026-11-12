@@ -1,0 +1,183 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITBoundaryRow",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITBoundaryRow",
+ "name": "DIGITBoundaryRow",
+ "title": "DIGIT boundary, with its hierarchy, level and parent",
+ "status": "draft",
+ "description": "A row of the DigitBoundary Library: one DIGIT boundary of a hierarchy, with the hierarchy, its level in it (0 for a top boundary) and the code of the boundary it is directly in.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITBoundaryRow",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITBoundaryRow",
+    "path": "DIGITBoundaryRow",
+    "short": "DIGITBoundaryRow",
+    "definition": "A row of the DigitBoundary Library: one DIGIT boundary of a hierarchy, with the hierarchy, its level in it (0 for a top boundary) and the code of the boundary it is directly in.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITBoundaryRow.code",
+    "path": "DIGITBoundaryRow.code",
+    "short": "The boundary code, unique in the tenant",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.id",
+    "path": "DIGITBoundaryRow.id",
+    "short": "The boundary's server id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.boundaryType",
+    "path": "DIGITBoundaryRow.boundaryType",
+    "short": "The level, such as COUNTRY or DISTRICT",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.hierarchyType",
+    "path": "DIGITBoundaryRow.hierarchyType",
+    "short": "The hierarchy, such as ADMIN or MICROPLAN",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.level",
+    "path": "DIGITBoundaryRow.level",
+    "short": "The depth in the hierarchy: 0 for a top boundary",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.parent",
+    "path": "DIGITBoundaryRow.parent",
+    "short": "The code of the boundary directly above; absent for a top boundary",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITBoundaryRow",
+    "path": "DIGITBoundaryRow",
+    "short": "DIGITBoundaryRow",
+    "definition": "A row of the DigitBoundary Library: one DIGIT boundary of a hierarchy, with the hierarchy, its level in it (0 for a top boundary) and the code of the boundary it is directly in.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITBoundaryRow.code",
+    "path": "DIGITBoundaryRow.code",
+    "short": "The boundary code, unique in the tenant",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.id",
+    "path": "DIGITBoundaryRow.id",
+    "short": "The boundary's server id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.boundaryType",
+    "path": "DIGITBoundaryRow.boundaryType",
+    "short": "The level, such as COUNTRY or DISTRICT",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.hierarchyType",
+    "path": "DIGITBoundaryRow.hierarchyType",
+    "short": "The hierarchy, such as ADMIN or MICROPLAN",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.level",
+    "path": "DIGITBoundaryRow.level",
+    "short": "The depth in the hierarchy: 0 for a top boundary",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryRow.parent",
+    "path": "DIGITBoundaryRow.parent",
+    "short": "The code of the boundary directly above; absent for a top boundary",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,13 @@
+url = "https://icr.healthcampaigns.org/Library/DigitBoundary"
+name = "DigitBoundary"
+status = "draft"
+kind = "SQLQuery"
+description = "Every DIGIT boundary of every hierarchy, with its hierarchy, level and parent, each parent before its children. Rows are DIGITBoundaryRow records."
+
+[[depends_on]]
+label = "tree"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/BoundaryTree"
+
+[[depends_on]]
+label = "boundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"

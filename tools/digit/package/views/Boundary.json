@@ -1,4 +1,12 @@
 {"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/Boundary","name":"Boundary","status":"draft","resource":"DIGITBoundaryTree",
  "select":[{"forEach":"boundary","unionAll":[
-  {"column":[{"name":"code","path":"code","type":"string"}]},
-  {"repeat":["children"],"column":[{"name":"code","path":"code","type":"string"}]}]}]}
+  {"column":[
+   {"name":"code","path":"code","type":"string"},
+   {"name":"id","path":"id","type":"string"},
+   {"name":"boundary_type","path":"boundaryType","type":"string"},
+   {"name":"children","path":"children.code","type":"string","collection":true}]},
+  {"repeat":["children"],"column":[
+   {"name":"code","path":"code","type":"string"},
+   {"name":"id","path":"id","type":"string"},
+   {"name":"boundary_type","path":"boundaryType","type":"string"},
+   {"name":"children","path":"children.code","type":"string","collection":true}]}]}]}

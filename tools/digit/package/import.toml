@@ -9,23 +9,23 @@ title = "DIGIT HCM to the Integrated Campaign Registry"
 null = "absent"
 unknown = "ignore"
 
-# One boundary tree is one record: the NIGERIA hierarchy of the demo tenant
-# has 83,194 boundaries, and its Locations take between 4 and 6 million
-# values in one transform, more than the engine's default limit of 2,000,000.
-# 20 million leaves room for a larger hierarchy.
-[maps]
-max_values = 20_000_000
-
-# The views Boundary and Facility read the boundary trees and the facilities
-# from their record files, not from staged resources: a view over a record
-# type goes beyond the SQL on FHIR specification, so it has to be allowed.
+# The views BoundaryTree, Boundary and Facility read the boundary trees and
+# the facilities from their record files, not from staged resources: a view
+# over a record type goes beyond the SQL on FHIR specification, so it has to
+# be allowed.
 [views]
 records = "allow"
 
-# Boundaries: every boundary of every hierarchy, to the output.
+# Every boundary of every hierarchy, with its hierarchy, level and parent,
+# each parent before its children. The Library reads the views BoundaryTree
+# and Boundary, which read the boundary trees.
 [[step]]
-map = "DIGITBoundaryTreeToICR"
-from = "DIGITBoundaryTree"
+library = "DigitBoundary"
+
+# Boundaries: an admin-unit Location each, to the output.
+[[step]]
+map = "DIGITBoundaryToICR"
+from = { library = "DigitBoundary" }
 
 # Each facility once, with its boundary when that boundary was exported, in
 # the order of facility.ndjson. The Library reads the views Boundary and

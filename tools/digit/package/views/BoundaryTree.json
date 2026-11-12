@@ -1,0 +1,5 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/BoundaryTree","name":"BoundaryTree","status":"draft","resource":"DIGITBoundaryTree",
+ "select":[{"column":[
+  {"name":"line","path":"%recordLine","type":"integer"},
+  {"name":"hierarchy_type","path":"hierarchyType","type":"string"},
+  {"name":"top","path":"boundary.code","type":"string","collection":true}]}]}
