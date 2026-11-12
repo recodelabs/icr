@@ -1,0 +1,199 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITBoundaryTree",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITBoundaryTree",
+ "name": "DIGITBoundaryTree",
+ "title": "DIGIT boundary tree",
+ "status": "draft",
+ "description": "One DIGIT boundary hierarchy with its boundaries, as boundary-service `boundary-relationships/_search?includeChildren=true` returns it: the top boundaries, each with its children nested to any depth.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITBoundaryTree",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITBoundaryTree",
+    "path": "DIGITBoundaryTree",
+    "short": "DIGITBoundaryTree",
+    "definition": "One DIGIT boundary hierarchy with its boundaries, as boundary-service `boundary-relationships/_search?includeChildren=true` returns it: the top boundaries, each with its children nested to any depth.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITBoundaryTree.hierarchyType",
+    "path": "DIGITBoundaryTree.hierarchyType",
+    "short": "The hierarchy, such as ADMIN or MICROPLAN",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.tenantId",
+    "path": "DIGITBoundaryTree.tenantId",
+    "short": "The DIGIT tenant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary",
+    "path": "DIGITBoundaryTree.boundary",
+    "short": "The top boundaries of the hierarchy",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.id",
+    "path": "DIGITBoundaryTree.boundary.id",
+    "short": "The boundary's server id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.code",
+    "path": "DIGITBoundaryTree.boundary.code",
+    "short": "The boundary code, unique in the tenant",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.boundaryType",
+    "path": "DIGITBoundaryTree.boundary.boundaryType",
+    "short": "The level, such as COUNTRY or DISTRICT",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.children",
+    "path": "DIGITBoundaryTree.boundary.children",
+    "short": "The boundaries directly below this one",
+    "min": 0,
+    "max": "*",
+    "contentReference": "#DIGITBoundaryTree.boundary"
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITBoundaryTree",
+    "path": "DIGITBoundaryTree",
+    "short": "DIGITBoundaryTree",
+    "definition": "One DIGIT boundary hierarchy with its boundaries, as boundary-service `boundary-relationships/_search?includeChildren=true` returns it: the top boundaries, each with its children nested to any depth.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITBoundaryTree.hierarchyType",
+    "path": "DIGITBoundaryTree.hierarchyType",
+    "short": "The hierarchy, such as ADMIN or MICROPLAN",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.tenantId",
+    "path": "DIGITBoundaryTree.tenantId",
+    "short": "The DIGIT tenant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary",
+    "path": "DIGITBoundaryTree.boundary",
+    "short": "The top boundaries of the hierarchy",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.id",
+    "path": "DIGITBoundaryTree.boundary.id",
+    "short": "The boundary's server id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.code",
+    "path": "DIGITBoundaryTree.boundary.code",
+    "short": "The boundary code, unique in the tenant",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.boundaryType",
+    "path": "DIGITBoundaryTree.boundary.boundaryType",
+    "short": "The level, such as COUNTRY or DISTRICT",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITBoundaryTree.boundary.children",
+    "path": "DIGITBoundaryTree.boundary.children",
+    "short": "The boundaries directly below this one",
+    "min": 0,
+    "max": "*",
+    "contentReference": "#DIGITBoundaryTree.boundary"
+   }
+  ]
+ }
+}

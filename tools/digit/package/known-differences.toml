@@ -1,0 +1,45 @@
+# Where the package's output differs from transform.py's on purpose. compare.py counts these
+# apart and does not count them as differences. Each entry names a resource type and either a
+# path (array indexes as []; kind: reference = only in transform.py's output, new = only in the
+# package's, changed = in both; match: members the differing value has) or order = true.
+
+# The reference output was edited after transform.py by enrich_grid3.py, which gives DIGIT's
+# Nigerian states and LGAs (168 boundaries in the demo) a GRID3 boundary, P-code, ICR Location
+# identifier and GRID3 spelling. That step is not part of this package yet.
+[[difference]]
+name = "GRID3 boundary"
+resource = "Location"
+path = "extension[]"
+kind = "reference"
+match = { url = "https://icr.healthcampaigns.org/StructureDefinition/location-boundary-geojson" }
+reason = "added to the reference by enrich_grid3.py, a later step"
+
+[[difference]]
+name = "GRID3 identifiers"
+resource = "Location"
+path = "identifier[]"
+kind = "reference"
+match = { system = ["https://icr.healthcampaigns.org/identifiers/pcode", "https://icr.healthcampaigns.org/identifiers/icr-location"] }
+reason = "added to the reference by enrich_grid3.py, a later step"
+
+[[difference]]
+name = "GRID3 spelling"
+resource = "Location"
+path = "alias[]"
+kind = "reference"
+reason = "added to the reference by enrich_grid3.py, a later step"
+
+# transform.py writes facilities in the order of facility.ndjson, which is the order the search
+# API returned them. The package writes them sorted by DIGIT id: the staged facilities go
+# through SQL, which has no file order, and a sorted order is the same on every run.
+[[difference]]
+name = "facility order"
+resource = "Location"
+order = true
+reason = "facilities are written sorted by DIGIT id, not in the order of the export"
+
+[[difference]]
+name = "facility order"
+resource = "Organization"
+order = true
+reason = "facilities are written sorted by DIGIT id, not in the order of the export"
