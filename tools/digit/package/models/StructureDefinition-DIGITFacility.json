@@ -1,0 +1,351 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITFacility",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITFacility",
+ "name": "DIGITFacility",
+ "title": "DIGIT facility",
+ "status": "draft",
+ "description": "A DIGIT facility as facility `_search` returns it. Only the elements the package reads are described; the run ignores the others (see import.toml).",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITFacility",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITFacility",
+    "path": "DIGITFacility",
+    "short": "DIGITFacility",
+    "definition": "A DIGIT facility as facility `_search` returns it. Only the elements the package reads are described; the run ignores the others (see import.toml).",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITFacility.id",
+    "path": "DIGITFacility.id",
+    "short": "The facility's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.tenantId",
+    "path": "DIGITFacility.tenantId",
+    "short": "The DIGIT tenant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.clientReferenceId",
+    "path": "DIGITFacility.clientReferenceId",
+    "short": "The id given by the device that created the facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.name",
+    "path": "DIGITFacility.name",
+    "short": "The facility name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.usage",
+    "path": "DIGITFacility.usage",
+    "short": "What the facility is used for, such as Warehouse or Health Facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.isPermanent",
+    "path": "DIGITFacility.isPermanent",
+    "short": "false for a temporary post",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.storageCapacity",
+    "path": "DIGITFacility.storageCapacity",
+    "short": "Storage capacity; not mapped",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.isDeleted",
+    "path": "DIGITFacility.isDeleted",
+    "short": "Soft-deleted in DIGIT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address",
+    "path": "DIGITFacility.address",
+    "short": "Where the facility is",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.latitude",
+    "path": "DIGITFacility.address.latitude",
+    "short": "Latitude; 0 with longitude 0 means not recorded",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.longitude",
+    "path": "DIGITFacility.address.longitude",
+    "short": "Longitude",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.locality",
+    "path": "DIGITFacility.address.locality",
+    "short": "The boundary the facility is in",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.locality.code",
+    "path": "DIGITFacility.address.locality.code",
+    "short": "The boundary code",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITFacility",
+    "path": "DIGITFacility",
+    "short": "DIGITFacility",
+    "definition": "A DIGIT facility as facility `_search` returns it. Only the elements the package reads are described; the run ignores the others (see import.toml).",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITFacility.id",
+    "path": "DIGITFacility.id",
+    "short": "The facility's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.tenantId",
+    "path": "DIGITFacility.tenantId",
+    "short": "The DIGIT tenant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.clientReferenceId",
+    "path": "DIGITFacility.clientReferenceId",
+    "short": "The id given by the device that created the facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.name",
+    "path": "DIGITFacility.name",
+    "short": "The facility name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.usage",
+    "path": "DIGITFacility.usage",
+    "short": "What the facility is used for, such as Warehouse or Health Facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.isPermanent",
+    "path": "DIGITFacility.isPermanent",
+    "short": "false for a temporary post",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.storageCapacity",
+    "path": "DIGITFacility.storageCapacity",
+    "short": "Storage capacity; not mapped",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.isDeleted",
+    "path": "DIGITFacility.isDeleted",
+    "short": "Soft-deleted in DIGIT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address",
+    "path": "DIGITFacility.address",
+    "short": "Where the facility is",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.latitude",
+    "path": "DIGITFacility.address.latitude",
+    "short": "Latitude; 0 with longitude 0 means not recorded",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.longitude",
+    "path": "DIGITFacility.address.longitude",
+    "short": "Longitude",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.locality",
+    "path": "DIGITFacility.address.locality",
+    "short": "The boundary the facility is in",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacility.address.locality.code",
+    "path": "DIGITFacility.address.locality.code",
+    "short": "The boundary code",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

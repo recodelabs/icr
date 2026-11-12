@@ -1,0 +1,85 @@
+/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITFacilityToICR'
+/// name = 'DIGITFacilityToICR'
+/// title = 'DIGIT facility to ICRLocation and ICRFacilityOrganization'
+/// status = 'draft'
+
+// One DIGIT facility (a row of the DigitFacility Library) as an ICRLocation
+// and the ICRFacilityOrganization that manages it, both with the same id.
+// Mapping: project/digit.md, "Facility → ICRLocation + ICRFacilityOrganization".
+//
+// The ids, systems and tag are those of the DIGIT demo tenant.
+
+uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITFacilityRow" alias DIGITFacilityRow as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/StructureDefinition/Location" alias Location as target
+uses "http://hl7.org/fhir/StructureDefinition/Organization" alias Organization as target
+
+group Facility(source src : DIGITFacilityRow, target bundle : Bundle) {
+  src -> bundle.type = 'collection' "bundleType";
+  // dgt- and the DIGIT id, each character not allowed in an id written as
+  // `-`. transform.py shortens an id longer than 64 characters with a hash;
+  // a map cannot, so such an id stops the run.
+  src.id as i check i.length() <= 60 -> evaluate(i, 'dgt-' + $this.replaceMatches('[^A-Za-z0-9.-]', '-')) as id then {
+    src -> bundle.entry as e, e.resource = create('Location') as loc then FacilityLocation(src, id, loc) "location";
+    src -> bundle.entry as e, e.resource = create('Organization') as org then FacilityOrganization(src, id, org) "organization";
+  } "resources";
+}
+
+group FacilityLocation(source src : DIGITFacilityRow, source id, target loc : Location) {
+  id -> loc.id = id "locationId";
+  src -> loc.meta as m then {
+    src -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "locationTag";
+    src -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRLocation' "locationProfile";
+  } "locationMeta";
+  src -> loc then Identifiers(src, loc) "locationIdentifiers";
+  src -> loc then Name(src, loc) "locationName";
+  // A deleted facility stays, inactive.
+  src where isDeleted = true -> loc.status = 'inactive' "deleted";
+  src where isDeleted.exists().not() or isDeleted = false -> loc.status = 'active' "notDeleted";
+  src -> loc.physicalType as pt, pt.coding as c, c.system = 'http://terminology.hl7.org/CodeSystem/location-physical-type', c.code = 'si', c.display = 'Site' "physicalType";
+  // A facility that is not permanent is a temporary post; one that does not
+  // say is a health facility.
+  src where isPermanent = false -> loc.type as t, t.coding as c, c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs', c.code = 'temporary-post', c.display = 'Temporary post' "temporaryPost";
+  src where isPermanent.exists().not() or isPermanent = true -> loc.type as t, t.coding as c, c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs', c.code = 'facility', c.display = 'Health facility' "facility";
+  src -> loc.type as t then Usage(src, t) "locationUsage";
+  id -> loc.managingOrganization as r, r.reference = append('Organization/', id) "managingOrganization";
+  // The locality boundary, only when it was exported (the Library leaves
+  // boundaryCode out otherwise).
+  src.boundaryCode as b -> loc.partOf as r, r.reference = evaluate(b, 'Location/dgt-' + $this.replaceMatches('[^A-Za-z0-9.-]', '-')) "partOf";
+  // DIGIT writes 0, 0 where no point was recorded; a point out of range is
+  // left out too.
+  src where (latitude != 0 or longitude != 0) and latitude >= -90 and latitude <= 90 and longitude >= -180 and longitude <= 180,
+      src.latitude as lat, src.longitude as lon -> loc.position as p, p.longitude = lon, p.latitude = lat "position";
+}
+
+group FacilityOrganization(source src : DIGITFacilityRow, source id, target org : Organization) {
+  id -> org.id = id "organizationId";
+  src -> org.meta as m then {
+    src -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "organizationTag";
+    src -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRFacilityOrganization' "organizationProfile";
+  } "organizationMeta";
+  src -> org then Identifiers(src, org) "organizationIdentifiers";
+  src where isDeleted = true -> org.active = false "inactive";
+  src where isDeleted.exists().not() or isDeleted = false -> org.active = true "active";
+  src -> org then Name(src, org) "organizationName";
+  src -> org.type as t, t.coding as c, c.system = 'http://terminology.hl7.org/CodeSystem/organization-type', c.code = 'prov', c.display = 'Healthcare Provider' "provider";
+  src -> org.type as t then Usage(src, t) "organizationUsage";
+}
+
+// The DIGIT id, then the clientReferenceId when there is one.
+group Identifiers(source src : DIGITFacilityRow, target tgt) {
+  src.id as i -> tgt.identifier as ident, ident.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/facility', ident.value = i "serverId";
+  src.clientReferenceId as c where $this != '' -> tgt.identifier as ident, ident.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/facility-client-ref', ident.value = c "clientRef";
+}
+
+// The name, or the DIGIT id for a facility without one.
+group Name(source src : DIGITFacilityRow, target tgt) {
+  src.name as n where $this != '' -> tgt.name = n "named";
+  src where name.exists().not() or name = '', src.id as i -> tgt.name = i "unnamed";
+}
+
+// The usage as text, `facility` when DIGIT gives none.
+group Usage(source src : DIGITFacilityRow, target t : CodeableConcept) {
+  src.usage as u where $this != '' -> t.text = u "usage";
+  src where usage.exists().not() or usage = '' -> t.text = 'facility' "noUsage";
+}

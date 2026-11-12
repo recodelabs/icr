@@ -1,0 +1,255 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITFacilityRow",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITFacilityRow",
+ "name": "DIGITFacilityRow",
+ "title": "DIGIT facility, with its exported boundary",
+ "status": "draft",
+ "description": "A row of the DigitFacility Library: one DIGIT facility, once, with the code of its locality boundary when that boundary was exported.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITFacilityRow",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITFacilityRow",
+    "path": "DIGITFacilityRow",
+    "short": "DIGITFacilityRow",
+    "definition": "A row of the DigitFacility Library: one DIGIT facility, once, with the code of its locality boundary when that boundary was exported.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITFacilityRow.id",
+    "path": "DIGITFacilityRow.id",
+    "short": "The facility's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.clientReferenceId",
+    "path": "DIGITFacilityRow.clientReferenceId",
+    "short": "The id given by the device that created the facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.name",
+    "path": "DIGITFacilityRow.name",
+    "short": "The facility name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.usage",
+    "path": "DIGITFacilityRow.usage",
+    "short": "What the facility is used for, such as Warehouse or Health Facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.isPermanent",
+    "path": "DIGITFacilityRow.isPermanent",
+    "short": "false for a temporary post",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.isDeleted",
+    "path": "DIGITFacilityRow.isDeleted",
+    "short": "Soft-deleted in DIGIT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.latitude",
+    "path": "DIGITFacilityRow.latitude",
+    "short": "Latitude; 0 where DIGIT recorded no point",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.longitude",
+    "path": "DIGITFacilityRow.longitude",
+    "short": "Longitude; 0 where DIGIT recorded no point",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.boundaryCode",
+    "path": "DIGITFacilityRow.boundaryCode",
+    "short": "The locality boundary's code, when that boundary was exported",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITFacilityRow",
+    "path": "DIGITFacilityRow",
+    "short": "DIGITFacilityRow",
+    "definition": "A row of the DigitFacility Library: one DIGIT facility, once, with the code of its locality boundary when that boundary was exported.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITFacilityRow.id",
+    "path": "DIGITFacilityRow.id",
+    "short": "The facility's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.clientReferenceId",
+    "path": "DIGITFacilityRow.clientReferenceId",
+    "short": "The id given by the device that created the facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.name",
+    "path": "DIGITFacilityRow.name",
+    "short": "The facility name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.usage",
+    "path": "DIGITFacilityRow.usage",
+    "short": "What the facility is used for, such as Warehouse or Health Facility",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.isPermanent",
+    "path": "DIGITFacilityRow.isPermanent",
+    "short": "false for a temporary post",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.isDeleted",
+    "path": "DIGITFacilityRow.isDeleted",
+    "short": "Soft-deleted in DIGIT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.latitude",
+    "path": "DIGITFacilityRow.latitude",
+    "short": "Latitude; 0 where DIGIT recorded no point",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.longitude",
+    "path": "DIGITFacilityRow.longitude",
+    "short": "Longitude; 0 where DIGIT recorded no point",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITFacilityRow.boundaryCode",
+    "path": "DIGITFacilityRow.boundaryCode",
+    "short": "The locality boundary's code, when that boundary was exported",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

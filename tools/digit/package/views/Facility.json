@@ -1,0 +1,12 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/Facility","name":"Facility","status":"draft","resource":"DIGITFacility",
+ "select":[{"column":[
+  {"name":"line","path":"%recordLine","type":"integer"},
+  {"name":"id","path":"id","type":"string"},
+  {"name":"client_reference_id","path":"clientReferenceId","type":"string"},
+  {"name":"name","path":"name","type":"string"},
+  {"name":"usage","path":"usage","type":"string"},
+  {"name":"is_permanent","path":"isPermanent","type":"boolean"},
+  {"name":"is_deleted","path":"isDeleted","type":"boolean"},
+  {"name":"latitude","path":"address.latitude","type":"decimal"},
+  {"name":"longitude","path":"address.longitude","type":"decimal"},
+  {"name":"locality","path":"address.locality.code","type":"string"}]}]}

@@ -1,0 +1,57 @@
+name = "icr-digit"
+title = "DIGIT HCM to the Integrated Campaign Registry"
+
+# The records are DIGIT search results as the API returns them: most
+# members are null when not set, and they carry audit details, row versions
+# and other members the mapping does not read. The models describe what the
+# package reads; nulls are read as absent and the other members are left out.
+[records]
+null = "absent"
+unknown = "ignore"
+
+# One boundary tree is one record: the NIGERIA hierarchy of the demo tenant
+# has 83,194 boundaries, and its Locations take between 4 and 6 million
+# values in one transform, more than the engine's default limit of 2,000,000.
+# 20 million leaves room for a larger hierarchy.
+[maps]
+max_values = 20_000_000
+
+# The views Boundary and Facility read the boundary trees and the facilities
+# from their record files, not from staged resources: a view over a record
+# type goes beyond the SQL on FHIR specification, so it has to be allowed.
+[views]
+records = "allow"
+
+# Boundaries: every boundary of every hierarchy, to the output.
+[[step]]
+map = "DIGITBoundaryTreeToICR"
+from = "DIGITBoundaryTree"
+
+# Each facility once, with its boundary when that boundary was exported, in
+# the order of facility.ndjson. The Library reads the views Boundary and
+# Facility, which read the record files.
+[[step]]
+library = "DigitFacility"
+
+# The facilities whose boundary was not exported: the run report counts them.
+[[step]]
+library = "DigitFacilityLocalityNotExported"
+
+# Facilities: a Location and an Organization each, to the output.
+[[step]]
+map = "DIGITFacilityToICR"
+from = { library = "DigitFacility" }
+
+[[test]]
+name = "one row per facility"
+library = "DigitFacility"
+unique = ["id"]
+
+[[test]]
+name = "one boundary per Location id"
+sql = """
+SELECT regexp_replace(code, '[^A-Za-z0-9.-]', '-', 'g') AS location_id, count(*) AS boundaries
+FROM boundary
+GROUP BY 1
+HAVING count(*) > 1
+"""

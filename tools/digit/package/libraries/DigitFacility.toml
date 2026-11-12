@@ -1,0 +1,13 @@
+url = "https://icr.healthcampaigns.org/Library/DigitFacility"
+name = "DigitFacility"
+status = "draft"
+kind = "SQLQuery"
+description = "DIGIT facilities, each once, with the code of the boundary each is in when that boundary was exported. Rows are DIGITFacilityRow records."
+
+[[depends_on]]
+label = "facility"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Facility"
+
+[[depends_on]]
+label = "boundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"

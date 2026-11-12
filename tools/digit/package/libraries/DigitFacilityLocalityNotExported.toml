@@ -1,0 +1,13 @@
+url = "https://icr.healthcampaigns.org/Library/DigitFacilityLocalityNotExported"
+name = "DigitFacilityLocalityNotExported"
+status = "draft"
+kind = "SQLQuery"
+description = "DIGIT facilities whose locality boundary was not exported, so their Location has no partOf. The run report counts the rows; no map reads them."
+
+[[depends_on]]
+label = "facility"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Facility"
+
+[[depends_on]]
+label = "boundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"
