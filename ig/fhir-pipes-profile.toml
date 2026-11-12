@@ -2,8 +2,9 @@
 #
 # Tells fhir-pipes (https://github.com/ohs-foundation/fhir-pipes-rs) which ICR
 # extensions, identifier systems and codes become GeoParquet columns, which
-# type codes are admin units and facilities, and the URLs `fhir-pipes dhis2`
-# and `fhir-pipes population` write. Keep it in step with the IG: a new or
+# type codes are admin units and facilities, and the URLs `fhir-pipes import`
+# and `fhir-pipes population` write. The `fhir-pipes dhis2` commands do not
+# read it: their URLs are parameters of the import package they run with. Keep it in step with the IG: a new or
 # renamed extension here is a change to the warehouse and the GIS export.
 # The format is documented in fhir-pipes' docs/profiles.md.
 #
@@ -38,6 +39,11 @@ type_systems = [
 # The column holding an admin unit's code: adminN_code, country (from the
 # level 0 unit) and the duplicate_admin_code report.
 admin_code_column = "pcode"
+# meta.profile of the Locations `fhir-pipes import location-boundaries` and
+# `location-sites` write, and the identifier system of the admin codes they
+# write. The first of type_systems above is the system of their type codes.
+profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRLocation"
+admin_code_system = "https://icr.healthcampaigns.org/identifiers/national-admin-code"
 
 # Extra Location columns, in output order. Kinds:
 #   identifier      the first identifier under one of `systems`, in order;
@@ -85,6 +91,8 @@ mirror_to_organization = true
 # gets a new Organization, with id "<id_prefix><location id>".
 facility_type = "facility"
 id_prefix = "org-"
+# meta.profile of the facility Organizations `import location-sites` writes.
+profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRFacilityOrganization"
 
 # Columns read from the Organization a Location names as its
 # managingOrganization. Same kinds, applied to Organization.identifier and
@@ -108,27 +116,6 @@ system = "https://icr.healthcampaigns.org/CodeSystem/icr-facility-type-cs"
 name = "ownership_text"
 kind = "type_text"
 system = "https://icr.healthcampaigns.org/CodeSystem/icr-ownership-cs"
-
-# fhir-pipes dhis2: DHIS2 org units, indicators and values as FHIR.
-[dhis2]
-# Identifier and code systems are minted under this base:
-# <base>/identifiers/dhis2/<instance>/orgunit, <base>/CodeSystem/dhis2/<instance>/…,
-# and Measures get canonical URLs <base>/Measure/<id>.
-base = "https://icr.healthcampaigns.org"
-project_tag_system = "https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs"
-location_profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRLocation"
-facility_organization_profile = "https://icr.healthcampaigns.org/StructureDefinition/ICRFacilityOrganization"
-location_type_system = "https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs"
-# --country-code goes on the top org unit under this system, so it becomes the
-# pcode (the admin code column reads it) and the country.
-country_code_system = "https://icr.healthcampaigns.org/identifiers/national-admin-code"
-period_extension = "https://icr.healthcampaigns.org/StructureDefinition/dhis2-period"
-campaign_extension = "https://icr.healthcampaigns.org/StructureDefinition/campaign"
-# Where each MeasureReport came from, a CodeableConcept under source_system:
-# dhis2-analytics or dhis2-data-values (--source).
-source_extension = "https://icr.healthcampaigns.org/StructureDefinition/report-source"
-source_system = "https://icr.healthcampaigns.org/CodeSystem/icr-report-source-cs"
-indicator_extension = "https://icr.healthcampaigns.org/StructureDefinition/dhis2-indicator"
 
 # fhir-pipes population: population Groups for admin units or catchments.
 [population]
