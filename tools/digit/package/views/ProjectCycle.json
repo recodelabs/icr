@@ -1,0 +1,8 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/ProjectCycle","name":"ProjectCycle","status":"draft","resource":"DIGITProject",
+ "select":[
+  {"column":[{"name":"project_id","path":"id","type":"string"}]},
+  {"forEach":"additionalDetails.projectType.cycles","column":[
+    {"name":"cycle_index","path":"%rowIndex","type":"integer"},
+    {"name":"cycle_id","path":"id","type":"integer"},
+    {"name":"start_date","path":"startDate","type":"decimal"},
+    {"name":"end_date","path":"endDate","type":"decimal"}]}]}

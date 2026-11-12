@@ -1,0 +1,45 @@
+/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITActivityToICR'
+/// name = 'DIGITActivityToICR'
+/// title = 'DIGIT campaign activity to an ICRCampaignActivity'
+/// status = 'draft'
+
+// One delivery of one product variant under a DIGIT project type (a row of
+// the DigitActivity Library) as an ICRCampaignActivity ActivityDefinition.
+// Mapping: project/digit.md, "Project type → ICRCampaignProtocol".
+//
+// The ids, systems and tag are those of the DIGIT demo tenant.
+
+uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITActivityRow" alias DIGITActivityRow as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/StructureDefinition/ActivityDefinition" alias ActivityDefinition as target
+
+group Activity(source src : DIGITActivityRow, target bundle : Bundle) {
+  src -> bundle.type = 'collection' "bundleType";
+  src -> bundle.entry as e, e.resource = create('ActivityDefinition') as ad then ActivityDefinition(src, ad) "activity";
+}
+
+group ActivityDefinition(source src : DIGITActivityRow, target ad : ActivityDefinition) {
+  src.id as i check i.length() <= 64 -> ad.id = i, ad.url = append('https://icr.healthcampaigns.org/ActivityDefinition/', i) "id";
+  src -> ad.meta as m then {
+    src -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "tag";
+    src -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignActivity' "profile";
+  } "meta";
+  src.productVariantId as v -> ad.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/product-variant', i.value = v "productVariant";
+  src.name as n -> ad.name = n "name";
+  src.title as t -> ad.title = t "title";
+  src.status as s -> ad.status = s "status";
+  src -> ad.kind = 'Task' "kind";
+  src.verb as v -> ad.code as c, c.text = v "code";
+  src.campaignType as t, src.campaignDisplay as d -> ad.topic as cc, cc.coding as c,
+      c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs', c.code = t, c.display = d "topic";
+  src.description as d -> ad.description = d "description";
+  // The product: its standard code when it has one, then the local code of
+  // the variant, with its label.
+  src.label as l -> ad.product = create('CodeableConcept') as cc then {
+    src.standardCode as code, src.standardSystem as sys, src.standardDisplay as d -> cc.coding as c, c.system = sys, c.code = code, c.display = d "standard";
+    src.productVariantId as v -> cc.coding as c, c.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/product-variant', c.code = v, c.display = l "local";
+    src -> cc.text = l "text";
+  } "product";
+  src.quantity as q, src.unit as u, src.ucum as code -> ad.quantity as qty, qty.value = q, qty.unit = u, qty.system = 'http://unitsofmeasure.org', qty.code = code "quantity";
+  src.dosage as d -> ad.dosage as ds, ds.text = d "dosage";
+}

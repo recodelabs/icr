@@ -1,0 +1,6 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/ProductVariant","name":"ProductVariant","status":"draft","resource":"DIGITProductVariant",
+ "select":[{"column":[
+  {"name":"line","path":"%recordLine","type":"integer"},
+  {"name":"id","path":"id","type":"string"},
+  {"name":"product_id","path":"productId","type":"string"},
+  {"name":"sku","path":"sku","type":"string"}]}]}

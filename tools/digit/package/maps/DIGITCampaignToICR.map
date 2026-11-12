@@ -1,0 +1,56 @@
+/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITCampaignToICR'
+/// name = 'DIGITCampaignToICR'
+/// title = 'DIGIT campaign to an ICRCampaign'
+/// status = 'draft'
+
+// One DIGIT campaign, or one cycle of it (a row of the DigitCampaign
+// Library), as an ICRCampaign CarePlan. A cycle's CarePlan is part of the
+// campaign's. Mapping: project/digit.md, "Project → ICRCampaign".
+//
+// The ids, systems and tag are those of the DIGIT demo tenant.
+
+uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITCampaignRow" alias DIGITCampaignRow as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/StructureDefinition/CarePlan" alias CarePlan as target
+
+group Campaign(source src : DIGITCampaignRow, target bundle : Bundle) {
+  src -> bundle.type = 'collection' "bundleType";
+  src -> bundle.entry as e, e.resource = create('CarePlan') as cp then CarePlan(src, cp) "campaign";
+}
+
+group CarePlan(source src : DIGITCampaignRow, target cp : CarePlan) {
+  src.id as i check i.length() <= 64 -> cp.id = i "id";
+  src -> cp.meta as m then {
+    src -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "tag";
+    src -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRCampaign' "profile";
+  } "meta";
+  src.projectId as v -> cp.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/project', i.value = v "projectId";
+  src.projectNumber as v -> cp.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/project-number', i.value = v "projectNumber";
+  src.campaignNumber as v -> cp.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/campaign-number', i.value = v "campaignNumber";
+  src.campaignId as v -> cp.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/campaign', i.value = v "campaignId";
+  src.round as n -> cp.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/campaign-round',
+      x.value = create('positiveInt') as v, v.value = n "round";
+  src.geography as l -> cp.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/target-geography',
+      x.value = create('Reference') as r, r.reference = append('Location/', l) "geography";
+  src.subject as g -> cp.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/planning-denominator',
+      x.value = create('Reference') as r, r.reference = append('Group/', g) "planningDenominator";
+  src.protocol as p -> cp.instantiatesCanonical = p "protocol";
+  src.status as s -> cp.status = s "status";
+  src.intent as i -> cp.intent = i "intent";
+  src.title as t -> cp.title = t "title";
+  src.campaignType as t, src.campaignDisplay as d -> cp.category as cc, cc.coding as c,
+      c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs', c.code = t, c.display = d "category";
+  src.subject as g -> cp.subject as r, r.reference = append('Group/', g) "subject";
+  src.start as s -> cp.period as p then {
+    src -> p.start = s "start";
+    src.end as e -> p.end = e "end";
+  } "period";
+  src.description as d -> cp.description = d "description";
+  src.partOf as c -> cp.partOf as r, r.reference = append('CarePlan/', c) "partOf";
+  src.activity as url, src.subject as g, src.detailStatus as s -> cp.activity as a, a.detail as d then {
+    src -> d.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/planning-denominator',
+        x.value = create('Reference') as r, r.reference = append('Group/', g) "activityDenominator";
+    src -> d.instantiatesCanonical = url "activityDefinition";
+    src -> d.status = s "activityStatus";
+  } "activity";
+}

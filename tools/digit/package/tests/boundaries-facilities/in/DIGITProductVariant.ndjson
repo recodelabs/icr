@@ -1,0 +1,7 @@
+{"id": "V-1", "tenantId": "test", "productId": "P-1", "sku": "SP - 500mg", "variation": "500mg", "isDeleted": false}
+{"id": "V-2", "tenantId": "test", "productId": "P-2", "sku": "", "variation": null, "isDeleted": false}
+{"id": "V-3", "tenantId": "test", "productId": "P-3", "sku": " Net, blue ", "variation": "blue", "isDeleted": false}
+{"id": "V-4", "tenantId": "test", "productId": "P-4", "sku": "Spray can", "variation": null, "isDeleted": false}
+{"id": "V-5", "tenantId": "test", "productId": "P-5", "sku": "Paracetamol 500mg", "variation": null, "isDeleted": false}
+{"id": "V-6", "tenantId": "test", "productId": "P-6", "sku": "Soap bar", "variation": null, "isDeleted": false}
+{"id": "V-7", "tenantId": "test", "productId": "P-99", "sku": "Lost product", "variation": null, "isDeleted": false}

@@ -1,0 +1,73 @@
+/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITProtocolToICR'
+/// name = 'DIGITProtocolToICR'
+/// title = 'DIGIT project type to an ICRCampaignProtocol'
+/// status = 'draft'
+
+// One DIGIT project type (a row of the DigitProtocol Library) as an
+// ICRCampaignProtocol PlanDefinition, with an action per activity, and,
+// when the project type has an age band, the Group of its eligible
+// population. Mapping: project/digit.md, "Project type → ICRCampaignProtocol".
+//
+// The ids, systems and tag are those of the DIGIT demo tenant.
+
+uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITProtocolRow" alias DIGITProtocolRow as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/StructureDefinition/PlanDefinition" alias PlanDefinition as target
+uses "http://hl7.org/fhir/StructureDefinition/Group" alias Group as target
+
+group Protocol(source src : DIGITProtocolRow, target bundle : Bundle) {
+  src -> bundle.type = 'collection' "bundleType";
+  src.eligibleGroup as gid -> bundle.entry as e, e.resource = create('Group') as g then Eligible(src, gid, g) "eligible";
+  src -> bundle.entry as e, e.resource = create('PlanDefinition') as pd then PlanDefinition(src, pd) "protocol";
+}
+
+group PlanDefinition(source src : DIGITProtocolRow, target pd : PlanDefinition) {
+  src.id as i check i.length() <= 64 -> pd.id = i, pd.url = append('https://icr.healthcampaigns.org/PlanDefinition/', i) "id";
+  src -> pd.meta as m then {
+    src -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "tag";
+    src -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRCampaignProtocol' "profile";
+  } "meta";
+  src.typeId as t where $this != '' -> pd.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/project-type', i.value = t "typeId";
+  src.code as c -> pd.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/project-type-code', i.value = c "code";
+  // DIGIT campaigns go house to house.
+  src -> pd.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/delivery-strategy',
+      x.value = create('CodeableConcept') as cc, cc.coding as c,
+      c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-delivery-strategy-cs', c.code = 'house-to-house', c.display = 'House-to-house' "deliveryStrategy";
+  src.name as n -> pd.name = n "name";
+  src.title as t -> pd.title = t "title";
+  src.status as s -> pd.status = s "status";
+  src.campaignType as t, src.campaignDisplay as d -> pd.type as cc, cc.coding as c,
+      c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-campaign-type-cs', c.code = t, c.display = d "type";
+  src.description as d -> pd.description = d "description";
+  src.eligibleGroup as g -> pd.subject = create('Reference') as r, r.reference = append('Group/', g) "subject";
+  src.action as a -> pd.action as act then Action(a, act) "action";
+}
+
+group Action(source a, target act) {
+  a.id as i -> act.id = i "actionId";
+  a.title as t -> act.title = t "actionTitle";
+  a.definition as d -> act.definition = create('canonical') as c, c.value = d "definition";
+  // DIGIT's dose criteria are carried as text; they are not FHIRPath.
+  a.condition as c -> act.condition as cond, cond.kind = 'applicability', cond.expression as x,
+      x.language = 'text/x-digit-condition', x.expression = c,
+      x.description = 'DIGIT dose-criterion expression, carried as text (not computable)' "condition";
+  a.after as p, a.waitDays as w -> act.relatedAction as ra, ra.actionId = p, ra.relationship = 'after-end',
+      ra.offset = create('Duration') as du, du.value = w, du.unit = 'days', du.system = 'http://unitsofmeasure.org', du.code = 'd' "after";
+}
+
+// The eligible population: the age band of the project type, in months.
+group Eligible(source src : DIGITProtocolRow, source gid, target g : Group) {
+  gid -> g.id = gid "groupId";
+  src -> g.meta as m, m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "groupTag";
+  src -> g.type = 'person' "groupType";
+  src -> g.actual = false "groupActual";
+  src.code as c -> g.name = append('Eligible population, ', c, ' (DIGIT validMinAge/validMaxAge)') "groupName";
+  src -> g.characteristic as ch then {
+    src -> ch.code as cc, cc.coding as c, c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs', c.code = 'age-band', c.display = 'Age band' "ageBandCode";
+    src -> ch.value = create('Range') as rg then {
+      src.minAge as n -> rg.low as q, q.value = n, q.unit = 'months', q.system = 'http://unitsofmeasure.org', q.code = 'mo' "low";
+      src.maxAge as n -> rg.high as q, q.value = n, q.unit = 'months', q.system = 'http://unitsofmeasure.org', q.code = 'mo' "high";
+    } "range";
+    src -> ch.exclude = false "ageBandExclude";
+  } "ageBand";
+}

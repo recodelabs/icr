@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/Library/DigitTargetGroup"
+name = "DigitTargetGroup"
+status = "draft"
+kind = "SQLQuery"
+description = "The target populations of the DIGIT projects: one row per target number (targeted, in total) above 0, with the id of its Group, in the order transform.py writes them."
+
+[[depends_on]]
+label = "project"
+resource = "https://icr.healthcampaigns.org/Library/DigitProject"
+
+[[depends_on]]
+label = "target"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectTarget"
+
+[[depends_on]]
+label = "boundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"

@@ -1,0 +1,111 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITProduct",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProduct",
+ "name": "DIGITProduct",
+ "title": "DIGIT product",
+ "status": "draft",
+ "description": "One DIGIT product, as product `product/v1/_search` returns it: a drug, vaccine or commodity, of which the product variants are the deliverable forms.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProduct",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITProduct",
+    "path": "DIGITProduct",
+    "short": "DIGITProduct",
+    "definition": "One DIGIT product, as product `product/v1/_search` returns it: a drug, vaccine or commodity, of which the product variants are the deliverable forms.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProduct.id",
+    "path": "DIGITProduct.id",
+    "short": "The product's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProduct.type",
+    "path": "DIGITProduct.type",
+    "short": "The product type, such as DRUG, TABLET, TONIC or BEDNET",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProduct.name",
+    "path": "DIGITProduct.name",
+    "short": "The product name, such as SP or Bednet",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITProduct",
+    "path": "DIGITProduct",
+    "short": "DIGITProduct",
+    "definition": "One DIGIT product, as product `product/v1/_search` returns it: a drug, vaccine or commodity, of which the product variants are the deliverable forms.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProduct.id",
+    "path": "DIGITProduct.id",
+    "short": "The product's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProduct.type",
+    "path": "DIGITProduct.type",
+    "short": "The product type, such as DRUG, TABLET, TONIC or BEDNET",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProduct.name",
+    "path": "DIGITProduct.name",
+    "short": "The product name, such as SP or Bednet",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

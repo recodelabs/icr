@@ -1,0 +1,2 @@
+{"id": "P-1", "tenantId": "test", "type": "TABLET", "name": "SP", "isDeleted": false}
+{"id": "P-2", "tenantId": "test", "type": "BEDNET", "name": "Bednet", "isDeleted": false}

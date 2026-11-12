@@ -1,0 +1,855 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITProject",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProject",
+ "name": "DIGITProject",
+ "title": "DIGIT project",
+ "status": "draft",
+ "description": "One DIGIT project, as project `project/v1/_search` returns it: a campaign (a project with no parent) or a part of one for a boundary, with its targets and its own copy of its project type.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProject",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITProject",
+    "path": "DIGITProject",
+    "short": "DIGITProject",
+    "definition": "One DIGIT project, as project `project/v1/_search` returns it: a campaign (a project with no parent) or a part of one for a boundary, with its targets and its own copy of its project type.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProject.id",
+    "path": "DIGITProject.id",
+    "short": "The project's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.parent",
+    "path": "DIGITProject.parent",
+    "short": "The project this one is part of; absent for a campaign's root project",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.projectHierarchy",
+    "path": "DIGITProject.projectHierarchy",
+    "short": "The ids of the projects above, separated by dots",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.name",
+    "path": "DIGITProject.name",
+    "short": "The project's name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.description",
+    "path": "DIGITProject.description",
+    "short": "A description",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.projectNumber",
+    "path": "DIGITProject.projectNumber",
+    "short": "The project number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.referenceID",
+    "path": "DIGITProject.referenceID",
+    "short": "The campaign number of the campaign the project belongs to",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.projectTypeId",
+    "path": "DIGITProject.projectTypeId",
+    "short": "The project type's id (MDMS data.id)",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.startDate",
+    "path": "DIGITProject.startDate",
+    "short": "The start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.endDate",
+    "path": "DIGITProject.endDate",
+    "short": "The end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.address",
+    "path": "DIGITProject.address",
+    "short": "Where the project is",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.address.boundary",
+    "path": "DIGITProject.address.boundary",
+    "short": "The code of the project's boundary",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets",
+    "path": "DIGITProject.targets",
+    "short": "The target populations",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.id",
+    "path": "DIGITProject.targets.id",
+    "short": "The target's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.beneficiaryType",
+    "path": "DIGITProject.targets.beneficiaryType",
+    "short": "INDIVIDUAL or HOUSEHOLD",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.targetNo",
+    "path": "DIGITProject.targets.targetNo",
+    "short": "The number targeted",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.totalNo",
+    "path": "DIGITProject.targets.totalNo",
+    "short": "The number in total",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.isDeleted",
+    "path": "DIGITProject.targets.isDeleted",
+    "short": "Whether the target was deleted",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails",
+    "path": "DIGITProject.additionalDetails",
+    "short": "Details DIGIT keeps with the project",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType",
+    "path": "DIGITProject.additionalDetails.projectType",
+    "short": "The project's own copy of its project type",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.beneficiaryType",
+    "path": "DIGITProject.additionalDetails.projectType.beneficiaryType",
+    "short": "INDIVIDUAL or HOUSEHOLD",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles",
+    "path": "DIGITProject.additionalDetails.projectType.cycles",
+    "short": "The cycles (rounds) of the campaign",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.id",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.id",
+    "short": "The cycle number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.startDate",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.startDate",
+    "short": "The cycle's start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.endDate",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.endDate",
+    "short": "The cycle's end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries",
+    "short": "The deliveries of the cycle",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.id",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.id",
+    "short": "The delivery number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.deliveryStrategy",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.deliveryStrategy",
+    "short": "DIRECT or INDIRECT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "short": "Days to wait after the previous delivery",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria",
+    "short": "Who gets what",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.condition",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.condition",
+    "short": "The condition, a DIGIT expression such as 3<=age<12",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants",
+    "short": "The product variants given",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "short": "The product variant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "short": "How many",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITProject",
+    "path": "DIGITProject",
+    "short": "DIGITProject",
+    "definition": "One DIGIT project, as project `project/v1/_search` returns it: a campaign (a project with no parent) or a part of one for a boundary, with its targets and its own copy of its project type.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProject.id",
+    "path": "DIGITProject.id",
+    "short": "The project's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.parent",
+    "path": "DIGITProject.parent",
+    "short": "The project this one is part of; absent for a campaign's root project",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.projectHierarchy",
+    "path": "DIGITProject.projectHierarchy",
+    "short": "The ids of the projects above, separated by dots",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.name",
+    "path": "DIGITProject.name",
+    "short": "The project's name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.description",
+    "path": "DIGITProject.description",
+    "short": "A description",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.projectNumber",
+    "path": "DIGITProject.projectNumber",
+    "short": "The project number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.referenceID",
+    "path": "DIGITProject.referenceID",
+    "short": "The campaign number of the campaign the project belongs to",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.projectTypeId",
+    "path": "DIGITProject.projectTypeId",
+    "short": "The project type's id (MDMS data.id)",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.startDate",
+    "path": "DIGITProject.startDate",
+    "short": "The start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.endDate",
+    "path": "DIGITProject.endDate",
+    "short": "The end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.address",
+    "path": "DIGITProject.address",
+    "short": "Where the project is",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.address.boundary",
+    "path": "DIGITProject.address.boundary",
+    "short": "The code of the project's boundary",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets",
+    "path": "DIGITProject.targets",
+    "short": "The target populations",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.id",
+    "path": "DIGITProject.targets.id",
+    "short": "The target's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.beneficiaryType",
+    "path": "DIGITProject.targets.beneficiaryType",
+    "short": "INDIVIDUAL or HOUSEHOLD",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.targetNo",
+    "path": "DIGITProject.targets.targetNo",
+    "short": "The number targeted",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.totalNo",
+    "path": "DIGITProject.targets.totalNo",
+    "short": "The number in total",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.targets.isDeleted",
+    "path": "DIGITProject.targets.isDeleted",
+    "short": "Whether the target was deleted",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails",
+    "path": "DIGITProject.additionalDetails",
+    "short": "Details DIGIT keeps with the project",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType",
+    "path": "DIGITProject.additionalDetails.projectType",
+    "short": "The project's own copy of its project type",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.beneficiaryType",
+    "path": "DIGITProject.additionalDetails.projectType.beneficiaryType",
+    "short": "INDIVIDUAL or HOUSEHOLD",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles",
+    "path": "DIGITProject.additionalDetails.projectType.cycles",
+    "short": "The cycles (rounds) of the campaign",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.id",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.id",
+    "short": "The cycle number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.startDate",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.startDate",
+    "short": "The cycle's start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.endDate",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.endDate",
+    "short": "The cycle's end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries",
+    "short": "The deliveries of the cycle",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.id",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.id",
+    "short": "The delivery number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.deliveryStrategy",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.deliveryStrategy",
+    "short": "DIRECT or INDIRECT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "short": "Days to wait after the previous delivery",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria",
+    "short": "Who gets what",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.condition",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.condition",
+    "short": "The condition, a DIGIT expression such as 3<=age<12",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants",
+    "short": "The product variants given",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "short": "The product variant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "path": "DIGITProject.additionalDetails.projectType.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "short": "How many",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   }
+  ]
+ }
+}

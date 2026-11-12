@@ -1,0 +1,10 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/ProjectTarget","name":"ProjectTarget","status":"draft","resource":"DIGITProject",
+ "select":[
+  {"column":[{"name":"project_id","path":"id","type":"string"}]},
+  {"forEach":"targets","column":[
+    {"name":"target_index","path":"%rowIndex","type":"integer"},
+    {"name":"id","path":"id","type":"string"},
+    {"name":"beneficiary_type","path":"beneficiaryType","type":"string"},
+    {"name":"target_no","path":"targetNo","type":"decimal"},
+    {"name":"total_no","path":"totalNo","type":"decimal"},
+    {"name":"is_deleted","path":"isDeleted","type":"boolean"}]}]}

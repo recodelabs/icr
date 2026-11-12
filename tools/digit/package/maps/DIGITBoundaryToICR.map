@@ -1,37 +1,24 @@
-/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITBoundaryTreeToICR'
-/// name = 'DIGITBoundaryTreeToICR'
-/// title = 'DIGIT boundary tree to ICRLocation admin units'
+/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITBoundaryToICR'
+/// name = 'DIGITBoundaryToICR'
+/// title = 'DIGIT boundary to an ICRLocation admin unit'
 /// status = 'draft'
 
-// One DIGIT boundary hierarchy, a tree nested to any depth, as one
-// admin-unit ICRLocation per boundary, each parent before its children.
-// Mapping: project/digit.md, "Boundary → ICRLocation".
+// One DIGIT boundary (a row of the DigitBoundary Library) as an admin-unit
+// ICRLocation. Mapping: project/digit.md, "Boundary → ICRLocation".
 //
 // The ids, systems and tag are those of the DIGIT demo tenant: ids are
 // dgt-<code>, identifiers are under .../identifiers/digit-demo/.
 
-uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITBoundaryTree" alias DIGITBoundaryTree as source
+uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITBoundaryRow" alias DIGITBoundaryRow as source
 uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
 uses "http://hl7.org/fhir/StructureDefinition/Location" alias Location as target
 
-group BoundaryTree(source src : DIGITBoundaryTree, target bundle : Bundle) {
-  src -> bundle.type = 'collection' "bundleType";
-  // The boundary codes are identifiers under a system per hierarchy.
-  src.hierarchyType as h -> evaluate(h, 'https://icr.healthcampaigns.org/identifiers/digit-demo/boundary/' + $this.lower()) as system, evaluate(h, 0) as top then {
-    // The top boundaries are level 0 and have no parent.
-    src.boundary as b -> bundle.entry as e, e.resource = create('Location') as loc then Boundary(b, h, system, top, loc), Children(b, h, system, top, bundle) "top";
-  } "hierarchy";
+group Boundary(source b : DIGITBoundaryRow, target bundle : Bundle) {
+  b -> bundle.type = 'collection' "bundleType";
+  b -> bundle.entry as e, e.resource = create('Location') as loc then Location(b, loc) "location";
 }
 
-// The children of boundary `b`, one level below it and with `b` as their
-// parent, and then their own children: the group calls itself.
-group Children(source b, source h, source system, source level, target bundle : Bundle) {
-  b.code as parent, b.children as c -> evaluate(level, $this + 1) as below, bundle.entry as e, e.resource = create('Location') as loc,
-      loc.partOf as r, r.reference = evaluate(parent, 'Location/dgt-' + $this.replaceMatches('[^A-Za-z0-9.-]', '-'))
-      then Boundary(c, h, system, below, loc), Children(c, h, system, below, bundle) "child";
-}
-
-group Boundary(source b, source h, source system, source level, target loc : Location) {
+group Location(source b : DIGITBoundaryRow, target loc : Location) {
   // dgt- and the code, each character not allowed in an id (such as `_`)
   // written as `-`. transform.py shortens an id longer than 64 characters
   // with a hash; a map cannot, so such a code stops the run.
@@ -40,7 +27,8 @@ group Boundary(source b, source h, source system, source level, target loc : Loc
     b -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "tag";
     b -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRLocation' "profile";
   } "meta";
-  b.code as c -> loc.identifier as i, i.system = system, i.value = c "code";
+  // The boundary codes are identifiers under a system per hierarchy.
+  b.code as c, b.hierarchyType as h -> loc.identifier as i, i.system = evaluate(h, 'https://icr.healthcampaigns.org/identifiers/digit-demo/boundary/' + $this.lower()), i.value = c "code";
   b.id as id where $this != '' -> loc.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/boundary-id', i.value = id "serverId";
   // DIGIT keeps boundary names in its localisation service, not with the
   // boundary, so the name is made from the code, as transform.py does: the
@@ -59,5 +47,7 @@ group Boundary(source b, source h, source system, source level, target loc : Loc
   b -> loc.physicalType as pt, pt.coding as cd, cd.system = 'http://terminology.hl7.org/CodeSystem/location-physical-type', cd.code = 'jdn', cd.display = 'Jurisdiction' "physicalType";
   b -> loc.type as t, t.coding as cd, cd.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-location-type-cs', cd.code = 'admin-unit', cd.display = 'Administrative unit' "adminUnit";
   // The DIGIT level as text: the boundary type, the hierarchy and the depth.
-  b.boundaryType as bt -> loc.type as t, t.text = append(bt, ' (DIGIT ', h, ' hierarchy, level ', level, ')') "level";
+  b.boundaryType as bt, b.hierarchyType as h, b.level as n -> loc.type as t, t.text = append(bt, ' (DIGIT ', h, ' hierarchy, level ', n, ')') "level";
+  // The boundary directly above, for all but the top boundaries.
+  b.parent as p -> loc.partOf as r, r.reference = evaluate(p, 'Location/dgt-' + $this.replaceMatches('[^A-Za-z0-9.-]', '-')) "partOf";
 }

@@ -1,0 +1,519 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITCampaignRow",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITCampaignRow",
+ "name": "DIGITCampaignRow",
+ "title": "DIGIT campaign or campaign cycle",
+ "status": "draft",
+ "description": "A row of the DigitCampaign Library: one DIGIT campaign (a root project) or one of its cycles.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITCampaignRow",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITCampaignRow",
+    "path": "DIGITCampaignRow",
+    "short": "DIGITCampaignRow",
+    "definition": "A row of the DigitCampaign Library: one DIGIT campaign (a root project) or one of its cycles.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITCampaignRow.id",
+    "path": "DIGITCampaignRow.id",
+    "short": "The CarePlan's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.projectId",
+    "path": "DIGITCampaignRow.projectId",
+    "short": "The root project's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.projectNumber",
+    "path": "DIGITCampaignRow.projectNumber",
+    "short": "The project number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignNumber",
+    "path": "DIGITCampaignRow.campaignNumber",
+    "short": "The campaign number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignId",
+    "path": "DIGITCampaignRow.campaignId",
+    "short": "The campaign record's id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.protocol",
+    "path": "DIGITCampaignRow.protocol",
+    "short": "The PlanDefinition's canonical URL",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignType",
+    "path": "DIGITCampaignRow.campaignType",
+    "short": "The ICR campaign type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignDisplay",
+    "path": "DIGITCampaignRow.campaignDisplay",
+    "short": "The ICR campaign type's display",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.status",
+    "path": "DIGITCampaignRow.status",
+    "short": "draft, active or completed",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.intent",
+    "path": "DIGITCampaignRow.intent",
+    "short": "plan for a draft, order otherwise",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.detailStatus",
+    "path": "DIGITCampaignRow.detailStatus",
+    "short": "The status of each activity",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.title",
+    "path": "DIGITCampaignRow.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.description",
+    "path": "DIGITCampaignRow.description",
+    "short": "The project's description",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.subject",
+    "path": "DIGITCampaignRow.subject",
+    "short": "The id of the at-risk target Group",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.geography",
+    "path": "DIGITCampaignRow.geography",
+    "short": "The id of the root project's boundary Location, when exported",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.round",
+    "path": "DIGITCampaignRow.round",
+    "short": "The cycle number, for a cycle",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.partOf",
+    "path": "DIGITCampaignRow.partOf",
+    "short": "The id of the campaign's CarePlan, for a cycle",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.start",
+    "path": "DIGITCampaignRow.start",
+    "short": "The start, a FHIR dateTime",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.end",
+    "path": "DIGITCampaignRow.end",
+    "short": "The end, a FHIR dateTime",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.activity",
+    "path": "DIGITCampaignRow.activity",
+    "short": "The ActivityDefinitions' canonical URLs",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITCampaignRow",
+    "path": "DIGITCampaignRow",
+    "short": "DIGITCampaignRow",
+    "definition": "A row of the DigitCampaign Library: one DIGIT campaign (a root project) or one of its cycles.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITCampaignRow.id",
+    "path": "DIGITCampaignRow.id",
+    "short": "The CarePlan's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.projectId",
+    "path": "DIGITCampaignRow.projectId",
+    "short": "The root project's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.projectNumber",
+    "path": "DIGITCampaignRow.projectNumber",
+    "short": "The project number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignNumber",
+    "path": "DIGITCampaignRow.campaignNumber",
+    "short": "The campaign number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignId",
+    "path": "DIGITCampaignRow.campaignId",
+    "short": "The campaign record's id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.protocol",
+    "path": "DIGITCampaignRow.protocol",
+    "short": "The PlanDefinition's canonical URL",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignType",
+    "path": "DIGITCampaignRow.campaignType",
+    "short": "The ICR campaign type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.campaignDisplay",
+    "path": "DIGITCampaignRow.campaignDisplay",
+    "short": "The ICR campaign type's display",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.status",
+    "path": "DIGITCampaignRow.status",
+    "short": "draft, active or completed",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.intent",
+    "path": "DIGITCampaignRow.intent",
+    "short": "plan for a draft, order otherwise",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.detailStatus",
+    "path": "DIGITCampaignRow.detailStatus",
+    "short": "The status of each activity",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.title",
+    "path": "DIGITCampaignRow.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.description",
+    "path": "DIGITCampaignRow.description",
+    "short": "The project's description",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.subject",
+    "path": "DIGITCampaignRow.subject",
+    "short": "The id of the at-risk target Group",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.geography",
+    "path": "DIGITCampaignRow.geography",
+    "short": "The id of the root project's boundary Location, when exported",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.round",
+    "path": "DIGITCampaignRow.round",
+    "short": "The cycle number, for a cycle",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.partOf",
+    "path": "DIGITCampaignRow.partOf",
+    "short": "The id of the campaign's CarePlan, for a cycle",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.start",
+    "path": "DIGITCampaignRow.start",
+    "short": "The start, a FHIR dateTime",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.end",
+    "path": "DIGITCampaignRow.end",
+    "short": "The end, a FHIR dateTime",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaignRow.activity",
+    "path": "DIGITCampaignRow.activity",
+    "short": "The ActivityDefinitions' canonical URLs",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   }
+  ]
+ }
+}

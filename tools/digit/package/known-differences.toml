@@ -1,7 +1,9 @@
 # Where the package's output differs from transform.py's on purpose. compare.py counts these
 # apart and does not count them as differences. Each entry names a resource type and either a
-# path (array indexes as []; kind: reference = only in transform.py's output, new = only in the
-# package's, changed = in both; match: members the differing value has) or order = true.
+# path (array indexes as []; a list for several; kind: reference = only in transform.py's
+# output, new = only in the package's, changed = in both; match: members the differing value
+# has; ids: only these resources), ids with kind and no path (these resources are only in
+# transform.py's output, or only in the package's), or order = true.
 
 # The reference output was edited after transform.py by enrich_grid3.py, which gives DIGIT's
 # Nigerian states and LGAs (168 boundaries in the demo) a GRID3 boundary, P-code, ICR Location
@@ -28,3 +30,27 @@ resource = "Location"
 path = "alias[]"
 kind = "reference"
 reason = "added to the reference by enrich_grid3.py, a later step"
+
+# transform.py also registers a campaign activity when a delivery event in the tasks names a
+# delivery number or product variant that no project type lists (emit_visits). The package
+# does not read the tasks yet, so it does not have these 11, and the two project types they
+# belong to have fewer actions: the actions after an added one have other numbers and titles.
+[[difference]]
+name = "activities from delivery events"
+resource = "ActivityDefinition"
+kind = "reference"
+ids = ["dgt-MR-DN-d2-PVAR-2026-07-06-000906", "dgt-MR-DN-d3-PVAR-2026-07-06-000906",
+       "dgt-MR-DN-d4-PVAR-2026-07-06-000906", "dgt-MR-DN-d2-PVAR-2026-07-06-000905",
+       "dgt-MR-DN-d3-PVAR-2026-07-06-000905", "dgt-MR-DN-d4-PVAR-2026-07-06-000905",
+       "dgt-Bednet-d1-PVAR-2026-07-06-000906", "dgt-Bednet-d1-PVAR-2026-07-06-000907",
+       "dgt-Bednet-d1-PVAR-2026-07-06-000908", "dgt-Bednet-d1-PVAR-2026-07-06-000905",
+       "dgt-MR-DN-d1-PVAR-2026-07-27-001456"]
+reason = "registered by transform.py from the delivery events of the tasks, which the package does not read yet"
+
+[[difference]]
+name = "actions from delivery events"
+resource = "PlanDefinition"
+ids = ["dgt-MR-DN", "dgt-Bednet"]
+path = ["action[]", "action[].id", "action[].title", "action[].definitionCanonical",
+        "action[].condition[]", "action[].condition[].expression.expression"]
+reason = "the actions of the activities transform.py registers from the delivery events of the tasks, which the package does not read yet"
