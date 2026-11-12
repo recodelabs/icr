@@ -1,0 +1,447 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITActivityRow",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITActivityRow",
+ "name": "DIGITActivityRow",
+ "title": "DIGIT campaign activity",
+ "status": "draft",
+ "description": "A row of the DigitActivity Library: one delivery of one product variant under one DIGIT project type, with the product from the catalogue.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITActivityRow",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITActivityRow",
+    "path": "DIGITActivityRow",
+    "short": "DIGITActivityRow",
+    "definition": "A row of the DigitActivity Library: one delivery of one product variant under one DIGIT project type, with the product from the catalogue.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITActivityRow.id",
+    "path": "DIGITActivityRow.id",
+    "short": "The ActivityDefinition's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.productVariantId",
+    "path": "DIGITActivityRow.productVariantId",
+    "short": "The product variant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.name",
+    "path": "DIGITActivityRow.name",
+    "short": "The computer name",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.title",
+    "path": "DIGITActivityRow.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.status",
+    "path": "DIGITActivityRow.status",
+    "short": "active or retired, as the project type is or is not active",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.verb",
+    "path": "DIGITActivityRow.verb",
+    "short": "Vaccinate, Treat, Distribute or Deliver, by the product's kind",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.campaignType",
+    "path": "DIGITActivityRow.campaignType",
+    "short": "The ICR campaign type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.campaignDisplay",
+    "path": "DIGITActivityRow.campaignDisplay",
+    "short": "The ICR campaign type's display",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.description",
+    "path": "DIGITActivityRow.description",
+    "short": "The project type's task procedure",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.label",
+    "path": "DIGITActivityRow.label",
+    "short": "The product variant's label",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.standardSystem",
+    "path": "DIGITActivityRow.standardSystem",
+    "short": "The system of the product's standard code",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.standardCode",
+    "path": "DIGITActivityRow.standardCode",
+    "short": "The product's standard code (ATC, CVX, ICR commodity class)",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.standardDisplay",
+    "path": "DIGITActivityRow.standardDisplay",
+    "short": "The standard code's display",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.quantity",
+    "path": "DIGITActivityRow.quantity",
+    "short": "How many are delivered",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.unit",
+    "path": "DIGITActivityRow.unit",
+    "short": "The unit, such as tablets",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.ucum",
+    "path": "DIGITActivityRow.ucum",
+    "short": "The UCUM code of the unit",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.dosage",
+    "path": "DIGITActivityRow.dosage",
+    "short": "The delivery strategy and dose criteria, as text",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITActivityRow",
+    "path": "DIGITActivityRow",
+    "short": "DIGITActivityRow",
+    "definition": "A row of the DigitActivity Library: one delivery of one product variant under one DIGIT project type, with the product from the catalogue.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITActivityRow.id",
+    "path": "DIGITActivityRow.id",
+    "short": "The ActivityDefinition's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.productVariantId",
+    "path": "DIGITActivityRow.productVariantId",
+    "short": "The product variant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.name",
+    "path": "DIGITActivityRow.name",
+    "short": "The computer name",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.title",
+    "path": "DIGITActivityRow.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.status",
+    "path": "DIGITActivityRow.status",
+    "short": "active or retired, as the project type is or is not active",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.verb",
+    "path": "DIGITActivityRow.verb",
+    "short": "Vaccinate, Treat, Distribute or Deliver, by the product's kind",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.campaignType",
+    "path": "DIGITActivityRow.campaignType",
+    "short": "The ICR campaign type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.campaignDisplay",
+    "path": "DIGITActivityRow.campaignDisplay",
+    "short": "The ICR campaign type's display",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.description",
+    "path": "DIGITActivityRow.description",
+    "short": "The project type's task procedure",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.label",
+    "path": "DIGITActivityRow.label",
+    "short": "The product variant's label",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.standardSystem",
+    "path": "DIGITActivityRow.standardSystem",
+    "short": "The system of the product's standard code",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.standardCode",
+    "path": "DIGITActivityRow.standardCode",
+    "short": "The product's standard code (ATC, CVX, ICR commodity class)",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.standardDisplay",
+    "path": "DIGITActivityRow.standardDisplay",
+    "short": "The standard code's display",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.quantity",
+    "path": "DIGITActivityRow.quantity",
+    "short": "How many are delivered",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.unit",
+    "path": "DIGITActivityRow.unit",
+    "short": "The unit, such as tablets",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.ucum",
+    "path": "DIGITActivityRow.ucum",
+    "short": "The UCUM code of the unit",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITActivityRow.dosage",
+    "path": "DIGITActivityRow.dosage",
+    "short": "The delivery strategy and dose criteria, as text",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

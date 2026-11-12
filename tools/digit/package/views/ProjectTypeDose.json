@@ -1,0 +1,15 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/ProjectTypeDose","name":"ProjectTypeDose","status":"draft","resource":"DIGITProjectType",
+ "select":[
+  {"column":[{"name":"line","path":"%recordLine","type":"integer"}]},
+  {"forEach":"data.cycles","column":[
+    {"name":"cycle_index","path":"%rowIndex","type":"integer"},
+    {"name":"cycle_id","path":"id","type":"integer"}],
+   "select":[{"forEach":"deliveries","column":[
+     {"name":"delivery_index","path":"%rowIndex","type":"integer"},
+     {"name":"delivery_id","path":"id","type":"integer"},
+     {"name":"strategy","path":"deliveryStrategy","type":"string"},
+     {"name":"wait_days","path":"mandatoryWaitSinceLastDeliveryInDays","type":"integer"}],
+    "select":[{"forEach":"doseCriteria","column":[
+      {"name":"criterion_index","path":"%rowIndex","type":"integer"},
+      {"name":"condition","path":"condition","type":"string"},
+      {"name":"criterion","path":"$this"}]}]}]}]}

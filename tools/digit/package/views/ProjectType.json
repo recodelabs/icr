@@ -1,0 +1,13 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/ProjectType","name":"ProjectType","status":"draft","resource":"DIGITProjectType",
+ "select":[{"column":[
+  {"name":"line","path":"%recordLine","type":"integer"},
+  {"name":"is_active","path":"isActive","type":"boolean"},
+  {"name":"type_id","path":"data.id","type":"string"},
+  {"name":"code","path":"data.code","type":"string"},
+  {"name":"name","path":"data.name","type":"string"},
+  {"name":"beneficiary_type","path":"data.beneficiaryType","type":"string"},
+  {"name":"observation_strategy","path":"data.observationStrategy","type":"string"},
+  {"name":"eligibility_criteria","path":"data.eligibilityCriteria","type":"string","collection":true},
+  {"name":"task_procedure","path":"data.taskProcedure","type":"string","collection":true},
+  {"name":"valid_min_age","path":"data.validMinAge","type":"integer"},
+  {"name":"valid_max_age","path":"data.validMaxAge","type":"integer"}]}]}

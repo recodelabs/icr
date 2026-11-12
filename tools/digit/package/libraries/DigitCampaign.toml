@@ -1,0 +1,21 @@
+url = "https://icr.healthcampaigns.org/Library/DigitCampaign"
+name = "DigitCampaign"
+status = "draft"
+kind = "SQLQuery"
+description = "The DIGIT campaigns as DIGITCampaignRow records, for the DIGITCampaignToICR map: one row per root project that gets a CarePlan, and one more per cycle when it has more than one."
+
+[[depends_on]]
+label = "campaign_root"
+resource = "https://icr.healthcampaigns.org/Library/DigitCampaignRoot"
+
+[[depends_on]]
+label = "cycle"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectCycle"
+
+[[depends_on]]
+label = "project_dose"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectDose"
+
+[[depends_on]]
+label = "activity"
+resource = "https://icr.healthcampaigns.org/Library/DigitActivityKey"

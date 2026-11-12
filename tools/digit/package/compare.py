@@ -12,7 +12,9 @@ Reports the counts on each side, the ids only on one side, and for ids on both s
 are equal as JSON values; for the others, each differing path (array indexes as []) with how
 many resources differ there and a few example ids. Differences listed in the known-differences
 file (default: known-differences.toml beside this script) are counted apart, by their entry, and
-do not count as differing. Also reports whether the ids common to both come in the same order.
+do not count as differing. An entry with `ids` applies to those resources only; one with `ids`,
+`kind` and no `path` explains those resources being on one side only. Also reports whether the
+ids common to both come in the same order.
 
 Exits 0 when nothing differs beyond the known differences, 1 otherwise, 2 on a usage error.
 Only the new side is indexed in memory (id and byte offset); the reference is read as a stream.
@@ -122,6 +124,7 @@ class Known:
 
     def __init__(self, path, rtype):
         self.entries = []
+        self.absent = []   # entries that explain resources on one side only
         self.order = None
         if not path:
             return
@@ -131,25 +134,30 @@ class Known:
         if unknown:
             usage(f"{path}: unknown keys {sorted(unknown)}")
         for i, e in enumerate(data.get("difference", [])):
-            bad = set(e) - {"name", "resource", "path", "kind", "match", "order", "reason"}
+            bad = set(e) - {"name", "resource", "path", "kind", "match", "ids", "order", "reason"}
             if bad or "reason" not in e or "name" not in e or "resource" not in e:
                 usage(f"{path}: difference {i + 1}: needs name, resource and "
-                                 f"reason, with path (and kind, match) or order = true; unknown {sorted(bad)}")
+                                 f"reason, with path (and kind, match, ids), ids and kind, or order = true; unknown {sorted(bad)}")
             if e["resource"] != rtype:
                 continue
             if e.get("order"):
                 self.order = e
                 continue
             if "path" not in e:
-                usage(f"{path}: difference {e['name']!r} needs path or order = true")
+                if not e.get("ids") or e.get("kind") not in ("reference", "new"):
+                    usage(f"{path}: difference {e['name']!r} needs path, order = true, or ids with kind reference or new")
+                self.absent.append(e)
+                continue
             if e.get("kind") and e["kind"] not in self.KINDS:
                 usage(f"{path}: difference {e['name']!r}: kind is reference, new or changed")
             self.entries.append(e)
 
-    def which(self, path, kind, ref, new):
+    def which(self, rid, path, kind, ref, new):
         """The entry that explains a difference, if one does."""
         for e in self.entries:
-            if general(path) != e["path"]:
+            if general(path) not in (e["path"] if isinstance(e["path"], list) else [e["path"]]):
+                continue
+            if "ids" in e and rid not in e["ids"]:
                 continue
             if e.get("kind") and self.KINDS[e["kind"]] != kind:
                 continue
@@ -161,6 +169,13 @@ class Known:
                 if not all(value.get(k) in (v if isinstance(v, list) else [v]) for k, v in match.items()):
                     continue
             return e
+        return None
+
+    def missing(self, rid, side):
+        """The entry that explains resource `rid` being only on `side` (reference or new)."""
+        for e in self.absent:
+            if e["kind"] == side and rid in e["ids"]:
+                return e
         return None
 
 
@@ -244,7 +259,7 @@ def main():
                 continue
             left, names = [], set()
             for d in found:
-                e = known.which(*d)
+                e = known.which(rid, *d)
                 if e:
                     names.add(e["name"])
                 else:
@@ -262,6 +277,16 @@ def main():
                     g[1].append(rid)
                     g[2].append((rv, nv))
     only_new = [i for i in new_order if i not in seen]
+    absent = collections.Counter()   # entry name -> resources on one side that it explains
+    for side, ids in (("reference", only_ref), ("new", only_new)):
+        left = []
+        for i in ids:
+            e = known.missing(i, side)
+            if e:
+                absent[e["name"]] += 1
+            else:
+                left.append(i)
+        ids[:] = left
 
     common_ref = [i for i in ref_order if i in new_at]
     common_new = [i for i in new_order if i in seen]
@@ -280,6 +305,9 @@ def main():
     print(f"  only in new:       {len(only_new)}" + (f", e.g. {', '.join(only_new[:a.examples])}" if only_new else ""))
     both = len(common_ref)
     print(f"  in both: {both}: {equal} equal, {explained_only} equal but for known differences, {differing} differ")
+    for name, count in absent.items():
+        e = next(x for x in known.absent if x["name"] == name)
+        print(f"    known: {name}: {count} resources only in the {e['kind'] if e['kind'] == 'reference' else 'new output'} ({e['reason']})")
     for name, count in explained.items():
         e = next(x for x in known.entries if x["name"] == name)
         print(f"    known: {name}: {count} resources ({e['reason']})")
@@ -299,7 +327,7 @@ def main():
             print(f"  order of the ids in both: differs ({where})")
     bad = only_ref or only_new or differing or ref_dups or new_dups or (not order_same and not order_known)
     print("  result: " + ("DIFFERENT" if bad else "the same, but for the known differences listed"
-                           if explained_only or order_known else "the same"))
+                           if explained_only or order_known or absent else "the same"))
     sys.exit(1 if bad else 0)
 
 

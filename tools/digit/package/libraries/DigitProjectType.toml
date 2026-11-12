@@ -1,0 +1,9 @@
+url = "https://icr.healthcampaigns.org/Library/DigitProjectType"
+name = "DigitProjectType"
+status = "draft"
+kind = "SQLQuery"
+description = "The DIGIT project types (MDMS), each with the id of its PlanDefinition and the ICR campaign type of its code."
+
+[[depends_on]]
+label = "project_type"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectType"

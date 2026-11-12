@@ -1,0 +1,255 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITCampaign",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITCampaign",
+ "name": "DIGITCampaign",
+ "title": "DIGIT campaign",
+ "status": "draft",
+ "description": "One DIGIT campaign record, as project-factory `project-type/search` returns it: the campaign as set up in the console, which can have several records per campaign number.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITCampaign",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITCampaign",
+    "path": "DIGITCampaign",
+    "short": "DIGITCampaign",
+    "definition": "One DIGIT campaign record, as project-factory `project-type/search` returns it: the campaign as set up in the console, which can have several records per campaign number.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITCampaign.id",
+    "path": "DIGITCampaign.id",
+    "short": "The campaign record's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.campaignNumber",
+    "path": "DIGITCampaign.campaignNumber",
+    "short": "The campaign number, which a project's referenceID refers to",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.campaignName",
+    "path": "DIGITCampaign.campaignName",
+    "short": "The campaign's name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.projectId",
+    "path": "DIGITCampaign.projectId",
+    "short": "The root project the record was created for",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.status",
+    "path": "DIGITCampaign.status",
+    "short": "The record's status, such as created, drafted or creating",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.startDate",
+    "path": "DIGITCampaign.startDate",
+    "short": "The start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.endDate",
+    "path": "DIGITCampaign.endDate",
+    "short": "The end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.auditDetails",
+    "path": "DIGITCampaign.auditDetails",
+    "short": "When the record was created and changed",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.auditDetails.lastModifiedTime",
+    "path": "DIGITCampaign.auditDetails.lastModifiedTime",
+    "short": "The last change, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITCampaign",
+    "path": "DIGITCampaign",
+    "short": "DIGITCampaign",
+    "definition": "One DIGIT campaign record, as project-factory `project-type/search` returns it: the campaign as set up in the console, which can have several records per campaign number.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITCampaign.id",
+    "path": "DIGITCampaign.id",
+    "short": "The campaign record's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.campaignNumber",
+    "path": "DIGITCampaign.campaignNumber",
+    "short": "The campaign number, which a project's referenceID refers to",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.campaignName",
+    "path": "DIGITCampaign.campaignName",
+    "short": "The campaign's name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.projectId",
+    "path": "DIGITCampaign.projectId",
+    "short": "The root project the record was created for",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.status",
+    "path": "DIGITCampaign.status",
+    "short": "The record's status, such as created, drafted or creating",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.startDate",
+    "path": "DIGITCampaign.startDate",
+    "short": "The start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.endDate",
+    "path": "DIGITCampaign.endDate",
+    "short": "The end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.auditDetails",
+    "path": "DIGITCampaign.auditDetails",
+    "short": "When the record was created and changed",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITCampaign.auditDetails.lastModifiedTime",
+    "path": "DIGITCampaign.auditDetails.lastModifiedTime",
+    "short": "The last change, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,9 @@
+url = "https://icr.healthcampaigns.org/Library/DigitTarget"
+name = "DigitTarget"
+status = "draft"
+kind = "SQLQuery"
+description = "The target populations as DIGITTargetRow records, for the DIGITTargetToICR map."
+
+[[depends_on]]
+label = "target_group"
+resource = "https://icr.healthcampaigns.org/Library/DigitTargetGroup"

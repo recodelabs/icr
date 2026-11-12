@@ -47,6 +47,55 @@ from = { library = "DigitFacility" }
 [[step]]
 library = "DigitProductVariant"
 
+# The target populations of the projects: a Group per target number.
+[[step]]
+library = "DigitTarget"
+
+[[step]]
+map = "DIGITTargetToICR"
+from = { library = "DigitTarget" }
+
+# The targets left out because their project's boundary was not exported,
+# and the root project targets written without a geography: the run report
+# counts them.
+[[step]]
+library = "DigitTargetBoundaryNotExported"
+
+[[step]]
+library = "DigitTargetWithoutGeography"
+
+# The campaign activities: an ActivityDefinition per project type, delivery
+# and product variant, with the product from the catalogue.
+[[step]]
+library = "DigitActivity"
+
+[[step]]
+map = "DIGITActivityToICR"
+from = { library = "DigitActivity" }
+
+# The project types: a PlanDefinition each, with an action per activity, and
+# a Group for the eligible age band when there is one.
+[[step]]
+library = "DigitProtocol"
+
+[[step]]
+map = "DIGITProtocolToICR"
+from = { library = "DigitProtocol" }
+
+# The campaigns: a CarePlan per root project, and one per cycle when it has
+# more than one.
+[[step]]
+library = "DigitCampaign"
+
+[[step]]
+map = "DIGITCampaignToICR"
+from = { library = "DigitCampaign" }
+
+# The root projects not written as a campaign, with the reason: the run
+# report counts them.
+[[step]]
+library = "DigitCampaignNotImported"
+
 [[test]]
 name = "one row per facility"
 library = "DigitFacility"
@@ -60,3 +109,23 @@ FROM boundary
 GROUP BY 1
 HAVING count(*) > 1
 """
+
+[[test]]
+name = "one project per id"
+library = "DigitProject"
+unique = ["id"]
+
+[[test]]
+name = "one target Group per id"
+library = "DigitTarget"
+unique = ["id"]
+
+[[test]]
+name = "one PlanDefinition per id"
+library = "DigitProtocol"
+unique = ["id"]
+
+[[test]]
+name = "one CarePlan per id"
+library = "DigitCampaign"
+unique = ["id"]

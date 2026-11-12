@@ -1,0 +1,59 @@
+/// url = 'https://icr.healthcampaigns.org/StructureMap/DIGITTargetToICR'
+/// name = 'DIGITTargetToICR'
+/// title = 'DIGIT project target to an ICRTargetPopulation'
+/// status = 'draft'
+
+// One target number of a DIGIT project (a row of the DigitTarget Library)
+// as an ICRTargetPopulation Group: the targeted number is the at-risk
+// population and the planning denominator, the total number the total
+// population. Mapping: project/digit.md, "Project targets".
+//
+// The ids, systems and tag are those of the DIGIT demo tenant.
+
+uses "https://icr.healthcampaigns.org/StructureDefinition/DIGITTargetRow" alias DIGITTargetRow as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/StructureDefinition/Group" alias Group as target
+
+group Target(source src : DIGITTargetRow, target bundle : Bundle) {
+  src -> bundle.type = 'collection' "bundleType";
+  src -> bundle.entry as e, e.resource = create('Group') as g then TargetGroup(src, g) "group";
+}
+
+group TargetGroup(source src : DIGITTargetRow, target g : Group) {
+  src.id as i -> g.id = i "id";
+  src -> g.meta as m then {
+    src -> m.tag as t, t.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-project-tag-cs', t.code = 'digit-demo', t.display = 'DIGIT demo' "tag";
+    src -> m.profile = 'https://icr.healthcampaigns.org/StructureDefinition/ICRTargetPopulation' "profile";
+  } "meta";
+  // DIGIT does not say where its numbers come from.
+  src -> g.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/denominator-source',
+      x.value = create('CodeableConcept') as cc, cc.coding as c,
+      c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-denominator-source-cs', c.code = 'unknown', c.display = 'Unknown' "denominatorSource";
+  src.denominatorType as d -> g.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/denominator-type',
+      x.value = create('code') as v, v.value = d "denominatorType";
+  src where denominatorType = 'at-risk' -> g.extension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/is-planning-denominator',
+      x.value = true "planningDenominator";
+  // A household target counts households.
+  src where unit = 'household' -> g.modifierExtension as x, x.url = 'https://icr.healthcampaigns.org/StructureDefinition/unit-of-count',
+      x.value = create('code') as v, v.value = 'household' "unitOfCount";
+  src.targetId as t -> g.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/project-target', i.value = t "targetId";
+  src.projectId as p -> g.identifier as i, i.system = 'https://icr.healthcampaigns.org/identifiers/digit-demo/project', i.value = p "projectId";
+  src -> g.type = 'person' "type";
+  src -> g.actual = false "actual";
+  // "<project>: <unit>s <targeted | in total>, <place>", the place named
+  // from its boundary code as the boundary's Location is (DIGITBoundaryToICR).
+  src.projectName as n, src.unit as u, src.countLabel as l, src.place as c where $this.matches('[^_]') -> evaluate(c,
+      $this.replaceMatches('^(.*_)?[0-9]+_+(.*[^0-9_].*)$', '$2')
+        .split('_').where($this != '').join(' ')
+        .lower().toChars()
+        .aggregate(iif($total.length() = 0 or $total.substring($total.length() - 1).matches('[^A-Za-z]'),
+                       $total + $this.upper(), $total + $this), '')) as place, g.name = append(n, ': ', u, 's ', l, ', ', place) "name";
+  src.projectName as n, src.unit as u, src.countLabel as l, src.place as c where $this.matches('[^_]').not() -> g.name = append(n, ': ', u, 's ', l, ', ', c) "nameIsCode";
+  src where place.exists().not(), src.projectName as n, src.unit as u, src.countLabel as l -> g.name = append(n, ': ', u, 's ', l, ', unknown area') "nameNoPlace";
+  src.quantity as q -> g.quantity = q "quantity";
+  src.geography as l -> g.characteristic as ch then {
+    src -> ch.code as cc, cc.coding as c, c.system = 'https://icr.healthcampaigns.org/CodeSystem/icr-group-characteristic-cs', c.code = 'geography', c.display = 'Geographic scope' "code";
+    src -> ch.value = create('Reference') as r, r.reference = append('Location/', l) "value";
+    src -> ch.exclude = false "exclude";
+  } "geography";
+}

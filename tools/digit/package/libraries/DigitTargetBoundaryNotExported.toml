@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/Library/DigitTargetBoundaryNotExported"
+name = "DigitTargetBoundaryNotExported"
+status = "draft"
+kind = "SQLQuery"
+description = "Targets of projects that are not a root and whose boundary was not exported: no Group is written for them. The run report counts the rows; no map reads them."
+
+[[depends_on]]
+label = "project"
+resource = "https://icr.healthcampaigns.org/Library/DigitProject"
+
+[[depends_on]]
+label = "target"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectTarget"
+
+[[depends_on]]
+label = "boundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"

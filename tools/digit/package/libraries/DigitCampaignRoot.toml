@@ -1,0 +1,25 @@
+url = "https://icr.healthcampaigns.org/Library/DigitCampaignRoot"
+name = "DigitCampaignRoot"
+status = "draft"
+kind = "SQLQuery"
+description = "Every DIGIT root project, with its project type, campaign record, start, end, status, title and subject, and the reason when it gets no CarePlan."
+
+[[depends_on]]
+label = "project"
+resource = "https://icr.healthcampaigns.org/Library/DigitProject"
+
+[[depends_on]]
+label = "project_type"
+resource = "https://icr.healthcampaigns.org/Library/DigitProjectType"
+
+[[depends_on]]
+label = "campaign"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Campaign"
+
+[[depends_on]]
+label = "target_group"
+resource = "https://icr.healthcampaigns.org/Library/DigitTargetGroup"
+
+[[depends_on]]
+label = "boundary"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Boundary"

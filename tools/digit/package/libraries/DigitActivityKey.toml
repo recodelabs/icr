@@ -1,0 +1,21 @@
+url = "https://icr.healthcampaigns.org/Library/DigitActivityKey"
+name = "DigitActivityKey"
+status = "draft"
+kind = "SQLQuery"
+description = "The campaign activities: one row per project type, delivery and product variant that a project type in MDMS or a root project's own copy of its project type lists, with the dose criteria, strategy, quantity and wait of the first that lists it."
+
+[[depends_on]]
+label = "project_type"
+resource = "https://icr.healthcampaigns.org/Library/DigitProjectType"
+
+[[depends_on]]
+label = "type_dose"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectTypeDose"
+
+[[depends_on]]
+label = "project"
+resource = "https://icr.healthcampaigns.org/Library/DigitProject"
+
+[[depends_on]]
+label = "project_dose"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProjectDose"

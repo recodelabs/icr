@@ -1,0 +1,11 @@
+{"resourceType":"ViewDefinition","url":"https://icr.healthcampaigns.org/ViewDefinition/Campaign","name":"Campaign","status":"draft","resource":"DIGITCampaign",
+ "select":[{"column":[
+  {"name":"line","path":"%recordLine","type":"integer"},
+  {"name":"id","path":"id","type":"string"},
+  {"name":"campaign_number","path":"campaignNumber","type":"string"},
+  {"name":"campaign_name","path":"campaignName","type":"string"},
+  {"name":"project_id","path":"projectId","type":"string"},
+  {"name":"status","path":"status","type":"string"},
+  {"name":"start_date","path":"startDate","type":"decimal"},
+  {"name":"end_date","path":"endDate","type":"decimal"},
+  {"name":"last_modified_time","path":"auditDetails.lastModifiedTime","type":"decimal"}]}]}

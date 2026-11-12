@@ -1,0 +1,17 @@
+url = "https://icr.healthcampaigns.org/Library/DigitProtocol"
+name = "DigitProtocol"
+status = "draft"
+kind = "SQLQuery"
+description = "The DIGIT project types as DIGITProtocolRow records, for the DIGITProtocolToICR map: each with its actions, one per activity, and its eligible age band when it has one."
+
+[[depends_on]]
+label = "project_type"
+resource = "https://icr.healthcampaigns.org/Library/DigitProjectType"
+
+[[depends_on]]
+label = "activity"
+resource = "https://icr.healthcampaigns.org/Library/DigitActivityKey"
+
+[[depends_on]]
+label = "product_variant"
+resource = "https://icr.healthcampaigns.org/Library/DigitProductVariant"

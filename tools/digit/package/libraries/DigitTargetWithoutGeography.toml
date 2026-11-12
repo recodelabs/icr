@@ -1,0 +1,9 @@
+url = "https://icr.healthcampaigns.org/Library/DigitTargetWithoutGeography"
+name = "DigitTargetWithoutGeography"
+status = "draft"
+kind = "SQLQuery"
+description = "Target Groups of root projects whose boundary was not exported: the Group is written without a geography. The run report counts the rows; no map reads them."
+
+[[depends_on]]
+label = "target_group"
+resource = "https://icr.healthcampaigns.org/Library/DigitTargetGroup"

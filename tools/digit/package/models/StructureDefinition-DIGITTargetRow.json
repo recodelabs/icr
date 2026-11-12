@@ -1,0 +1,279 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITTargetRow",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITTargetRow",
+ "name": "DIGITTargetRow",
+ "title": "DIGIT project target number",
+ "status": "draft",
+ "description": "A row of the DigitTarget Library: one target number (targeted or in total) of one target of a DIGIT project, with the id of its Group.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITTargetRow",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITTargetRow",
+    "path": "DIGITTargetRow",
+    "short": "DIGITTargetRow",
+    "definition": "A row of the DigitTarget Library: one target number (targeted or in total) of one target of a DIGIT project, with the id of its Group.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITTargetRow.id",
+    "path": "DIGITTargetRow.id",
+    "short": "The Group's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.targetId",
+    "path": "DIGITTargetRow.targetId",
+    "short": "The DIGIT target's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.projectId",
+    "path": "DIGITTargetRow.projectId",
+    "short": "The project's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.projectName",
+    "path": "DIGITTargetRow.projectName",
+    "short": "The project's name",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.unit",
+    "path": "DIGITTargetRow.unit",
+    "short": "What is counted: person or household",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.countLabel",
+    "path": "DIGITTargetRow.countLabel",
+    "short": "targeted or in total",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.place",
+    "path": "DIGITTargetRow.place",
+    "short": "The code of the project's boundary, for the name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.denominatorType",
+    "path": "DIGITTargetRow.denominatorType",
+    "short": "at-risk (targeted) or total-population (in total)",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.quantity",
+    "path": "DIGITTargetRow.quantity",
+    "short": "The number",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.geography",
+    "path": "DIGITTargetRow.geography",
+    "short": "The id of the boundary's Location, when the boundary was exported",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITTargetRow",
+    "path": "DIGITTargetRow",
+    "short": "DIGITTargetRow",
+    "definition": "A row of the DigitTarget Library: one target number (targeted or in total) of one target of a DIGIT project, with the id of its Group.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITTargetRow.id",
+    "path": "DIGITTargetRow.id",
+    "short": "The Group's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.targetId",
+    "path": "DIGITTargetRow.targetId",
+    "short": "The DIGIT target's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.projectId",
+    "path": "DIGITTargetRow.projectId",
+    "short": "The project's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.projectName",
+    "path": "DIGITTargetRow.projectName",
+    "short": "The project's name",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.unit",
+    "path": "DIGITTargetRow.unit",
+    "short": "What is counted: person or household",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.countLabel",
+    "path": "DIGITTargetRow.countLabel",
+    "short": "targeted or in total",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.place",
+    "path": "DIGITTargetRow.place",
+    "short": "The code of the project's boundary, for the name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.denominatorType",
+    "path": "DIGITTargetRow.denominatorType",
+    "short": "at-risk (targeted) or total-population (in total)",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.quantity",
+    "path": "DIGITTargetRow.quantity",
+    "short": "The number",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITTargetRow.geography",
+    "path": "DIGITTargetRow.geography",
+    "short": "The id of the boundary's Location, when the boundary was exported",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

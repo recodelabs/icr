@@ -1,0 +1,639 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITProjectType",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProjectType",
+ "name": "DIGITProjectType",
+ "title": "DIGIT project type",
+ "status": "draft",
+ "description": "One DIGIT project type, as MDMS `HCM-PROJECT-TYPES.projectTypes` returns it: the protocol of a kind of campaign, with its cycles, deliveries, dose criteria and the product variants each delivers.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProjectType",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITProjectType",
+    "path": "DIGITProjectType",
+    "short": "DIGITProjectType",
+    "definition": "One DIGIT project type, as MDMS `HCM-PROJECT-TYPES.projectTypes` returns it: the protocol of a kind of campaign, with its cycles, deliveries, dose criteria and the product variants each delivers.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProjectType.id",
+    "path": "DIGITProjectType.id",
+    "short": "The MDMS record id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.isActive",
+    "path": "DIGITProjectType.isActive",
+    "short": "Whether the project type is in use",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data",
+    "path": "DIGITProjectType.data",
+    "short": "The project type",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.id",
+    "path": "DIGITProjectType.data.id",
+    "short": "The project type's id, which a project's projectTypeId refers to",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.code",
+    "path": "DIGITProjectType.data.code",
+    "short": "The project type code, such as MR-DN or LLIN-mz",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.name",
+    "path": "DIGITProjectType.data.name",
+    "short": "The project type's name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.beneficiaryType",
+    "path": "DIGITProjectType.data.beneficiaryType",
+    "short": "INDIVIDUAL or HOUSEHOLD",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.observationStrategy",
+    "path": "DIGITProjectType.data.observationStrategy",
+    "short": "How the delivery is observed, such as DOT1",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.eligibilityCriteria",
+    "path": "DIGITProjectType.data.eligibilityCriteria",
+    "short": "Eligibility criteria, as text",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.taskProcedure",
+    "path": "DIGITProjectType.data.taskProcedure",
+    "short": "The steps of the task, as text",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.validMinAge",
+    "path": "DIGITProjectType.data.validMinAge",
+    "short": "The youngest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.validMaxAge",
+    "path": "DIGITProjectType.data.validMaxAge",
+    "short": "The oldest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles",
+    "path": "DIGITProjectType.data.cycles",
+    "short": "The cycles (rounds) of the campaign",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.id",
+    "path": "DIGITProjectType.data.cycles.id",
+    "short": "The cycle number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.startDate",
+    "path": "DIGITProjectType.data.cycles.startDate",
+    "short": "The cycle's start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.endDate",
+    "path": "DIGITProjectType.data.cycles.endDate",
+    "short": "The cycle's end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries",
+    "path": "DIGITProjectType.data.cycles.deliveries",
+    "short": "The deliveries of the cycle",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.id",
+    "path": "DIGITProjectType.data.cycles.deliveries.id",
+    "short": "The delivery number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.deliveryStrategy",
+    "path": "DIGITProjectType.data.cycles.deliveries.deliveryStrategy",
+    "short": "DIRECT or INDIRECT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "path": "DIGITProjectType.data.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "short": "Days to wait after the previous delivery",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria",
+    "short": "Who gets what",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.condition",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.condition",
+    "short": "The condition, a DIGIT expression such as 3<=age<12",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants",
+    "short": "The product variants given",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "short": "The product variant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "short": "How many",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITProjectType",
+    "path": "DIGITProjectType",
+    "short": "DIGITProjectType",
+    "definition": "One DIGIT project type, as MDMS `HCM-PROJECT-TYPES.projectTypes` returns it: the protocol of a kind of campaign, with its cycles, deliveries, dose criteria and the product variants each delivers.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProjectType.id",
+    "path": "DIGITProjectType.id",
+    "short": "The MDMS record id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.isActive",
+    "path": "DIGITProjectType.isActive",
+    "short": "Whether the project type is in use",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "boolean"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data",
+    "path": "DIGITProjectType.data",
+    "short": "The project type",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.id",
+    "path": "DIGITProjectType.data.id",
+    "short": "The project type's id, which a project's projectTypeId refers to",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.code",
+    "path": "DIGITProjectType.data.code",
+    "short": "The project type code, such as MR-DN or LLIN-mz",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.name",
+    "path": "DIGITProjectType.data.name",
+    "short": "The project type's name",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.beneficiaryType",
+    "path": "DIGITProjectType.data.beneficiaryType",
+    "short": "INDIVIDUAL or HOUSEHOLD",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.observationStrategy",
+    "path": "DIGITProjectType.data.observationStrategy",
+    "short": "How the delivery is observed, such as DOT1",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.eligibilityCriteria",
+    "path": "DIGITProjectType.data.eligibilityCriteria",
+    "short": "Eligibility criteria, as text",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.taskProcedure",
+    "path": "DIGITProjectType.data.taskProcedure",
+    "short": "The steps of the task, as text",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.validMinAge",
+    "path": "DIGITProjectType.data.validMinAge",
+    "short": "The youngest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.validMaxAge",
+    "path": "DIGITProjectType.data.validMaxAge",
+    "short": "The oldest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles",
+    "path": "DIGITProjectType.data.cycles",
+    "short": "The cycles (rounds) of the campaign",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.id",
+    "path": "DIGITProjectType.data.cycles.id",
+    "short": "The cycle number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.startDate",
+    "path": "DIGITProjectType.data.cycles.startDate",
+    "short": "The cycle's start, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.endDate",
+    "path": "DIGITProjectType.data.cycles.endDate",
+    "short": "The cycle's end, epoch milliseconds",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries",
+    "path": "DIGITProjectType.data.cycles.deliveries",
+    "short": "The deliveries of the cycle",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.id",
+    "path": "DIGITProjectType.data.cycles.deliveries.id",
+    "short": "The delivery number",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.deliveryStrategy",
+    "path": "DIGITProjectType.data.cycles.deliveries.deliveryStrategy",
+    "short": "DIRECT or INDIRECT",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "path": "DIGITProjectType.data.cycles.deliveries.mandatoryWaitSinceLastDeliveryInDays",
+    "short": "Days to wait after the previous delivery",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria",
+    "short": "Who gets what",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.condition",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.condition",
+    "short": "The condition, a DIGIT expression such as 3<=age<12",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants",
+    "short": "The product variants given",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.productVariantId",
+    "short": "The product variant",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "path": "DIGITProjectType.data.cycles.deliveries.doseCriteria.ProductVariants.quantity",
+    "short": "How many",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "decimal"
+     }
+    ]
+   }
+  ]
+ }
+}

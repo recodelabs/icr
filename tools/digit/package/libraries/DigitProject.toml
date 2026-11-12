@@ -1,0 +1,13 @@
+url = "https://icr.healthcampaigns.org/Library/DigitProject"
+name = "DigitProject"
+status = "draft"
+kind = "SQLQuery"
+description = "The DIGIT projects, each with its root project (the campaign it belongs to) and, for a root, the line of its project type in mdms_project_type.ndjson."
+
+[[depends_on]]
+label = "project"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Project"
+
+[[depends_on]]
+label = "project_type"
+resource = "https://icr.healthcampaigns.org/Library/DigitProjectType"

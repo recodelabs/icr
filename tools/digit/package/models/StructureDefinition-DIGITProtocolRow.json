@@ -1,0 +1,495 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITProtocolRow",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProtocolRow",
+ "name": "DIGITProtocolRow",
+ "title": "DIGIT project type as a protocol",
+ "status": "draft",
+ "description": "A row of the DigitProtocol Library: one DIGIT project type, with its actions (one per activity) and its eligible age band.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProtocolRow",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITProtocolRow",
+    "path": "DIGITProtocolRow",
+    "short": "DIGITProtocolRow",
+    "definition": "A row of the DigitProtocol Library: one DIGIT project type, with its actions (one per activity) and its eligible age band.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProtocolRow.id",
+    "path": "DIGITProtocolRow.id",
+    "short": "The PlanDefinition's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.typeId",
+    "path": "DIGITProtocolRow.typeId",
+    "short": "The project type's MDMS data.id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.code",
+    "path": "DIGITProtocolRow.code",
+    "short": "The project type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.name",
+    "path": "DIGITProtocolRow.name",
+    "short": "The computer name",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.title",
+    "path": "DIGITProtocolRow.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.status",
+    "path": "DIGITProtocolRow.status",
+    "short": "active or retired",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.campaignType",
+    "path": "DIGITProtocolRow.campaignType",
+    "short": "The ICR campaign type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.campaignDisplay",
+    "path": "DIGITProtocolRow.campaignDisplay",
+    "short": "The ICR campaign type's display",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.description",
+    "path": "DIGITProtocolRow.description",
+    "short": "The beneficiary type, observation strategy and eligibility, as text",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.eligibleGroup",
+    "path": "DIGITProtocolRow.eligibleGroup",
+    "short": "The id of the eligible population Group, when there is an age band",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.minAge",
+    "path": "DIGITProtocolRow.minAge",
+    "short": "The youngest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.maxAge",
+    "path": "DIGITProtocolRow.maxAge",
+    "short": "The oldest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action",
+    "path": "DIGITProtocolRow.action",
+    "short": "The actions, one per activity",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.id",
+    "path": "DIGITProtocolRow.action.id",
+    "short": "The action's id, d<delivery>-<n>",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.title",
+    "path": "DIGITProtocolRow.action.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.definition",
+    "path": "DIGITProtocolRow.action.definition",
+    "short": "The ActivityDefinition's canonical URL",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.condition",
+    "path": "DIGITProtocolRow.action.condition",
+    "short": "The dose criteria, a DIGIT expression",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.after",
+    "path": "DIGITProtocolRow.action.after",
+    "short": "The id of the action this one follows",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.waitDays",
+    "path": "DIGITProtocolRow.action.waitDays",
+    "short": "The days to wait after that action",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITProtocolRow",
+    "path": "DIGITProtocolRow",
+    "short": "DIGITProtocolRow",
+    "definition": "A row of the DigitProtocol Library: one DIGIT project type, with its actions (one per activity) and its eligible age band.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProtocolRow.id",
+    "path": "DIGITProtocolRow.id",
+    "short": "The PlanDefinition's id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.typeId",
+    "path": "DIGITProtocolRow.typeId",
+    "short": "The project type's MDMS data.id",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.code",
+    "path": "DIGITProtocolRow.code",
+    "short": "The project type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.name",
+    "path": "DIGITProtocolRow.name",
+    "short": "The computer name",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.title",
+    "path": "DIGITProtocolRow.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.status",
+    "path": "DIGITProtocolRow.status",
+    "short": "active or retired",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.campaignType",
+    "path": "DIGITProtocolRow.campaignType",
+    "short": "The ICR campaign type code",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.campaignDisplay",
+    "path": "DIGITProtocolRow.campaignDisplay",
+    "short": "The ICR campaign type's display",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.description",
+    "path": "DIGITProtocolRow.description",
+    "short": "The beneficiary type, observation strategy and eligibility, as text",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.eligibleGroup",
+    "path": "DIGITProtocolRow.eligibleGroup",
+    "short": "The id of the eligible population Group, when there is an age band",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.minAge",
+    "path": "DIGITProtocolRow.minAge",
+    "short": "The youngest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.maxAge",
+    "path": "DIGITProtocolRow.maxAge",
+    "short": "The oldest eligible age, in months",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action",
+    "path": "DIGITProtocolRow.action",
+    "short": "The actions, one per activity",
+    "min": 0,
+    "max": "*",
+    "type": [
+     {
+      "code": "BackboneElement"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.id",
+    "path": "DIGITProtocolRow.action.id",
+    "short": "The action's id, d<delivery>-<n>",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.title",
+    "path": "DIGITProtocolRow.action.title",
+    "short": "The title",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.definition",
+    "path": "DIGITProtocolRow.action.definition",
+    "short": "The ActivityDefinition's canonical URL",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "uri"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.condition",
+    "path": "DIGITProtocolRow.action.condition",
+    "short": "The dose criteria, a DIGIT expression",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.after",
+    "path": "DIGITProtocolRow.action.after",
+    "short": "The id of the action this one follows",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProtocolRow.action.waitDays",
+    "path": "DIGITProtocolRow.action.waitDays",
+    "short": "The days to wait after that action",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "integer"
+     }
+    ]
+   }
+  ]
+ }
+}
