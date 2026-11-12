@@ -1,0 +1,13 @@
+url = "https://icr.healthcampaigns.org/Library/DigitProductVariant"
+name = "DigitProductVariant"
+status = "draft"
+kind = "SQLQuery"
+description = "The DIGIT product catalogue: each product variant whose product was exported, with its label, its kind (vaccine, drug or commodity), its standard code (ATC, CVX or ICR commodity class) when there is one, and the unit its quantities are counted in."
+
+[[depends_on]]
+label = "variant"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/ProductVariant"
+
+[[depends_on]]
+label = "product"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/Product"

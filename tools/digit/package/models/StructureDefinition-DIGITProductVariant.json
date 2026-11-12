@@ -1,0 +1,111 @@
+{
+ "resourceType": "StructureDefinition",
+ "id": "DIGITProductVariant",
+ "url": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProductVariant",
+ "name": "DIGITProductVariant",
+ "title": "DIGIT product variant",
+ "status": "draft",
+ "description": "One DIGIT product variant, as product `product/variant/v1/_search` returns it: a deliverable form of a product, such as SP 500mg.",
+ "fhirVersion": "4.0.1",
+ "kind": "logical",
+ "abstract": false,
+ "type": "https://icr.healthcampaigns.org/StructureDefinition/DIGITProductVariant",
+ "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Element",
+ "derivation": "specialization",
+ "snapshot": {
+  "element": [
+   {
+    "id": "DIGITProductVariant",
+    "path": "DIGITProductVariant",
+    "short": "DIGITProductVariant",
+    "definition": "One DIGIT product variant, as product `product/variant/v1/_search` returns it: a deliverable form of a product, such as SP 500mg.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProductVariant.id",
+    "path": "DIGITProductVariant.id",
+    "short": "The product variant's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProductVariant.productId",
+    "path": "DIGITProductVariant.productId",
+    "short": "The product it is a variant of",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProductVariant.sku",
+    "path": "DIGITProductVariant.sku",
+    "short": "The stock keeping unit name, such as SP - 500mg",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ },
+ "differential": {
+  "element": [
+   {
+    "id": "DIGITProductVariant",
+    "path": "DIGITProductVariant",
+    "short": "DIGITProductVariant",
+    "definition": "One DIGIT product variant, as product `product/variant/v1/_search` returns it: a deliverable form of a product, such as SP 500mg.",
+    "min": 0,
+    "max": "*"
+   },
+   {
+    "id": "DIGITProductVariant.id",
+    "path": "DIGITProductVariant.id",
+    "short": "The product variant's server id",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProductVariant.productId",
+    "path": "DIGITProductVariant.productId",
+    "short": "The product it is a variant of",
+    "min": 1,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   },
+   {
+    "id": "DIGITProductVariant.sku",
+    "path": "DIGITProductVariant.sku",
+    "short": "The stock keeping unit name, such as SP - 500mg",
+    "min": 0,
+    "max": "1",
+    "type": [
+     {
+      "code": "string"
+     }
+    ]
+   }
+  ]
+ }
+}

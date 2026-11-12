@@ -42,6 +42,11 @@ library = "DigitFacilityLocalityNotExported"
 map = "DIGITFacilityToICR"
 from = { library = "DigitFacility" }
 
+# The product catalogue: each product variant with its label, kind, standard
+# code and unit, for the maps that write a product.
+[[step]]
+library = "DigitProductVariant"
+
 [[test]]
 name = "one row per facility"
 library = "DigitFacility"

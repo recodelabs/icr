@@ -1,0 +1,6 @@
+{"id": "P-1", "tenantId": "test", "type": "TABLET", "name": "SP", "manufacturer": null, "isDeleted": false}
+{"id": "P-2", "tenantId": "test", "type": "TONIC", "name": "MR Vaccine ", "manufacturer": null, "isDeleted": false}
+{"id": "P-3", "tenantId": "test", "type": "BEDNET", "name": "Bednet", "manufacturer": null, "isDeleted": false}
+{"id": "P-4", "tenantId": "test", "type": "RESIDUAL_SPRAY", "name": "Spray", "manufacturer": null, "isDeleted": false}
+{"id": "P-5", "tenantId": "test", "type": "DRUG", "name": "Paracetamol", "manufacturer": null, "isDeleted": false}
+{"id": "P-6", "tenantId": "test", "type": "SOAP", "name": "Soap", "manufacturer": null, "isDeleted": false}

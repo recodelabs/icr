@@ -20,7 +20,8 @@ connector writes these names, make a folder of links to the files `extract.py` a
 | `boundary_tree.ndjson` | `DIGITBoundaryTree` | `models/StructureDefinition-DIGITBoundaryTree.json` | the views `BoundaryTree` and `Boundary` |
 | `facility.ndjson` | `DIGITFacility` | `models/StructureDefinition-DIGITFacility.json` | the view `Facility` |
 | `boundary_hierarchy.ndjson` | `DIGITBoundaryHierarchy` | not yet | (`transform.py` does not read it either) |
-| `product.ndjson`, `product_variant.ndjson` | `DIGITProduct`, `DIGITProductVariant` | not yet | |
+| `product.ndjson` | `DIGITProduct` | `models/StructureDefinition-DIGITProduct.json` | the view `Product` |
+| `product_variant.ndjson` | `DIGITProductVariant` | `models/StructureDefinition-DIGITProductVariant.json` | the view `ProductVariant` |
 | `mdms_project_type.ndjson` | `DIGITProjectType` | not yet | |
 | `campaign.ndjson`, `project.ndjson` | `DIGITCampaign`, `DIGITProject` | not yet | |
 | `individual.ndjson` | `DIGITIndividual` | not yet | |
@@ -30,12 +31,14 @@ connector writes these names, make a folder of links to the files `extract.py` a
 | `stock.ndjson` | `DIGITStock` | not yet | |
 | `referral.ndjson` | `DIGITReferral` | not yet | |
 
-A run refuses a record file that no step or view reads, so for now the folder holds only the first two:
+A run refuses a record file that no step or view reads, so for now the folder holds only the types with a model:
 
 ```bash
 mkdir -p digit-in
 ln -s "$DIGIT_WORK/raw/boundary_tree.ndjson" digit-in/DIGITBoundaryTree.ndjson
 ln -s "$DIGIT_WORK/raw/facility.ndjson"      digit-in/DIGITFacility.ndjson
+ln -s "$DIGIT_WORK/raw/product.ndjson"       digit-in/DIGITProduct.ndjson
+ln -s "$DIGIT_WORK/raw/product_variant.ndjson" digit-in/DIGITProductVariant.ndjson
 fhir-pipes import check --package tools/digit/package --in digit-in
 fhir-pipes import run   --package tools/digit/package --in digit-in --out digit-fhir --report digit-run.json
 fhir-pipes import test  --package tools/digit/package
@@ -117,6 +120,36 @@ such member, as the choice element `boundary[x]` and returns its `boundaryType`.
 The data test `one row per facility` stops the run if two different rows have one facility id;
 `one boundary per Location id` stops it if two boundary codes would give one Location id
 (`transform.py` stops on that too).
+
+## The product catalogue
+
+`transform.py` writes no resource for a product. It keeps a catalogue of the product
+variants (`products.py`) and writes a variant into other resources: the `product` of an
+ActivityDefinition and the `title` of a PlanDefinition action, and, in parts not yet ported,
+the medication, vaccine or item of a delivery or a stock movement.
+
+The `DigitProductVariant` Library is that catalogue. It reads the views `Product` and
+`ProductVariant` and gives one row per variant whose product was exported:
+
+| Column | Value |
+| --- | --- |
+| `product_variant_id` | The variant's id |
+| `label` | The SKU, or the product name when the SKU is empty, trimmed |
+| `kind` | `vaccine`, `drug` or `commodity`, from the product type (`TONIC`, `DRUG`, `TABLET`, `BEDNET`, `RESIDUAL_SPRAY`); empty for another type |
+| `standard_system`, `standard_code`, `standard_display` | The ATC code of a drug or the CVX code of a vaccine, by product name, or the ICR commodity class of a commodity, by product type; empty when the tables have none |
+| `unit`, `unit_code` | The UCUM unit for a quantity: nets, tablets, doses or units |
+
+The tables in the SQL are the demo tenant's, as in `products.py` (its comments call them the
+per-instance ConceptMap). A variant that is not in the catalogue, or whose product was not
+exported, is written with a local code only and the label `DIGIT product variant <id>`, as
+`transform.py` does.
+
+`products.py` also splits a co-packed variant (SPAQ) into its two drugs. Only the
+administrations of a delivery use that, so the package does not have it yet.
+
+On the demo export the catalogue has 276 rows. Each gives the same code, label, kind and unit
+as `products.py`, and the same codes and units as the 79 variants in the reference
+ActivityDefinitions and the 34 in the reference SupplyDeliveries.
 
 ## What the run reports
 
