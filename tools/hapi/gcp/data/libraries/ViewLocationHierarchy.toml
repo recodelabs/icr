@@ -1,0 +1,10 @@
+url = "https://icr.healthcampaigns.org/data/Library/LocationHierarchy"
+name = "ViewLocationHierarchy"
+status = "active"
+kind = "SQLQuery"
+title = "Each Location with its place in the partOf tree"
+description = "Every row of fhir-pipes' built-in LocationHierarchy SQLView (the location_hierarchy table)."
+
+[[depends_on]]
+label = "v"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

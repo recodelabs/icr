@@ -131,7 +131,8 @@ services:
     networks:
       default:
         # containers reach the public hostnames through Caddy without leaving the VM
-        aliases: ["${FHIR_HOST}", "${AUTH_HOST}"]
+        # (data/'s serve refreshes through the gateway, so it is here too)
+        aliases: ["${FHIR_HOST}", "${AUTH_HOST}", "${GATEWAY_HOST}"]
     ports:
       - "80:80"
       - "443:443"

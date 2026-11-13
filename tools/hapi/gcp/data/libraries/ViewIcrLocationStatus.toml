@@ -1,0 +1,10 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrLocationStatus"
+name = "ViewIcrLocationStatus"
+status = "active"
+kind = "SQLQuery"
+title = "ICR location status"
+description = "Every row of the IcrLocationStatus ViewDefinition (Observation), as the warehouse's refresh wrote it from the NDJSON."
+
+[[depends_on]]
+label = "v"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrLocationStatus"

@@ -1,0 +1,38 @@
+# fhir-pipes serve at https://data.healthcampaigns.org, beside the main stack (project
+# icr-hapi) on the same VM. Its own compose project; only serve joins the main stack's network,
+# as `data-serve`, so Caddy (sites/data.caddy) can reach it and it reaches
+# auth.healthcampaigns.org and gateway.healthcampaigns.org through Caddy without leaving the VM.
+#
+# From /opt/icr-hapi/gcp on the VM (see README.md in this folder):
+#   sudo docker compose -f data/docker-compose.yml --env-file data/data.env up -d --build
+name: icr-data
+services:
+  serve:
+    build: .
+    image: icr-data-serve:0.7.0
+    restart: unless-stopped
+    # serve runs each refresh as a child process group; init reaps what it leaves.
+    init: true
+    environment:
+      # The gateway API key the refreshes use (realm icr, key-data).
+      FHIR_PIPES_CLIENT_ID: ${FHIR_PIPES_CLIENT_ID:?set in data.env}
+      FHIR_PIPES_CLIENT_SECRET: ${FHIR_PIPES_CLIENT_SECRET:?set in data.env}
+      # A shared token that opens everything, for the operator; callers use Keycloak tokens.
+      FHIR_PIPES_SERVE_TOKEN: ${FHIR_PIPES_SERVE_TOKEN:?set in data.env}
+    volumes:
+      - ./build:/config:ro
+      - warehouse:/warehouse
+    mem_limit: ${DATA_MEMORY:-3g}
+    # More than [serve] stop_grace (120 s), so a stopping refresh is not killed early.
+    stop_grace_period: 150s
+    networks:
+      shared:
+        aliases: ["data-serve"]
+
+networks:
+  shared:
+    external: true
+    name: ${MAIN_NETWORK:-icr-hapi_default}
+
+volumes:
+  warehouse:
