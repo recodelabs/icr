@@ -16,11 +16,8 @@ profile = "/config/fhir-pipes-profile.toml"
 libraries = ["/config/libraries"]
 
 [server]
-# HAPI's open address for now. The gateway (https://gateway.healthcampaigns.org/fhir) is
-# where this should read from, with the API key below; on 2026-11-13 it refused every token
-# from realm icr ("does not match the expected token issuer"), so serve reads HAPI until that
-# is fixed. The token is sent either way; HAPI ignores it.
-base = "https://hapi.healthcampaigns.org/fhir"
+# Through the gateway, with the API key below (reached on the VM through Caddy's alias).
+base = "https://gateway.healthcampaigns.org/fhir"
 name = "hapi-gcp"
 # The API key (FHIR_PIPES_CLIENT_ID, FHIR_PIPES_CLIENT_SECRET in data.env) is traded here.
 token_url = "https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token"
