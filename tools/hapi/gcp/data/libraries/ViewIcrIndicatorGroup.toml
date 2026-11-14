@@ -1,0 +1,10 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrIndicatorGroup"
+name = "ViewIcrIndicatorGroup"
+status = "active"
+kind = "SQLQuery"
+title = "ICR indicator groups"
+description = "Every row of the IcrIndicatorGroup ViewDefinition (Measure), as the warehouse's refresh wrote it from the NDJSON."
+
+[[depends_on]]
+label = "v"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrIndicatorGroup"

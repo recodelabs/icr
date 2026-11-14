@@ -73,3 +73,6 @@ tools/microplan-builder/out/
 # fhir-pipes' run lock in a warehouse folder (data/, country/*/warehouse/): an empty file it
 # keeps on purpose; the lock itself ends with the run.
 .refresh.lock
+
+# tools/hapi/gcp/data/bundle.sh output (serve's /config)
+tools/hapi/gcp/data/build/

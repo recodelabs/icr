@@ -1,0 +1,7 @@
+# fhir-pipes serve (../data/docker-compose.yml, env file data/data.env): $sql-run over the
+# warehouse it refreshes, and its run API. Every path but /health and
+# /fhir/.well-known/smart-configuration needs a token.
+data.healthcampaigns.org {
+	encode gzip
+	reverse_proxy data-serve:8090
+}

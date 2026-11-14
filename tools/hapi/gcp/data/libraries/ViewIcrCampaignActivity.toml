@@ -1,0 +1,10 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrCampaignActivity"
+name = "ViewIcrCampaignActivity"
+status = "active"
+kind = "SQLQuery"
+title = "ICR campaign activities"
+description = "Every row of the IcrCampaignActivity ViewDefinition (CarePlan), as the warehouse's refresh wrote it from the NDJSON."
+
+[[depends_on]]
+label = "v"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignActivity"

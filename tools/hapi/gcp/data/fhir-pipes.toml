@@ -1,0 +1,72 @@
+# fhir-pipes serve at https://data.healthcampaigns.org (see README.md in this folder).
+#
+# serve refreshes its own warehouse (the /warehouse volume) from the ICR's main FHIR server,
+# through its gateway with an API key of its own, once a day and when asked, and answers
+# $sql-run for the Libraries in /config/libraries: one per ViewDefinition, which returns that
+# view's table. Callers send an access token from Keycloak (realm icr).
+#
+# Paths are in the container: build/ in this folder is mounted at /config (bundle.sh fills it).
+
+data = "/warehouse"
+# The ICR's ViewDefinitions (bundle.sh copies them in).
+views = "/config/views"
+profile = "/config/fhir-pipes-profile.toml"
+# One SQLQuery per ViewDefinition, `SELECT * FROM v`: $sql-run returns each view's table.
+# Built from libraries/ by bundle.sh. The refresh also writes each as a table (view_icr_…).
+libraries = ["/config/libraries"]
+
+[server]
+# HAPI's open address for now. The gateway (https://gateway.healthcampaigns.org/fhir) is
+# where this should read from, with the API key below; on 2026-11-13 it refused every token
+# from realm icr ("does not match the expected token issuer"), so serve reads HAPI until that
+# is fixed. The token is sent either way; HAPI ignores it.
+base = "https://hapi.healthcampaigns.org/fhir"
+name = "hapi-gcp"
+# The API key (FHIR_PIPES_CLIENT_ID, FHIR_PIPES_CLIENT_SECRET in data.env) is traded here.
+token_url = "https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token"
+
+[tables]
+# IcrIndicatorValue → indicator_value
+strip_prefix = ["icr_"]
+
+# As the main warehouse: every view table partitioned by country, from the registry through
+# location_id, else through campaign_id via the campaign calendar.
+[partition]
+column = "country"
+
+[[partition.lookup]]
+key = "location_id"
+table = "locations"
+table_key = "id"
+
+[[partition.lookup]]
+key = "campaign_id"
+table = "campaign_calendar"
+
+# A refresh always builds map tiles; only Nigeria's, as the main warehouse does.
+[tiles]
+countries = ["NGA"]
+
+[serve]
+retries = 2
+retry_delay = 600
+
+# Once a day at 02:30 UTC, only what changed since the last refresh.
+[[serve.schedule]]
+cron = "30 2 * * *"
+mode = "incremental"
+
+[serve.query]
+approve = "active"          # the libraries/ are all active
+source = "local"
+timeout = 120
+max_rows = 2_000_000        # the largest view (location hierarchy) has ~350,000 rows
+concurrency = 4
+
+[serve.auth]
+issuer = "https://auth.healthcampaigns.org/realms/icr"
+audience = "fhir-pipes"
+# SMART on FHIR: a token with system/Library.rs (or system/*.rs, system/Library.read …) queries.
+query_scope = "system/Library.rs"
+# Starts and reads refreshes (POST /run, /status, /runs).
+admin_scope = "fhir-pipes.admin"

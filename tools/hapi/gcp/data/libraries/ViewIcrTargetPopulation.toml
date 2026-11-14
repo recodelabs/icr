@@ -1,0 +1,10 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrTargetPopulation"
+name = "ViewIcrTargetPopulation"
+status = "active"
+kind = "SQLQuery"
+title = "ICR target populations"
+description = "Every row of the IcrTargetPopulation ViewDefinition (Group), as the warehouse's refresh wrote it from the NDJSON."
+
+[[depends_on]]
+label = "v"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
