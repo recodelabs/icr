@@ -46,6 +46,9 @@ USER pipes
 WORKDIR /warehouse
 # duckdb 2.0 changes its output when it thinks an agent runs it; keep 1.x behaviour either way.
 ENV DUCKDB_AGENT_MODE=0
+# The tiles step needs spatial and the refresh does not install it. A new warehouse volume
+# starts with what the image has here; on an existing one, run this line in the container.
+RUN duckdb -c "INSTALL spatial"
 
 ENTRYPOINT ["fhir-pipes"]
 CMD ["serve", "--config", "/config/fhir-pipes.toml", "--listen", "0.0.0.0:8090"]

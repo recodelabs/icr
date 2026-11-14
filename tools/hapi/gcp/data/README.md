@@ -31,7 +31,7 @@ https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/docs/serve.md
 
 | File | |
 |---|---|
-| `Dockerfile` | the fhir-pipes 0.7.0 release binary (checked against SHA256SUMS) and the duckdb CLI |
+| `Dockerfile` | the fhir-pipes 0.7.0 release binary (checked against SHA256SUMS), the duckdb CLI, and tippecanoe, built from source: every refresh runs the tiles step, Nigeria's only |
 | `docker-compose.yml` | project `icr-data`: the serve container, on the main stack's network as `data-serve` |
 | `fhir-pipes.toml` | the warehouse, the schedule, `[serve.query]` and `[serve.auth]` |
 | `libraries/` | one SQLQuery per ViewDefinition, as `.sql` + `.toml` |
