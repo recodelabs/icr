@@ -1,0 +1,236 @@
+# ICR data API
+
+`https://data.healthcampaigns.org` serves the ICR's FHIR data as tables. Each table is the
+result of a SQL on FHIR ViewDefinition, refreshed from the FHIR server once a day (02:30 UTC).
+You ask for a table by name and get all of its rows as CSV or JSON.
+
+This guide shows how to get a token with your API key, how to query a table, and how to get
+NTD endemicity by location, the data behind https://dashboards.healthcampaigns.org/ntd.
+
+The server holds a Nigerian location registry and campaign data generated for the demo. The
+endemicity classifications and prevalence figures are not real records.
+
+| | |
+| --- | --- |
+| Query URL | `https://data.healthcampaigns.org/fhir/$sql-run` |
+| List of tables | `https://data.healthcampaigns.org/fhir/Library` |
+| Token URL | `https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token` |
+| Token scope | `system/Library.rs` |
+| Token lifetime | 1 hour |
+| Formats | `csv`, `json`, `ndjson` |
+
+The examples use `curl`, [`jq`](https://jqlang.org) and [DuckDB](https://duckdb.org).
+
+## How access works
+
+- Your **API key** is a client id (`key-<name>`) and a client secret. It does not expire. Keep
+  the secret private, like a password.
+- You trade the key for a **token** at the token URL. A token lasts 1 hour.
+- You send the token with each query. The data API never sees your secret.
+- When a token expires, queries return `401`. Get a new token the same way.
+
+## 1. Save your key
+
+Put the two values you were given in environment variables, so the commands below can use them:
+
+```bash
+export ICR_CLIENT_ID=key-yourname
+export ICR_CLIENT_SECRET='the secret you were given'
+```
+
+## 2. Get a token
+
+```bash
+TOKEN=$(curl -s https://auth.healthcampaigns.org/realms/icr/protocol/openid-connect/token \
+  -d grant_type=client_credentials \
+  -d client_id="$ICR_CLIENT_ID" \
+  --data-urlencode client_secret="$ICR_CLIENT_SECRET" \
+  -d scope=system/Library.rs | jq -r .access_token)
+```
+
+`scope=system/Library.rs` is required. Keycloak also gives a token without it, but the data API
+answers that token with `401`.
+
+The full response looks like this; `access_token` is the token and `expires_in` is in seconds:
+
+```json
+{
+  "access_token": "eyJhbGciOi…",
+  "expires_in": 3600,
+  "token_type": "Bearer",
+  "scope": "system/Library.rs profile email"
+}
+```
+
+If you get `{"error": "invalid_scope"}`, your key has not been granted access to the data API
+yet. Ask the ICR team to grant it.
+
+## 3. See which tables there are
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" https://data.healthcampaigns.org/fhir/Library \
+  | jq -r '.entry[].resource | [.url, .title] | @tsv'
+```
+
+Each table has an address of the form `https://icr.healthcampaigns.org/data/Library/<Name>`.
+That address is what you pass to a query.
+
+| Name | Rows are |
+| --- | --- |
+| `LocationHierarchy` | every location, with its name, level and the names of its parents |
+| `IcrLocationStatus` | endemicity classifications per location and disease |
+| `IcrLocationStatusLocation` | the admin units that have an endemicity classification, with the `LocationHierarchy` columns |
+| `IcrCampaignCalendar`, `IcrCampaignActivity` | campaigns and their activities |
+| `IcrCampaignTask`, `IcrCampaignTaskOutput` | campaign tasks and what they produced |
+| `IcrTargetPopulation` | target populations (denominators) |
+| `IcrCoverage`, `IcrCoverageStrata` | coverage results, and their breakdowns |
+| `IcrIndicator`, `IcrIndicatorGroup`, `IcrIndicatorStrata`, `IcrIndicatorValue` | indicators and their values |
+
+## 4. Query a table
+
+Pass the table's address as `subjectCanonical` and choose a format:
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir/$sql-run' \
+  --data-urlencode subjectCanonical=https://icr.healthcampaigns.org/data/Library/IcrLocationStatus \
+  --data-urlencode _format=csv > status.csv
+```
+
+Keep the single quotes around the URL, or the shell will try to expand `$sql`.
+
+A query returns the whole table. Filters are not supported yet, so filter the rows after you
+download them.
+
+## 5. Get endemicity by location
+
+Endemicity is in `IcrLocationStatus`. It refers to a location by id only, so you download
+`IcrLocationStatusLocation` as well and join the two. That table has one row for each admin
+unit that has an endemicity classification, with its name and the names of its parents.
+
+### Download the two tables
+
+```bash
+Q() { curl -sS -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir/$sql-run' \
+        --data-urlencode "subjectCanonical=https://icr.healthcampaigns.org/data/Library/$1" \
+        --data-urlencode _format=csv; }
+
+Q IcrLocationStatus > status.csv                # about 670 rows
+Q IcrLocationStatusLocation > locations.csv     # about 120 rows
+```
+
+### What the endemicity table holds
+
+One row is one classification of one place for one disease, made on one date. In FHIR each row
+is an `Observation` (profile ICRLocationStatus) whose subject is the `Location`.
+
+| Column | Meaning | Example |
+| --- | --- | --- |
+| `observation_id` | id of the Observation | `nga-demo-endem-lf-ba-5001-2022` |
+| `location_id` | id of the Location it is about | `nga-ba-5001` |
+| `property` | the disease: `lf-endemicity`, `oncho-endemicity`, `schisto-endemicity`, `sth-endemicity`, `trachoma-endemicity` | `lf-endemicity` |
+| `status` | the classification: `endemic-under-mda`, `endemic-mda-not-started`, `post-mda-surveillance`, `elimination-validated`, `non-endemic`, `unknown` | `endemic-under-mda` |
+| `effective` | when it was assessed | `2022-01-15` |
+| `performer` | who made the classification | Bauchi State Ministry of Health, NTD programme |
+| `method` | how it was determined | LGA-level ICT mapping survey |
+| `evidence` | the source document | ICT mapping survey report, Alkaleri LGA, 2012 |
+| `figure_label` | what the supporting figure measures | LF antigenaemia prevalence at mapping (ICT), 15+ years (2012) |
+| `figure_value` | the figure | `2.7` |
+| `figure_unit` | its unit | `%` |
+| `country` | ISO country code | `NGA` |
+
+Three things to know when you read it:
+
+- **A place can have several rows per disease**, one per assessment (for example 2022 and
+  2025). The current classification is the row with the newest `effective`.
+- **`figure_value` is not always a percentage.** For most rows it is the prevalence the
+  classification rests on, with `figure_unit` = `%`. For lymphatic filariasis rows in
+  `post-mda-surveillance` it is the number of positive children in the survey, with
+  `figure_unit` = `children`. Check `figure_unit` before you treat the value as a rate.
+- **A classification covers everything below the place it names.** Most rows name an LGA. A
+  row that names a state applies to all of its LGAs unless an LGA has its own row.
+
+### Join the tables
+
+This gives the current classification of each place for each disease, with its state and LGA
+names:
+
+```bash
+duckdb -c "
+COPY (
+  WITH current AS (
+    SELECT * FROM read_csv('status.csv')
+    QUALIFY row_number() OVER (PARTITION BY location_id, property ORDER BY effective DESC) = 1
+  )
+  SELECT l.admin0_name AS country,
+         l.admin1_name AS state,
+         l.name        AS location,
+         l.admin_level,
+         c.location_id,
+         replace(c.property, '-endemicity', '') AS disease,
+         c.status,
+         CAST(c.effective AT TIME ZONE 'UTC' AS DATE) AS assessed,
+         c.figure_value, c.figure_unit, c.figure_label,
+         c.performer, c.method
+  FROM current AS c
+  JOIN read_csv('locations.csv') AS l ON l.id = c.location_id
+  ORDER BY disease, state, location
+) TO 'endemicity_by_location.csv' (HEADER);"
+```
+
+The first rows of the result:
+
+| state | location | disease | status | assessed | figure_value | figure_unit |
+| --- | --- | --- | --- | --- | --- | --- |
+| Bauchi | Alkaleri | lf | post-mda-surveillance | 2025-03-21 | 3.0 | children |
+| Bauchi | Bauchi | lf | post-mda-surveillance | 2024-04-05 | 0.0 | children |
+| Bauchi | Bogoro | lf | post-mda-surveillance | 2024-05-15 | 3.0 | children |
+
+Changes you can make to the query:
+
+- To keep every assessment and not only the current one, remove the `QUALIFY` line.
+- For baseline prevalence rates only, add `WHERE c.figure_unit = '%'` before `ORDER BY`.
+- For Nigeria only, add `WHERE l.country = 'NGA'`. The server also holds the Implementation
+  Guide's worked examples, so a few rows are about an example place (Kambia District, Sierra
+  Leone).
+
+### The location columns
+
+`IcrLocationStatusLocation` has the same columns as `LocationHierarchy`. The ones used above:
+
+| Column | Meaning |
+| --- | --- |
+| `id` | the Location id; matches `location_id` in the other tables |
+| `name` | the location's name |
+| `part_of` | id of its parent |
+| `admin_level` | 0 country, 1 state, 2 LGA |
+| `admin0_name` … `admin4_name` | names of the admin units it sits in, from the country down |
+| `admin0_code` … `admin4_code` | their codes |
+| `path` | ids from the country down, for example `/nga/nga-ba/nga-ba-5001` |
+
+Other tables that carry a `location_id` join to `LocationHierarchy` the same way.
+`LocationHierarchy` has every location (admin units, health facilities, settlements and other
+places): about 350,000 rows and 62 MB, which takes about 10 seconds to download.
+
+## Errors
+
+| Response | Cause |
+| --- | --- |
+| `401` | no token, the token has expired, or it was asked for without `scope=system/Library.rs`. Get a new one. |
+| `invalid_scope` from the token URL | the key has not been granted access to the data API |
+| `unauthorized_client` from the token URL | wrong client id or secret |
+| `404` | unknown table address |
+| `400` | unsupported `_format` |
+| `503` | the first refresh has not finished; try again later |
+
+## For the ICR team: give someone access
+
+On the `icr-hapi` VM, from `/opt/icr-hapi/gcp`:
+
+```bash
+k()  { sudo docker compose exec -T keycloak bash -s -- "$@" < gateway/api-key.sh; }
+kd() { sudo docker compose exec -T keycloak bash -s -- "$@" < data/keycloak.sh; }
+k create yourname     # prints the client id and secret to send them
+kd grant yourname     # lets the key ask for system/Library.rs
+```
+
+More on running the service is in `tools/hapi/gcp/data/README.md`.

@@ -1,0 +1,14 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrLocationStatusLocation"
+name = "IcrLocationStatusLocation"
+status = "active"
+kind = "SQLQuery"
+title = "The admin units that have a location status"
+description = "The LocationHierarchy rows of the admin units that an IcrLocationStatus row (endemicity) is about: a small table to join IcrLocationStatus to on location_id, in place of the whole LocationHierarchy."
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"
+
+[[depends_on]]
+label = "location_status"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrLocationStatus"
