@@ -1,0 +1,33 @@
+SELECT v.report_id,
+       v.campaign_id,
+       c.title AS campaign_title,
+       c.campaign_type,
+       regexp_replace(c.protocol, '.*/', '') AS protocol,
+       c.round,
+       c.status AS campaign_status,
+       year(coalesce(c.period_start, v.period_start)) AS year,
+       v.country,
+       v.location_id,
+       h.name AS location_name,
+       h.admin_level,
+       h.admin1_name AS state,
+       h.admin2_name AS lga,
+       regexp_replace(v.measure, '.*/', '') AS measure,
+       v.source,
+       v.lineage,
+       v.denominator_type,
+       v.status AS report_status,
+       v.period_start,
+       v.period_end,
+       v.reported,
+       v.numerator,
+       v.denominator,
+       v.score,
+       v.ci_low,
+       v.ci_high,
+       v.sample_design,
+       v.reporter
+FROM coverage AS v
+LEFT JOIN calendar AS c ON c.campaign_id = v.campaign_id
+LEFT JOIN hierarchy AS h ON h.id = v.location_id
+ORDER BY year, state, lga, v.campaign_id, v.reported

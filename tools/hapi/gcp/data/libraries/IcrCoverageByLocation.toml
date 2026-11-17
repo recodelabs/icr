@@ -1,0 +1,18 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrCoverageByLocation"
+name = "IcrCoverageByLocation"
+status = "active"
+kind = "SQLQuery"
+title = "Coverage reports with their campaign and place"
+description = "Each IcrCoverage row with its campaign (title, type, protocol, round, year, from IcrCampaignCalendar) and its Location's name, admin level, state and LGA (from LocationHierarchy), so a caller can filter coverage by year, place or programme without joining tables."
+
+[[depends_on]]
+label = "coverage"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCoverage"
+
+[[depends_on]]
+label = "calendar"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"

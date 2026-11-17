@@ -18,7 +18,13 @@ https://data.healthcampaigns.org/status, /run, /runs     refreshes (token with f
 - **Queries.** There is one SQLQuery Library per ViewDefinition (`libraries/`), whose SQL is
   `SELECT * FROM v`, so `$sql-run` returns each view's whole table. Its canonical is
   `https://icr.healthcampaigns.org/data/Library/<View>`, for example `…/IcrCoverage`. Library
-  parameters are not supported yet, so callers filter what they get.
+  parameters are not supported yet, so callers filter what they get. Three more Libraries join
+  tables: `IcrLocationStatusLocation`, the LocationHierarchy rows of the admin units that have an
+  IcrLocationStatus row, so a caller who wants endemicity by place does not download every
+  Location; and `IcrCoverageByLocation`, each IcrCoverage row with its campaign and its place's
+  names, to filter coverage by year, state or programme; and `IcrPopulationByLocation`, the census
+  projection and WorldPop total population per admin unit, side by side. `datapi.md` at the repo root is the
+  guide for callers.
 - **Tokens.** `[serve.auth]` checks tokens from Keycloak, realm `icr`. A token needs the
   SMART scope `system/Library.rs` to query and `fhir-pipes.admin` to run refreshes; both
   scopes set the audience `fhir-pipes` that serve requires. `FHIR_PIPES_SERVE_TOKEN` in
@@ -101,6 +107,8 @@ The `scope` must be asked for: the scopes are optional, so a token without it ge
 
 - **A new fhir-pipes release:** change `FHIR_PIPES_VERSION` in the `Dockerfile` and the
   image tag in `docker-compose.yml`, then ship and run the `up -d --build` line again.
+- **A new or changed Library:** edit `libraries/`, run `bundle.sh`, ship, then restart serve
+  (`… up -d --force-recreate`).
 - **New or changed ViewDefinitions:** rebuild the IG, run `bundle.sh`, ship, then restart
   serve (`… up -d --force-recreate`) and run a full refresh:
   `curl -X POST … -d '{"mode": "full"}' https://data.healthcampaigns.org/run`.
