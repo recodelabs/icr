@@ -74,20 +74,44 @@ curl -s -H "Authorization: Bearer $TOKEN" https://data.healthcampaigns.org/fhir/
 ```
 
 Each table has an address of the form `https://icr.healthcampaigns.org/data/Library/<Name>`.
-That address is what you pass to a query.
+That address is what you pass to a query, and what to cite when you refer to a table.
 
-| Name | Rows are |
-| --- | --- |
-| `LocationHierarchy` | every location, with its name, level and the names of its parents |
-| `IcrLocationStatus` | endemicity classifications per location and disease |
-| `IcrLocationStatusLocation` | the admin units that have an endemicity classification, with the `LocationHierarchy` columns |
-| `IcrCampaignCalendar`, `IcrCampaignActivity` | campaigns and their activities |
-| `IcrCampaignTask`, `IcrCampaignTaskOutput` | campaign tasks and what they produced |
-| `IcrTargetPopulation` | target populations (denominators) |
-| `IcrPopulationByLocation` | census and WorldPop total population per admin unit, side by side |
-| `IcrCoverage`, `IcrCoverageStrata` | coverage results, and their breakdowns |
-| `IcrCoverageByLocation` | coverage results with their campaign, year, state and LGA |
-| `IcrIndicator`, `IcrIndicatorGroup`, `IcrIndicatorStrata`, `IcrIndicatorValue` | indicators and their values |
+| Name | Rows are | Defined by |
+| --- | --- | --- |
+| `LocationHierarchy` | every location, with its name, level and the names of its parents | [SQL](https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/views/location/LocationHierarchy.sql) |
+| `IcrLocationStatus` | endemicity classifications per location and disease | [view](https://icr.healthcampaigns.org/Binary-IcrLocationStatus.html) |
+| `IcrLocationStatusLocation` | the admin units that have an endemicity classification, with the `LocationHierarchy` columns | [SQL](https://github.com/recodelabs/icr/blob/main/tools/hapi/gcp/data/libraries/IcrLocationStatusLocation.sql) |
+| `IcrCampaignCalendar` | campaigns | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignCalendar.html) |
+| `IcrCampaignActivity` | the activities of each campaign | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignActivity.html) |
+| `IcrCampaignTask` | campaign tasks | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignTask.html) |
+| `IcrCampaignTaskOutput` | what the tasks produced, per activity | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignTaskOutput.html) |
+| `IcrTargetPopulation` | target populations (denominators) | [view](https://icr.healthcampaigns.org/Binary-IcrTargetPopulation.html) |
+| `IcrPopulationByLocation` | census and WorldPop total population per admin unit, side by side | [SQL](https://github.com/recodelabs/icr/blob/main/tools/hapi/gcp/data/libraries/IcrPopulationByLocation.sql) |
+| `IcrCoverage` | coverage results | [view](https://icr.healthcampaigns.org/Binary-IcrCoverage.html) |
+| `IcrCoverageStrata` | coverage results broken down by group | [view](https://icr.healthcampaigns.org/Binary-IcrCoverageStrata.html) |
+| `IcrCoverageByLocation` | coverage results with their campaign, year, state and LGA | [SQL](https://github.com/recodelabs/icr/blob/main/tools/hapi/gcp/data/libraries/IcrCoverageByLocation.sql) |
+| `IcrIndicator` | indicators | [view](https://icr.healthcampaigns.org/Binary-IcrIndicator.html) |
+| `IcrIndicatorGroup` | groups of indicators | [view](https://icr.healthcampaigns.org/Binary-IcrIndicatorGroup.html) |
+| `IcrIndicatorStrata` | indicator values broken down by group | [view](https://icr.healthcampaigns.org/Binary-IcrIndicatorStrata.html) |
+| `IcrIndicatorValue` | indicator values | [view](https://icr.healthcampaigns.org/Binary-IcrIndicatorValue.html) |
+
+"Defined by" links to what produces the table:
+
+- **view**: a SQL on FHIR ViewDefinition in the ICR Implementation Guide. It says which FHIR
+  resource the rows come from and the FHIRPath of each column. The table is every row of the
+  view.
+- **SQL**: a query over other tables. The link is its source. The three written for this API
+  are in the ICR repository, in
+  [`tools/hapi/gcp/data/libraries/`](https://github.com/recodelabs/icr/tree/main/tools/hapi/gcp/data/libraries),
+  each with a `.toml` file beside it that holds its address, description, inputs and filters.
+
+The server also gives you each table's query. This prints the SQL of one, as the server runs it:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" https://data.healthcampaigns.org/fhir/Library \
+  | jq -r '.entry[].resource | select(.url | endswith("/IcrCoverageByLocation"))
+           | .content[] | select(.contentType == "application/sql") | .data | @base64d'
+```
 
 ## 4. Query a table
 
