@@ -13,7 +13,7 @@ RUN apt-get update \
 
 FROM debian:12-slim
 
-ARG FHIR_PIPES_VERSION=0.7.0
+ARG FHIR_PIPES_VERSION=0.8.0
 # The duckdb version fhir-pipes' CI tests with.
 ARG DUCKDB_VERSION=1.5.6
 
