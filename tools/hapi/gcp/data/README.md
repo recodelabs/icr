@@ -18,11 +18,12 @@ https://data.healthcampaigns.org/status, /run, /runs     refreshes (token with f
 - **Queries.** There is one SQLQuery Library per ViewDefinition (`libraries/`), whose SQL is
   `SELECT * FROM v`, so `$sql-run` returns each view's whole table. Its canonical is
   `https://icr.healthcampaigns.org/data/Library/<View>`, for example `…/IcrCoverage`. Library
-  parameters are not supported yet, so callers filter what they get. Two more Libraries join
+  parameters are not supported yet, so callers filter what they get. Three more Libraries join
   tables: `IcrLocationStatusLocation`, the LocationHierarchy rows of the admin units that have an
   IcrLocationStatus row, so a caller who wants endemicity by place does not download every
   Location; and `IcrCoverageByLocation`, each IcrCoverage row with its campaign and its place's
-  names, to filter coverage by year, state or programme. `datapi.md` at the repo root is the
+  names, to filter coverage by year, state or programme; and `IcrPopulationByLocation`, the census
+  projection and WorldPop total population per admin unit, side by side. `datapi.md` at the repo root is the
   guide for callers.
 - **Tokens.** `[serve.auth]` checks tokens from Keycloak, realm `icr`. A token needs the
   SMART scope `system/Library.rs` to query and `fhir-pipes.admin` to run refreshes; both

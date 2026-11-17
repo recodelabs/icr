@@ -83,6 +83,7 @@ That address is what you pass to a query.
 | `IcrCampaignCalendar`, `IcrCampaignActivity` | campaigns and their activities |
 | `IcrCampaignTask`, `IcrCampaignTaskOutput` | campaign tasks and what they produced |
 | `IcrTargetPopulation` | target populations (denominators) |
+| `IcrPopulationByLocation` | census and WorldPop total population per admin unit, side by side |
 | `IcrCoverage`, `IcrCoverageStrata` | coverage results, and their breakdowns |
 | `IcrCoverageByLocation` | coverage results with their campaign, year, state and LGA |
 | `IcrIndicator`, `IcrIndicatorGroup`, `IcrIndicatorStrata`, `IcrIndicatorValue` | indicators and their values |
@@ -342,6 +343,79 @@ For states in one year, group by `state` and add `AND year = 2024`:
 | Jigawa | 20 | 0.715 |
 | Kano | 35 | 0.729 |
 | Yobe | 4 | 0.825 |
+
+## 7. Get census and WorldPop population by LGA
+
+`IcrPopulationByLocation` has two estimates of how many people live in each admin unit, side by
+side: the census projection the campaigns were planned against, and the WorldPop grid summed
+over the unit's boundary. It is the data behind https://dashboards.healthcampaigns.org/targeting.
+It needs no join.
+
+### Download the table
+
+```bash
+Q IcrPopulationByLocation > population.csv     # about 810 rows, 60 KB
+```
+
+One row is one admin unit in one estimate year. The table has every admin unit with at least
+one of the two estimates: for Nigeria in 2026, the country, 37 states and 774 LGAs. All of them
+have a WorldPop figure. The census projection is there for 5 states (Bauchi, Gombe, Jigawa,
+Kano, Yobe) and their 119 LGAs; elsewhere `census` and the difference columns are empty.
+
+### The columns
+
+| Column | Meaning | Example |
+| --- | --- | --- |
+| `country` | ISO country code | `NGA` |
+| `location_id`, `location_name` | the admin unit | `nga-kn-20004`, Ajingi |
+| `admin_level` | 0 country, 1 state, 2 LGA | `2` |
+| `state`, `lga` | the names of its state and LGA | Kano, Ajingi |
+| `year`, `estimate_date` | the year the estimates are for | `2026`, `2026-01-01` |
+| `census` | total population, census projection | `321507` |
+| `worldpop` | total population, WorldPop | `208063` |
+| `worldpop_calculated` | true where the WorldPop figure is the sum of the units below it, as for states | `false` |
+| `difference` | `worldpop` minus `census` | `-113444` |
+| `difference_share` | the difference as a share of the census figure | `-0.3529` |
+
+### Filter by level, state or year
+
+LGAs that have both estimates, largest disagreement first:
+
+```bash
+duckdb -c "
+COPY (
+  SELECT state, lga, year, census, worldpop, difference, difference_share
+  FROM 'population.csv'
+  WHERE admin_level = 2 AND census IS NOT NULL
+  ORDER BY abs(difference_share) DESC
+) TO 'census_vs_worldpop_by_lga.csv' (HEADER);"
+```
+
+Add `AND state = 'Kano'` for one state, or `AND year = 2026` for one year. For states, use
+`admin_level = 1`; for every LGA, with or without a census figure, leave out
+`AND census IS NOT NULL`.
+
+The first LGAs of Kano:
+
+| state | lga | year | census | worldpop | difference | difference_share |
+| --- | --- | --- | --- | --- | --- | --- |
+| Kano | Ajingi | 2026 | 321,507 | 208,063 | -113,444 | -0.3529 |
+| Kano | Albasu | 2026 | 349,473 | 296,282 | -53,191 | -0.1522 |
+| Kano | Bagwai | 2026 | 300,901 | 289,941 | -10,960 | -0.0364 |
+
+The five states:
+
+| state | census | worldpop | difference_share |
+| --- | --- | --- | --- |
+| Bauchi | 9,604,794 | 7,938,273 | -0.1735 |
+| Gombe | 4,504,775 | 3,653,283 | -0.1890 |
+| Jigawa | 8,587,319 | 6,742,395 | -0.2148 |
+| Kano | 17,510,245 | 15,845,286 | -0.0951 |
+| Yobe | 4,086,830 | 4,398,047 | 0.0762 |
+
+For other populations (at-risk, age groups, planning denominators, and places that are not
+admin units), use `IcrTargetPopulation`. It has one row per estimate, with `source`,
+`denominator_type`, `age_low`, `age_high` and `location_id`.
 
 ## Errors
 

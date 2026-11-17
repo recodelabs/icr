@@ -1,0 +1,14 @@
+url = "https://icr.healthcampaigns.org/data/Library/IcrPopulationByLocation"
+name = "IcrPopulationByLocation"
+status = "active"
+kind = "SQLQuery"
+title = "Census and WorldPop total population per admin unit"
+description = "One row per admin unit and estimate year: the census projection and the WorldPop total population (IcrTargetPopulation, denominator type total-population) side by side, the difference between them, and the unit's name, level, state and LGA (from LocationHierarchy). A side with no estimate is empty."
+
+[[depends_on]]
+label = "target_population"
+resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
+
+[[depends_on]]
+label = "hierarchy"
+resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"
