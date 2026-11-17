@@ -3,7 +3,7 @@ name = "IcrPopulationByLocation"
 status = "active"
 kind = "SQLQuery"
 title = "Census and WorldPop total population per admin unit"
-description = "One row per admin unit and estimate year: the census projection and the WorldPop total population (IcrTargetPopulation, denominator type total-population) side by side, the difference between them, and the unit's name, level, state and LGA (from LocationHierarchy). A side with no estimate is empty."
+description = "One row per admin unit and estimate year: the census projection and the WorldPop total population (IcrTargetPopulation, denominator type total-population) side by side, the difference between them, and the unit's name, level, state and LGA (from LocationHierarchy). A side with no estimate is empty. Each parameter filters the rows; one that is not given filters nothing."
 
 [[depends_on]]
 label = "target_population"
@@ -12,3 +12,33 @@ resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrTargetPopulation"
 [[depends_on]]
 label = "hierarchy"
 resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"
+
+[[parameter]]
+name = "year"
+type = "integer"
+documentation = "The year the estimates are for, for example 2026"
+
+[[parameter]]
+name = "country"
+type = "code"
+documentation = "ISO country code, for example NGA"
+
+[[parameter]]
+name = "admin_level"
+type = "integer"
+documentation = "0 country, 1 state, 2 LGA"
+
+[[parameter]]
+name = "state"
+type = "string"
+documentation = "The name of the state (admin level 1), for example Kano"
+
+[[parameter]]
+name = "lga"
+type = "string"
+documentation = "The name of the LGA (admin level 2), for example Ajingi"
+
+[[parameter]]
+name = "has_census"
+type = "boolean"
+documentation = "true for units with a census projection, false for those without"

@@ -17,8 +17,9 @@ https://data.healthcampaigns.org/status, /run, /runs     refreshes (token with f
   ViewDefinitions and writes their tables into the `warehouse` volume.
 - **Queries.** There is one SQLQuery Library per ViewDefinition (`libraries/`), whose SQL is
   `SELECT * FROM v`, so `$sql-run` returns each view's whole table. Its canonical is
-  `https://icr.healthcampaigns.org/data/Library/<View>`, for example `…/IcrCoverage`. Library
-  parameters are not supported yet, so callers filter what they get. Three more Libraries join
+  `https://icr.healthcampaigns.org/data/Library/<View>`, for example `…/IcrCoverage`. A Library
+  can declare parameters (`[[parameter]]` in its `.toml`, `:name` in its SQL) that a caller
+  gives as query parameters; one that is not given is NULL. Three more Libraries join
   tables: `IcrLocationStatusLocation`, the LocationHierarchy rows of the admin units that have an
   IcrLocationStatus row, so a caller who wants endemicity by place does not download every
   Location; and `IcrCoverageByLocation`, each IcrCoverage row with its campaign and its place's
@@ -37,7 +38,7 @@ https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/docs/serve.md
 
 | File | |
 |---|---|
-| `Dockerfile` | the fhir-pipes 0.7.0 release binary (checked against SHA256SUMS), the duckdb CLI, and tippecanoe, built from source: every refresh runs the tiles step, Nigeria's only |
+| `Dockerfile` | the fhir-pipes 0.8.0 release binary (checked against SHA256SUMS), the duckdb CLI, and tippecanoe, built from source: every refresh runs the tiles step, Nigeria's only |
 | `docker-compose.yml` | project `icr-data`: the serve container, on the main stack's network as `data-serve` |
 | `fhir-pipes.toml` | the warehouse, the schedule, `[serve.query]` and `[serve.auth]` |
 | `libraries/` | one SQLQuery per ViewDefinition, as `.sql` + `.toml` |
@@ -50,7 +51,7 @@ https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/docs/serve.md
 
 1. **DNS.** In Cloudflare, add an A record `data` → `35.187.76.240`, DNS only (grey cloud),
    so Caddy can get a Let's Encrypt certificate.
-2. **Bundle** on a machine with this repo and fhir-pipes 0.7.0:
+2. **Bundle** on a machine with this repo and fhir-pipes 0.8.0 or later (a Library's `[[parameter]]` entries need it):
    `tools/hapi/gcp/data/bundle.sh`
 3. **Ship** this folder, the site file and the main compose file (its Caddy now also has the
    gateway's hostname as an alias, so serve reaches the gateway without leaving the VM):

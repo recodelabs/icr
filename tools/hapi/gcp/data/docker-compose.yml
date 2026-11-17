@@ -9,7 +9,7 @@ name: icr-data
 services:
   serve:
     build: .
-    image: icr-data-serve:0.7.0
+    image: icr-data-serve:0.8.0
     restart: unless-stopped
     # serve runs each refresh as a child process group; init reaps what it leaves.
     init: true

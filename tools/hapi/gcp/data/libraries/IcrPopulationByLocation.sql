@@ -25,4 +25,10 @@ SELECT k.country,
 FROM keys AS k
 LEFT JOIN w ON w.location_id = k.location_id AND w.estimate_date = k.estimate_date
 LEFT JOIN c ON c.location_id = k.location_id AND c.estimate_date = k.estimate_date
+WHERE (:year IS NULL OR year(k.estimate_date) = :year)
+  AND (:country IS NULL OR k.country = :country)
+  AND (:admin_level IS NULL OR k.admin_level = :admin_level)
+  AND (:state IS NULL OR k.admin1_name = :state)
+  AND (:lga IS NULL OR k.admin2_name = :lga)
+  AND (:has_census IS NULL OR (c.census IS NOT NULL) = :has_census)
 ORDER BY k.country, year, k.admin_level, state, lga

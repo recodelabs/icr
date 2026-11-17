@@ -3,7 +3,7 @@ name = "IcrCoverageByLocation"
 status = "active"
 kind = "SQLQuery"
 title = "Coverage reports with their campaign and place"
-description = "Each IcrCoverage row with its campaign (title, type, protocol, round, year, from IcrCampaignCalendar) and its Location's name, admin level, state and LGA (from LocationHierarchy), so a caller can filter coverage by year, place or programme without joining tables."
+description = "Each IcrCoverage row with its campaign (title, type, protocol, round, year, from IcrCampaignCalendar) and its Location's name, admin level, state and LGA (from LocationHierarchy), so a caller can filter coverage by year, place or programme without joining tables. Each parameter filters the rows; one that is not given filters nothing."
 
 [[depends_on]]
 label = "coverage"
@@ -16,3 +16,43 @@ resource = "https://icr.healthcampaigns.org/ViewDefinition/IcrCampaignCalendar"
 [[depends_on]]
 label = "hierarchy"
 resource = "https://healthcampaigns.org/fhir/analytics/Library/LocationHierarchy"
+
+[[parameter]]
+name = "year"
+type = "integer"
+documentation = "The year the campaign started, for example 2024"
+
+[[parameter]]
+name = "country"
+type = "code"
+documentation = "ISO country code, for example NGA"
+
+[[parameter]]
+name = "state"
+type = "string"
+documentation = "The name of the state (admin level 1), for example Kano"
+
+[[parameter]]
+name = "lga"
+type = "string"
+documentation = "The name of the LGA (admin level 2), for example Ajingi"
+
+[[parameter]]
+name = "protocol"
+type = "string"
+documentation = "The campaign's protocol, which tells one programme from another, for example nga-demo-proto-lf-oncho-mda"
+
+[[parameter]]
+name = "campaign_type"
+type = "code"
+documentation = "mda, vaccination-sia, integrated, …"
+
+[[parameter]]
+name = "source"
+type = "code"
+documentation = "administrative, survey or lqas"
+
+[[parameter]]
+name = "lineage"
+type = "code"
+documentation = "reconciled (final) or realtime (while the round runs)"

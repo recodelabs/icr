@@ -30,4 +30,12 @@ SELECT v.report_id,
 FROM coverage AS v
 LEFT JOIN calendar AS c ON c.campaign_id = v.campaign_id
 LEFT JOIN hierarchy AS h ON h.id = v.location_id
+WHERE (:year IS NULL OR year(coalesce(c.period_start, v.period_start)) = :year)
+  AND (:country IS NULL OR v.country = :country)
+  AND (:state IS NULL OR h.admin1_name = :state)
+  AND (:lga IS NULL OR h.admin2_name = :lga)
+  AND (:protocol IS NULL OR regexp_replace(c.protocol, '.*/', '') = :protocol)
+  AND (:campaign_type IS NULL OR c.campaign_type = :campaign_type)
+  AND (:source IS NULL OR v.source = :source)
+  AND (:lineage IS NULL OR v.lineage = :lineage)
 ORDER BY year, state, lga, v.campaign_id, v.reported

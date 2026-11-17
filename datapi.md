@@ -2,7 +2,8 @@
 
 `https://data.healthcampaigns.org` serves the ICR's FHIR data as tables. Each table is the
 result of a SQL on FHIR ViewDefinition, refreshed from the FHIR server once a day (02:30 UTC).
-You ask for a table by name and get all of its rows as CSV or JSON.
+You ask for a table by name and get its rows as CSV or JSON. Some tables take filters, such as
+a year or a state, so the server returns only the rows you want.
 
 This guide shows how to get a token with your API key, how to query a table, and how to get
 NTD endemicity by location, the data behind https://dashboards.healthcampaigns.org/ntd.
@@ -73,20 +74,44 @@ curl -s -H "Authorization: Bearer $TOKEN" https://data.healthcampaigns.org/fhir/
 ```
 
 Each table has an address of the form `https://icr.healthcampaigns.org/data/Library/<Name>`.
-That address is what you pass to a query.
+That address is what you pass to a query, and what to cite when you refer to a table.
 
-| Name | Rows are |
-| --- | --- |
-| `LocationHierarchy` | every location, with its name, level and the names of its parents |
-| `IcrLocationStatus` | endemicity classifications per location and disease |
-| `IcrLocationStatusLocation` | the admin units that have an endemicity classification, with the `LocationHierarchy` columns |
-| `IcrCampaignCalendar`, `IcrCampaignActivity` | campaigns and their activities |
-| `IcrCampaignTask`, `IcrCampaignTaskOutput` | campaign tasks and what they produced |
-| `IcrTargetPopulation` | target populations (denominators) |
-| `IcrPopulationByLocation` | census and WorldPop total population per admin unit, side by side |
-| `IcrCoverage`, `IcrCoverageStrata` | coverage results, and their breakdowns |
-| `IcrCoverageByLocation` | coverage results with their campaign, year, state and LGA |
-| `IcrIndicator`, `IcrIndicatorGroup`, `IcrIndicatorStrata`, `IcrIndicatorValue` | indicators and their values |
+| Name | Rows are | Defined by |
+| --- | --- | --- |
+| `LocationHierarchy` | every location, with its name, level and the names of its parents | [SQL](https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/views/location/LocationHierarchy.sql) |
+| `IcrLocationStatus` | endemicity classifications per location and disease | [view](https://icr.healthcampaigns.org/Binary-IcrLocationStatus.html) |
+| `IcrLocationStatusLocation` | the admin units that have an endemicity classification, with the `LocationHierarchy` columns | [SQL](https://github.com/recodelabs/icr/blob/main/tools/hapi/gcp/data/libraries/IcrLocationStatusLocation.sql) |
+| `IcrCampaignCalendar` | campaigns | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignCalendar.html) |
+| `IcrCampaignActivity` | the activities of each campaign | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignActivity.html) |
+| `IcrCampaignTask` | campaign tasks | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignTask.html) |
+| `IcrCampaignTaskOutput` | what the tasks produced, per activity | [view](https://icr.healthcampaigns.org/Binary-IcrCampaignTaskOutput.html) |
+| `IcrTargetPopulation` | target populations (denominators) | [view](https://icr.healthcampaigns.org/Binary-IcrTargetPopulation.html) |
+| `IcrPopulationByLocation` | census and WorldPop total population per admin unit, side by side | [SQL](https://github.com/recodelabs/icr/blob/main/tools/hapi/gcp/data/libraries/IcrPopulationByLocation.sql) |
+| `IcrCoverage` | coverage results | [view](https://icr.healthcampaigns.org/Binary-IcrCoverage.html) |
+| `IcrCoverageStrata` | coverage results broken down by group | [view](https://icr.healthcampaigns.org/Binary-IcrCoverageStrata.html) |
+| `IcrCoverageByLocation` | coverage results with their campaign, year, state and LGA | [SQL](https://github.com/recodelabs/icr/blob/main/tools/hapi/gcp/data/libraries/IcrCoverageByLocation.sql) |
+| `IcrIndicator` | indicators | [view](https://icr.healthcampaigns.org/Binary-IcrIndicator.html) |
+| `IcrIndicatorGroup` | groups of indicators | [view](https://icr.healthcampaigns.org/Binary-IcrIndicatorGroup.html) |
+| `IcrIndicatorStrata` | indicator values broken down by group | [view](https://icr.healthcampaigns.org/Binary-IcrIndicatorStrata.html) |
+| `IcrIndicatorValue` | indicator values | [view](https://icr.healthcampaigns.org/Binary-IcrIndicatorValue.html) |
+
+"Defined by" links to what produces the table:
+
+- **view**: a SQL on FHIR ViewDefinition in the ICR Implementation Guide. It says which FHIR
+  resource the rows come from and the FHIRPath of each column. The table is every row of the
+  view.
+- **SQL**: a query over other tables. The link is its source. The three written for this API
+  are in the ICR repository, in
+  [`tools/hapi/gcp/data/libraries/`](https://github.com/recodelabs/icr/tree/main/tools/hapi/gcp/data/libraries),
+  each with a `.toml` file beside it that holds its address, description, inputs and filters.
+
+The server also gives you each table's query. This prints the SQL of one, as the server runs it:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" https://data.healthcampaigns.org/fhir/Library \
+  | jq -r '.entry[].resource | select(.url | endswith("/IcrCoverageByLocation"))
+           | .content[] | select(.contentType == "application/sql") | .data | @base64d'
+```
 
 ## 4. Query a table
 
@@ -100,7 +125,7 @@ curl -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir
 
 Keep the single quotes around the URL, or the shell will try to expand `$sql`.
 
-A query returns the whole table. The API takes three parameters and no others:
+Every query takes these parameters:
 
 | Parameter | |
 | --- | --- |
@@ -108,16 +133,59 @@ A query returns the whole table. The API takes three parameters and no others:
 | `_format` | `csv`, `json` or `ndjson` (the default) |
 | `_limit` | the most rows to return, for example `_limit=5` to look at a table |
 
-There are no filter parameters yet. A request with one, such as `year=2024`, is refused with
-`400`:
+### Filters
+
+A table can also take filters of its own. Each is one more parameter, named after what it
+filters:
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir/$sql-run' \
+  --data-urlencode subjectCanonical=https://icr.healthcampaigns.org/data/Library/IcrCoverageByLocation \
+  --data-urlencode year=2024 \
+  --data-urlencode state=Kano \
+  --data-urlencode _format=csv > coverage_kano_2024.csv
+```
+
+The rules:
+
+- **A filter you leave out filters nothing.** With no filters you get the whole table.
+- **Filters combine with AND.** `year=2024` and `state=Kano` gives the rows that match both.
+- **A filter takes one value** and matches it exactly, including capital letters: `state=Kano`,
+  not `state=kano`. To get two states, make two requests, or download more and filter it
+  yourself.
+- **Each filter has a type.** `year=abc` is refused with `400`, as is a filter the table does
+  not have. The message lists the filters the table takes:
 
 ```json
 {"resourceType":"OperationOutcome","issue":[{"severity":"error","code":"invalid",
- "diagnostics":"unsupported parameter(s): year; this server takes subjectCanonical, _format and _limit"}]}
+ "diagnostics":"unsupported parameter(s): disease; this server takes subjectCanonical, _format and _limit, and this Library takes year, country, state, lga, protocol, campaign_type, source, lineage"}]}
 ```
 
-So you download a table and filter its rows yourself, as [section 6](#6-get-mda-coverage-and-filter-it-by-year-state-or-programme)
-shows. The coverage table, for example, is 1.3 MB.
+To see which filters a table takes, with a description of each, read its `parameter` list:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" https://data.healthcampaigns.org/fhir/Library \
+  | jq -r '.entry[].resource | select(.parameter) | .url, (.parameter[] | "  \(.name) (\(.type)): \(.documentation)")'
+```
+
+The rest of this guide uses a small function, `Q`, for the same request: the table's name,
+then any filters, written `name=value`.
+
+```bash
+Q() { local table=$1; shift
+      local args=(); for f in "$@"; do args+=(--data-urlencode "$f"); done
+      curl -sS -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir/$sql-run' \
+        --data-urlencode "subjectCanonical=https://icr.healthcampaigns.org/data/Library/$table" \
+        --data-urlencode _format=csv "${args[@]}"; }
+```
+
+```bash
+Q IcrCoverageByLocation year=2024 state=Kano > coverage_kano_2024.csv
+```
+
+Two tables take filters today: `IcrCoverageByLocation` ([section 6](#6-get-mda-coverage-by-year-state-or-programme))
+and `IcrPopulationByLocation` ([section 7](#7-get-census-and-worldpop-population-by-lga)).
+The others return every row.
 
 ## 5. Get endemicity by location
 
@@ -128,10 +196,6 @@ unit that has an endemicity classification, with its name and the names of its p
 ### Download the two tables
 
 ```bash
-Q() { curl -sS -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir/$sql-run' \
-        --data-urlencode "subjectCanonical=https://icr.healthcampaigns.org/data/Library/$1" \
-        --data-urlencode _format=csv; }
-
 Q IcrLocationStatus > status.csv                # about 670 rows
 Q IcrLocationStatusLocation > locations.csv     # about 120 rows
 ```
@@ -229,20 +293,54 @@ Other tables that carry a `location_id` join to `LocationHierarchy` the same way
 `LocationHierarchy` has every location (admin units, health facilities, settlements and other
 places): about 350,000 rows and 62 MB, which takes about 10 seconds to download.
 
-## 6. Get MDA coverage, and filter it by year, state or programme
+## 6. Get MDA coverage by year, state or programme
 
 `IcrCoverageByLocation` has one row per coverage report, with the campaign it belongs to and
 the place it covers. It is the data behind https://dashboards.healthcampaigns.org/coverage. It
-needs no join.
+needs no join, and it takes filters.
 
-### Download the table
+### The filters
+
+| Filter | Type | Keeps the rows where | Example |
+| --- | --- | --- | --- |
+| `year` | integer | the campaign started in that year | `year=2024` |
+| `country` | code | the ISO country code is that | `country=NGA` |
+| `state` | string | the state has that name | `state=Kano` |
+| `lga` | string | the LGA has that name | `lga=Ajingi` |
+| `protocol` | string | the campaign follows that protocol; this is what tells one programme or disease from another | `protocol=nga-demo-proto-lf-oncho-mda` |
+| `campaign_type` | code | the campaign is of that type | `campaign_type=mda` |
+| `source` | code | the result is `administrative` (reported counts), `survey` or `lqas` | `source=administrative` |
+| `lineage` | code | the result is `reconciled` (final) or `realtime` (while the round runs) | `lineage=reconciled` |
+
+### Ask for what you want
+
+(`Q` is the function from section 4.)
+
+All LF MDA coverage as reported by the programme (administrative coverage, final figures):
+
+```bash
+Q IcrCoverageByLocation protocol=nga-demo-proto-lf-oncho-mda \
+  source=administrative lineage=reconciled > lf_mda_coverage.csv
+```
+
+This gives 341 rows, one per LGA and round, from 2022 to 2026. Leave out `source` and `lineage`
+to get the survey results too (59 more rows).
+
+One year, one state, or both:
+
+```bash
+Q IcrCoverageByLocation protocol=nga-demo-proto-lf-oncho-mda \
+  source=administrative lineage=reconciled year=2024 > lf_2024.csv              # 74 rows
+
+Q IcrCoverageByLocation protocol=nga-demo-proto-lf-oncho-mda \
+  source=administrative lineage=reconciled year=2024 state=Kano > lf_kano_2024.csv   # 35 rows
+```
+
+Everything, for every programme:
 
 ```bash
 Q IcrCoverageByLocation > coverage.csv     # about 2,900 rows, 1.3 MB
 ```
-
-(`Q` is the function from section 5.) This is every coverage report for every programme. The
-filters below pick out what you want.
 
 ### The columns
 
@@ -277,42 +375,26 @@ filters below pick out what you want.
 | `nga-demo-proto-sch-sth-school-mda` | schistosomiasis and soil-transmitted helminths, school MDA |
 | `nga-demo-proto-trachoma-mda` | trachoma MDA |
 
-To see every protocol in the table: `duckdb -c "SELECT DISTINCT campaign_type, protocol FROM 'coverage.csv'"`.
+To see every protocol, download the table with no filters and run
+`duckdb -c "SELECT DISTINCT campaign_type, protocol FROM 'coverage.csv'"`.
 
-### Filter by programme
+### What the filters cannot do
 
-All LF MDA coverage, as reported by the programme (administrative coverage, final figures):
+A filter matches one exact value. For anything else, such as two states, a range of years or a
+name that contains some text, ask for a wider set of rows and narrow it yourself:
 
 ```bash
+Q IcrCoverageByLocation protocol=nga-demo-proto-lf-oncho-mda > lf.csv
 duckdb -c "
 COPY (
-  SELECT year, state, lga, campaign_title, period_start, period_end,
-         numerator AS treated, denominator AS at_risk, score AS coverage, reporter
-  FROM 'coverage.csv'
-  WHERE protocol = 'nga-demo-proto-lf-oncho-mda'
-    AND source = 'administrative' AND lineage = 'reconciled'
-  ORDER BY year, state, lga
-) TO 'lf_mda_coverage.csv' (HEADER);"
+  SELECT * FROM 'lf.csv'
+  WHERE state IN ('Kano', 'Jigawa') AND year BETWEEN 2023 AND 2025
+) TO 'lf_kano_jigawa_2023_2025.csv' (HEADER);"
 ```
-
-This gives 341 rows, one per LGA and round, from 2022 to 2026. Leave out the `source` and
-`lineage` line to keep the survey results too (59 more rows).
-
-### Filter by year, by state, or both
-
-Add conditions to the `WHERE` line:
-
-```sql
-  WHERE protocol = 'nga-demo-proto-lf-oncho-mda'
-    AND source = 'administrative' AND lineage = 'reconciled'
-    AND year = 2024              -- one year
-    AND state = 'Kano'           -- one state
-```
-
-Other forms: `year BETWEEN 2023 AND 2025`, `state IN ('Kano', 'Jigawa')`.
 
 ### Totals by year or by state
 
+The API returns rows; it does not add them up. For a total, download the rows and sum them.
 Coverage for a group of LGAs is people treated over people at risk, summed. Do not average the
 LGAs' `score` values.
 
@@ -320,9 +402,7 @@ LGAs' `score` values.
 duckdb -c "
 SELECT year, count(*) AS lgas, sum(numerator) AS treated, sum(denominator) AS at_risk,
        round(sum(numerator) / sum(denominator), 3) AS coverage
-FROM 'coverage.csv'
-WHERE protocol = 'nga-demo-proto-lf-oncho-mda'
-  AND source = 'administrative' AND lineage = 'reconciled'
+FROM 'lf_mda_coverage.csv'
 GROUP BY year ORDER BY year;"
 ```
 
@@ -334,7 +414,7 @@ GROUP BY year ORDER BY year;"
 | 2025 | 48 | 10,342,663 | 13,893,008 | 0.744 |
 | 2026 | 34 | 7,079,699 | 9,484,594 | 0.746 |
 
-For states in one year, group by `state` and add `AND year = 2024`:
+For states in one year, use `lf_2024.csv` and group by `state`:
 
 | state | lgas | coverage |
 | --- | --- | --- |
@@ -351,10 +431,26 @@ side: the census projection the campaigns were planned against, and the WorldPop
 over the unit's boundary. It is the data behind https://dashboards.healthcampaigns.org/targeting.
 It needs no join.
 
-### Download the table
+### The filters
+
+| Filter | Type | Keeps the rows where | Example |
+| --- | --- | --- | --- |
+| `admin_level` | integer | the unit is at that level: 0 country, 1 state, 2 LGA | `admin_level=2` |
+| `state` | string | the state has that name | `state=Kano` |
+| `lga` | string | the LGA has that name | `lga=Ajingi` |
+| `year` | integer | the estimates are for that year | `year=2026` |
+| `country` | code | the ISO country code is that | `country=NGA` |
+| `has_census` | boolean | `true`: the unit has a census projection; `false`: it has none | `has_census=true` |
+
+### Ask for what you want
+
+(`Q` is the function from section 4.)
 
 ```bash
-Q IcrPopulationByLocation > population.csv     # about 810 rows, 60 KB
+Q IcrPopulationByLocation admin_level=2 has_census=true > census_vs_worldpop_by_lga.csv   # 119 LGAs
+Q IcrPopulationByLocation admin_level=2 state=Kano > kano_lgas.csv                        # 44 LGAs
+Q IcrPopulationByLocation admin_level=1 has_census=true > states.csv                      # 5 states
+Q IcrPopulationByLocation > population.csv                                                # everything: about 810 rows
 ```
 
 One row is one admin unit in one estimate year. The table has every admin unit with at least
@@ -377,23 +473,15 @@ Kano, Yobe) and their 119 LGAs; elsewhere `census` and the difference columns ar
 | `difference` | `worldpop` minus `census` | `-113444` |
 | `difference_share` | the difference as a share of the census figure | `-0.3529` |
 
-### Filter by level, state or year
+### Sort by the size of the disagreement
 
-LGAs that have both estimates, largest disagreement first:
+The rows come back in order of state and LGA. To put the largest disagreements first, sort the
+file you downloaded:
 
 ```bash
-duckdb -c "
-COPY (
-  SELECT state, lga, year, census, worldpop, difference, difference_share
-  FROM 'population.csv'
-  WHERE admin_level = 2 AND census IS NOT NULL
-  ORDER BY abs(difference_share) DESC
-) TO 'census_vs_worldpop_by_lga.csv' (HEADER);"
+duckdb -c "SELECT state, lga, census, worldpop, difference_share
+           FROM 'census_vs_worldpop_by_lga.csv' ORDER BY abs(difference_share) DESC LIMIT 10;"
 ```
-
-Add `AND state = 'Kano'` for one state, or `AND year = 2026` for one year. For states, use
-`admin_level = 1`; for every LGA, with or without a census figure, leave out
-`AND census IS NOT NULL`.
 
 The first LGAs of Kano:
 
@@ -425,7 +513,7 @@ admin units), use `IcrTargetPopulation`. It has one row per estimate, with `sour
 | `invalid_scope` from the token URL | the key has not been granted access to the data API |
 | `unauthorized_client` from the token URL | wrong client id or secret |
 | `404` | unknown table address |
-| `400` | unsupported `_format` |
+| `400` | unsupported `_format`; a filter the table does not have; a filter value of the wrong type (`year=abc`); a filter given twice |
 | `503` | the first refresh has not finished; try again later |
 
 ## For the ICR team: give someone access
