@@ -84,6 +84,7 @@ That address is what you pass to a query.
 | `IcrCampaignTask`, `IcrCampaignTaskOutput` | campaign tasks and what they produced |
 | `IcrTargetPopulation` | target populations (denominators) |
 | `IcrCoverage`, `IcrCoverageStrata` | coverage results, and their breakdowns |
+| `IcrCoverageByLocation` | coverage results with their campaign, year, state and LGA |
 | `IcrIndicator`, `IcrIndicatorGroup`, `IcrIndicatorStrata`, `IcrIndicatorValue` | indicators and their values |
 
 ## 4. Query a table
@@ -98,8 +99,24 @@ curl -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir
 
 Keep the single quotes around the URL, or the shell will try to expand `$sql`.
 
-A query returns the whole table. Filters are not supported yet, so filter the rows after you
-download them.
+A query returns the whole table. The API takes three parameters and no others:
+
+| Parameter | |
+| --- | --- |
+| `subjectCanonical` | required: the table's address |
+| `_format` | `csv`, `json` or `ndjson` (the default) |
+| `_limit` | the most rows to return, for example `_limit=5` to look at a table |
+
+There are no filter parameters yet. A request with one, such as `year=2024`, is refused with
+`400`:
+
+```json
+{"resourceType":"OperationOutcome","issue":[{"severity":"error","code":"invalid",
+ "diagnostics":"unsupported parameter(s): year; this server takes subjectCanonical, _format and _limit"}]}
+```
+
+So you download a table and filter its rows yourself, as [section 6](#6-get-mda-coverage-and-filter-it-by-year-state-or-programme)
+shows. The coverage table, for example, is 1.3 MB.
 
 ## 5. Get endemicity by location
 
@@ -210,6 +227,121 @@ Changes you can make to the query:
 Other tables that carry a `location_id` join to `LocationHierarchy` the same way.
 `LocationHierarchy` has every location (admin units, health facilities, settlements and other
 places): about 350,000 rows and 62 MB, which takes about 10 seconds to download.
+
+## 6. Get MDA coverage, and filter it by year, state or programme
+
+`IcrCoverageByLocation` has one row per coverage report, with the campaign it belongs to and
+the place it covers. It is the data behind https://dashboards.healthcampaigns.org/coverage. It
+needs no join.
+
+### Download the table
+
+```bash
+Q IcrCoverageByLocation > coverage.csv     # about 2,900 rows, 1.3 MB
+```
+
+(`Q` is the function from section 5.) This is every coverage report for every programme. The
+filters below pick out what you want.
+
+### The columns
+
+| Column | Meaning | Example |
+| --- | --- | --- |
+| `report_id` | id of the MeasureReport | `nga-demo-cov-admin-lf-kn-2024-kn-20004` |
+| `campaign_id`, `campaign_title` | the campaign | LF/onchocerciasis MDA (ivermectin + albendazole), 2024 round — Ajingi LGA, Kano |
+| `campaign_type` | `mda`, `vaccination-sia`, `integrated`, … | `mda` |
+| `protocol` | the campaign's protocol; this is what tells one programme or disease from another | `nga-demo-proto-lf-oncho-mda` |
+| `round`, `campaign_status` | the campaign's round number and status | `1`, `completed` |
+| `year` | the year the campaign started | `2024` |
+| `country` | ISO country code | `NGA` |
+| `location_id`, `location_name`, `admin_level` | the place the report covers | `nga-kn-20004`, Ajingi, `2` |
+| `state`, `lga` | the names of its state and LGA | Kano, Ajingi |
+| `measure` | what was measured | `icr-mda-treatment-coverage` |
+| `source` | `administrative` (reported counts), `survey` or `lqas` | `administrative` |
+| `lineage` | `reconciled` (final) or `realtime` (while the round runs) | `reconciled` |
+| `denominator_type` | which population the denominator is | `at-risk` |
+| `period_start`, `period_end`, `reported` | the period covered, and when it was reported | |
+| `numerator` | people reached (treated) | `181036` |
+| `denominator` | people targeted; for a survey, the sample size | `246227` |
+| `score` | coverage, from 0 to 1 | `0.735` |
+| `ci_low`, `ci_high`, `sample_design` | for surveys: the confidence interval and the design | |
+| `reporter` | who reported it | |
+
+### The protocols for MDA programmes
+
+| `protocol` | Programme |
+| --- | --- |
+| `nga-demo-proto-lf-oncho-mda` | lymphatic filariasis and onchocerciasis MDA (ivermectin + albendazole) |
+| `nga-demo-proto-oncho-cdti` | onchocerciasis, community-directed treatment with ivermectin |
+| `nga-demo-proto-sch-sth-school-mda` | schistosomiasis and soil-transmitted helminths, school MDA |
+| `nga-demo-proto-trachoma-mda` | trachoma MDA |
+
+To see every protocol in the table: `duckdb -c "SELECT DISTINCT campaign_type, protocol FROM 'coverage.csv'"`.
+
+### Filter by programme
+
+All LF MDA coverage, as reported by the programme (administrative coverage, final figures):
+
+```bash
+duckdb -c "
+COPY (
+  SELECT year, state, lga, campaign_title, period_start, period_end,
+         numerator AS treated, denominator AS at_risk, score AS coverage, reporter
+  FROM 'coverage.csv'
+  WHERE protocol = 'nga-demo-proto-lf-oncho-mda'
+    AND source = 'administrative' AND lineage = 'reconciled'
+  ORDER BY year, state, lga
+) TO 'lf_mda_coverage.csv' (HEADER);"
+```
+
+This gives 341 rows, one per LGA and round, from 2022 to 2026. Leave out the `source` and
+`lineage` line to keep the survey results too (59 more rows).
+
+### Filter by year, by state, or both
+
+Add conditions to the `WHERE` line:
+
+```sql
+  WHERE protocol = 'nga-demo-proto-lf-oncho-mda'
+    AND source = 'administrative' AND lineage = 'reconciled'
+    AND year = 2024              -- one year
+    AND state = 'Kano'           -- one state
+```
+
+Other forms: `year BETWEEN 2023 AND 2025`, `state IN ('Kano', 'Jigawa')`.
+
+### Totals by year or by state
+
+Coverage for a group of LGAs is people treated over people at risk, summed. Do not average the
+LGAs' `score` values.
+
+```bash
+duckdb -c "
+SELECT year, count(*) AS lgas, sum(numerator) AS treated, sum(denominator) AS at_risk,
+       round(sum(numerator) / sum(denominator), 3) AS coverage
+FROM 'coverage.csv'
+WHERE protocol = 'nga-demo-proto-lf-oncho-mda'
+  AND source = 'administrative' AND lineage = 'reconciled'
+GROUP BY year ORDER BY year;"
+```
+
+| year | lgas | treated | at_risk | coverage |
+| --- | --- | --- | --- | --- |
+| 2022 | 94 | 17,562,740 | 24,545,927 | 0.716 |
+| 2023 | 91 | 17,222,994 | 24,403,015 | 0.706 |
+| 2024 | 74 | 15,005,327 | 20,523,872 | 0.731 |
+| 2025 | 48 | 10,342,663 | 13,893,008 | 0.744 |
+| 2026 | 34 | 7,079,699 | 9,484,594 | 0.746 |
+
+For states in one year, group by `state` and add `AND year = 2024`:
+
+| state | lgas | coverage |
+| --- | --- | --- |
+| Bauchi | 7 | 0.714 |
+| Gombe | 8 | 0.758 |
+| Jigawa | 20 | 0.715 |
+| Kano | 35 | 0.729 |
+| Yobe | 4 | 0.825 |
 
 ## Errors
 
