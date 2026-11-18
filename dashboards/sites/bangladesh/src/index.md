@@ -45,11 +45,11 @@ const w = (n) => Math.max(320, (width - 24) / n - 24);
 
 ## Totals for the whole campaign
 
-<div class="muted" style="margin:-8px 0 12px">${CAMPAIGN.start} to ${CAMPAIGN.end}, children 9 months to under 15 years, school and community.</div>
+<div class="muted" style="margin:-8px 0 12px">${CAMPAIGN.start} to ${CAMPAIGN.end}.</div>
 
 <div class="grid grid-cols-3" style="gap: 16px">
-${item("Total Target - MR Campaign 2026", kpi("Total Target (School + Community)", countOf(camp(DX.target))))}
-${item("Total Vaccinated - MR Campaign 2026", kpi("Total Vaccinated (School + Community)", countOf(camp(DX.vaccinated))))}
+${item("Total Target - MR Campaign 2026", kpi("Total Target", countOf(camp(DX.target))))}
+${item("Total Vaccinated - MR Campaign 2026", kpi("Total Vaccinated", countOf(camp(DX.vaccinated))))}
 ${item("Total Coverage - MR Campaign 2026", kpi("MR vaccination coverage (%)", camp(DX.coverage)?.value, 1))}
 </div>
 
@@ -57,8 +57,8 @@ ${item("Total Coverage - MR Campaign 2026", kpi("MR vaccination coverage (%)", c
 
 <div style="margin-top: 8px">
 ${item("Targets, Vaccinated and Coverage of MR campaign 2026 - Bangladesh (By dates) (Line Graph)", lines(days.flatMap((d) => [
-    {category: d.label, series: "Total Target (School + Community)", value: countOf(at(DX.target, COUNTRY_ID, d.period))},
-    {category: d.label, series: "Total Vaccinated (School + Community)", value: countOf(at(DX.vaccinated, COUNTRY_ID, d.period))}
+    {category: d.label, series: "Total Target", value: countOf(at(DX.target, COUNTRY_ID, d.period))},
+    {category: d.label, series: "Total Vaccinated", value: countOf(at(DX.vaccinated, COUNTRY_ID, d.period))}
   ]).filter((d) => d.value != null), {width: width - 40, height: 420, format: (c) => c.slice(5)}),
   {note: "DHIS2 draws coverage on the same axis, where it shows as a flat line near zero; daily coverage is in the table below."})}
 </div>
@@ -87,16 +87,16 @@ const campaignMapView = coverageMap(boundaries, campaignRows, {level: mapLevel, 
 ${item(`MR campaign coverage, ${CAMPAIGN.start} to ${CAMPAIGN.end}`, html`${mapLevelInput}${campaignMapView}`,
   {note: "Vaccinated ÷ target for the whole campaign. Boundaries: the DGHS GIS dashboard, and the city corporations' ward shapefiles."})}
 ${item("Targets Vs. Vaccinated of MR campaign 2026 - (By Division)", columns(divisions.flatMap((p) => [
-    {category: short(p.location_name), series: "Total Target (School + Community)", value: countOf(camp(DX.target, p.location_id))},
-    {category: short(p.location_name), series: "Total Vaccinated (School + Community)", value: countOf(camp(DX.vaccinated, p.location_id))}
+    {category: short(p.location_name), series: "Total Target", value: countOf(camp(DX.target, p.location_id))},
+    {category: short(p.location_name), series: "Total Vaccinated", value: countOf(camp(DX.vaccinated, p.location_id))}
   ]), {width: w(2), height: 520}),
   {note: "DHIS2's title says 2025; its periods are the 2026 campaign days."})}
 </div>
 
 <div style="margin-top: 16px">
 ${item("Targets Vs. Vaccinated of MR campaign 2026 - (By District)", columns(districts.flatMap((p) => [
-    {category: short(p.location_name), series: "Total Target (School + Community)", value: countOf(camp(DX.target, p.location_id))},
-    {category: short(p.location_name), series: "Total Vaccinated (School + Community)", value: countOf(camp(DX.vaccinated, p.location_id))}
+    {category: short(p.location_name), series: "Total Target", value: countOf(camp(DX.target, p.location_id))},
+    {category: short(p.location_name), series: "Total Vaccinated", value: countOf(camp(DX.vaccinated, p.location_id))}
   ]), {width: width - 40, height: 380, rotate: -60}))}
 </div>
 
@@ -123,7 +123,7 @@ ${item("Bari_Syl_Total_Target_Vaccination_MR_Cam_26", pivot(bsPlaces.flatMap((p)
 ${item("B_S_MR Campaign_Tar_Vac_Coverage_2026", prev ? pivot(bsPlaces.flatMap((p) => dayRow(p, prev.period, "Yesterday")),
   {row: (d) => d.row, col: (d) => d.col, rowLabel: "Division · district", digits: 1}) : html`<p class="muted">No campaign day before ${day.label}.</p>`)}
 ${item("Bari_Total_Vaccination_MR_Cam_26_Bar", prev ? columns([...divisions.filter((p) => p.division === "Barishal"), ...districts.filter((p) => p.division === "Barishal")].map((p) => (
-    {category: short(p.location_name), series: "Total Vaccinated (School + Community)", value: countOf(at(DX.vaccinated, p.location_id, prev.period))})),
+    {category: short(p.location_name), series: "Total Vaccinated", value: countOf(at(DX.vaccinated, p.location_id, prev.period))})),
   {width: w(2), height: 300, horizontal: true}) : "", {note: prev ? `Yesterday = ${prev.label}.` : ""})}
 </div>
 </div>

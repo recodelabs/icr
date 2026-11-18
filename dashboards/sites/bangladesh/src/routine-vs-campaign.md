@@ -32,7 +32,7 @@ const levelInput = Inputs.select([2, 3], {label: "Compare by", format: (l) => l 
 const level = Generators.input(levelInput);
 ```
 
-<div class="d2-filter">${baselineInput}${doseInput}${levelInput}<span class="muted">Campaign: MR coverage for the whole campaign, ${CAMPAIGN.start} to ${CAMPAIGN.end}, children 9 months to under 15 years. Routine: ${dose === "mr1" ? "MR-1" : "MR-2"} doses ÷ target, children 0–11 months.</span></div>
+<div class="d2-filter">${baselineInput}${doseInput}${levelInput}<span class="muted">Campaign: MR coverage for the whole campaign, ${CAMPAIGN.start} to ${CAMPAIGN.end}. Routine: ${dose === "mr1" ? "MR-1" : "MR-2"} doses ÷ target, children 0–11 months.</span></div>
 
 ```js
 // Routine coverage over the chosen months, from summed doses and targets (months whose year
@@ -137,7 +137,7 @@ ${item(`All ${unit}`, html`${pivot(both.slice().sort((a, b) => a.name.localeComp
 
 <div class="d2-footer muted">
 
-**The two figures measure different things.** Routine coverage is the share of children aged 0–11 months who got ${dose === "mr1" ? "MR-1" : "MR-2"} through the EPI e-Tracker, from the DGHS GIS dashboard. Campaign coverage is the share of children aged 9 months to under 15 years vaccinated in the 2026 MR campaign, from the EPI campaign DHIS2. A place can reach every child in the campaign and still have weak routine coverage: that is what a campaign is for. Where the campaign is high and routine is low, the campaign filled a gap; where both are low, children were missed twice.
+**The two figures measure different things.** Routine coverage is the share of children aged 0–11 months who got ${dose === "mr1" ? "MR-1" : "MR-2"} through the EPI e-Tracker, from the DGHS GIS dashboard. Campaign coverage is the share of targeted children vaccinated in the 2026 MR campaign, from the EPI campaign DHIS2. A place can reach every child in the campaign and still have weak routine coverage: that is what a campaign is for. Where the campaign is high and routine is low, the campaign filled a gap; where both are low, children were missed twice.
 
 **Routine data quality.** Routine figures depend on e-Tracker reporting, which dropped in many upazilas from mid-2025, so a low routine figure can be missing reports. Places whose dashboard target is implausible for a year are left out of that year's months. Chattogram, Rajbari and Shariatpur districts have no routine figures (not linked to the e-Tracker in the dashboard).
 
