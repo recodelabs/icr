@@ -29,6 +29,25 @@ services:
       shared:
         aliases: ["data-serve"]
 
+  # The MCP server at https://data.healthcampaigns.org/mcp (mcp/): serve's saved queries as
+  # tools for Claude. It runs no SQL itself; it calls serve with the caller's own token.
+  mcp:
+    build: ./mcp
+    image: icr-data-mcp:0.1.0
+    restart: unless-stopped
+    environment:
+      MCP_URL: https://${DATA_HOST:-data.healthcampaigns.org}/mcp
+      ISSUER: https://${AUTH_HOST:-auth.healthcampaigns.org}/realms/icr
+      # The realm's signing keys, read from Keycloak on the main stack's network.
+      JWKS_URL: http://keycloak:8080/realms/icr/protocol/openid-connect/certs
+      SERVE_URL: http://data-serve:8090/fhir
+    mem_limit: 256m
+    read_only: true
+    tmpfs: ["/tmp"]
+    networks:
+      shared:
+        aliases: ["data-mcp"]
+
 networks:
   shared:
     external: true
