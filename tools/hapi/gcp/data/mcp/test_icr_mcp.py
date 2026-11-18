@@ -242,7 +242,7 @@ async def test_run_query_sends_the_filters(signed_in):
     q = dict(run.url.params)
     assert q == {
         "subjectCanonical": "https://icr.healthcampaigns.org/data/Library/IcrCoverageByLocation",
-        "_format": "ndjson", "year": "2024", "state": "Kano", "has_census": "true",
+        "_format": "ndjson", "_limit": "201", "year": "2024", "state": "Kano", "has_census": "true",
     }
     assert run.headers["authorization"] == "Bearer tok-abc"
     assert out["columns"] == ["state", "year", "n"]
@@ -473,6 +473,7 @@ async def test_aggregate_where_takes_a_list_and_sends_parameters_to_serve(signed
     assert out["rows"] == [["administrative", 1], ["survey", 1]]
     run = [r for r in serve.requests if r.url.path.endswith("$sql-run")][0]
     assert run.url.params["year"] == "2024"
+    assert "_limit" not in run.url.params  # a total reads every row
 
 
 @pytest.mark.anyio

@@ -299,9 +299,14 @@ def make_server(
             raise ToolError(f"{lib.get('name')} does not take {', '.join(unknown)}; it takes {takes}")
         return given
 
-    async def stream_rows(lib: dict[str, Any], given: dict[str, Any], token: AccessToken) -> AsyncIterator[dict[str, Any]]:
-        """The rows of one Library from serve's $sql-run, one at a time."""
+    async def stream_rows(
+        lib: dict[str, Any], given: dict[str, Any], token: AccessToken, at_most: int | None = None
+    ) -> AsyncIterator[dict[str, Any]]:
+        """The rows of one Library from serve's $sql-run, one at a time. `at_most` is passed to
+        serve as `_limit`, so it stops early instead of writing every row."""
         query: dict[str, str] = {"subjectCanonical": lib["url"], "_format": "ndjson"}
+        if at_most is not None:
+            query["_limit"] = str(at_most)
         for k, v in given.items():
             query[k] = ("true" if v else "false") if isinstance(v, bool) else str(v)
         async with client_factory() as client:
@@ -402,8 +407,8 @@ def make_server(
         started = time.monotonic()
         rows: list[dict[str, Any]] = []
         truncated = False
-        # aclosing: stopping at the limit closes the connection to serve at once.
-        async with aclosing(stream_rows(lib, given, token)) as stream:
+        # One row more than the limit, to know whether the result was cut.
+        async with aclosing(stream_rows(lib, given, token, at_most=limit + 1)) as stream:
             async for row in stream:
                 if len(rows) == limit:
                     truncated = True

@@ -158,7 +158,7 @@ The rules:
 
 ```json
 {"resourceType":"OperationOutcome","issue":[{"severity":"error","code":"invalid",
- "diagnostics":"unsupported parameter(s): disease; this server takes subjectCanonical, _format and _limit, and this Library takes year, country, state, lga, protocol, campaign_type, source, lineage"}]}
+ "diagnostics":"unsupported parameter(s): disease; this server takes subjectCanonical, _format and _limit, and this Library takes year, country, state, lga, admin_level, protocol, campaign_type, source, lineage"}]}
 ```
 
 To see which filters a table takes, with a description of each, read its `parameter` list:
@@ -307,6 +307,7 @@ needs no join, and it takes filters.
 | `country` | code | the ISO country code is that | `country=NGA` |
 | `state` | string | the state has that name | `state=Kano` |
 | `lga` | string | the LGA has that name | `lga=Ajingi` |
+| `admin_level` | integer | the report is about a place at that level: 0 country, 1 state, 2 LGA | `admin_level=2` |
 | `protocol` | string | the campaign follows that protocol; this is what tells one programme or disease from another | `protocol=nga-demo-proto-lf-oncho-mda` |
 | `campaign_type` | code | the campaign is of that type | `campaign_type=mda` |
 | `source` | code | the result is `administrative` (reported counts), `survey` or `lqas` | `source=administrative` |
