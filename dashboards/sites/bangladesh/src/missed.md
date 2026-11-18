@@ -166,7 +166,7 @@ ${item("Campaign coverage of 1-year-olds against the routine target", map,
 
 ```js
 const table = (list, label = "Upazila") => pivot(list.flatMap((d) => [
-    ["Campaign vaccinated", d.vaccinated], ["Coverage reported (%)", d.own_coverage], ["Routine target", d.routine_target],
+    ["Campaign target", d.campaign_target], ["Campaign vaccinated", d.vaccinated], ["Coverage reported (%)", d.own_coverage], ["Routine target", d.routine_target],
     ["Coverage, routine target (%)", d.routine_coverage], ["WorldPop under 1", d.worldpop], ["Children short", d.short_agreed]
   ].map(([col, value]) => ({row: d.name, col, value}))), {row: (d) => d.row, col: (d) => d.col, rowLabel: label, digits: 0});
 const inDistrict = selected.filter((d) => d.district === district).sort((a, b) => a.name.localeCompare(b.name));
