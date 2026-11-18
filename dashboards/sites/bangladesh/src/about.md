@@ -84,7 +84,7 @@ These dashboards put two Bangladesh immunization systems side by side: the MR ca
 |---|---|---|
 | **System** | EPI campaign DHIS2, "National EPI Campaign System" (epicampaign.dghs.gov.bd) | EPI e-Tracker, a DHIS2 Tracker (epietracker.dghs.gov.bd), read through the DGHS GIS dashboard (gisdashboard.dghs.gov.bd) |
 | **What it records** | Totals reported by vaccination sessions each day of the campaign: children targeted and vaccinated, vaccine received and used | Doses given to individual children at routine sessions, summed by the dashboard into monthly totals per place |
-| **Who it covers** | Children in the campaign's age groups, in community and school sessions | Children aged 0–11 months (the annual target), and the doses on the routine schedule |
+| **Who it covers** | Children in the campaign's target group | Children aged 0–11 months (the annual target), and the doses on the routine schedule |
 | **Period** | The 2026 MR campaign, 5 April to 20 May 2026 | January 2024 to October 2026, by month and by year |
 | **How it was read** | DHIS2 analytics API | The coverage files the dashboard publishes (read only) |
 
@@ -96,7 +96,7 @@ These dashboards put two Bangladesh immunization systems side by side: the MR ca
 - **Indicators:** 143 indicator and data element definitions, loaded as FHIR Measures. The MR campaign uses 35 of them.
 - **The campaign:** one FHIR CarePlan for the 2026 MR campaign.
 - **Values:** about 852,000 values, loaded as FHIR MeasureReports, for the country, 8 divisions, 76 districts and city corporations and 805 upazilas. Each value is for a day, a week, a month or the whole campaign.
-- **The figures used here:** target and children vaccinated by age group (6 months, 9 months, and each year from 1 to 4), by sex, and for school and community sessions; MR vaccine received and vials used; the reporting rate.
+- **The figures used here:** target and children vaccinated, by sex; MR vaccine received and vials used; the reporting rate.
 
 ### From the routine e-Tracker
 
