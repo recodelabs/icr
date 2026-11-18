@@ -15,5 +15,5 @@ COPY (
          max(count) FILTER (WHERE m = 'bd-epi-PLsyc7XfCYo') AS vaccinated_1y,
          max(count) FILTER (WHERE m = 'bd-epi-WaAXoj3iiRv') AS target_all,
          max(count) FILTER (WHERE m = 'bd-epi-IIu9d1VChct') AS vaccinated_all
-  FROM v GROUP BY 1
+  FROM v GROUP BY 1 ORDER BY 1
 ) TO '/dev/stdout' (FORMAT PARQUET);"

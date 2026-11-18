@@ -35,5 +35,5 @@ COPY (
          CASE WHEN NOT coalesce(ok.target_ok, true) AND (key LIKE '%coverage%' OR key LIKE '%unvaccinated') THEN NULL
               WHEN key LIKE '%coverage%' OR key LIKE 'dropout-%' THEN round(k.score * 100, 2) ELSE k.score END AS value
   FROM k LEFT JOIN l ON l.id = k.location_id LEFT JOIN ok ON ok.location_id = k.location_id AND ok.year = left(k.period, 4)
-  ORDER BY key, l.admin_level, location_name, k.period_start
+  ORDER BY key, l.admin_level, location_name, k.period_start, k.location_id, k.period
 ) TO '/dev/stdout' (FORMAT PARQUET);"
