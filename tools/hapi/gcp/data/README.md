@@ -9,6 +9,7 @@ https://data.healthcampaigns.org/fhir/$sql-run           a query (token with sys
 https://data.healthcampaigns.org/fhir/Library            the queries there are, with their SQL
 https://data.healthcampaigns.org/fhir/.well-known/smart-configuration   how to get a token (open)
 https://data.healthcampaigns.org/status, /run, /runs     refreshes (token with fhir-pipes.admin)
+https://data.healthcampaigns.org/mcp                     the saved queries as MCP tools, for Claude
 ```
 
 - **Refreshes.** Once a day at 02:30 UTC, and when asked with `POST /run`, serve runs
@@ -45,7 +46,8 @@ https://github.com/ohs-foundation/fhir-pipes-rs/blob/main/docs/serve.md
 | `bundle.sh` | fills `build/` (mounted at `/config`): the config, the ICR profile, the ViewDefinitions and the Libraries as JSON |
 | `keycloak.sh` | the two client scopes, and which API keys may ask for them |
 | `data.env.example` | `data.env` on the VM, not in git: the API key and the operator token |
-| `../sites/data.caddy` | Caddy's site for the host |
+| `mcp/` | the MCP server (`icr_mcp.py`, its tests, `Dockerfile`, `uv.lock`) |
+| `../sites/data.caddy` | Caddy's site for the host: `/mcp` to the MCP server, the rest to serve |
 
 ## First deploy
 
@@ -103,6 +105,57 @@ curl -H "Authorization: Bearer $TOKEN" -G 'https://data.healthcampaigns.org/fhir
 ```
 
 The `scope` must be asked for: the scopes are optional, so a token without it gets `403`.
+
+## Claude (MCP)
+
+`mcp/` is an MCP server at `https://data.healthcampaigns.org/mcp`, in the same compose project
+(service `mcp`, alias `data-mcp`). Claude adds it as a custom connector; people then ask
+questions in Claude (typed or by voice) and Claude runs the saved queries. It has four tools:
+
+- `list_queries`: the approved Libraries, with their parameters
+- `get_query`: one Library's SQL and the tables it reads
+- `run_query`: run one with filter parameters; at most 1,000 rows come back (200 by default)
+- `aggregate`: run one, then group its rows and compute figures per group (`count`,
+  `count_distinct`, `sum`, `avg`, `min`, `max`, and `ratio`, which is sum over sum, for coverage
+  and other rates), with a `where` on any column. The grouping happens in the MCP server, over
+  the rows `run_query` would return, so it reaches no other data. It reads at most 500,000 rows.
+
+**Totals over one kind of row.** A query can return rows that must not be added together: a
+state's row and its LGAs' rows, an administrative report and a survey of the same place, two
+programmes. `mcp/queries.toml` lists these columns for each query (`one_kind`). `aggregate`
+refuses a sum, average, ratio, minimum or maximum over rows that differ in one of them, and
+its error lists the values found; the agent then fixes one value (a parameter or `where`) or
+groups by the column. Counts are not checked. Each result says which kind of row it is for
+(`kinds`). When a Library is added or gains such a column, add it to `queries.toml`. The check
+cannot see what a query has no column for: `ViewIcrCoverage` has no admin level, so use
+`IcrCoverageByLocation` for totals by place.
+
+It runs no SQL of its own, only serve's approved Libraries through `$sql-run`.
+
+**Sign-in.** People sign in with an account in realm `icr`, through the Keycloak client
+`claude-mcp`. Its tokens are issued for two audiences: the MCP URL, which the MCP server
+checks, and `fhir-pipes`, with `system/Library.rs`, which serve checks. The MCP server sends
+the caller's token on to serve, so serve sees each person. Any enabled user of the realm can
+use the connector.
+
+```bash
+kd claude        # once: the client; prints the client ID and secret for Claude
+kd user jdoe     # a person; prints a temporary password, changed at first sign-in
+kd unuser jdoe
+```
+
+**Connect in Claude** (web, Desktop or mobile, which share the connector): Settings → Connectors →
+Add custom connector. URL `https://data.healthcampaigns.org/mcp`; under the OAuth client, use
+your own client: ID `claude-mcp` and the secret `kd claude` printed. Claude cannot change a
+connector's sign-in settings later: to change them, remove the connector and add it again.
+
+**Deploy or update:** ship this folder and `../sites/data.caddy`, then on the VM
+`sudo docker compose -f data/docker-compose.yml --env-file data/data.env up -d --build mcp`, then
+`sudo docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile`.
+Logs show each call with the person's username:
+`sudo docker compose -f data/docker-compose.yml --env-file data/data.env logs -f mcp`.
+
+**Tests:** `cd mcp && uv run pytest`.
 
 ## Update
 

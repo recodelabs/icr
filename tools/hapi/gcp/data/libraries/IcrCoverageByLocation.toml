@@ -38,6 +38,11 @@ type = "string"
 documentation = "The name of the LGA (admin level 2), for example Ajingi"
 
 [[parameter]]
+name = "admin_level"
+type = "integer"
+documentation = "The level of the place the report is about: 0 country, 1 state, 2 LGA. A state's report and its LGAs' reports cover the same people, so total one level at a time"
+
+[[parameter]]
 name = "protocol"
 type = "string"
 documentation = "The campaign's protocol, which tells one programme from another, for example nga-demo-proto-lf-oncho-mda"

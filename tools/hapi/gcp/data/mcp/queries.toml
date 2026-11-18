@@ -1,0 +1,49 @@
+# What the MCP server knows about each saved query beyond its Library: the columns that split
+# its rows into kinds that must not be added together. aggregate refuses a sum, average, ratio,
+# minimum or maximum over rows that differ in one of these columns, unless the column is in
+# group_by. (A Library's own .toml takes no extra keys, so this lives here.)
+#
+# Example: IcrCoverageByLocation has a row for a state and a row for each of its LGAs, and for
+# one place an administrative report and a survey. Summing across either counts people twice.
+#
+# A query that is not listed has no such columns. test_icr_mcp.py checks that every name here
+# is a Library in ../libraries.
+
+# protocol is the programme (LF MDA, a polio campaign, ...): a rate over two programmes is a
+# rate of nothing. Rounds and years of one programme can be totalled.
+[IcrCoverageByLocation]
+one_kind = ["protocol", "admin_level", "source", "lineage", "measure", "denominator_type"]
+
+# No admin level here: a state's report and its LGAs' reports cannot be told apart, so prefer
+# IcrCoverageByLocation for totals by place.
+[ViewIcrCoverage]
+one_kind = ["source", "lineage", "measure", "denominator_type"]
+
+# Each report is split once by sex, once by age band, ...: every person is in each split.
+[ViewIcrCoverageStrata]
+one_kind = ["stratifier"]
+
+# A population estimate per place and year; a state's row holds its LGAs' people.
+[IcrPopulationByLocation]
+one_kind = ["admin_level", "year"]
+
+# `name` is the population group (all ages, 5 years and over, ...), and groups overlap.
+[ViewIcrTargetPopulation]
+one_kind = ["name", "source", "estimate_date"]
+
+[ViewIcrIndicatorValue]
+one_kind = ["measure"]
+
+[ViewIcrIndicatorStrata]
+one_kind = ["measure", "dimension"]
+
+# realtime rows are replaced by reconciled ones for the same work.
+[ViewIcrCampaignTask]
+one_kind = ["lineage"]
+
+[ViewIcrCampaignTaskOutput]
+one_kind = ["lineage"]
+
+# figure_value is a prevalence for one property (LF, oncho, ...), each in its own unit.
+[ViewIcrLocationStatus]
+one_kind = ["property"]

@@ -1,7 +1,17 @@
 # fhir-pipes serve (../data/docker-compose.yml, env file data/data.env): $sql-run over the
 # warehouse it refreshes, and its run API. Every path but /health and
 # /fhir/.well-known/smart-configuration needs a token.
+#
+# /mcp and its OAuth metadata go to the MCP server (data/mcp/), which Claude connects to.
 data.healthcampaigns.org {
 	encode gzip
-	reverse_proxy data-serve:8090
+	handle /mcp {
+		reverse_proxy data-mcp:8000
+	}
+	handle /.well-known/oauth-protected-resource/mcp {
+		reverse_proxy data-mcp:8000
+	}
+	handle {
+		reverse_proxy data-serve:8090
+	}
 }
