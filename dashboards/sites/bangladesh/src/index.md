@@ -72,7 +72,7 @@ ${item("Targets, Vaccinated and Coverage of MR campaign 2026 - Bangladesh (By da
 
 ```js
 import {coverageMap} from "./components/campaign-map.js";
-const boundaries = await FileAttachment("data/boundaries.json").json();
+const boundaries = await FileAttachment("data/boundaries.pmtiles").arrayBuffer();
 const campaignRows = rows(await sql`SELECT * FROM campaign`);
 const mapLevelInput = Inputs.radio(new Map([["District and city corporation", 2], ["Upazila", 3]]), {label: "Map by", value: 2});
 const mapLevel = Generators.input(mapLevelInput);

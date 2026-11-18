@@ -12,7 +12,7 @@ sql:
 ```js
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
-import maplibregl from "npm:maplibre-gl@5";
+import maplibregl from "maplibre-gl";
 import {item, pivot, fmt, rows} from "./components/dhis2.js";
 import {thematic} from "./components/charts.js";
 import {unitMap} from "./components/unit-map.js";
@@ -22,7 +22,7 @@ const YEARS = ["2024", "2025", "2026"];
 const LOW = 80, HIGH = 125;
 const short = (n) => (n ?? "").replace(/ (District|Upazila)$/, "");
 const pct = (a, b) => a != null && b ? 100 * a / b : null;
-const boundaries = await FileAttachment("data/boundaries.json").json();
+const boundaries = await FileAttachment("data/boundaries.pmtiles").arrayBuffer();
 const kpi = (label, v, sub = "") => html`<div style="text-align:center;padding:18px 0 10px"><div class="d2-kpi">${v == null ? "—" : typeof v === "string" ? v : fmt(v, 0)}</div>
   <div class="muted" style="font-size:12px;margin-top:6px">${label}</div>${sub ? html`<div class="muted" style="font-size:11px;margin-top:2px">${sub}</div>` : ""}</div>`;
 // Red where the routine target is below WorldPop's estimate, blue where it is above.
@@ -161,7 +161,7 @@ const HOW = "Each bar counts the places in a 5-point band; 100% means the routin
 // The map is in its own cell so that changing the year or resizing the window does not make a
 // new one. `shown` holds the places the popups read; the cell below fills it.
 const shown = {byId: new Map(), year: null};
-const map = unitMap({geojson: boundaries, height: 520});
+const map = unitMap({pmtiles: boundaries, height: 520});
 // closeOnClick is off because it would also close the box on the click that opens the next one.
 const pinned = new maplibregl.Popup({closeButton: true, closeOnClick: false, maxWidth: "340px", offset: 8});
 map.map.on("click", (event) => { if (!map.map.queryRenderedFeatures(event.point, {layers: ["unit-fill"]}).length) pinned.remove(); });

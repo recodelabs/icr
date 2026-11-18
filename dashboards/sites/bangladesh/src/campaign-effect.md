@@ -11,7 +11,7 @@ sql:
 ```js
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
-import maplibregl from "npm:maplibre-gl@5";
+import maplibregl from "maplibre-gl";
 import {item, pivot, fmt, rows} from "./components/dhis2.js";
 import {thematic} from "./components/charts.js";
 import {unitMap} from "./components/unit-map.js";
@@ -27,7 +27,7 @@ const monthName = (p) => new Date(Date.UTC(+p.slice(0, 4), +p.slice(4) - 1, 1)).
 const VACCINES = [["mr1", "MR-1", "#d74554"], ["mr2", "MR-2", "#f59e9e"], ["bcg", "BCG", "#518cc3"], ["penta1", "Penta-1", "#7fb0d9"], ["penta3", "Penta-3", "#9aa5b1"]];
 const short = (n) => (n ?? "").replace(/ (District|Upazila)$/, "");
 const pct = (a, b) => a != null && b ? 100 * a / b : null;
-const boundaries = await FileAttachment("data/boundaries.json").json();
+const boundaries = await FileAttachment("data/boundaries.pmtiles").arrayBuffer();
 const kpi = (label, v, sub = "") => html`<div style="text-align:center;padding:18px 0 10px"><div class="d2-kpi">${v == null ? "—" : typeof v === "string" ? v : fmt(v, 0)}</div>
   <div class="muted" style="font-size:12px;margin-top:6px">${label}</div>${sub ? html`<div class="muted" style="font-size:11px;margin-top:2px">${sub}</div>` : ""}</div>`;
 // Red where doses fell during the campaign, blue where they rose.
@@ -149,7 +149,7 @@ const range = Generators.input(histogram);
 ```js
 // The map is in its own cell so that resizing the window (which redraws the histogram) does not
 // make a new one; when this cell is replaced, the old map is removed.
-const map = unitMap({geojson: boundaries, height: 560});
+const map = unitMap({pmtiles: boundaries, height: 560});
 invalidation.then(() => map.map.remove());
 // Click an upazila for a pinned box with its name and monthly doses (hovering shows the ratio only).
 const byId = new Map(upazilas.map((d) => [d.location_id, d]));

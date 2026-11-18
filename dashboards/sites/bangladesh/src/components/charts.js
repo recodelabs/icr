@@ -105,8 +105,7 @@ export function yearOverYear(data, {width = 640, height = 320, yLabel = null} = 
  * Colour a unit map like a DHIS2 Maps thematic layer: with a legend set when one is given,
  * otherwise five equal-interval classes between the lowest and highest value.
  */
-export function thematic(map, data, {level, legend, label, points: facilities, outline}) {
-  // `points`: facility rows {id, name, lon, lat} to colour by the values in `data` (level null).
+export function thematic(map, data, {level, legend, label}) {
   const values = new Map(data.map((d) => [d.location_id, d.value]));
   const byId = new Map(data.map((d) => [d.location_id, d]));
   let stops, colors, format;
@@ -122,12 +121,9 @@ export function thematic(map, data, {level, legend, label, points: facilities, o
     colors = MAP_CLASSES;
     format = (v) => fmt(v);
   }
-  const tip = (d) => !d ? "no value" : `${fmt(d.value)}` + (d.denominator != null ? `<br>${fmt(d.numerator, 0)} ÷ ${fmt(d.denominator, 0)}` : "");
-  const points = (facilities ?? []).map((f) => ({...f, value: byId.get(f.id)?.value, popup: tip(byId.get(f.id))}));
-  map.update({
-    level, values, stops, colors, points, outline,
-    legend: [label, format],
-    popup: (id) => {
+  map.setValues(values, {
+    level, thresholds: stops, colors, label, legendFormat: format,
+    describe: (id) => {
       const d = byId.get(id);
       if (!d) return "no value";
       return `${fmt(d.value)}` + (d.denominator != null ? `<br>${fmt(d.numerator, 0)} ÷ ${fmt(d.denominator, 0)}` : "");

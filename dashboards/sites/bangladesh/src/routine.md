@@ -15,7 +15,7 @@ const VACCINES = [["bcg", "BCG"], ["penta1", "Penta-1"], ["penta2", "Penta-2"], 
 const VNAME = new Map(VACCINES);
 const COUNTRY = "bgd-I9x3B8oQvZH";
 const short = (n) => (n ?? "").replace(/ (District|Upazila)$/, "");
-const boundaries = await FileAttachment("data/boundaries.json").json();
+const boundaries = await FileAttachment("data/boundaries.pmtiles").arrayBuffer();
 const areas = rows(await sql`SELECT DISTINCT location_id, location_name, admin_level FROM routine WHERE admin_level = 2 ORDER BY location_name`);
 ```
 
@@ -63,7 +63,7 @@ ${item(`Penta-1 zero-dose children, ${placeName} ${year}`, kpi("Target minus Pen
 </div>
 
 ```js
-const map = unitMap({geojson: boundaries, height: 520});
+const map = unitMap({pmtiles: boundaries, height: 520});
 const covUnits = units.filter((d) => d.key === `${vaccine}-coverage`);
 thematic(map, covUnits.map((d) => ({location_id: d.location_id, value: d.value, numerator: d.numerator, denominator: d.denominator})),
   {level: unitLevel, legend: MAP_LEGEND, label: `${VNAME.get(vaccine)} coverage ${year} (%)`});
