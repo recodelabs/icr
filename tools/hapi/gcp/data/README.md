@@ -120,6 +120,16 @@ questions in Claude (typed or by voice) and Claude runs the saved queries. It ha
   and other rates), with a `where` on any column. The grouping happens in the MCP server, over
   the rows `run_query` would return, so it reaches no other data. It reads at most 500,000 rows.
 
+**Totals over one kind of row.** A query can return rows that must not be added together: a
+state's row and its LGAs' rows, an administrative report and a survey of the same place, two
+programmes. `mcp/queries.toml` lists these columns for each query (`one_kind`). `aggregate`
+refuses a sum, average, ratio, minimum or maximum over rows that differ in one of them, and
+its error lists the values found; the agent then fixes one value (a parameter or `where`) or
+groups by the column. Counts are not checked. Each result says which kind of row it is for
+(`kinds`). When a Library is added or gains such a column, add it to `queries.toml`. The check
+cannot see what a query has no column for: `ViewIcrCoverage` has no admin level, so use
+`IcrCoverageByLocation` for totals by place.
+
 It runs no SQL of its own, only serve's approved Libraries through `$sql-run`.
 
 **Sign-in.** People sign in with an account in realm `icr`, through the Keycloak client

@@ -310,8 +310,101 @@ COVERAGE = [
 ]
 
 
+ONE_KIND = {"IcrCoverageByLocation": ["admin_level", "source"]}
+
+
 def agg_server(data=COVERAGE):
-    return icr_mcp.make_server(VERIFIER, Serve(data=data).factory())
+    return icr_mcp.make_server(VERIFIER, Serve(data=data).factory(), one_kind=ONE_KIND)
+
+
+# --- one kind of row per total --------------------------------------------------------------
+
+SUM = [{"op": "sum", "of": "numerator"}]
+
+
+@pytest.mark.anyio
+async def test_a_total_over_mixed_kinds_is_refused_and_names_the_values(signed_in):
+    with pytest.raises(ToolError) as e:
+        await agg_server().call_tool("aggregate", {"name": "IcrCoverageByLocation", "group_by": ["state"], "metrics": SUM})
+    message = str(e.value)
+    assert 'admin_level: 1, 2' in message
+    assert 'source: "administrative", "survey"' in message
+    assert "group_by" in message and "where" in message
+
+
+@pytest.mark.anyio
+async def test_fixing_only_one_column_still_refuses_and_names_the_other(signed_in):
+    with pytest.raises(ToolError) as e:
+        await agg_server().call_tool("aggregate", {
+            "name": "IcrCoverageByLocation", "group_by": ["state"], "where": {"admin_level": 2}, "metrics": SUM,
+        })
+    assert "source:" in str(e.value) and "admin_level:" not in str(e.value)
+
+
+@pytest.mark.anyio
+async def test_a_kind_can_be_fixed_by_where_or_split_by_group_by(signed_in):
+    out = await call(agg_server(), "aggregate", {
+        "name": "IcrCoverageByLocation",
+        "group_by": ["state", "source"], "where": {"admin_level": 2}, "metrics": SUM,
+        "order_by": "sum_numerator",
+    })
+    assert out["rows"] == [["Kano", "administrative", 900], ["Jigawa", "survey", 45], ["Jigawa", "administrative", 30]]
+    assert out["kinds"] == {"source": "grouped", "admin_level": 2}
+
+
+@pytest.mark.anyio
+async def test_kinds_that_differ_between_groups_but_not_within_one_are_allowed(signed_in):
+    # Each state's rows are of one source, though the states differ: nothing is counted twice.
+    data = [cov("A", "x", 2, 1, 2, None), cov("A", "y", 2, 3, 4, None), cov("B", "z", 2, 5, 6, None, source="survey")]
+    out = await call(agg_server(data), "aggregate", {"name": "IcrCoverageByLocation", "group_by": ["state"], "metrics": SUM})
+    assert sorted(out["rows"]) == [["A", 4], ["B", 5]]
+    assert out["kinds"] == {"admin_level": 2, "source": ["administrative", "survey"]}
+
+
+@pytest.mark.anyio
+async def test_a_missing_value_is_its_own_kind(signed_in):
+    data = [cov("A", "x", 2, 1, 2, None), cov("A", None, None, 9, 9, None)]
+    with pytest.raises(ToolError, match=re.escape("admin_level: 2, null")):
+        await agg_server(data).call_tool("aggregate", {"name": "IcrCoverageByLocation", "metrics": SUM})
+
+
+@pytest.mark.anyio
+async def test_counts_over_mixed_kinds_are_allowed(signed_in):
+    out = await call(agg_server(), "aggregate", {
+        "name": "IcrCoverageByLocation",
+        "metrics": [{"op": "count", "as": "reports"}, {"op": "count_distinct", "of": "state", "as": "states"}],
+    })
+    assert out["rows"] == [[6, 2]]
+    assert out["kinds"] == {"admin_level": [1, 2], "source": ["administrative", "survey"]}
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("op", ["sum", "avg", "min", "max"])
+async def test_every_total_is_checked(signed_in, op):
+    with pytest.raises(ToolError, match="more than one kind"):
+        await agg_server().call_tool("aggregate", {"name": "IcrCoverageByLocation", "metrics": [{"op": op, "of": "score"}]})
+
+
+@pytest.mark.anyio
+async def test_a_query_with_no_one_kind_columns_is_not_checked(signed_in):
+    server = icr_mcp.make_server(VERIFIER, Serve(data=COVERAGE).factory(), one_kind={})
+    out = await call(server, "aggregate", {"name": "IcrCoverageByLocation", "metrics": SUM})
+    assert out["rows"] == [[1875]] and out["kinds"] == {}
+
+
+@pytest.mark.anyio
+async def test_list_and_get_show_one_kind(signed_in):
+    server = agg_server()
+    assert (await call(server, "list_queries", {}))["result"][0]["one_kind"] == ["admin_level", "source"]
+    assert (await call(server, "get_query", {"name": "IcrCoverageByLocation"}))["one_kind"] == ["admin_level", "source"]
+
+
+def test_queries_toml_names_real_libraries():
+    from pathlib import Path
+    libraries = {p.stem for p in (Path(__file__).parent.parent / "libraries").glob("*.toml")}
+    declared = icr_mcp.load_one_kind()
+    assert declared and set(declared) <= libraries, set(declared) - libraries
+    assert all(cols and len(set(cols)) == len(cols) for cols in declared.values())
 
 
 @pytest.mark.anyio
@@ -344,11 +437,12 @@ async def test_aggregate_ratio_is_sum_over_sum_not_the_mean_of_rates(signed_in):
 async def test_aggregate_without_group_by_gives_one_total(signed_in):
     out = await call(agg_server(), "aggregate", {
         "name": "IcrCoverageByLocation",
-        "where": {"admin_level": 2},
+        "where": {"admin_level": 2, "source": "administrative"},
         "metrics": [{"op": "count_distinct", "of": "state", "as": "states"}, {"op": "sum", "of": "denominator"}],
     })
     assert out["columns"] == ["states", "sum_denominator"]
-    assert out["rows"] == [[2, 1400]]
+    assert out["rows"] == [[2, 1300]]
+    assert out["kinds"] == {"admin_level": 2, "source": "administrative"}
 
 
 @pytest.mark.anyio
@@ -417,7 +511,7 @@ async def test_aggregate_ratio_with_a_zero_denominator_is_null(signed_in):
         ({"metrics": [{"op": "sum", "of": "nope"}]}, "has no column nope; its columns are: state, lga"),
         ({"metrics": [{"op": "count"}], "group_by": ["nope"]}, "has no column nope"),
         ({"metrics": [{"op": "count"}], "where": {"nope": 1}}, "has no column nope"),
-        ({"metrics": [{"op": "sum", "of": "state"}]}, "state is not a number (found 'Kano')"),
+        ({"metrics": [{"op": "sum", "of": "state"}], "where": {"admin_level": 1}}, "state is not a number (found 'Kano')"),
         ({"metrics": [{"op": "count"}], "parameters": {"disease": "lf"}}, "does not take disease"),
         ({"metrics": [{"op": "count"}], "limit": 0}, "limit must be between 1 and 1000"),
     ],

@@ -31,7 +31,9 @@ import json
 import logging
 import os
 import time
+import tomllib
 from contextlib import aclosing
+from pathlib import Path
 from typing import Any, AsyncIterator, Literal
 
 import httpx2 as httpx
@@ -96,6 +98,13 @@ class KeycloakVerifier:
 
 
 Scalar = str | int | float | bool | None
+
+
+def load_one_kind(path: Path | None = None) -> dict[str, list[str]]:
+    """queries.toml: for each query, the columns whose values must not be mixed in a total."""
+    path = path or Path(__file__).with_name("queries.toml")
+    with path.open("rb") as f:
+        return {name: list(q.get("one_kind", [])) for name, q in tomllib.load(f).items()}
 
 
 class Metric(BaseModel):
@@ -200,23 +209,24 @@ You can run only the saved queries this server lists; there is no free-form SQL.
 Rates: a rate for a group (coverage of a state, say) is sum(numerator) / sum(denominator),
 which is aggregate's `ratio`. Do not average the rows' own rates (score): that weights a small
 place the same as a large one.
-Double counting: a query can return rows at more than one admin level (a state row and its
-LGA rows) or of more than one kind (source, lineage, measure). Before you sum, look at a few
-rows with run_query and narrow to one level and one kind with parameters or aggregate's `where`.
-
-Places: state is admin level 1, LGA admin level 2; names are as in the registry (e.g. Kano,
-Ajingi). Coverage is a share (0-1). When you answer, say which query and filters you used.
+Double counting: a query can return rows of more than one kind: a state's row and its LGAs'
+rows, or an administrative report and a survey of the same place. list_queries names these
+columns for each query (`one_kind`). aggregate refuses a total that mixes them and lists the
+values found: choose one value (parameter or `where`) or group by the column. If the person
+did not say which kind they mean (administrative or survey, say), tell them which you used.
 """
 
 
 def make_server(
     verifier: Any,
     client_factory: Any = None,
+    one_kind: dict[str, list[str]] | None = None,
 ) -> MCPServer:
     """The MCP server. `client_factory` returns the httpx client used to call serve (tests
     pass one with a mock transport)."""
 
     client_factory = client_factory or (lambda: httpx.AsyncClient(timeout=TIMEOUT))
+    one_kind = load_one_kind() if one_kind is None else one_kind
     # The approved Libraries are the same for every caller; each run_query still goes to serve
     # with the caller's own token, so serve decides every time whether they may run it.
     cache: dict[str, Any] = {"at": 0.0, "libraries": None}
@@ -317,7 +327,11 @@ def make_server(
     )
     async def list_queries() -> list[dict[str, Any]]:
         """The saved queries you can run, each with its name, what it returns, and the filter
-        parameters it takes (none are required). Call this first."""
+        parameters it takes (none are required). Call this first.
+
+        `one_kind` lists the columns that split a query's rows into kinds that must not be added
+        together (a state's row and its LGAs' rows, an administrative report and a survey of
+        the same place). aggregate refuses a total that mixes them."""
         token = caller()
         out = []
         for lib in await libraries(token):
@@ -327,6 +341,7 @@ def make_server(
                     "title": lib.get("title"),
                     "description": lib.get("description"),
                     "parameters": in_params(lib),
+                    "one_kind": one_kind.get(lib.get("name", ""), []),
                 }
             )
         log.info("%s list_queries", who(token))
@@ -352,6 +367,7 @@ def make_server(
             "title": lib.get("title"),
             "description": lib.get("description"),
             "parameters": in_params(lib),
+            "one_kind": one_kind.get(name, []),
             "reads": [
                 {"table": a.get("label"), "definition": a.get("resource")}
                 for a in lib.get("relatedArtifact", [])
@@ -437,8 +453,12 @@ def make_server(
         group_by: columns of the query to group on, e.g. ["state"]. Leave out for one total.
         where: keep only rows where a column equals a value, or one of a list:
             {"admin_level": 2, "source": ["administrative", "survey"]}. Use it for columns the
-            query has no parameter for. Check that the rows you total are of one admin level and
-            one kind, or places are counted twice.
+            query has no parameter for.
+        One kind of row: a total (anything but a count) must be over rows of one kind. For each
+            of the query's `one_kind` columns (see list_queries), either fix one value with a
+            parameter or `where`, or put the column in group_by. Otherwise the call is refused
+            and the error lists the values found, so you can choose. The result's `kinds` says
+            which kind of row each figure is for: say it in your answer.
         order_by: a group_by column or a metric's name; descending by default.
         limit: the most groups to return (default 100, at most 1000).
         """
@@ -463,6 +483,13 @@ def make_server(
         filters = {k: set(v) if isinstance(v, list) else {v} for k, v in (where or {}).items()}
         used = set(group_by) | set(filters) | {c for m in metrics for c in (m.of, m.per) if c}
 
+        # The columns whose values must not be mixed within a group, when a metric totals rows.
+        totals = any(m.op not in ("count", "count_distinct") for m in metrics)
+        guard = [c for c in one_kind.get(name, []) if c not in group_by]
+        kinds: dict[str, set[Any]] = {c: set() for c in guard}  # every value among the rows used
+        in_group: dict[tuple[Any, ...], list[Any]] = {}  # each group's first value per guard column
+        mixed: set[str] = set()  # guard columns that some group has two values of
+
         started = time.monotonic()
         groups: dict[tuple[Any, ...], list[Acc]] = {}
         read = kept = 0
@@ -472,6 +499,10 @@ def make_server(
                     missing = sorted(used - set(row))
                     if missing:
                         raise ToolError(f"{name} has no column {', '.join(missing)}; its columns are: {', '.join(row)}")
+                    absent = [c for c in guard if c not in row]
+                    if absent:
+                        log.warning("queries.toml: %s has no column %s", name, ", ".join(absent))
+                        guard = [c for c in guard if c in row]
                 read += 1
                 if read > MAX_INPUT_ROWS:
                     raise ToolError(f"{name} returns more than {MAX_INPUT_ROWS} rows with these parameters; add filters")
@@ -484,10 +515,29 @@ def make_server(
                     if len(groups) >= MAX_DISTINCT:
                         raise ToolError(f"more than {MAX_DISTINCT} groups; group on fewer columns or add filters")
                     accs = groups[key] = [Acc(m) for m in metrics]
+                    in_group[key] = [row[c] for c in guard]
                 for acc in accs:
                     acc.add(row)
+                first = in_group[key]
+                for i, c in enumerate(guard):
+                    v = row[c]
+                    if v != first[i]:
+                        mixed.add(c)
+                    if len(kinds[c]) <= 20:
+                        kinds[c].add(v)
         if not group_by and not groups:
             groups[()] = [Acc(m) for m in metrics]  # one total, even over no rows
+
+        def values(c: str) -> list[Any]:
+            return sorted(kinds[c], key=lambda v: (v is None, str(v)))
+
+        if totals and mixed:
+            found = "; ".join(f"{c}: {', '.join(json.dumps(v) for v in values(c))}" for c in guard if c in mixed)
+            raise ToolError(
+                f"These rows are of more than one kind, so a total over them would count the same thing more than "
+                f"once. They differ in {found}. For each of these columns, either fix one value with a parameter "
+                f"or `where`, or add the column to group_by."
+            )
 
         out = [list(key) + [acc.value() for acc in accs] for key, accs in groups.items()]
         if order_by is not None:
@@ -512,6 +562,10 @@ def make_server(
             "truncated": len(out) > limit,
             "rows_read": read,
             "rows_used": kept,
+            # What kind of rows the figures are over: each one_kind column's value, or that
+            # the groups are split by it.
+            "kinds": {c: "grouped" for c in one_kind.get(name, []) if c in group_by}
+            | {c: (values(c)[0] if len(kinds[c]) == 1 else values(c)) for c in guard if kinds[c]},
         }
 
     return mcp
