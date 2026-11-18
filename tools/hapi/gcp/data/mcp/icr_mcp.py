@@ -5,9 +5,11 @@ Tools:
   list_queries  the approved queries, with their parameters
   get_query     one query's SQL and the tables it reads
   run_query     run one, with optional filter parameters, and return its rows
+  aggregate     run one, then group its rows and compute totals, averages and rates per group
 
 It runs no SQL of its own: every call goes to serve's `/fhir/Library` and `$sql-run`, so a
-caller can run only the Libraries serve has approved.
+caller can run only the Libraries serve has approved. aggregate groups the rows of one such
+run in this process, with a fixed set of operations.
 
 Sign-in: Claude gets a token from Keycloak (realm icr, client `claude-mcp`). The token is
 issued for two audiences: this server's URL, which is checked here, and `fhir-pipes`, with
@@ -29,7 +31,8 @@ import json
 import logging
 import os
 import time
-from typing import Any
+from contextlib import aclosing
+from typing import Any, AsyncIterator, Literal
 
 import httpx2 as httpx
 import jwt
@@ -40,6 +43,7 @@ from mcp.server.auth.settings import AuthSettings
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp_types import ToolAnnotations
+from pydantic import BaseModel, ConfigDict, Field
 
 log = logging.getLogger("icr-mcp")
 
@@ -50,6 +54,9 @@ SERVE_URL = os.environ.get("SERVE_URL", "http://data-serve:8090/fhir").rstrip("/
 
 DEFAULT_LIMIT = 200
 MAX_LIMIT = 1000
+MAX_GROUPS = 1000  # the most groups aggregate returns
+MAX_INPUT_ROWS = 500_000  # the most rows aggregate reads before it asks for filters
+MAX_DISTINCT = 100_000  # the most distinct values or groups aggregate keeps in memory
 LIBRARY_TTL = 60  # seconds the Library list is kept before it is read again
 TIMEOUT = httpx.Timeout(120.0, connect=10.0)
 
@@ -88,6 +95,95 @@ class KeycloakVerifier:
         )
 
 
+Scalar = str | int | float | bool | None
+
+
+class Metric(BaseModel):
+    """One figure to compute for each group."""
+
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
+
+    op: Literal["count", "count_distinct", "sum", "avg", "min", "max", "ratio"] = Field(
+        description="count: rows (or non-null values of `of`). count_distinct: distinct non-null values of `of`. "
+        "sum, avg, min, max: over the non-null values of `of`. "
+        "ratio: sum(of) / sum(per), over rows where both are present; use it for coverage and other rates."
+    )
+    of: str | None = Field(default=None, description="The column the figure is computed from (not needed for count).")
+    per: str | None = Field(default=None, description="For ratio only: the denominator column.")
+    label: str | None = Field(default=None, alias="as", description="The name of the output column.")
+
+    def name(self) -> str:
+        if self.label:
+            return self.label
+        if self.op == "ratio":
+            return f"{self.of}_per_{self.per}"
+        return f"{self.op}_{self.of}" if self.of else self.op
+
+
+def number(v: Any, column: str) -> float | int:
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        raise ToolError(f"{column} is not a number (found {v!r}), so it cannot be summed or averaged")
+    return v
+
+
+class Acc:
+    """One metric's running figure for one group."""
+
+    def __init__(self, m: Metric):
+        self.m = m
+        self.n = 0
+        self.a: Any = 0
+        self.b: Any = 0
+        self.seen: set[Any] = set()
+        self.best: Any = None
+
+    def add(self, row: dict[str, Any]) -> None:
+        m = self.m
+        v = row.get(m.of) if m.of else None
+        if m.op == "count":
+            if m.of is None or v is not None:
+                self.n += 1
+            return
+        if v is None:
+            return
+        if m.op == "count_distinct":
+            if len(self.seen) >= MAX_DISTINCT and v not in self.seen:
+                raise ToolError(f"{m.of} has more than {MAX_DISTINCT} distinct values; add filters")
+            self.seen.add(v)
+        elif m.op in ("sum", "avg"):
+            self.a += number(v, m.of)
+            self.n += 1
+        elif m.op == "ratio":
+            d = row.get(m.per)
+            if d is None:
+                return
+            self.a += number(v, m.of)
+            self.b += number(d, m.per)
+            self.n += 1
+        else:  # min, max
+            try:
+                if self.best is None or (v < self.best if m.op == "min" else v > self.best):
+                    self.best = v
+            except TypeError:
+                raise ToolError(f"{m.of} mixes kinds of value, so it has no {m.op}") from None
+
+    def value(self) -> Scalar:
+        m = self.m
+        if m.op == "count":
+            return self.n
+        if m.op == "count_distinct":
+            return len(self.seen)
+        if m.op in ("min", "max"):
+            return self.best
+        if self.n == 0:
+            return None
+        if m.op == "sum":
+            return round(self.a, 6) if isinstance(self.a, float) else self.a
+        if m.op == "avg":
+            return round(self.a / self.n, 6)
+        return round(self.a / self.b, 6) if self.b else None  # ratio
+
+
 INSTRUCTIONS = """\
 ICR data: the Integrated Campaign Registry's warehouse (public health campaigns: NTD mass drug
 administration, vaccination, malaria; Nigeria first). The data on this server is demo data.
@@ -97,7 +193,16 @@ You can run only the saved queries this server lists; there is no free-form SQL.
 2. Call run_query with a query name and, where it helps, filter parameters. A filter that is
    not given filters nothing. Filter on the server (year, state, lga, ...) rather than
    fetching everything: results are cut at the row limit.
-3. get_query shows a query's SQL, which tells you its columns and how it joins tables.
+3. For totals, averages, rankings or "which place has the most/least", call aggregate, not
+   run_query: it groups and totals a query's rows on the server and returns only the groups.
+4. get_query shows a query's SQL, which tells you its columns and how it joins tables.
+
+Rates: a rate for a group (coverage of a state, say) is sum(numerator) / sum(denominator),
+which is aggregate's `ratio`. Do not average the rows' own rates (score): that weights a small
+place the same as a large one.
+Double counting: a query can return rows at more than one admin level (a state row and its
+LGA rows) or of more than one kind (source, lineage, measure). Before you sum, look at a few
+rows with run_query and narrow to one level and one kind with parameters or aggregate's `where`.
 
 Places: state is admin level 1, LGA admin level 2; names are as in the registry (e.g. Kano,
 Ajingi). Coverage is a share (0-1). When you answer, say which query and filters you used.
@@ -175,6 +280,37 @@ def make_server(
             if p.get("use", "in") == "in"
         ]
 
+    def checked_params(lib: dict[str, Any], parameters: dict[str, Any] | None) -> dict[str, Any]:
+        declared = {p["name"] for p in in_params(lib)}
+        given = {k: v for k, v in (parameters or {}).items() if v is not None}
+        unknown = sorted(set(given) - declared)
+        if unknown:
+            takes = ", ".join(sorted(declared)) or "no parameters"
+            raise ToolError(f"{lib.get('name')} does not take {', '.join(unknown)}; it takes {takes}")
+        return given
+
+    async def stream_rows(lib: dict[str, Any], given: dict[str, Any], token: AccessToken) -> AsyncIterator[dict[str, Any]]:
+        """The rows of one Library from serve's $sql-run, one at a time."""
+        query: dict[str, str] = {"subjectCanonical": lib["url"], "_format": "ndjson"}
+        for k, v in given.items():
+            query[k] = ("true" if v else "false") if isinstance(v, bool) else str(v)
+        async with client_factory() as client:
+            try:
+                async with client.stream(
+                    "GET",
+                    f"{SERVE_URL}/$sql-run",
+                    params=query,
+                    headers={"Authorization": f"Bearer {token.token}"},
+                ) as r:
+                    if r.status_code >= 400:
+                        await r.aread()
+                        check(r)
+                    async for line in r.aiter_lines():
+                        if line.strip():
+                            yield json.loads(line)
+            except httpx.HTTPError as e:
+                raise ToolError(f"the data server did not answer: {type(e).__name__}") from e
+
     @mcp.tool(
         title="List the saved queries",
         annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=False),
@@ -245,42 +381,18 @@ def make_server(
         if not 1 <= limit <= MAX_LIMIT:
             raise ToolError(f"limit must be between 1 and {MAX_LIMIT}")
         lib = await library(name, token)
-        declared = {p["name"] for p in in_params(lib)}
-        given = parameters or {}
-        unknown = sorted(set(given) - declared)
-        if unknown:
-            takes = ", ".join(sorted(declared)) or "no parameters"
-            raise ToolError(f"{name} does not take {', '.join(unknown)}; it takes {takes}")
-
-        query: dict[str, str] = {"subjectCanonical": lib["url"], "_format": "ndjson"}
-        for k, v in given.items():
-            if v is None:
-                continue
-            query[k] = ("true" if v else "false") if isinstance(v, bool) else str(v)
+        given = checked_params(lib, parameters)
 
         started = time.monotonic()
         rows: list[dict[str, Any]] = []
         truncated = False
-        async with client_factory() as client:
-            try:
-                async with client.stream(
-                    "GET",
-                    f"{SERVE_URL}/$sql-run",
-                    params=query,
-                    headers={"Authorization": f"Bearer {token.token}"},
-                ) as r:
-                    if r.status_code >= 400:
-                        await r.aread()
-                        check(r)
-                    async for line in r.aiter_lines():
-                        if not line.strip():
-                            continue
-                        if len(rows) == limit:
-                            truncated = True
-                            break
-                        rows.append(json.loads(line))
-            except httpx.HTTPError as e:
-                raise ToolError(f"the data server did not answer: {type(e).__name__}") from e
+        # aclosing: stopping at the limit closes the connection to serve at once.
+        async with aclosing(stream_rows(lib, given, token)) as stream:
+            async for row in stream:
+                if len(rows) == limit:
+                    truncated = True
+                    break
+                rows.append(row)
 
         columns: list[str] = []
         for row in rows:
@@ -299,6 +411,107 @@ def make_server(
             "rows": [[row.get(c) for c in columns] for row in rows],
             "row_count": len(rows),
             "truncated": truncated,
+        }
+
+    @mcp.tool(
+        title="Group and total a saved query",
+        annotations=ToolAnnotations(readOnlyHint=True, idempotentHint=True, openWorldHint=False),
+    )
+    async def aggregate(
+        name: str,
+        metrics: list[Metric],
+        group_by: list[str] | None = None,
+        parameters: dict[str, str | int | float | bool] | None = None,
+        where: dict[str, Scalar | list[Scalar]] | None = None,
+        order_by: str | None = None,
+        descending: bool = True,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        """Run a saved query, then group its rows and compute figures per group. Use this for
+        totals, averages, rates and rankings; it reads every row of the query, so it is not
+        cut at run_query's row limit.
+
+        name, parameters: as for run_query.
+        metrics: the figures, e.g. [{"op": "ratio", "of": "numerator", "per": "denominator", "as": "coverage"},
+            {"op": "count", "as": "reports"}]. For a rate such as coverage use ratio, not avg of the rows' rates.
+        group_by: columns of the query to group on, e.g. ["state"]. Leave out for one total.
+        where: keep only rows where a column equals a value, or one of a list:
+            {"admin_level": 2, "source": ["administrative", "survey"]}. Use it for columns the
+            query has no parameter for. Check that the rows you total are of one admin level and
+            one kind, or places are counted twice.
+        order_by: a group_by column or a metric's name; descending by default.
+        limit: the most groups to return (default 100, at most 1000).
+        """
+        token = caller()
+        if not 1 <= limit <= MAX_GROUPS:
+            raise ToolError(f"limit must be between 1 and {MAX_GROUPS}")
+        if not metrics:
+            raise ToolError("give at least one metric")
+        group_by = group_by or []
+        names = group_by + [m.name() for m in metrics]
+        if len(set(names)) != len(names):
+            raise ToolError("two output columns have the same name; give each metric its own `as`")
+        for m in metrics:
+            if m.op != "count" and not m.of:
+                raise ToolError(f"{m.op} needs `of`, the column to compute it from")
+            if (m.op == "ratio") != bool(m.per):
+                raise ToolError("`per` goes with ratio, and ratio needs it")
+        if order_by is not None and order_by not in names:
+            raise ToolError(f"order_by must be one of: {', '.join(names)}")
+        lib = await library(name, token)
+        given = checked_params(lib, parameters)
+        filters = {k: set(v) if isinstance(v, list) else {v} for k, v in (where or {}).items()}
+        used = set(group_by) | set(filters) | {c for m in metrics for c in (m.of, m.per) if c}
+
+        started = time.monotonic()
+        groups: dict[tuple[Any, ...], list[Acc]] = {}
+        read = kept = 0
+        async with aclosing(stream_rows(lib, given, token)) as stream:
+            async for row in stream:
+                if read == 0:
+                    missing = sorted(used - set(row))
+                    if missing:
+                        raise ToolError(f"{name} has no column {', '.join(missing)}; its columns are: {', '.join(row)}")
+                read += 1
+                if read > MAX_INPUT_ROWS:
+                    raise ToolError(f"{name} returns more than {MAX_INPUT_ROWS} rows with these parameters; add filters")
+                if any(row.get(k) not in allowed for k, allowed in filters.items()):
+                    continue
+                kept += 1
+                key = tuple(row.get(g) for g in group_by)
+                accs = groups.get(key)
+                if accs is None:
+                    if len(groups) >= MAX_DISTINCT:
+                        raise ToolError(f"more than {MAX_DISTINCT} groups; group on fewer columns or add filters")
+                    accs = groups[key] = [Acc(m) for m in metrics]
+                for acc in accs:
+                    acc.add(row)
+        if not group_by and not groups:
+            groups[()] = [Acc(m) for m in metrics]  # one total, even over no rows
+
+        out = [list(key) + [acc.value() for acc in accs] for key, accs in groups.items()]
+        if order_by is not None:
+            i = names.index(order_by)
+            found = [r for r in out if r[i] is not None]
+            try:
+                found.sort(key=lambda r: r[i], reverse=descending)
+            except TypeError:
+                raise ToolError(f"{order_by} mixes kinds of value, so it cannot be ordered") from None
+            out = found + [r for r in out if r[i] is None]  # groups with no figure go last
+        log.info(
+            "%s aggregate %s %s by %s where %s -> %d groups from %d of %d rows in %.1fs",
+            who(token), name, json.dumps(given, sort_keys=True), group_by, sorted(filters),
+            len(out), kept, read, time.monotonic() - started,
+        )
+        return {
+            "query": name,
+            "parameters": given,
+            "columns": names,
+            "rows": out[:limit],
+            "group_count": len(out),
+            "truncated": len(out) > limit,
+            "rows_read": read,
+            "rows_used": kept,
         }
 
     return mcp

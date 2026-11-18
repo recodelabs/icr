@@ -110,11 +110,15 @@ The `scope` must be asked for: the scopes are optional, so a token without it ge
 
 `mcp/` is an MCP server at `https://data.healthcampaigns.org/mcp`, in the same compose project
 (service `mcp`, alias `data-mcp`). Claude adds it as a custom connector; people then ask
-questions in Claude (typed or by voice) and Claude runs the saved queries. It has three tools:
+questions in Claude (typed or by voice) and Claude runs the saved queries. It has four tools:
 
 - `list_queries`: the approved Libraries, with their parameters
 - `get_query`: one Library's SQL and the tables it reads
 - `run_query`: run one with filter parameters; at most 1,000 rows come back (200 by default)
+- `aggregate`: run one, then group its rows and compute figures per group (`count`,
+  `count_distinct`, `sum`, `avg`, `min`, `max`, and `ratio`, which is sum over sum, for coverage
+  and other rates), with a `where` on any column. The grouping happens in the MCP server, over
+  the rows `run_query` would return, so it reaches no other data. It reads at most 500,000 rows.
 
 It runs no SQL of its own, only serve's approved Libraries through `$sql-run`.
 
