@@ -31,7 +31,8 @@ ADMIN_SCOPE=fhir-pipes.admin
 # The MCP server's URL: an audience of every token claude-mcp gets, which the MCP server checks.
 MCP_URL=${MCP_URL:-https://data.healthcampaigns.org/mcp}
 CLAUDE_CLIENT=claude-mcp
-CLAUDE_CALLBACK=https://claude.ai/api/mcp/auth_callback
+# Where Claude receives the sign-in: claude.ai today, claude.com if it moves there.
+CLAUDE_CALLBACKS='["https://claude.ai/api/mcp/auth_callback","https://claude.com/api/mcp/auth_callback"]'
 cmd=${1:-}; name=${2:-}; level=${3:-}
 
 $K config credentials --server http://localhost:8080 --realm master \
@@ -107,7 +108,7 @@ case "$cmd" in
         -s "name=Claude (data.healthcampaigns.org/mcp)" -s protocol=openid-connect \
         -s publicClient=false -s standardFlowEnabled=true -s implicitFlowEnabled=false \
         -s directAccessGrantsEnabled=false -s serviceAccountsEnabled=false -s consentRequired=false \
-        -s "redirectUris=[\"$CLAUDE_CALLBACK\"]" -s 'webOrigins=[]' \
+        -s "redirectUris=$CLAUDE_CALLBACKS" -s 'webOrigins=[]' \
         -s 'attributes."pkce.code.challenge.method"=S256')
       $K create "clients/$cid/protocol-mappers/models" -r $REALM \
         -s name=audience-mcp -s protocol=openid-connect -s protocolMapper=oidc-audience-mapper \
@@ -116,6 +117,7 @@ case "$cmd" in
       $K update "clients/$cid/default-client-scopes/$sid" -r $REALM
       echo "client $CLAUDE_CLIENT created"
     else
+      $K update "clients/$cid" -r $REALM -s "redirectUris=$CLAUDE_CALLBACKS"
       echo "client $CLAUDE_CLIENT exists"
     fi
     secret=$($K get "clients/$cid/client-secret" -r $REALM 2>/dev/null | tr -d '\n ' | grep -o '"value":"[^"]*"' | cut -d'"' -f4)

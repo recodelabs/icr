@@ -181,6 +181,15 @@ async def test_the_metadata_names_keycloak():
     body = r.json()
     assert body["resource"] == icr_mcp.MCP_URL
     assert body["authorization_servers"] == [icr_mcp.ISSUER]
+    # With no scopes named, Claude asks Keycloak for every scope of the realm and is refused.
+    assert body["scopes_supported"] == ["system/Library.rs", "offline_access"]
+
+
+@pytest.mark.anyio
+async def test_a_token_without_the_query_scope_gets_403():
+    async with http(app()) as c:
+        r = await c.post("/mcp", json=INIT, headers=HEADERS | {"Authorization": f"Bearer {make_token(scope='openid offline_access')}"})
+    assert r.status_code == 403
 
 
 @pytest.mark.anyio

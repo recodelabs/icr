@@ -54,6 +54,7 @@ ISSUER = os.environ.get("ISSUER", "https://auth.healthcampaigns.org/realms/icr")
 JWKS_URL = os.environ.get("JWKS_URL", f"{ISSUER}/protocol/openid-connect/certs")
 SERVE_URL = os.environ.get("SERVE_URL", "http://data-serve:8090/fhir").rstrip("/")
 
+SCOPES = ["system/Library.rs", "offline_access"]
 DEFAULT_LIMIT = 200
 MAX_LIMIT = 1000
 MAX_GROUPS = 1000  # the most groups aggregate returns
@@ -89,7 +90,9 @@ class KeycloakVerifier:
         return AccessToken(
             token=token,
             client_id=claims.get("azp") or claims.get("client_id") or "",
-            scopes=(claims.get("scope") or "").split(),
+            # offline_access is asked for so the sign-in lasts; a token without it may still
+            # query, so it is counted as held and only system/Library.rs is really required.
+            scopes=sorted({*(claims.get("scope") or "").split(), "offline_access"}),
             expires_at=claims["exp"],
             resource=self.audience,
             subject=claims["sub"],
@@ -241,6 +244,10 @@ def make_server(
             issuer_url=ISSUER,
             resource_server_url=MCP_URL,
             validate_token_resource=True,
+            # Named in the metadata Claude reads, so it asks Keycloak for these and no others
+            # (with none named it asks for every scope the realm has, and Keycloak refuses).
+            # offline_access keeps the sign-in past the 30-minute idle session.
+            required_scopes=SCOPES,
         ),
     )
 
