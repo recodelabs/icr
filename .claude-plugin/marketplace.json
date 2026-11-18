@@ -1,0 +1,11 @@
+{
+  "name": "icr",
+  "owner": {"name": "Recode Labs"},
+  "plugins": [
+    {
+      "name": "icr",
+      "source": "./",
+      "description": "Skills for working with the Integrated Campaign Registry's data and dashboards with Claude"
+    }
+  ]
+}
