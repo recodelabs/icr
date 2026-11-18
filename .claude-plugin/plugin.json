@@ -1,0 +1,7 @@
+{
+  "name": "icr",
+  "description": "Skills for working with the Integrated Campaign Registry's data and dashboards with Claude",
+  "version": "0.1.0",
+  "homepage": "https://github.com/recodelabs/icr",
+  "repository": "https://github.com/recodelabs/icr"
+}

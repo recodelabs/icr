@@ -99,6 +99,22 @@ Only that site's pages are listed, and the editor only answers on this computer
 > ../../observatory/packages/cli` here (with the observatory repo next to this one). The next
 > plain `npm install` puts the published version back.
 
+## Writing pages with Claude
+
+Two Claude Code plugins teach Claude this work. Install both once, then open this repo in
+Claude Code (or the Code tab of Claude Desktop) and ask for the page you want:
+
+```
+/plugin install observatory --marketplace recodelabs/observatory
+/plugin install icr --marketplace recodelabs/icr
+```
+
+- **observatory** (`dashboards` skill): how a site is put together, where a calculation
+  belongs, the page layout and chart preferences, and how to check a page in the preview.
+- **icr** (`icr-dashboards` skill, in `skills/` at the root of this repo): where the ICR's
+  tables, ViewDefinitions and saved SQL queries are, the rules for ICR figures, and how to go
+  from a question answered with the ICR data connector to a page.
+
 ## Run
 
 ```bash
