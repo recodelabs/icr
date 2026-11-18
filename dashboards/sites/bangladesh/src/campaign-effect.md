@@ -15,6 +15,7 @@ import maplibregl from "npm:maplibre-gl@5";
 import {item, pivot, fmt, rows} from "./components/dhis2.js";
 import {thematic} from "./components/charts.js";
 import {unitMap} from "./components/unit-map.js";
+import {brushX, within as inRange} from "@recodelabs/observatory-components/brush";
 import {CAMPAIGN} from "./components/mr.js";
 
 const LOW = 80, HIGH = 125;
@@ -140,35 +141,7 @@ const histogram = (() => {
       Plot.ruleY([0])
     ]
   });
-  const x = svg.scale("x");
-  const bars = d3.select(svg).selectAll('g[aria-label="rect"] rect');
-  const GRIP = {width: 8, height: 44};
-  svg.value = null;
-  // Bars in the selected range get a thin outline, the rest are faded; grips mark the two edges.
-  function show(selection) {
-    bars.each(function () {
-      const mid = +this.getAttribute("x") + +this.getAttribute("width") / 2;
-      const inside = !selection || (mid >= selection[0] && mid <= selection[1]);
-      d3.select(this).attr("opacity", inside ? 1 : 0.3).attr("stroke", selection && inside ? "#334155" : null).attr("stroke-width", selection && inside ? 0.75 : null);
-    });
-    grip.attr("display", selection ? null : "none");
-    if (selection) grip.attr("x", (i) => selection[i] - GRIP.width / 2);
-  }
-  const brush = d3.brushX().extent([[MARGIN.left, MARGIN.top], [W - MARGIN.right, H - MARGIN.bottom]])
-    .on("brush", (event) => show(event.selection))
-    .on("end", (event) => {
-      show(event.selection);
-      svg.value = event.selection ? event.selection.map((px) => Math.round(x.invert(px))) : null;
-      svg.dispatchEvent(new Event("input", {bubbles: true}));
-    });
-  const g = d3.select(svg).append("g").attr("class", "brush").call(brush);
-  g.select(".selection").attr("fill", "#334155").attr("fill-opacity", 0.06).attr("stroke", "#334155").attr("stroke-opacity", 0.5).attr("stroke-dasharray", "3,2");
-  const grip = g.selectAll(".grip").data([0, 1]).join("rect").attr("class", "grip")
-    .attr("width", GRIP.width).attr("height", GRIP.height).attr("rx", 4)
-    .attr("y", (MARGIN.top + H - MARGIN.bottom - GRIP.height) / 2)
-    .attr("fill", "white").attr("stroke", "#334155").attr("stroke-width", 1.2)
-    .attr("pointer-events", "none").attr("display", "none");
-  return svg;
+  return brushX(svg, {color: "#334155"});
 })();
 const range = Generators.input(histogram);
 ```
@@ -200,7 +173,7 @@ map.map.on("click", "unit-fill", (event) => {
 
 ```js
 // The right end of the chart holds everything beyond it, so a range touching it is open on that side.
-const within = (v) => !range || (v >= range[0] && (range[1] >= 200 || v <= range[1]));
+const within = (v) => inRange(range, v, {max: 200});
 const selected = upazilas.filter((d) => within(d.mr1_ratio));
 const bcgInRange = upazilas.filter((d) => within(d.bcg_ratio));
 thematic(map, selected.map((d) => ({location_id: d.location_id, value: +d.mr1_ratio.toFixed(0)})),

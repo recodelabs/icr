@@ -25,5 +25,5 @@ COPY (
          v.period_start, v.period_end, v.numerator, v.denominator, v.count,
          round(v.score * coalesce(i.factor, 1), 2) AS value
   FROM v JOIN i ON i.url = v.measure LEFT JOIN p ON p.id = v.location_id
-  ORDER BY dx, p.level, location_name, v.period_start
+  ORDER BY dx, p.level, location_name, v.period_start, v.location_id, v.period
 ) TO '/dev/stdout' (FORMAT PARQUET);"
