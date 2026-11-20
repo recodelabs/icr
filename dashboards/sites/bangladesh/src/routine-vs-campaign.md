@@ -15,7 +15,7 @@ import {unitMap} from "./components/unit-map.js";
 import {CAMPAIGN} from "./components/mr.js";
 
 const short = (n) => (n ?? "").replace(/ (District|Upazila)$/, "");
-const boundaries = await FileAttachment("data/boundaries.json").json();
+const boundaries = await FileAttachment("data/boundaries.pmtiles").arrayBuffer();
 const BASELINES = [
   ["12m", "12 months before the campaign (Apr 2025 – Mar 2026)", "202504", "202603"],
   ["2025", "Calendar year 2025", "202501", "202512"],
@@ -101,16 +101,16 @@ ${item("Where the two disagree most", pivot(both.slice().sort((a, b) => (b.campa
 </div>
 
 ```js
-const routineMap = unitMap({geojson: boundaries, height: 480});
+const routineMap = unitMap({pmtiles: boundaries, height: 480});
 thematic(routineMap, both.map((d) => ({location_id: d.location_id, value: d.value, numerator: d.doses, denominator: d.target})),
   {level, legend: MAP_LEGEND, label: `Routine ${dose === "mr1" ? "MR-1" : "MR-2"} coverage (%)`});
-const campaignMap = unitMap({geojson: boundaries, height: 480});
+const campaignMap = unitMap({pmtiles: boundaries, height: 480});
 thematic(campaignMap, both.map((d) => ({location_id: d.location_id, value: d.campaign, numerator: d.campaign_vaccinated, denominator: d.campaign_target})),
   {level, legend: CAMPAIGN_LEGEND, label: "MR campaign coverage (%)"});
 ```
 
 ```js
-const deltaMap = unitMap({geojson: boundaries, height: 560});
+const deltaMap = unitMap({pmtiles: boundaries, height: 560});
 thematic(deltaMap, both.map((d) => ({location_id: d.location_id, value: +(d.campaign - d.value).toFixed(1)})),
   {level, legend: DELTA_LEGEND, label: "Campaign minus routine coverage (percentage points)"});
 ```
